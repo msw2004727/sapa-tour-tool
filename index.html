@@ -548,7 +548,7 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
 <script src="./config.js"></script>
 <script>
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '2.4';
+var APP_VERSION = '2.5';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -1336,8 +1336,8 @@ VIEWS.home=function(){
   '</section>');
   }
   /* 我的資訊：不分出發前後，固定顯示航空公司／報到航廈／房號，再加上「我被分配到的每一個分組」；
-     領隊可在「領隊專區→首頁分組顯示」把不想曝光的分組情境關掉。最後固定加一張「換一個名字」小卡，
-     取代原本常用工具區塊裡的同功能按鈕。 */
+     領隊可在「領隊專區→首頁分組顯示」把不想曝光的分組情境關掉。報到航廈跟著航空公司走，
+     領隊在「分組→航空公司→航空公司與航廈設定」改，不是寫死在程式裡。 */
   var me=getMe();
   if(me){
     var ad=airDef(me.airline);
@@ -1352,7 +1352,6 @@ VIEWS.home=function(){
       var gname=sc.names[gi]||('第 '+(gi+1)+' 組');
       strip.push('<button data-act="tab" data-tab="groups" data-scn="'+esc(sc.id)+'"><span class="k">'+esc(sc.name)+'</span><span class="v s">'+esc(gname)+'</span></button>');
     });
-    strip.push('<button data-act="pickMe"><span class="k">換一個名字</span><span class="v s">'+esc(me.name)+'</span></button>');
     h.push('<div class="me-strip">'+strip.join('')+'</div>');
   } else {
     h.push('<button class="btn big block" data-act="pickMe">'+ic('search')+'<span class="b2">點這裡選你的名字<small>首頁就會顯示你的航空公司、房號、分組</small></span></button>');
@@ -1555,13 +1554,13 @@ function airNote(){ var v=S().settings.airNote; return (v===undefined||v===null)
 function airlineView(){
   var me=getMe(), ae=airDef('eva')||{}, ac=airDef('ci')||{};
   var cols=[['eva',ae.name],['ci',ac.name],['','尚未設定']], h=[];
-  h.push('<div class="hint-lead">'+ic('info')+(P.leader?'點團員即可設定航空公司，此頁會依航空公司自動分類顯示':'團員已依照航空公司分類顯示；機場集合請看自己排在哪一區')+'</div>');
-  if(P.leader) h.push('<div class="row"><button class="btn" data-act="editAirlines">'+ic('edit')+'改航空公司名稱</button></div>');
+  h.push('<div class="hint-lead">'+ic('info')+(P.leader?'點團員即可設定航空公司；點各區塊右上角的鉛筆可設定該航空公司的報到航廈與名稱，此頁會依航空公司自動分類顯示':'團員已依照航空公司分類顯示；機場集合請看自己排在哪一區')+'</div>');
+  if(P.leader) h.push('<div class="row"><button class="btn" data-act="editAirlines">'+ic('edit')+'航空公司與航廈設定</button></div>');
   cols.forEach(function(c){
     var list=members().filter(function(m){ return (m.airline||'')===c[0]; });
     if(!c[0]&&!list.length) return;
     var mine=me&&list.some(function(m){return m.id===me.id;});
-    h.push('<section class="grp'+(mine?' me-grp':'')+'"><h3>'+(c[0]?airlineBadge(c[0]):'')+esc(c[1])+'<span class="n">'+list.length+' 人</span></h3><div class="gm">'+list.map(function(m){return memberCard(m,{sm:true,pk:P.leader,act:P.leader?'setAirlineAsk':'memberTap',noAir:true});}).join('')+(list.length?'':'<div class="muted">（尚無）</div>')+'</div></section>');
+    h.push('<section class="grp'+(mine?' me-grp':'')+'"><h3>'+(c[0]?airlineBadge(c[0]):'')+esc(c[1])+'<span class="n">'+list.length+' 人</span>'+(P.leader&&c[0]?'<button class="btn sm edit" data-act="editAirlines" aria-label="設定'+esc(c[1])+'的航廈與名稱">'+ic('edit')+'</button>':'')+'</h3><div class="gm">'+list.map(function(m){return memberCard(m,{sm:true,pk:P.leader,act:P.leader?'setAirlineAsk':'memberTap',noAir:true});}).join('')+(list.length?'':'<div class="muted">（尚無）</div>')+'</div></section>');
   });
   var an=airNote();
   if(an||P.leader) h.push('<div class="card muted air-note" style="line-height:1.5">'+ic('plane')+'<span>'+(an?esc(an):'（提醒已留白，團員看不到這段）')+'</span>'+(P.leader?'<button class="btn sm" data-act="editAirNote">'+ic('edit')+'編輯</button>':'')+'</div>');
@@ -2206,13 +2205,13 @@ var ACT={
     Object.keys(mt).forEach(function(id){ var a=mt[id]||[]; if(a.indexOf(old)>=0){ var na=a.filter(function(x){return x!==old;}); Store.savePath('groups',scnPath(sc)+'/mtags/'+id, na.length?na:null); } });
     closeSheet(); sheetTagOpts(); toast('已刪除標籤'); },
   editAirlines:function(){ var e=airDef('eva')||{}, c=airDef('ci')||{};
-    openSheet({title:'航空公司名稱',focus:true,body:
-      '<div class="muted">改成這次實際搭的航空公司即可，徽章顏色不變（綠色 / 紅色）。</div>'+
+    openSheet({title:'航空公司與航廈設定',focus:true,body:
+      '<div class="muted">改成這次實際搭的航空公司即可，徽章顏色不變（綠色 / 紅色）。「報到航廈」會同步顯示在團員的「我的資訊」卡與首頁航班卡上，不是寫死的。</div>'+
       '<h2 class="sec">'+airlineBadge('eva')+'綠色徽章</h2>'+
-      '<div class="grid2">'+fld('徽章短名（2–3 字）',inp('eva_short',e.short,'text','maxlength="3"'))+fld('航廈／備註',inp('eva_note',e.note))+'</div>'+
+      '<div class="grid2">'+fld('徽章短名（2–3 字）',inp('eva_short',e.short,'text','maxlength="3"'))+fld('報到航廈',inp('eva_note',e.note,'text','placeholder="例：桃園第二航廈"'))+'</div>'+
       fld('全名',inp('eva_name',e.name))+
       '<h2 class="sec">'+airlineBadge('ci')+'紅色徽章</h2>'+
-      '<div class="grid2">'+fld('徽章短名（2–3 字）',inp('ci_short',c.short,'text','maxlength="3"'))+fld('航廈／備註',inp('ci_note',c.note))+'</div>'+
+      '<div class="grid2">'+fld('徽章短名（2–3 字）',inp('ci_short',c.short,'text','maxlength="3"'))+fld('報到航廈',inp('ci_note',c.note,'text','placeholder="例：桃園第一航廈"'))+'</div>'+
       fld('全名',inp('ci_name',c.name)),
       foot:footBtns('saveAirlines')}); },
   saveAirlines:function(){ var st=S().settings; st.airlines=st.airlines||{};
