@@ -84,6 +84,10 @@ svg.i{width:1.25rem;height:1.25rem;flex-shrink:0;fill:none;stroke:currentColor;s
 .top-r2{background:var(--band);display:flex;align-items:center;justify-content:center;padding:.22rem .5rem;min-height:26px}
 .lcd{display:flex;align-items:baseline;gap:.3rem;background:rgba(0,0,0,.32);border-radius:8px;padding:.16rem .45rem .2rem;
   font-variant-numeric:tabular-nums;line-height:1;white-space:nowrap;max-width:100%;overflow:hidden}
+.lcd .dot{width:.4rem;height:.4rem;border-radius:50%;background:var(--lcd-dim);flex-shrink:0;align-self:center}
+.lcd .dot.on{background:var(--terrace)}
+.lcd .dot.off{background:var(--alert)}
+.lcd .sy{font-size:11px;font-weight:800;color:var(--lcd-dim);flex-shrink:0}
 .lcd .lb{font-size:9.5px;font-weight:900;color:var(--lcd-dim);letter-spacing:.08em;flex-shrink:0}
 .lcd .n{font-size:21px;font-weight:900;letter-spacing:-.01em;color:var(--lcd-ink);text-shadow:0 0 8px var(--lcd-glow);flex-shrink:0}
 .lcd .tw{font-size:11px;font-weight:700;color:var(--lcd-dim);flex-shrink:0}
@@ -92,7 +96,6 @@ svg.i{width:1.25rem;height:1.25rem;flex-shrink:0;fill:none;stroke:currentColor;s
 .lcd .cd .k{font-size:9.5px;font-weight:900;color:var(--lcd-dim);letter-spacing:.06em;margin-right:.22rem;text-shadow:none}
 .lcd .cd.late{color:var(--lcd-red);text-shadow:0 0 8px var(--lcd-red-glow)}
 .lcd .cd.none{color:var(--lcd-dim);text-shadow:none}
-.sync .sync-r{font-weight:800;flex-shrink:0}
 .sync .me{color:var(--ink);font-weight:900;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .icon-btn{position:relative;width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--ink-2);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:900;font-size:12px;padding:0;line-height:1}
 .icon-btn svg.i{width:17px;height:17px}
@@ -102,11 +105,6 @@ svg.i{width:1.25rem;height:1.25rem;flex-shrink:0;fill:none;stroke:currentColor;s
 :root[data-theme="dark"] .icon-btn.on{color:#0F141C}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .icon-btn.on{color:#0F141C}}
 .sync{font-size:12px;color:var(--ink-3);font-weight:700;padding:.28rem .8rem;display:flex;align-items:center;gap:.4rem;background:var(--card);border-bottom:1px solid var(--line);white-space:nowrap;overflow:hidden}
-.sync>span:nth-child(2){min-width:0;overflow:hidden;text-overflow:ellipsis}
-.sync .dot{width:.5rem;height:.5rem;border-radius:50%;background:var(--ink-3);flex-shrink:0}
-.sync.cloud .dot{background:var(--terrace)}
-.sync.off .dot{background:var(--alert)}
-.sync .sp{flex:1}
 .leader-bar{background:var(--gold-2);color:var(--ink);font-size:13px;font-weight:800;padding:.35rem .85rem;display:flex;align-items:center;gap:.4rem;border-bottom:1px solid var(--line)}
 .leader-bar .sp{flex:1}
 .leader-bar button{border:0;background:transparent;color:var(--indigo);font-weight:900;font-size:13.5px;min-height:2rem;padding:0 .3rem}
@@ -531,13 +529,14 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
     </div>
     <div class="top-r2">
       <div class="lcd" aria-live="off">
-        <span class="lb">越南</span><span class="n" id="clockVN">--:--</span>
+        <span class="dot" id="hdDot"></span><span class="sy" id="hdSyncTx">連線中</span>
+        <span class="dv"></span><span class="cd" id="hdCountdown" hidden></span>
         <span class="dv"></span><span class="tw">台灣 <span id="clockTW">--:--</span></span>
-        <span class="dv" id="cdDiv" hidden></span><span class="cd" id="hdCountdown" hidden></span>
+        <span class="dv"></span><span class="lb">越南</span><span class="n" id="clockVN">--:--</span>
       </div>
     </div>
   </header>
-  <div class="sync" id="syncBar"><span class="dot"></span><span id="syncText">讀取中…</span><span class="sp"></span><span class="sync-r" id="syncRight"></span></div>
+  <div class="sync" id="syncBar" hidden></div>
   <div class="leader-bar" id="leaderBar" hidden><span id="leaderBarIcon"></span>領隊管理模式：可直接點卡片修改<span class="sp"></span><button data-act="leaderLock">鎖定</button></div>
   <main id="view"></main>
   <nav class="tabbar" id="tabbar" aria-label="主選單"></nav>
@@ -548,7 +547,7 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
 <script src="./config.js"></script>
 <script>
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '2.2';
+var APP_VERSION = '2.3';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -1218,21 +1217,23 @@ function foldCard(id,icon,title,sub,sum,inner,auto){
 function zlab(t){ return '<div class="zlab"><span>'+t+'</span><i></i></div>'; }
 function grp(key,label,cards){ cards=cards.filter(Boolean); if(!cards.length) return ''; return '<div class="zsec g-'+key+'">'+zlab(label)+cards.join('')+'</div>'; }
 function renderSync(){
-  var bar=el('syncBar'), tx=el('syncText'); bar.className='sync';
-  var at=Store.lastSync?tzParts(VN).hm:'';
-  var pend=Store.q.length?'（'+Store.q.length+' 筆修改待送出）':'';
-  bar.title='沙壩隨身團務 v'+APP_VERSION;
-  if(Store.mode==='cloud'){ bar.classList.add('cloud'); tx.textContent=navigator.onLine===false?'目前離線 · 顯示最後同步的版本'+pend:(pend?'已連線 · 正在補送'+pend:'已連線 · 領隊一改，全團自動更新'); }
-  else if(Store.mode==='connecting'){ tx.textContent='連線中 · 先顯示這支手機的版本'; }
-  else if(Store.mode==='offline'){ bar.classList.add('off'); tx.textContent='離線中 · 修改先存這支手機'+pend; }
-  else { tx.textContent=(window.SAPA_CONFIG&&window.SAPA_CONFIG.sync==='firebase')?'單機模式 · 尚未連上雲端':'單機模式 · 資料只在這支手機（未設定同步後端）'; }
-  /* 選過名字的人：左邊換成問候，狀態縮到右邊，不多佔一行 */
-  var me=getMe(), rt=el('syncRight');
+  /* 連線狀態（點＋字）併進標頭第二列，跟越南／台灣時間同一行；狀態字固定用簡短版本 */
+  var state='', txt='';
+  if(Store.mode==='cloud'){ state=(navigator.onLine===false?'off':'on'); txt=navigator.onLine===false?'離線':'已連線'; }
+  else if(Store.mode==='connecting'){ txt='連線中'; }
+  else if(Store.mode==='offline'){ state='off'; txt='離線'; }
+  else { txt='單機'; }
+  var dot=el('hdDot'), sy=el('hdSyncTx');
+  dot.className='dot'+(state?' '+state:'');
+  sy.textContent=txt;
+  sy.title='沙壩隨身團務 v'+APP_VERSION+(Store.q.length?'（'+Store.q.length+' 筆修改待送出）':'');
+  /* 選過名字的人：下面單獨一列問候；沒選名字時這列整個隱藏（連線狀態已經在上面那排看得到） */
+  var me=getMe(), bar=el('syncBar');
   if(me){
     var h=tzParts(VN).h, g=(h<11?'早安':(h<18?'午安':'晚安'));
-    tx.innerHTML='<span class="me">'+esc(g)+'，'+esc(me.name)+'</span>';
-    rt.textContent = Store.mode==='cloud' ? (navigator.onLine===false?'離線':'已連線') : (Store.mode==='connecting'?'連線中':(Store.mode==='offline'?'離線':'單機'));
-  } else { rt.textContent=''; }
+    bar.hidden=false;
+    bar.innerHTML='<span class="me">'+esc(g)+'，'+esc(me.name)+'</span>';
+  } else { bar.hidden=true; bar.innerHTML=''; }
 }
 function renderTabs(){
   var cur=(P.tab==='notes')?'tools':P.tab;
@@ -1245,9 +1246,9 @@ function tick(){
   var vn=tzParts(VN), tw=tzParts(TW);
   el('clockVN').textContent=vn.hm; el('clockTW').textContent=tw.hm;
   var c=el('countdown'); if(c){ var cd=countdown(); c.hidden=!cd; if(cd){ c.innerHTML=ic('clock')+esc(cd.text); c.classList.toggle('late',cd.late); } }
-  var hc=el('hdCountdown'), hd=el('cdDiv');
+  var hc=el('hdCountdown');
   if(hc){ var s2=countdownShort();
-    hc.hidden=false; hd.hidden=false;
+    hc.hidden=false;
     hc.innerHTML='<span class="k">'+(s2.cls==='none'?'集合':'集合倒數')+'</span>'+esc(s2.text);
     hc.className='cd'+(s2.cls?' '+s2.cls:'');
   }
