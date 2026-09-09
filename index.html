@@ -548,7 +548,7 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
 <script src="./config.js"></script>
 <script>
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '2.1';
+var APP_VERSION = '2.2';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -1280,7 +1280,7 @@ function memberCard(m,opt){
     '<span class="em'+(badgeDef(m.emoji)?'':' none')+'">'+badgeSVG(m.emoji)+'</span>'+
     '<span class="tx"><span class="nm">'+esc(m.name)+'</span>'+(!opt.sm&&m.remark?'<span class="rk">'+esc(m.remark)+'</span>':'')+
     ((opt.mtags&&opt.mtags.length)?'<span class="mtags">'+opt.mtags.slice(0,3).map(function(x){return '<span class="mtag">'+esc(x)+'</span>';}).join('')+(opt.mtags.length>3?'<span class="mtag more">+'+(opt.mtags.length-3)+'</span>':'')+'</span>':'')+
-    '</span>'+airlineBadge(m.airline)+right+'</'+tag+'>';
+    '</span>'+(opt.noAir?'':airlineBadge(m.airline))+right+'</'+tag+'>';
 }
 function airDef(k){ var d=AIRLINES[k]; if(!d) return null; var o=((S().settings||{}).airlines||{})[k]||{};
   return {cls:d.cls, short:(o.short||d.label), name:(o.name||d.name), note:(o.note===undefined||o.note===null?d.note:o.note)}; }
@@ -1537,11 +1537,11 @@ VIEWS.rooms=function(){
     var keys=Object.keys(byRoom).sort(function(a,b){ return a.localeCompare(b,undefined,{numeric:true}); });
     var me=getMe();
     h.push('<div class="rooms">'+keys.map(function(r){
-      return '<div class="room'+(me&&me.room===r?' me-room':'')+'"><h3>'+ic('key')+esc(r)+' 房</h3>'+byRoom[r].map(function(m){return memberCard(m,{sm:true});}).join('')+'</div>';
+      return '<div class="room'+(me&&me.room===r?' me-room':'')+'"><h3>'+ic('key')+esc(r)+' 房</h3>'+byRoom[r].map(function(m){return memberCard(m,{sm:true,noAir:true});}).join('')+'</div>';
     }).join('')+'</div>');
     if(me&&!me.room) h.push('<div class="card me-wait">'+ic('key')+'<span>'+esc(me.name)+'，你的房號公布後會顯示在這裡，並且排在最前面。</span></div>');
     if(none.length){ var meFirst=none.slice().sort(function(a,b){ return (b.id===(me||{}).id)-(a.id===(me||{}).id); });
-      h.push('<h2 class="sec">尚未分配房號<span class="n" style="margin-left:auto;font-size:.85rem;color:var(--ink-3)">'+none.length+' 人</span></h2><div class="mlist two">'+meFirst.map(function(m){return memberCard(m,{sm:true});}).join('')+'</div>'); }
+      h.push('<h2 class="sec">尚未分配房號<span class="n" style="margin-left:auto;font-size:.85rem;color:var(--ink-3)">'+none.length+' 人</span></h2><div class="mlist two">'+meFirst.map(function(m){return memberCard(m,{sm:true,noAir:true});}).join('')+'</div>'); }
   } else {
     h.push('<div class="search">'+ic('search')+'<input id="memberSearch" type="search" placeholder="找我的名字…" autocomplete="off" aria-label="搜尋團員"></div>');
     h.push('<div id="memberList">'+memberListHTML()+'</div>');
@@ -1553,17 +1553,17 @@ VIEWS.rooms=function(){
 var AIR_NOTE_DEF='提醒：桃園機場長榮多在第二航廈、華航多在第一航廈，出發前請再對一次航班上的航廈；兩航廈之間有免費電車，約 5 分鐘。';
 function airNote(){ var v=S().settings.airNote; return (v===undefined||v===null)?AIR_NOTE_DEF:v; }
 
-/* 航空公司分流：不是隨機分組，而是每個人固定的屬性；徽章會顯示在所有卡片上 */
+/* 航空公司分流：不是隨機分組，而是每個人固定的屬性；卡片本身不掛徽章（徽章只在全員名單顯示），這裡改用分類區塊呈現 */
 function airlineView(){
   var me=getMe(), ae=airDef('eva')||{}, ac=airDef('ci')||{};
   var cols=[['eva',ae.name],['ci',ac.name],['','尚未設定']], h=[];
-  h.push('<div class="hint-lead">'+ic('info')+(P.leader?'點團員即可設定航空公司，徽章會出現在每一張卡片上':'圓形徽章代表你搭哪一家；機場集合請看自己的徽章')+'</div>');
+  h.push('<div class="hint-lead">'+ic('info')+(P.leader?'點團員即可設定航空公司，此頁會依航空公司自動分類顯示':'團員已依照航空公司分類顯示；機場集合請看自己排在哪一區')+'</div>');
   if(P.leader) h.push('<div class="row"><button class="btn" data-act="editAirlines">'+ic('edit')+'改航空公司名稱</button></div>');
   cols.forEach(function(c){
     var list=members().filter(function(m){ return (m.airline||'')===c[0]; });
     if(!c[0]&&!list.length) return;
     var mine=me&&list.some(function(m){return m.id===me.id;});
-    h.push('<section class="grp'+(mine?' me-grp':'')+'"><h3>'+(c[0]?airlineBadge(c[0]):'')+esc(c[1])+'<span class="n">'+list.length+' 人</span></h3><div class="gm">'+list.map(function(m){return memberCard(m,{sm:true,pk:P.leader,act:P.leader?'setAirlineAsk':'memberTap'});}).join('')+(list.length?'':'<div class="muted">（尚無）</div>')+'</div></section>');
+    h.push('<section class="grp'+(mine?' me-grp':'')+'"><h3>'+(c[0]?airlineBadge(c[0]):'')+esc(c[1])+'<span class="n">'+list.length+' 人</span></h3><div class="gm">'+list.map(function(m){return memberCard(m,{sm:true,pk:P.leader,act:P.leader?'setAirlineAsk':'memberTap',noAir:true});}).join('')+(list.length?'':'<div class="muted">（尚無）</div>')+'</div></section>');
   });
   var an=airNote();
   if(an||P.leader) h.push('<div class="card muted air-note" style="line-height:1.5">'+ic('plane')+'<span>'+(an?esc(an):'（提醒已留白，團員看不到這段）')+'</span>'+(P.leader?'<button class="btn sm" data-act="editAirNote">'+ic('edit')+'編輯</button>':'')+'</div>');
@@ -1593,9 +1593,9 @@ VIEWS.groups=function(){
   members().forEach(function(m){ var gi=sc.assign?sc.assign[m.id]:undefined; if(gi===undefined||gi===null||gi<0||gi>=sc.count) un.push(m); else buckets[gi].push(m); });
   buckets.forEach(function(b,i){
     var mine=me&&b.some(function(m){return m.id===me.id;});
-    h.push('<section class="grp'+(mine?' me-grp':'')+'"><h3>'+ic('flag')+esc(sc.names[i]||('第 '+(i+1)+' 組'))+'<span class="n">'+b.length+' 人</span></h3><div class="gm">'+b.map(function(m){return memberCard(m,{sm:true,pk:P.leader,act:P.leader?'moveMember':'memberTap',mtags:useTag?mtagsOf(sc,m.id):null});}).join('')+(b.length?'':'<div class="muted">（空）</div>')+'</div></section>');
+    h.push('<section class="grp'+(mine?' me-grp':'')+'"><h3>'+ic('flag')+esc(sc.names[i]||('第 '+(i+1)+' 組'))+'<span class="n">'+b.length+' 人</span></h3><div class="gm">'+b.map(function(m){return memberCard(m,{sm:true,pk:P.leader,act:P.leader?'moveMember':'memberTap',mtags:useTag?mtagsOf(sc,m.id):null,noAir:true});}).join('')+(b.length?'':'<div class="muted">（空）</div>')+'</div></section>');
   });
-  if(un.length) h.push('<section class="grp"><h3>'+ic('users')+'尚未分組<span class="n">'+un.length+' 人</span></h3><div class="gm">'+un.map(function(m){return memberCard(m,{sm:true,pk:P.leader,act:P.leader?'moveMember':'memberTap',mtags:useTag?mtagsOf(sc,m.id):null});}).join('')+'</div></section>');
+  if(un.length) h.push('<section class="grp"><h3>'+ic('users')+'尚未分組<span class="n">'+un.length+' 人</span></h3><div class="gm">'+un.map(function(m){return memberCard(m,{sm:true,pk:P.leader,act:P.leader?'moveMember':'memberTap',mtags:useTag?mtagsOf(sc,m.id):null,noAir:true});}).join('')+'</div></section>');
   return h.join('');
 };
 /* ===== 工具分頁 ===== */
@@ -2081,9 +2081,10 @@ var ACT={
   setMe:function(t){ P.meId=t.getAttribute('data-id')||''; savePrefs(); closeSheet(); render(); toast(P.meId?'已標記：'+member(P.meId).name:'已取消標記'); },
   memberTap:function(t){ var id=t.getAttribute('data-id'); if(P.leader) sheetMember(id); else sheetMemberView(id); },
   editMember:function(t){ sheetMember(t.getAttribute('data-id')||''); },
-  saveMember:function(){ var name=sv('name'); if(!name){ toast('請輸入姓名'); return; } var ms=members(); var m=SHEET.id?member(SHEET.id):null; if(!m){ m={id:uid()}; ms.push(m); }
+  saveMember:function(){ var name=sv('name'); if(!name){ toast('請輸入姓名'); return; } var ms=members(); var editId=SHEET.id; var m=editId?member(editId):null; if(!m){ m={id:uid()}; ms.push(m); }
     m.name=name; m.emoji=sv('emoji'); m.bg=sv('bg')||'bg-white'; m.border=sv('border')||'bd-grey'; m.airline=sv('airline'); m.remark=sv('remark'); m.room=sv('room'); m.phone=sv('phone'); closeSheet();
-    if(SHEET.id) Store.savePath('members','items/'+ms.indexOf(m), m); else Store.save('members'); toast('已儲存'); },
+    /* 注意：closeSheet() 會把 SHEET 設成 null，判斷分支一定要用上面先存好的 editId，不能再讀 SHEET.id */
+    if(editId) Store.savePath('members','items/'+ms.indexOf(m), m); else Store.save('members'); toast('已儲存'); },
   setAirlineAsk:function(t){ var m=member(t.getAttribute('data-id')); if(!m) return;
     var ae=airDef('eva')||{}, ac=airDef('ci')||{};
     openSheet({title:esc(m.name)+' 搭哪一家？',body:'<div class="stack">'+[['eva',ae.name,ae.note],['ci',ac.name,ac.note],['','尚未設定','']].map(function(c){ return '<button class="btn big'+((m.airline||'')===c[0]?' pri':'')+'" data-act="setAirline" data-id="'+m.id+'" data-v="'+c[0]+'">'+(c[0]?airlineBadge(c[0],true):'<span class="al lg none">無</span>')+'<span class="b2">'+esc(c[1]||'')+(c[2]?'<small>'+esc(c[2])+'</small>':'')+'</span></button>'; }).join('')+'</div>'}); },
