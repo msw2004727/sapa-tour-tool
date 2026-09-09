@@ -395,12 +395,14 @@ select.in{appearance:none;-webkit-appearance:none}
 .map-btn:active{background:var(--indigo-2)}
 .map-btn.lg{width:2.5rem;height:2.5rem;min-width:2.5rem;margin-left:.4rem}
 .map-btn.lg svg.i{width:1.35rem;height:1.35rem}
-.t-title{display:flex;align-items:center;gap:.15rem}
+
 .tagrow{flex:1;min-width:0;display:flex;align-items:center;gap:.45rem;font-size:1rem;white-space:nowrap;overflow:hidden}
 .tagrow svg.i{width:1.2rem;height:1.2rem;color:var(--indigo)}
 .sw button svg.i{width:1.4rem;height:1.4rem}
 .btn.line{background:#06C755;color:#fff;border-color:#06C755}
 .btn.line svg.i{width:1.1rem;height:1.1rem}
+.tag.map{background:var(--indigo-2);color:var(--indigo);border-color:transparent;text-decoration:none;font-weight:900}
+.tag.map svg.i{color:var(--indigo)}
 </style>
 </head>
 <body>
@@ -563,36 +565,135 @@ var DEFAULTS = {
   },
   broadcast:{ time:'', label:'集合', location:'', tip:'', idle:false, updatedAt:'' },
   itinerary:{ items:[
-    {id:'d1a',day:1,place:'Taoyuan International Airport Terminal 2',time:'05:30',title:'桃園第二航廈集合',desc:'全體不分航空公司，05:30 在第二航廈集合，分發護照與行李吊牌。',detail:'請提早出門，05:30 準時到第二航廈出境大廳。液體超過 100ml 請放託運行李；行動電源請放隨身。',tags:['ticket','toilet']},
-    {id:'d1b',day:1,place:'Taoyuan International Airport Terminal 1',time:'06:00',title:'分頭辦登機',desc:'🔴 華航團員一起搭免費電車到第一航廈（08:20 起飛）；🟢 長榮團員留在第二航廈（09:00 起飛）。',detail:'兩航廈之間的電車約 5 分鐘一班、車程 2 分鐘。辦完登機各自過安檢，登機門看登機證。',tags:['ticket','walk']},
-    {id:'d1c',day:1,place:'Noi Bai International Airport',time:'11:15',title:'河內機場會合',desc:'華航約 10:30、長榮約 11:15 抵達（當地時間），先到的在行李轉盤外等，導遊舉牌接機。',detail:'越南時間比台灣慢 1 小時，下機後請確認手機時間已自動調整；本網頁所有時間皆為越南當地時間。\n入境需出示越南電子簽證列印本與護照，請放隨身包。',tags:['ticket','bus']},
-    {id:'d1d',day:1,time:'12:45',title:'午餐：越式家常菜',desc:'會合後直接前往餐廳。',detail:'',tags:['meal']},
-    {id:'d1e',day:1,place:'Hoan Kiem Lake, Hanoi',time:'14:30',title:'老街・還劍湖散步',desc:'老城區慢走、喝一杯蛋咖啡，感受河內市井。',detail:'河內老街機車多，過馬路請「慢慢走、不要突然停」，機車會自動繞開您。\n蛋咖啡（Cà phê trứng）是河內名物，推薦 Giảng 咖啡。\n購物提醒：路邊小販開價通常可殺 3～5 成。',tags:['walk','cash','camera']},
-    {id:'d1f',day:1,time:'18:00',title:'晚餐：河內烤魚',desc:'百年老店風味，薑黃烤魚配蒔蘿與米線。',detail:'',tags:['meal']},
-    {id:'d1g',day:1,time:'20:00',title:'入住河內飯店',desc:'分發房卡，明早晨喚時間請看首頁。',detail:'',tags:['bed']}
-  ,
-    {id:'d2a',day:2,time:'07:30',title:'出發前往沙壩',desc:'車程約 5.5 小時，途中休息站停 2 次，可上洗手間。',detail:'容易暈車的長輩請坐前排；建議上車前吃暈車藥、少看手機。\n休息站洗手間有時需付 5,000 盾，請準備小鈔。',tags:['bus','pill','toilet']},
-    {id:'d2b',day:2,time:'12:30',title:'午餐：老街市區',desc:'越式家常菜，補充體力後再上山。',detail:'',tags:['meal']},
-    {id:'d2c',day:2,place:'Hotel de la Coupole MGallery, Sa Pa',time:'15:00',title:'抵達沙壩入住飯店',desc:'法式殖民風格飯店，位在纜車站正對面。',detail:'飯店大廳往右走 2 分鐘就是 Sun Plaza 纜車站；步行 8 分鐘可到沙壩石教堂與湖區。',tags:['bed','toilet']},
-    {id:'d2d',day:2,place:'Sa Pa Stone Church',time:'16:30',title:'石教堂・湖區散步',desc:'鎮中心地標，傍晚常有苗族婦女擺攤賣手工藝品。',detail:'沙壩傍晚溫度會快速下降，出門請帶外套。\n手工藝品建議在店面買、標價清楚；路邊「跟著走一路推銷」的攤販可以微笑婉拒（Không cần, cảm ơn）。',tags:['coat','walk','camera']},
-    {id:'d2e',day:2,time:'18:30',title:'晚餐：鮭魚火鍋',desc:'沙壩高山冷水養殖鮭魚，是當地招牌。',detail:'',tags:['meal']}
-  ,
-    {id:'d3a',day:3,place:'Sun World Fansipan Legend',time:'08:30',title:'番西邦纜車登頂',desc:'搭世界級三索纜車直上「印度支那屋脊」，俯瞰梯田雲海。',detail:'番西邦峰海拔 3,143 公尺，是中南半島最高峰。纜車 2016 年由 Sun World 建成，全長 6,292 公尺，約 15 分鐘直達山上站。\n山頂比鎮上低約 8～10 度，請務必穿厚外套；山上站到最高點還有約 600 階階梯，可選擇再搭一段登山小火車（需另付費）。\n拍照機位：大佛平台看雲海、山頂三角點合照請排隊、纜車內靠窗左側看梯田。\n高海拔小提醒：動作放慢、多喝水，覺得頭暈就坐下休息。',tags:['coat','shoes','toilet','alt','camera'],isCurrent:true},
-    {id:'d3b',day:3,time:'12:00',title:'午餐：山上自助餐',desc:'纜車上站餐廳，餐後搭纜車下山。',detail:'',tags:['meal','toilet']},
-    {id:'d3c',day:3,place:'Cat Cat Village, Sa Pa',time:'14:30',title:'貓貓村健行',desc:'沿石板步道下坡穿過梯田、水車與法國時期小水電站。',detail:'貓貓村是黑苗族（H\'Mông Đen）聚落，村內可看到靛藍染布、麻織與銀飾工藝；1920 年代法國人在瀑布旁建的水電站遺址仍在。\n步道多為下坡石階、約 1.5 小時，雨後濕滑請穿防滑鞋、走慢一點。體力較弱的長輩可選「咖啡悠閒組」在村口咖啡館看梯田等大家。\n購物：村內明碼標價的手工藝品店比路邊攤穩妥。',tags:['shoes','rain','toilet','walk','camera']},
-    {id:'d3d',day:3,place:'Sa Pa Market',time:'18:00',title:'沙壩夜市自由活動',desc:'烤肉串、烤玉米、竹筒飯，逛完自行回飯店。',detail:'走散或想先回飯店，打開「工具 → 計程車回飯店卡」出示給司機即可。',tags:['meal','coat','cash']}
-  ,
-    {id:'d4a',day:4,place:'Silver Waterfall, Sa Pa',time:'08:00',title:'銀瀑布・天門觀景',desc:'沿黃連山公路看百米瀑布與峽谷雲霧。',detail:'銀瀑布落差約 200 公尺，觀景台階梯較陡，可在下方平台拍照即可。\n天門（O Quy Ho 山口）海拔近 2,000 公尺、風大，請戴帽子、穿外套。',tags:['coat','shoes','camera','toilet']},
-    {id:'d4b',day:4,time:'11:00',title:'出發返回河內',desc:'車程約 5.5 小時，中途休息與午餐。',detail:'',tags:['bus','pill','toilet']},
-    {id:'d4c',day:4,place:'Thang Long Water Puppet Theatre',time:'17:30',title:'水上木偶劇場',desc:'河內千年傳統藝術，約 50 分鐘。',detail:'水上木偶戲起源於紅河三角洲農村，藝師站在水中操偶，配樂為傳統民樂。\n劇場內不可用閃光燈；座位較窄，行動不便的長輩請告知領隊安排走道位。',tags:['ticket','camera']},
-    {id:'d4d',day:4,time:'19:00',title:'晚餐・入住飯店',desc:'明天最後一天，請開始整理行李。',detail:'',tags:['meal','bed']}
-  ,
-    {id:'d5a',day:5,time:'06:30',title:'早餐・退房',desc:'行李請依晨間時程放房門口，退房前再檢查保險箱。',detail:'',tags:['meal','toilet']},
-    {id:'d5b',day:5,place:'Noi Bai International Airport',time:'07:30',title:'出發前往內排機場',desc:'車程約 45 分鐘，剩餘越盾可在機場花掉。',detail:'越盾出境後幾乎無法在台灣兌換，建議在機場咖啡店或免稅店用完；小額可捐入機場捐款箱。',tags:['bus','ticket','cash']},
-    {id:'d5c',day:5,place:'Noi Bai International Airport Terminal 2',time:'08:30',title:'華航辦登機',desc:'🔴 華航團員 08:30 到華航櫃檯集合，統一辦登機與託運（11:30 起飛）。',detail:'',tags:['ticket']},
-    {id:'d5d',day:5,place:'Noi Bai International Airport Terminal 2',time:'09:00',title:'長榮辦登機',desc:'🟢 長榮團員 09:00 到長榮櫃檯集合，統一辦登機與託運（12:05 起飛）。',detail:'',tags:['ticket']},
-    {id:'d5e',day:5,time:'11:30',title:'華航起飛回台',desc:'11:30 起飛，台灣時間約 15:45 抵達桃園第一航廈，領行李後解散。',detail:'',tags:['ticket']},
-    {id:'d5f',day:5,time:'12:05',title:'長榮起飛回台',desc:'12:05 起飛，台灣時間約 16:20 抵達桃園第二航廈，領行李後解散，辛苦大家！',detail:'',tags:['ticket']}
+    /* ===== 第 1 天 9/24（三）桃園 → 河內 → 沙壩 ===== */
+    {id:'d1a',day:1,place:'Taoyuan International Airport Terminal 2',time:'05:30',title:'桃園機場集合',
+     desc:'全體不分航空公司，05:30 在第二航廈集合。',
+     detail:'請提早出門，05:30 準時到第二航廈出境大廳，領隊會發護照與行李吊牌。\n液體超過 100ml 一律託運；行動電源、鋰電池必須隨身，不可以放託運行李。\n手機記得充飽電，並帶一條充電線與轉接頭（越南是雙圓孔，台灣扁插頭多半可以直接用）。',
+     tags:['ticket','toilet']},
+    {id:'d1b',day:1,place:'Taoyuan International Airport Terminal 1',time:'06:00',title:'分頭辦登機',
+     desc:'🔴 華航團員搭電車到第一航廈；🟢 長榮團員留在第二航廈。',
+     detail:'兩航廈間的免費電車約 5 分鐘一班、車程 2 分鐘，跟著領隊走不會迷路。\n辦完登機各自過安檢，登機門看登機證上的號碼。\n過安檢後如果找不到人，直接看本網頁的「緊急求助」打電話，不要自己亂走。',
+     tags:['ticket','walk']},
+    {id:'d1c',day:1,place:'Noi Bai International Airport',time:'11:15',title:'河內機場會合',
+     desc:'華航約 10:30、長榮約 11:15 抵達，先到的在行李轉盤外等。',
+     detail:'越南時間比台灣慢 1 小時，下機後請確認手機時間已自動調整；本網頁所有時間都是越南當地時間。\n入境要出示護照與越南電子簽證列印本，請放在隨身包好拿的地方。\n領完行李在出關大廳等全員到齊，導遊會舉牌接機。',
+     tags:['ticket','bus']},
+    {id:'d1d',day:1,place:'Sa Pa, Lao Cai, Vietnam',time:'12:00',title:'出發前往沙壩',
+     desc:'車程約 6 小時，中途休息站停 2 次可上洗手間。',
+     detail:'河內到沙壩約 320 公里，走高速公路約 5.5～6 小時，是這趟最長的一段車程。\n容易暈車的人請在上車前 30 分鐘先吃暈車藥，坐前排、看遠方、少滑手機。\n山路後半段彎道多，隨身行李請放腳邊或行李架綁好。\n休息站有洗手間但不一定有衛生紙，請自備一小包。',
+     tags:['bus','pill','toilet']},
+    {id:'d1e',day:1,place:'To dan pho Cau May 1, Sa Pa, Lao Cai',time:'18:00',title:'抵達沙壩入住',
+     desc:'抵達沙壩飯店，領隊發房卡。',
+     detail:'沙壩海拔約 1,500 公尺，晚上常降到 15 度以下，下車第一件事就是把外套拿出來。\n進房先確認：熱水、吹風機、插座、保險箱。有問題馬上跟領隊說，不要忍到隔天。\n這間飯店會住 3 個晚上（9/24、9/25、9/26），行李可以整個攤開，不用每天收。',
+     tags:['bed','coat']},
+    {id:'d1f',day:1,time:'19:00',title:'晚餐：飯店',
+     desc:'第一晚在飯店內用餐，餐後早點休息。',
+     detail:'今天坐了一整天車，晚餐後建議早點睡，讓身體適應高度與溫差。\n山上空氣乾，睡前多喝一點溫水。',
+     tags:['meal']},
+
+    /* ===== 第 2 天 9/25（四）番西邦峰・貓貓村 ===== */
+    {id:'d2a',day:2,time:'06:00',title:'早餐：飯店',
+     desc:'飯店內自助早餐，06:00–08:00。',
+     detail:'今天要上番西邦峰，早餐請吃飽一點，山頂餐廳選擇不多。\n建議帶一顆水煮蛋或麵包上山備用。',
+     tags:['meal']},
+    {id:'d2b',day:2,place:'Sun World Fansipan Legend',time:'08:00',title:'番西邦峰纜車',
+     desc:'搭三索纜車直上「印度支那屋脊」，俯瞰梯田雲海。',
+     detail:'番西邦峰海拔 3,143 公尺，是中南半島最高峰。纜車全長 6.3 公里，約 15 分鐘直達上站。\n山頂比沙壩鎮再冷 5～8 度，而且風大，厚外套一定要帶著，不要放在車上。\n上站到峰頂還有 600 階石梯，走不動的人可以加購山頂纜車（單程約 150,000 越盾），或在觀景平台等大家，不要勉強。\n高海拔容易喘、頭暈，慢慢走、多休息；有心臟或高血壓問題的長輩請先告訴領隊。\n山上雲霧變化很快，看到雲海就先拍，不要等下一個點。',
+     tags:['coat','alt','shoes','camera','toilet']},
+    {id:'d2c',day:2,place:'33 Hoang Lien, Sa Pa, Lao Cai',time:'11:30',title:'午餐：越式合菜',
+     desc:'Viet Trekking 餐廳，越式合菜（番西邦套餐）。',
+     detail:'地址：33 Hoàng Liên, Sa Pa, Lào Cai，就在鎮上主要道路旁。\n吃素或有忌口的人請在上車前先告訴領隊，餐廳需要提前備料。',
+     tags:['meal']},
+    {id:'d2d',day:2,place:'Cat Cat Village, Sa Pa',time:'13:30',title:'貓貓村健行',
+     desc:'沿石板步道下坡穿過梯田、水車與法國時期小水電站。',
+     detail:'貓貓村（Cát Cát）是黑苗族的村落，距沙壩鎮約 2 公里，全程下坡約 1.5 公里。\n石板路走多了會滑，尤其下過雨之後，請穿防滑的鞋子，不要穿新鞋或涼鞋。\n回程是上坡，走不動可以在村口叫摩托計程車（約 50,000 越盾）回鎮上，先跟領隊說一聲。\n村裡的苗族婦女會跟著你兜售手工藝品，不想買就微笑說「không, cảm ơn」（不用了，謝謝）並繼續走，不要停下來翻看。\n拍照前請先問一下，尤其是拍人。',
+     tags:['shoes','walk','rain','camera','cash']},
+    {id:'d2e',day:2,place:'Sa Pa Xua Restaurant, Sa Pa',time:'17:30',title:'晚餐：夜市旁餐廳',
+     desc:'Sapa Xưa，沙壩夜市正對面，用餐到 22:00。',
+     detail:'地址：SN 005, Đường N02（Đỗ Quyên），沙壩夜市正對面。\n山上腸胃比較敏感，生食與冰飲建議少碰，多喝溫的。\n餐後走幾步就是夜市，想逛的人跟領隊說一聲，回飯店的路只有 5 分鐘，但天黑後路燈不多，兩人以上一起走。',
+     tags:['meal','cash','coat']},
+
+    /* ===== 第 3 天 9/26（五）達灣・按摩・廣場 ===== */
+    {id:'d3a',day:3,time:'06:00',title:'早餐：飯店',
+     desc:'飯店內自助早餐，06:00–09:00。',
+     detail:'今天行程比較輕鬆，可以睡晚一點再下樓。',
+     tags:['meal']},
+    {id:'d3b',day:3,place:'Ta Van Village, Sa Pa',time:'09:00',title:'達灣梯田村',
+     desc:'達灣 Tả Van，沙壩最美的梯田村落。',
+     detail:'達灣（Tả Van）在沙壩鎮東南約 10 公里的山谷裡，是整個沙壩梯田風景最完整的一段。\n九月底正好是稻穗轉金黃的時候，這裡是全程最值得拍照的地方。\n田埂路窄又可能有泥，請走在導遊指定的路線上，不要為了取景走進田裡。\n村裡有吊橋，一次不要太多人上去，過橋時扶好欄杆。\n山谷訊號較弱，跟大家走在一起，不要落單。',
+     tags:['walk','shoes','camera','rain']},
+    {id:'d3c',day:3,place:'Sailing Ta Van, Sa Pa',time:'11:30',title:'午餐：達灣景觀',
+     desc:'Sailing Ta Van，梯田景觀餐廳。',
+     detail:'餐廳有大片落地窗看得到整片梯田，早到的人可以先去露台拍照。\n吃素或有忌口的人請提前告訴領隊。',
+     tags:['meal','camera']},
+    {id:'d3d',day:3,time:'14:00',title:'自由按摩行程',
+     desc:'下午自由安排，可以做腳底或全身按摩。',
+     detail:'走了兩天山路，這個下午是特地留給大家休息的。\n沙壩鎮上的按摩店行情：腳底 60 分鐘約 200,000～300,000 越盾，全身約 350,000～450,000 越盾，記得先問價再進去。\n有高血壓、心臟病、剛開過刀或懷孕的人，請避免全身重壓的按摩。\n不想按摩的人可以留在飯店休息，或到廣場附近喝咖啡，晚餐前回到飯店集合。',
+     tags:['cash','pill']},
+    {id:'d3e',day:3,place:'Nha hang O Quy Ho, Sa Pa',time:'17:30',title:'晚餐：山區風味',
+     desc:'Nhà hàng Ô Quý Hồ，沙壩山區特色料理。',
+     detail:'沙壩的高山冷水養殖鮭魚是當地招牌，跟海水鮭魚口感不同，值得試試。\n這一帶的菜偏酸辣，怕辣的人點餐時說「không cay」（不要辣）。\n山上的雞湯與燉品很適合長輩，可以多喝一點湯暖身。',
+     tags:['meal']},
+    {id:'d3f',day:3,place:'Sa Pa Square, Sa Pa',time:'19:30',title:'廣場自由活動',
+     desc:'飯後可以到廣場喝咖啡、逛街，21:30 前回飯店。',
+     detail:'沙壩廣場與石教堂就在飯店步行 5～10 分鐘範圍內，晚上有當地人跳廣場舞，很熱鬧。\n越南咖啡很濃，晚上喝建議點一杯就好，或改點椰子咖啡。\n夜市與路邊攤開價通常可以殺 3～5 成，慢慢殺不要急。\n山上晚上溫差大，出門一定要加件外套。\n找不到路回飯店就打開本網頁的「計程車回飯店卡」給司機或路人看。',
+     tags:['walk','cash','coat']},
+
+    /* ===== 第 4 天 9/27（六）飯店設施・老街・夜臥火車 ===== */
+    {id:'d4a',day:4,time:'06:00',title:'早餐：飯店',
+     desc:'飯店內自助早餐，06:00–09:00。今天要退房。',
+     detail:'今晚睡火車，早餐後請先把行李整理好，該託運的、隨身的分開裝。',
+     tags:['meal','bed']},
+    {id:'d4b',day:4,time:'08:00',title:'飯店設施自由',
+     desc:'自由使用飯店設施，或自費去玻璃橋。',
+     detail:'玻璃橋（Rồng Mây 龍雲玻璃橋）在沙壩往萊州的公路上，車程約 40 分鐘，門票需自費。\n想去的人請在前一晚跟領隊登記，人數夠才會安排車輛。\n懼高、有心臟病或高血壓的長輩不建議前往。\n不去的人可以留在飯店泡湯、泡咖啡，或到附近散步，12:00 前回房間收行李。',
+     tags:['cash','camera']},
+    {id:'d4c',day:4,place:'To dan pho Cau May 1, Sa Pa, Lao Cai',time:'12:00',title:'退房・寄行李',
+     desc:'12:00 退房，行李統一寄放在飯店。',
+     detail:'退房前請務必檢查：保險箱（很多人把護照忘在裡面）、浴室、床頭櫃、插座上的充電器。\n退房後行李寄放在飯店大廳，下午還可以自由活動，16:00 上車前再一起取。\n護照、錢包、藥品、當晚換洗衣物請放隨身包，不要放進寄放的大行李。',
+     tags:['bed','ticket']},
+    {id:'d4d',day:4,place:'22 Ngu Chi Son, Sa Pa, Lao Cai',time:'12:30',title:'午餐：沙壩最後',
+     desc:'Chạm Quán Sapa - Restaurant & Drinks。',
+     detail:'地址：22 Ngũ Chỉ Sơn, Sa Pa, Lào Cai。\n吃完飯後鎮上還有時間可以買伴手禮：竹筒飯、山茶、乾燥草藥包、苗族刺繡都是這裡的特產。\n剩下的越盾建議在沙壩花掉，火車站與機場的東西比較貴。',
+     tags:['meal','cash']},
+    {id:'d4e',day:4,place:'Lao Cai Railway Station',time:'16:00',title:'前往老街站',
+     desc:'搭車下山到老街火車站，車程約 1 小時。',
+     detail:'從沙壩下到老街市區約 35 公里、車程 1 小時，全程下坡彎道多，容易暈車的人請先吃藥。\n老街市就在中越邊境旁，可以看到對岸的中國河口。\n到了火車站先上洗手間，火車上的洗手間比較克難。',
+     tags:['bus','pill','toilet']},
+    {id:'d4f',day:4,time:'19:00',title:'晚餐：老街',
+     desc:'在老街市區用晚餐，之後前往月台候車。',
+     detail:'上車前請把水裝滿、想吃的零食先買好，火車上沒有餐車。\n建議先換上舒服好睡的衣服。',
+     tags:['meal']},
+    {id:'d4g',day:4,place:'Lao Cai Railway Station',time:'21:30',title:'搭夜臥火車',
+     desc:'21:30 從老街發車，隔天清晨 05:30 抵達河內。',
+     detail:'臥鋪車廂是四人一間的上下舖，領隊會分配舖位，行李放在下舖底下或走道行李架。\n上舖有爬梯，長輩請睡下舖，上車先跟領隊講。\n貴重物品（護照、錢包、手機）請放在枕頭邊或隨身腰包，不要放在走道上。\n火車會搖晃且有聲音，帶耳塞和眼罩會好睡很多。\n車廂冷氣偏強，睡覺記得蓋好被子或加件外套。\n洗手間在車廂兩端，晚上走動請扶著扶手。',
+     tags:['bed','coat','toilet','ticket']},
+
+    /* ===== 第 5 天 9/28（日）河內 → 桃園 ===== */
+    {id:'d5a',day:5,place:'Hanoi Railway Station',time:'05:30',title:'抵達河內',
+     desc:'05:30 抵達河內火車站，清點行李下車。',
+     detail:'下車前請把舖位、行李架、枕頭底下再檢查一次，火車靠站時間短，東西掉了很難找回來。\n月台燈光昏暗，請跟緊領隊，慢慢走不要趕。',
+     tags:['ticket','walk']},
+    {id:'d5b',day:5,time:'06:00',title:'早餐：河粉',
+     desc:'河內道地牛肉河粉（Phở），這趟最後一餐越南味。',
+     detail:'河粉配的生菜與豆芽是生的，腸胃敏感的人可以不要放。\n桌上的辣椒醬與魚露請先沾一點試味道，越南魚露比台灣的鹹。\n吃完可以買一杯越南煉乳咖啡在車上喝。',
+     tags:['meal']},
+    {id:'d5c',day:5,place:'Noi Bai International Airport Terminal 2',time:'08:00',title:'前往內排機場',
+     desc:'車程約 45 分鐘，剩餘越盾可在機場花掉。',
+     detail:'越盾出境後幾乎換不回來，也不好用，請在機場免稅店或便利商店花完。\n機場有賣咖啡、腰果、椰子糖，是常見的伴手禮。\n手推車在航廈外就有，長輩的行李可以先放上去。',
+     tags:['cash','bus']},
+    {id:'d5d',day:5,place:'Noi Bai International Airport Terminal 2',time:'09:00',title:'辦登機託運',
+     desc:'🔴 華航、🟢 長榮分別到各自櫃檯，領隊統一辦理。',
+     detail:'請把護照與登機證拿在手上，不要收進行李。\n買的山茶、草藥、水果乾請放託運；打火機不能託運也不能隨身（越南規定較嚴，建議直接丟掉）。\n過海關後在登機門附近等，不要走太遠去逛免稅店。',
+     tags:['ticket']},
+    {id:'d5e',day:5,time:'11:30',title:'華航起飛回台',
+     desc:'11:30 起飛，台灣時間約 15:45 抵達桃園第一航廈。',
+     detail:'領完行李在入境大廳解散，回程請注意台灣的天氣與交通。',
+     tags:['ticket']},
+    {id:'d5f',day:5,time:'12:05',title:'長榮起飛回台',
+     desc:'12:05 起飛，台灣時間約 16:20 抵達桃園第二航廈。',
+     detail:'領完行李在入境大廳解散，辛苦大家了，平安回家。',
+     tags:['ticket']}
   ]},
   members:{ items:[
     {id:'m01',name:'麥松華',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
@@ -953,7 +1054,8 @@ var VIEWS={};
 function tagList(){ var t=S().settings.tags; if(t&&t.length) return t;
   return Object.keys(TAGS).map(function(k){ return {id:k,icon:TAGS[k].icon,label:TAGS[k].label}; }); }
 function tagDef(id){ var l=tagList(); for(var i=0;i<l.length;i++) if(l[i].id===id) return l[i]; return TAGS[id]?{id:id,icon:TAGS[id].icon,label:TAGS[id].label}:null; }
-function tagsHTML(tags){ var out=(tags||[]).map(function(t){ var d=tagDef(t); return d?'<span class="tag">'+ic(d.icon)+esc(d.label)+'</span>':''; }).join('');
+function tagsHTML(tags,place){ var out=(tags||[]).map(function(t){ var d=tagDef(t); return d?'<span class="tag">'+ic(d.icon)+esc(d.label)+'</span>':''; }).join('');
+  if(place) out+='<a class="tag map" href="'+mapHref(place)+'" target="_blank" rel="noopener" aria-label="用 Google 地圖走到「'+esc(place)+'」">'+ic('pin')+'地圖路線</a>';
   return out?'<div class="tags">'+out+'</div>':''; }
 function memberCard(m,opt){
   opt=opt||{}; if(!m) return '';
@@ -1124,7 +1226,7 @@ VIEWS.plan=function(){
     h.push('<article class="'+cls+'">'+
       (x.isCurrent&&!x.isCanceled?'<span class="badge">進行中</span>':'')+(x.isCanceled?'<span class="badge off">因天候取消</span>':'')+
       '<div class="t-time">'+esc(x.time)+(x.end?'<span>– '+esc(x.end)+'</span>':'')+'</div>'+
-      '<div><h3 class="t-title">'+esc(x.title)+mapBtn(x.place,'lg')+'</h3><p class="t-desc">'+esc(x.desc||'')+'</p>'+tagsHTML(x.tags)+
+      '<div><h3 class="t-title">'+esc(x.title)+'</h3><p class="t-desc">'+esc(x.desc||'')+'</p>'+tagsHTML(x.tags,x.place)+
       (P.planMode==='detail'&&x.detail?'<div class="t-detail">'+esc(x.detail)+'</div>':'')+'</div>'+
       (P.leader?'<div class="lead-ctl">'+
         '<button class="btn sm" data-act="moveItem" data-id="'+x.id+'" data-dir="-1"'+(i===0?' disabled':'')+'>'+ic('up')+'上移</button>'+
