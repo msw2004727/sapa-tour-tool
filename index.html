@@ -459,10 +459,11 @@ select.in{appearance:none;-webkit-appearance:none}
 .cbody{padding:0 .8rem .8rem}
 .lead-sw{display:flex;align-items:center;gap:.45rem;padding:.45rem .8rem;background:var(--gold-2);font-size:.82rem;font-weight:800;white-space:nowrap;word-break:keep-all}
 .lead-sw .sp{flex:1}
-.lead-sw .tgl{width:52px;height:30px;border-radius:999px;border:0;background:var(--ink-3);position:relative;flex-shrink:0;padding:0}
-.lead-sw .tgl::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:left .16s ease}
-.lead-sw .tgl.on{background:var(--terrace)}
-.lead-sw .tgl.on::after{left:25px}
+.tgl{width:52px;height:30px;border-radius:999px;border:0;background:var(--ink-3);position:relative;flex-shrink:0;padding:0}
+.tgl::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:left .16s ease}
+.tgl.on{background:var(--terrace)}
+.tgl.on::after{left:25px}
+.it-row .tgl{align-self:center}
 /* 明度階梯：現在＝浮起、稍後＝沉一階、隨時查＝只留框 */
 .g-now>.card{box-shadow:var(--lift);border-color:transparent;position:relative;overflow:hidden}
 .g-now>.card::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,var(--alert),var(--indigo))}
@@ -547,7 +548,7 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
 <script src="./config.js"></script>
 <script>
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '2.3';
+var APP_VERSION = '2.4';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -1132,6 +1133,9 @@ function getMe(){ return P.meId?member(P.meId):null; }
 function items(){ return (S().itinerary&&S().itinerary.items)||[]; }
 function scenario(id){ var g=S().groups||{scenarios:[]}; var want=id||P.scn||g.activeId; var sc=(g.scenarios||[]).filter(function(x){return x.id===want;})[0]; return sc||(id?null:(g.scenarios||[])[0]); }
 function groupNameOf(scnId,mid){ var sc=scenario(scnId); if(!sc) return ''; var gi=sc.assign&&sc.assign[mid]; if(gi===undefined||gi===null||gi<0) return ''; return sc.names[gi]||('第 '+(gi+1)+' 組'); }
+/* 首頁「我的資訊」分組列：領隊可以把特定分組情境從首頁關掉（分組頁籤不受影響，只是不出現在首頁） */
+function homeScnHidden(id){ return !!((S().settings.hiddenScn||{})[id]); }
+function homeScnToggle(id){ var st=S().settings; if(!st.hiddenScn) st.hiddenScn={}; if(st.hiddenScn[id]) delete st.hiddenScn[id]; else st.hiddenScn[id]=true; Store.save('settings'); sheetHomeScn(); }
 function contacts(){ var st=S().settings; if(st.contacts&&st.contacts.length) return st.contacts.filter(function(c){return c&&(c.phone||c.line);}); var out=[]; if(st.leaderPhone) out.push({name:st.leaderName||'領隊',label:'',phone:st.leaderPhone}); if(st.guidePhone) out.push({name:st.guideName||'導遊',label:'',phone:st.guidePhone}); return out; }
 function nbPages(){ var n=S().notebook; return (n&&n.pages)||[]; }
 function nbPage(id){ var ps=nbPages(); return ps.filter(function(p){return p.id===(id||P.nbPage);})[0]||ps[0]; }
@@ -1331,27 +1335,27 @@ VIEWS.home=function(){
     (P.leader?'<div class="ctl"><button class="btn" data-act="editBroadcast">'+ic('edit')+'修改廣播</button><button class="btn" data-act="tool" data-tool="rollcall">'+ic('clipboard')+'點名</button><button class="btn" data-act="bumpTime" data-min="15">現在＋15分</button><button class="btn" data-act="bumpTime" data-min="30">現在＋30分</button></div>'+(tm||b.location||b.tip?'<button class="clr" data-act="clearBroadcast">'+ic('trash')+'清空廣播</button>':''):'')+
   '</section>');
   }
-  /* 我的資訊 */
+  /* 我的資訊：不分出發前後，固定顯示航空公司／報到航廈／房號，再加上「我被分配到的每一個分組」；
+     領隊可在「領隊專區→首頁分組顯示」把不想曝光的分組情境關掉。最後固定加一張「換一個名字」小卡，
+     取代原本常用工具區塊裡的同功能按鈕。 */
   var me=getMe();
   if(me){
-    if(before){
-      var ad=airDef(me.airline);
-      h.push('<div class="me-strip">'+
-        '<button data-act="tab" data-tab="groups" data-scn="airline"><span class="k">航空公司</span><span class="v s">'+(ad?airlineBadge(me.airline)+' '+esc(ad.short):'待設定')+'</span></button>'+
-        '<button data-act="tab" data-tab="groups" data-scn="airline"><span class="k">報到航廈</span><span class="v s">'+esc(ad&&ad.note?ad.note.replace(/^桃園/,''):'—')+'</span></button>'+
-        '<button data-act="tab" data-tab="rooms"><span class="k">我的房號</span><span class="v">'+esc(me.room||'待分配')+'</span></button>'+
-      '</div>');
-    } else {
-      var g1=groupNameOf('meal',me.id)||'未分';
-      var g2=groupNameOf('shuttle',me.id)||'未分';
-      h.push('<div class="me-strip">'+
-        '<button data-act="tab" data-tab="rooms"><span class="k">我的房號</span><span class="v">'+esc(me.room||'待分配')+'</span></button>'+
-        '<button data-act="tab" data-tab="groups" data-scn="meal"><span class="k">用餐</span><span class="v s">'+esc(g1)+'</span></button>'+
-        '<button data-act="tab" data-tab="groups" data-scn="shuttle"><span class="k">接駁車</span><span class="v s">'+esc(g2)+'</span></button>'+
-      '</div>');
-    }
+    var ad=airDef(me.airline);
+    var strip=[];
+    strip.push('<button data-act="tab" data-tab="groups" data-scn="airline"><span class="k">航空公司</span><span class="v s">'+(ad?airlineBadge(me.airline)+' '+esc(ad.short):'待設定')+'</span></button>');
+    strip.push('<button data-act="tab" data-tab="groups" data-scn="airline"><span class="k">報到航廈</span><span class="v s">'+esc(ad&&ad.note?ad.note.replace(/^桃園/,''):'—')+'</span></button>');
+    strip.push('<button data-act="tab" data-tab="rooms"><span class="k">我的房號</span><span class="v">'+esc(me.room||'待分配')+'</span></button>');
+    (S().groups.scenarios||[]).forEach(function(sc){
+      if(homeScnHidden(sc.id)) return;
+      var gi=sc.assign&&sc.assign[me.id];
+      if(gi===undefined||gi===null||gi<0) return;
+      var gname=sc.names[gi]||('第 '+(gi+1)+' 組');
+      strip.push('<button data-act="tab" data-tab="groups" data-scn="'+esc(sc.id)+'"><span class="k">'+esc(sc.name)+'</span><span class="v s">'+esc(gname)+'</span></button>');
+    });
+    strip.push('<button data-act="pickMe"><span class="k">換一個名字</span><span class="v s">'+esc(me.name)+'</span></button>');
+    h.push('<div class="me-strip">'+strip.join('')+'</div>');
   } else {
-    h.push('<button class="btn big block" data-act="pickMe">'+ic('search')+'<span class="b2">點這裡選你的名字<small>首頁就會顯示你的房號、桌次、座車</small></span></button>');
+    h.push('<button class="btn big block" data-act="pickMe">'+ic('search')+'<span class="b2">點這裡選你的名字<small>首頁就會顯示你的航空公司、房號、分組</small></span></button>');
   }
 
   var flightsSoon=(before||di.idx===1||di.idx===di.days);
@@ -1378,13 +1382,6 @@ VIEWS.home=function(){
     h.push(grp('ref','隨時查',ref));
   }
 
-  /* 快速工具 */
-  h.push('<h2 class="sec">'+ic('grid')+'常用工具</h2><div class="grid2">'+
-    '<button class="btn big" data-act="tool" data-tool="money">'+ic('cash')+'<span class="b2">越幣速算<small>按鈔票就算</small></span></button>'+
-    '<button class="btn big" data-act="tool" data-tool="phrases">'+ic('chat')+'<span class="b2">越語圖卡<small>出示給店員看</small></span></button>'+
-    '<button class="btn big" data-act="tool" data-tool="sos">'+ic('alert')+'<span class="b2">緊急求助<small>電話一鍵撥</small></span></button>'+
-    '<button class="btn big" data-act="pickMe">'+ic('star')+'<span class="b2">'+(me?'換一個名字':'我是誰？')+'<small>'+(me?'目前：'+esc(me.name):'標記自己的卡片')+'</small></span></button>'+
-  '</div>');
   return h.join('');
 };
 
@@ -1634,6 +1631,7 @@ function toolMenu(){
       '<button class="btn big" data-act="settings">'+ic('gear')+'<span class="b2">團務設定<small>日期、PIN、電話</small></span></button>'+
       '<button class="btn big" data-act="pickHotel">'+ic('bed')+'<span class="b2">飯店資料<small>入住切換、Wi-Fi</small></span></button>'+
       '<button class="btn big" data-act="editTags">'+ic('flag')+'<span class="b2">防呆標籤<small>自訂增減、改名</small></span></button>'+
+      '<button class="btn big" data-act="homeScnVis">'+ic('users')+'<span class="b2">首頁分組顯示<small>選擇哪些分組情境出現在首頁</small></span></button>'+
     '</div><div class="row"><button class="btn dng" data-act="resetDemo">'+ic('refresh')+'重置為初始資料</button><button class="btn" data-act="leaderLock">'+ic('lock')+'鎖定領隊模式</button></div>');
   }
   h.push('<div class="ver">沙壩隨身團務 v'+APP_VERSION+' · '+(Store.backend==='firebase'?'雲端同步':(Store.backend==='claude'?'預覽同步':'單機'))+'</div>');
@@ -2027,6 +2025,15 @@ function sheetSettings(){
     foot:footBtns('saveSettings')});
   SHEET.nContacts=cs.length;
 }
+function sheetHomeScn(){
+  var list=(S().groups&&S().groups.scenarios)||[];
+  openSheet({title:'首頁分組顯示',body:
+    '<div class="muted">團員選好自己的名字後，首頁「我的資訊」會列出他被分配到的分組。這裡可以把不想讓大家在首頁看到的情境關掉；關掉後「分組」頁籤仍正常使用，只是不會出現在首頁。</div>'+
+    '<div class="it-wrap" style="margin-top:.6rem">'+(list.length?list.map(function(sc){
+      return '<div class="it-row"><div class="tagrow"><b>'+esc(sc.name)+'</b></div>'+
+        '<button class="tgl'+(homeScnHidden(sc.id)?'':' on')+'" data-act="toggleHomeScn" data-id="'+esc(sc.id)+'" aria-label="切換是否顯示在首頁"></button></div>';
+    }).join(''):'<div class="muted">目前還沒有分組情境。</div>')+'</div>'});
+}
 function sheetNbPage(id){
   var pg=id?nbPage(id):{icon:'📝',title:'',type:'notes'};
   var ps=nbPages(), idx=ps.indexOf(pg);
@@ -2149,6 +2156,8 @@ var ACT={
       foot:footBtns('saveAirNote')}); },
   saveAirNote:function(){ S().settings.airNote=sv('airNote'); closeSheet(); Store.save('settings'); toast('提醒已更新'); },
   pickHotel:function(){ sheetHotel(); },
+  homeScnVis:function(){ sheetHomeScn(); },
+  toggleHomeScn:function(t){ if(!P.leader) return; homeScnToggle(t.getAttribute('data-id')); },
   setHotel:function(t){ S().settings.currentHotelId=t.getAttribute('data-id'); closeSheet(); Store.save('settings'); toast('已切換入住飯店'); },
   editHotel:function(t){ sheetHotelEdit(t.getAttribute('data-id')||''); },
   saveHotel:function(){ var st=S().settings; st.hotels=st.hotels||[]; var h=SHEET.id?st.hotels.filter(function(x){return x.id===SHEET.id;})[0]:null; if(!h){ h={id:uid()}; st.hotels.push(h); if(!st.currentHotelId) st.currentHotelId=h.id; }
