@@ -23,6 +23,7 @@
   --gold:#C99A1E; --gold-2:#FFF4CC;
   --danger:#C62828;
   --soft:#F2F5F9;
+  --band:#2F4479; --lcd-ink:#7DE0C0; --lcd-glow:rgba(125,224,192,.32); --lcd-dim:#7C8C9C; --lcd-amber:#FFB648; --lcd-amber-glow:rgba(255,182,72,.35); --lcd-red:#FF6B5B; --lcd-red-glow:rgba(255,107,91,.4);
   --shadow:0 1px 2px rgba(27,36,55,.06),0 6px 16px rgba(27,36,55,.07);
   --lift:0 1px 2px rgba(27,36,55,.08),0 8px 20px rgba(27,36,55,.10);
   --r:14px;
@@ -36,6 +37,7 @@
     --gold:#E2B94A; --gold-2:#3A2F12;
     --danger:#FF6B6B;
     --soft:#131A26;
+    --band:#1E2C48; --lcd-ink:#6FD9B8; --lcd-glow:rgba(111,217,184,.3); --lcd-dim:#8496A6; --lcd-amber:#FFC062; --lcd-amber-glow:rgba(255,192,98,.32); --lcd-red:#FF7F70; --lcd-red-glow:rgba(255,127,112,.35);
     --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
     --lift:0 1px 2px rgba(0,0,0,.5),0 10px 24px rgba(0,0,0,.45);
   }
@@ -48,6 +50,7 @@
   --gold:#E2B94A; --gold-2:#3A2F12;
   --danger:#FF6B6B;
   --soft:#131A26;
+  --band:#1E2C48; --lcd-ink:#6FD9B8; --lcd-glow:rgba(111,217,184,.3); --lcd-dim:#8496A6; --lcd-amber:#FFC062; --lcd-amber-glow:rgba(255,192,98,.32); --lcd-red:#FF7F70; --lcd-red-glow:rgba(255,127,112,.35);
   --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
   --lift:0 1px 2px rgba(0,0,0,.5),0 10px 24px rgba(0,0,0,.45);
 }
@@ -67,20 +70,33 @@ svg.i{width:1.25rem;height:1.25rem;flex-shrink:0;fill:none;stroke:currentColor;s
   .app{box-shadow:0 0 0 1px var(--line),0 24px 60px rgba(0,0,0,.28)}
 }
 /* header */
-.top{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:.4rem;padding:.55rem .6rem;padding-top:calc(.55rem + env(safe-area-inset-top))}
-.brand{flex:1;min-width:0}
-.trip-name{font-weight:900;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.01em}
-.day-chip{font-size:12.5px;color:var(--ink-3);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.clock{text-align:right;line-height:1.05;flex-shrink:0}
-.clock-vn{font-weight:900;font-size:19px;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
-.clock-vn small{font-size:11px;font-weight:700;color:var(--ink-3);margin-left:.25rem;letter-spacing:.04em}
-.clock-tw{font-size:11px;color:var(--ink-3);font-weight:700;font-variant-numeric:tabular-nums;margin-top:.15rem}
-.icon-btn{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:900;font-size:16px;padding:0}
-.icon-btn svg.i{width:20px;height:20px}
+.top{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--line);flex-shrink:0;padding-top:env(safe-area-inset-top)}
+.top-r1{display:flex;align-items:center;gap:.25rem;padding:.35rem .5rem}
+.trip-name{flex:1;min-width:0;font-weight:900;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.01em}
+.pen{width:20px;height:20px;border-radius:6px;border:1px dashed var(--ink-3);color:var(--ink-3);background:transparent;display:inline-flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;padding:0;line-height:1;margin-right:.15rem}
+.day-chip{font-size:11.5px;font-weight:900;border-radius:999px;padding:.1rem .5rem;white-space:nowrap;word-break:keep-all;flex-shrink:0;line-height:1.5;background:var(--indigo-2);color:var(--indigo);margin-right:.15rem}
+.day-chip.warm{background:var(--alert-2);color:var(--alert)}
+.day-chip.done{background:var(--terrace-2);color:var(--terrace)}
+.top-r2{background:var(--band);display:flex;align-items:center;justify-content:center;padding:.22rem .5rem;min-height:26px}
+.lcd{display:flex;align-items:baseline;gap:.3rem;background:rgba(0,0,0,.32);border-radius:8px;padding:.16rem .45rem .2rem;
+  font-variant-numeric:tabular-nums;line-height:1;white-space:nowrap;max-width:100%;overflow:hidden}
+.lcd .lb{font-size:9.5px;font-weight:900;color:var(--lcd-dim);letter-spacing:.08em;flex-shrink:0}
+.lcd .n{font-size:21px;font-weight:900;letter-spacing:-.01em;color:var(--lcd-ink);text-shadow:0 0 8px var(--lcd-glow);flex-shrink:0}
+.lcd .tw{font-size:11px;font-weight:700;color:var(--lcd-dim);flex-shrink:0}
+.lcd .dv{width:1px;height:13px;background:rgba(255,255,255,.16);align-self:center;margin:0 .05rem;flex-shrink:0}
+.lcd .cd{font-size:11px;font-weight:900;color:var(--lcd-amber);text-shadow:0 0 8px var(--lcd-amber-glow);flex-shrink:0;letter-spacing:.01em}
+.lcd .cd .k{font-size:9.5px;font-weight:900;color:var(--lcd-dim);letter-spacing:.06em;margin-right:.22rem;text-shadow:none}
+.lcd .cd.late{color:var(--lcd-red);text-shadow:0 0 8px var(--lcd-red-glow)}
+.lcd .cd.none{color:var(--lcd-dim);text-shadow:none}
+.sync .sync-r{font-weight:800;flex-shrink:0}
+.sync .me{color:var(--ink);font-weight:900;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.icon-btn{width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--ink-2);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:900;font-size:12px;padding:0;line-height:1}
+.icon-btn svg.i{width:17px;height:17px}
 .icon-btn.on{background:var(--indigo);color:#fff;border-color:var(--indigo)}
 :root[data-theme="dark"] .icon-btn.on{color:#0F141C}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .icon-btn.on{color:#0F141C}}
-.sync{font-size:12px;color:var(--ink-3);font-weight:700;padding:.3rem .85rem;display:flex;align-items:center;gap:.4rem;background:var(--card);border-bottom:1px solid var(--line)}
+.sync{font-size:12px;color:var(--ink-3);font-weight:700;padding:.28rem .8rem;display:flex;align-items:center;gap:.4rem;background:var(--card);border-bottom:1px solid var(--line);white-space:nowrap;overflow:hidden}
+.sync>span:nth-child(2){min-width:0;overflow:hidden;text-overflow:ellipsis}
 .sync .dot{width:.5rem;height:.5rem;border-radius:50%;background:var(--ink-3);flex-shrink:0}
 .sync.cloud .dot{background:var(--terrace)}
 .sync.off .dot{background:var(--alert)}
@@ -390,19 +406,23 @@ select.in{appearance:none;-webkit-appearance:none}
 <body>
 <div class="app" id="app">
   <header class="top">
-    <div class="brand">
+    <div class="top-r1">
       <div class="trip-name" id="hdTrip">沙壩雲海五日</div>
-      <div class="day-chip" id="hdDay">第 1 天 / 共 5 天</div>
+      <button class="pen" id="btnTrip" data-act="editTripName" aria-label="修改團名" title="修改團名" hidden>✏️</button>
+      <span class="day-chip" id="hdDay">第 1 天</span>
+      <button class="icon-btn" id="btnTheme" data-act="themeToggle" aria-label="切換深淺色主題" title="深淺色"></button>
+      <button class="icon-btn" id="btnFont" data-act="fontCycle" aria-label="切換字體大小" title="字體大小">A<span style="font-size:.7em">A</span></button>
+      <button class="icon-btn" id="btnLeader" data-act="leaderToggle" aria-label="領隊模式"></button>
     </div>
-    <div class="clock" aria-live="off">
-      <div class="clock-vn"><span id="clockVN">--:--</span><small>沙壩</small></div>
-      <div class="clock-tw">台灣 <span id="clockTW">--:--</span></div>
+    <div class="top-r2">
+      <div class="lcd" aria-live="off">
+        <span class="lb">越南</span><span class="n" id="clockVN">--:--</span>
+        <span class="dv"></span><span class="tw">台灣 <span id="clockTW">--:--</span></span>
+        <span class="dv" id="cdDiv" hidden></span><span class="cd" id="hdCountdown" hidden></span>
+      </div>
     </div>
-    <button class="icon-btn" id="btnTheme" data-act="themeToggle" aria-label="切換深淺色主題" title="深淺色"></button>
-    <button class="icon-btn" id="btnFont" data-act="fontCycle" aria-label="切換字體大小" title="字體大小">A<span style="font-size:.7em">A</span></button>
-    <button class="icon-btn" id="btnLeader" data-act="leaderToggle" aria-label="領隊模式"></button>
   </header>
-  <div class="sync" id="syncBar"><span class="dot"></span><span id="syncText">讀取中…</span><span class="sp"></span></div>
+  <div class="sync" id="syncBar"><span class="dot"></span><span id="syncText">讀取中…</span><span class="sp"></span><span class="sync-r" id="syncRight"></span></div>
   <div class="leader-bar" id="leaderBar" hidden>👑 領隊管理模式：可直接點卡片修改<span class="sp"></span><button data-act="leaderLock">鎖定</button></div>
   <main id="view"></main>
   <nav class="tabbar" id="tabbar" aria-label="主選單"></nav>
@@ -718,6 +738,19 @@ function countdown(){
   if(diff>-240) return {text:'已過 '+fmtDur(-diff),late:true};
   return null;
 }
+/* 標頭用的短倒數：1 小時以上 12h22、不足 1 小時 45分、過了就 已過 5 分 */
+function countdownShort(){
+  var b=S().broadcast;
+  if(!b||b.idle) return {text:'自由活動',cls:'none'};
+  if(!b.time||b.time.indexOf(':')<0) return {text:'待公布',cls:'none'};
+  var vn=tzParts(VN), p=b.time.split(':').map(Number);
+  var diff=(p[0]*60+p[1])-(vn.h*60+vn.m);
+  function hm(n){ var h=Math.floor(n/60), m=n%60; return h>0 ? h+'h'+pad(m) : m+'分'; }
+  if(diff>0) return {text:hm(diff), cls:(diff<=30?'late':'')};
+  if(diff===0) return {text:'時間到',cls:'late'};
+  if(diff>-240) return {text:'已過 '+hm(-diff),cls:'late'};
+  return {text:'待公布',cls:'none'};
+}
 function toast(msg){ var t=el('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._tm); t._tm=setTimeout(function(){t.classList.remove('show');},2200); }
 function telHref(p){ return 'tel:'+String(p||'').replace(/[^\d+]/g,''); }
 /* 從 LINE 內建瀏覽器開啟？（iOS 是 " Line/13.x"，Android 是 "Line/13.x/IAB"） */
@@ -822,14 +855,26 @@ function render(){
   tick();
 }
 function renderHeader(){
-  var st=S().settings, di=dayInfo();
+  var st=S().settings, di=dayInfo(), days=di.days||st.days||5;
   el('hdTrip').textContent=st.tripName||'旅遊團';
-  var t;
-  if(di.status==='before') t='出發倒數 '+(-di.diff)+' 天';
-  else if(di.status==='after') t='旅程圓滿結束';
-  else if(di.status==='override') t='第 '+di.idx+'／'+di.days+' 天（指定）';
-  else t='第 '+di.idx+' 天／共 '+di.days+' 天';
-  el('hdDay').textContent=t;
+  el('btnTrip').hidden=!P.leader;
+  /* 狀態藥丸：六種階段，全部是不換行的短標籤 */
+  var t,cls='';
+  if(di.status==='before'){
+    var d=-di.diff;
+    if(d>1){ t='倒數 '+d+' 天'; }
+    else if(d===1){ t='明天出發'; cls='warm'; }
+    else { t='今天出發'; cls='warm'; }
+  } else if(di.status==='after'){
+    t=(di.diff<=7?'旅程結束 🎉':'旅程已結束'); cls=(di.diff<=7?'done':'');
+  } else if(di.idx>=days){
+    t='最後一天'; cls='warm';
+  } else if(di.idx===1){
+    t='今天出發'; cls='warm';
+  } else {
+    t='第 '+di.idx+'/'+days+' 天';
+  }
+  var dc=el('hdDay'); dc.textContent=t; dc.className='day-chip'+(cls?' '+cls:'');
   var tb=el('btnTheme');
   if(!P.theme){ tb.innerHTML=ic('auto'); tb.title='目前：跟隨系統'; tb.setAttribute('aria-label','主題：跟隨系統'); }
   else if(P.theme==='light'){ tb.innerHTML=ic('sun'); tb.title='目前：淺色'; tb.setAttribute('aria-label','主題：淺色'); }
@@ -878,6 +923,13 @@ function renderSync(){
   else if(Store.mode==='connecting'){ tx.textContent='連線中 · 先顯示這支手機的版本'; }
   else if(Store.mode==='offline'){ bar.classList.add('off'); tx.textContent='離線中 · 顯示這支手機最後的版本'; }
   else { tx.textContent=(window.SAPA_CONFIG&&window.SAPA_CONFIG.sync==='firebase')?'單機模式 · 尚未連上雲端':'單機模式 · 資料只在這支手機（未設定同步後端）'; }
+  /* 選過名字的人：左邊換成問候，狀態縮到右邊，不多佔一行 */
+  var me=getMe(), rt=el('syncRight');
+  if(me){
+    var h=tzParts(VN).h, g=(h<11?'早安':(h<18?'午安':'晚安'));
+    tx.innerHTML='<span class="me">'+esc(g)+'，'+esc(me.name)+'</span>';
+    rt.textContent = Store.mode==='cloud' ? (navigator.onLine===false?'離線':'已連線') : (Store.mode==='connecting'?'連線中':(Store.mode==='offline'?'離線':'單機'));
+  } else { rt.textContent=''; }
 }
 function renderTabs(){
   el('tabbar').innerHTML=TABS.map(function(t){ return '<button class="tab'+(P.tab===t[0]?' on':'')+'" data-act="tab" data-tab="'+t[0]+'" aria-label="'+t[1]+'">'+ic(t[2])+'<span>'+t[1]+'</span></button>'; }).join('');
@@ -886,6 +938,12 @@ function tick(){
   var vn=tzParts(VN), tw=tzParts(TW);
   el('clockVN').textContent=vn.hm; el('clockTW').textContent=tw.hm;
   var c=el('countdown'); if(c){ var cd=countdown(); c.hidden=!cd; if(cd){ c.innerHTML=ic('clock')+esc(cd.text); c.classList.toggle('late',cd.late); } }
+  var hc=el('hdCountdown'), hd=el('cdDiv');
+  if(hc){ var s2=countdownShort();
+    hc.hidden=false; hd.hidden=false;
+    hc.innerHTML='<span class="k">'+(s2.cls==='none'?'集合':'集合倒數')+'</span>'+esc(s2.text);
+    hc.className='cd'+(s2.cls?' '+s2.cls:'');
+  }
 }
 setInterval(tick,15000);
 
@@ -1312,6 +1370,18 @@ function sheetItem(id){
     foot:footBtns('saveItem',id?'<button class="btn dng" data-act="delItem">刪除</button>':'')});
   SHEET.id=id;
 }
+function sheetTripName(){
+  var st=S().settings, v=st.tripName||'';
+  openSheet({title:'團名',focus:true,body:
+    fld('顯示在畫面最上方（建議 10 字以內）',inp('tripName',v,'text','maxlength="20" id="tnInput"'))+
+    '<div class="muted" id="tnCount" style="text-align:right;margin-top:-.35rem">'+[].slice.call(v).length+' / 20 字</div>'+
+    '<div class="chips" style="margin-top:.5rem">'+
+      ['沙壩雲海五日','越南沙壩 5 日','2026 沙壩團'].map(function(x){
+        return '<button type="button" class="chip pick" data-act="tnPick" data-val="'+esc(x)+'">'+esc(x)+'</button>'; }).join('')+
+    '</div>'+
+    '<div class="muted" style="margin-top:.6rem">太長會在標頭以「…」截斷，不會換行。窄螢幕（iPhone SE）大約放得下 10 個中文字。</div>',
+    foot:footBtns('saveTripName')});
+}
 /* --- 防呆標籤管理（領隊） --- */
 function sheetTags(){
   var list=tagList();
@@ -1490,6 +1560,10 @@ var ACT={
   setCurrent:function(t){ var id=t.getAttribute('data-id'); var cur=null; items().forEach(function(x){ x.isCurrent=(x.id===id&&!x.isCurrent)?true:false; if(x.isCurrent) cur=x; }); if(cur){ var b=S().broadcast; b.location=cur.title; b.updatedAt=stamp(); Store.save('broadcast'); } Store.save('itinerary'); toast(cur?'已設為當前站，首頁地點已連動':'已取消當前站'); },
   cancelItem:function(t){ var id=t.getAttribute('data-id'); items().forEach(function(x){ if(x.id===id){ x.isCanceled=!x.isCanceled; if(x.isCanceled) x.isCurrent=false; } }); Store.save('itinerary'); },
   editItem:function(t){ sheetItem(t.getAttribute('data-id')||''); },
+  editTripName:function(){ sheetTripName(); },
+  saveTripName:function(){ var v=sv('tripName'); if(!v){ toast('請輸入團名'); return; }
+    S().settings.tripName=v; closeSheet(); Store.save('settings'); toast('團名已更新'); },
+  tnPick:function(t){ var i=el('sheetRoot').querySelector('[name=tripName]'); if(i){ i.value=t.getAttribute('data-val'); i.dispatchEvent(new Event('input',{bubbles:true})); } },
   editTags:function(){ sheetTags(); },
   editTag:function(t){ sheetTagEdit(t.getAttribute('data-id')||''); },
   saveTag:function(){ var label=sv('label'); if(!label){ toast('請輸入標籤文字'); return; }
@@ -1574,6 +1648,7 @@ document.addEventListener('input',function(ev){
   if(t.id==='memberSearch'){ P.q=t.value; var l=el('memberList'); if(l) l.innerHTML=memberListHTML(); }
   else if(t.id==='meSearch'){ var ml=el('meList'); if(ml) ml.innerHTML=meListHTML(t.value.trim()); }
   else if(t.id==='twdIn'){ var v=Number(t.value)||0, r=Number(S().settings.vndPerTwd)||820; el('twdOut').textContent=v?fmtVND(Math.round(v*r/1000)*1000):'—'; }
+  else if(t.id==='tnInput'){ var c=el('tnCount'); if(c) c.textContent=[].slice.call(t.value).length+' / 20 字'; }
   else if(t.id==='rcLabel'){ var rc=S().rollcall; if(rc){ rc.label=t.value.trim(); Store.cache(); } }
 });
 document.addEventListener('change',function(ev){ var t=ev.target;
