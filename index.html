@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#2F4479">
 <meta name="robots" content="noindex,nofollow">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -51,12 +51,12 @@
   --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
   --lift:0 1px 2px rgba(0,0,0,.5),0 10px 24px rgba(0,0,0,.45);
 }
-html{font-size:16px;-webkit-text-size-adjust:100%}
+html{font-size:16px;-webkit-text-size-adjust:100%;touch-action:pan-x pan-y;-webkit-text-size-adjust:100%}
 html[data-fs="lg"]{font-size:18px}
 html[data-fs="xl"]{font-size:20px}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC",-apple-system,"PingFang TC","Heiti TC","Microsoft JhengHei","Noto Sans CJK TC",sans-serif;line-height:1.4;overscroll-behavior-y:contain}
+body{margin:0;touch-action:pan-x pan-y;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC",-apple-system,"PingFang TC","Heiti TC","Microsoft JhengHei","Noto Sans CJK TC",sans-serif;line-height:1.4;overscroll-behavior-y:contain}
 button{font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
 button:focus-visible,a:focus-visible,.in:focus-visible{outline:3px solid var(--indigo);outline-offset:2px}
 a{color:var(--indigo)}
@@ -348,7 +348,7 @@ select.in{appearance:none;-webkit-appearance:none}
 .hint-lead{font-size:.82rem;color:var(--ink-3);font-weight:700;display:flex;align-items:center;gap:.3rem}
 .hint-lead svg.i{width:1rem;height:1rem}
 /* ===== v4：首頁分段（現在／稍後／隨時查）＋ 可收合卡片 ===== */
-.grp{display:flex;flex-direction:column;gap:.7rem}
+.zsec{display:flex;flex-direction:column;gap:.7rem}
 .zlab{display:flex;align-items:center;gap:.5rem;margin-bottom:-.05rem}
 .zlab span{font-size:.78rem;font-weight:900;color:var(--ink-3);letter-spacing:.1em;white-space:nowrap;word-break:keep-all}
 .zlab i{flex:1;height:1px;background:var(--line)}
@@ -361,10 +361,10 @@ select.in{appearance:none;-webkit-appearance:none}
 .cbody{padding:0 .8rem .8rem}
 .lead-sw{display:flex;align-items:center;gap:.45rem;padding:.45rem .8rem;background:var(--gold-2);font-size:.82rem;font-weight:800;white-space:nowrap;word-break:keep-all}
 .lead-sw .sp{flex:1}
-.sw{width:52px;height:30px;border-radius:999px;border:0;background:var(--ink-3);position:relative;flex-shrink:0;padding:0}
-.sw::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:left .16s ease}
-.sw.on{background:var(--terrace)}
-.sw.on::after{left:25px}
+.lead-sw .tgl{width:52px;height:30px;border-radius:999px;border:0;background:var(--ink-3);position:relative;flex-shrink:0;padding:0}
+.lead-sw .tgl::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:left .16s ease}
+.lead-sw .tgl.on{background:var(--terrace)}
+.lead-sw .tgl.on::after{left:25px}
 /* 明度階梯：現在＝浮起、稍後＝沉一階、隨時查＝只留框 */
 .g-now>.card{box-shadow:var(--lift);border-color:transparent;position:relative;overflow:hidden}
 .g-now>.card::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,var(--alert),var(--indigo))}
@@ -372,6 +372,19 @@ select.in{appearance:none;-webkit-appearance:none}
 .g-ref>.card,.g-ref>.ccard{background:transparent;border-color:var(--line)}
 .g-ref .chead .ttl{color:var(--ink-3)}
 .g-ref .fl-col{background:var(--card)}
+/* Google 地圖按鈕 */
+.map-btn{width:2.1rem;height:2.1rem;min-width:2.1rem;border-radius:10px;border:1px solid var(--line);background:var(--card);
+  color:var(--indigo);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;text-decoration:none;vertical-align:middle}
+.map-btn svg.i{width:1.15rem;height:1.15rem}
+.map-btn:active{background:var(--indigo-2)}
+.map-btn.lg{width:2.5rem;height:2.5rem;min-width:2.5rem;margin-left:.4rem}
+.map-btn.lg svg.i{width:1.35rem;height:1.35rem}
+.t-title{display:flex;align-items:center;gap:.15rem}
+.tagrow{flex:1;min-width:0;display:flex;align-items:center;gap:.45rem;font-size:1rem;white-space:nowrap;overflow:hidden}
+.tagrow svg.i{width:1.2rem;height:1.2rem;color:var(--indigo)}
+.sw button svg.i{width:1.4rem;height:1.4rem}
+.btn.line{background:#06C755;color:#fff;border-color:#06C755}
+.btn.line svg.i{width:1.1rem;height:1.1rem}
 </style>
 </head>
 <body>
@@ -463,6 +476,7 @@ var TAGS = {
   walk:{icon:'walk',label:'步行多'}, camera:{icon:'camera',label:'拍照點'}, pill:{icon:'thermo',label:'易暈車坐前排'},
   bed:{icon:'bed',label:'入住'}
 };
+var TAG_ICONS = ['coat','shoes','toilet','rain','meal','ticket','mountain','bus','cash','walk','camera','thermo','bed','cup','wifi','taxi','clock','flag','star','alert','info','pin','phone','key','plane','book','check','users','calendar'];
 var EMOJIS = ['👑','🚩','🌟','🥗','🍵','💊','🧳','📸'];
 var EMOJI_HINT = {'👑':'總隊長 / 車長','🚩':'小組長','🌟':'壽星','🥗':'素食','🍵':'需溫熱水','💊':'易暈車','🧳':'行李協助','📸':'攝影'};
 var BGS = [['bg-white','白'],['bg-yellow','鵝黃'],['bg-pink','粉紅'],['bg-green','草綠'],['bg-blue','淺藍']];
@@ -503,12 +517,20 @@ var DEFAULTS = {
     tripName:'沙壩雲海五日', startDate:'2026-09-24', days:5, dayOverride:0, pin:'8888',
     /* 領隊決定團員第一次看到時，卡片是展開(1)還是收起(0)；ts 變動時團員自己的選擇會重置 */
     cards:{prep:{o:1,ts:0},flight:{o:1,ts:0},morning:{o:1,ts:0},hotel:{o:0,ts:0}},
+    /* 防呆標籤：領隊可自訂增減，改了全團同步 */
+    tags:[
+      {id:'coat',icon:'coat',label:'厚外套'},{id:'shoes',icon:'shoes',label:'防滑鞋'},{id:'toilet',icon:'toilet',label:'有洗手間'},
+      {id:'rain',icon:'rain',label:'雨具'},{id:'meal',icon:'meal',label:'用餐'},{id:'ticket',icon:'ticket',label:'帶護照'},
+      {id:'alt',icon:'mountain',label:'高海拔'},{id:'bus',icon:'bus',label:'長途車'},{id:'cash',icon:'cash',label:'備現金'},
+      {id:'walk',icon:'walk',label:'步行多'},{id:'camera',icon:'camera',label:'拍照點'},{id:'pill',icon:'thermo',label:'易暈車'},
+      {id:'bed',icon:'bed',label:'入住'}
+    ],
     vndPerTwd:820,
     /* 電話刻意留白：正式版請領隊進管理模式 → 團務設定 填入，資料只存在同步後端，不會出現在原始碼 */
     contacts:[
-      {name:'黃氏添',label:'越南電話',phone:''},
-      {name:'黃氏添',label:'台灣電話',phone:''},
-      {name:'麥松華',label:'台灣電話',phone:''}
+      {name:'黃氏添',label:'越南電話',phone:'',line:''},
+      {name:'黃氏添',label:'台灣電話',phone:'',line:''},
+      {name:'麥松華',label:'台灣電話',phone:'',line:''}
     ],
     flights:{ ci:{out:'08:20',back:'11:30'}, eva:{out:'09:00',back:'12:05'}, note:'團體報到：全體 05:30 在桃園第二航廈集合（不分航空公司）。分發護照與行李吊牌後，華航團員一起搭免費電車到第一航廈辦登機，長榮團員留在第二航廈。' },
     embassyPhone:'',
@@ -519,36 +541,36 @@ var DEFAULTS = {
     ],
     morning:{wake:'',breakfast:'',luggage:'',depart:'',note:'領隊每晚會在這裡公布明早時間。'}
   },
-  broadcast:{ time:'', label:'集合', location:'', tip:'', updatedAt:'' },
+  broadcast:{ time:'', label:'集合', location:'', tip:'', idle:false, updatedAt:'' },
   itinerary:{ items:[
-    {id:'d1a',day:1,time:'05:30',title:'桃園第二航廈集合',desc:'全體不分航空公司，05:30 在第二航廈集合，分發護照與行李吊牌。',detail:'請提早出門，05:30 準時到第二航廈出境大廳。液體超過 100ml 請放託運行李；行動電源請放隨身。',tags:['ticket','toilet']},
-    {id:'d1b',day:1,time:'06:00',title:'分頭辦登機',desc:'🔴 華航團員一起搭免費電車到第一航廈（08:20 起飛）；🟢 長榮團員留在第二航廈（09:00 起飛）。',detail:'兩航廈之間的電車約 5 分鐘一班、車程 2 分鐘。辦完登機各自過安檢，登機門看登機證。',tags:['ticket','walk']},
-    {id:'d1c',day:1,time:'11:15',title:'河內機場會合',desc:'華航約 10:30、長榮約 11:15 抵達（當地時間），先到的在行李轉盤外等，導遊舉牌接機。',detail:'越南時間比台灣慢 1 小時，下機後請確認手機時間已自動調整；本網頁所有時間皆為越南當地時間。\n入境需出示越南電子簽證列印本與護照，請放隨身包。',tags:['ticket','bus']},
+    {id:'d1a',day:1,place:'Taoyuan International Airport Terminal 2',time:'05:30',title:'桃園第二航廈集合',desc:'全體不分航空公司，05:30 在第二航廈集合，分發護照與行李吊牌。',detail:'請提早出門，05:30 準時到第二航廈出境大廳。液體超過 100ml 請放託運行李；行動電源請放隨身。',tags:['ticket','toilet']},
+    {id:'d1b',day:1,place:'Taoyuan International Airport Terminal 1',time:'06:00',title:'分頭辦登機',desc:'🔴 華航團員一起搭免費電車到第一航廈（08:20 起飛）；🟢 長榮團員留在第二航廈（09:00 起飛）。',detail:'兩航廈之間的電車約 5 分鐘一班、車程 2 分鐘。辦完登機各自過安檢，登機門看登機證。',tags:['ticket','walk']},
+    {id:'d1c',day:1,place:'Noi Bai International Airport',time:'11:15',title:'河內機場會合',desc:'華航約 10:30、長榮約 11:15 抵達（當地時間），先到的在行李轉盤外等，導遊舉牌接機。',detail:'越南時間比台灣慢 1 小時，下機後請確認手機時間已自動調整；本網頁所有時間皆為越南當地時間。\n入境需出示越南電子簽證列印本與護照，請放隨身包。',tags:['ticket','bus']},
     {id:'d1d',day:1,time:'12:45',title:'午餐：越式家常菜',desc:'會合後直接前往餐廳。',detail:'',tags:['meal']},
-    {id:'d1e',day:1,time:'14:30',title:'老街・還劍湖散步',desc:'老城區慢走、喝一杯蛋咖啡，感受河內市井。',detail:'河內老街機車多，過馬路請「慢慢走、不要突然停」，機車會自動繞開您。\n蛋咖啡（Cà phê trứng）是河內名物，推薦 Giảng 咖啡。\n購物提醒：路邊小販開價通常可殺 3～5 成。',tags:['walk','cash','camera']},
+    {id:'d1e',day:1,place:'Hoan Kiem Lake, Hanoi',time:'14:30',title:'老街・還劍湖散步',desc:'老城區慢走、喝一杯蛋咖啡，感受河內市井。',detail:'河內老街機車多，過馬路請「慢慢走、不要突然停」，機車會自動繞開您。\n蛋咖啡（Cà phê trứng）是河內名物，推薦 Giảng 咖啡。\n購物提醒：路邊小販開價通常可殺 3～5 成。',tags:['walk','cash','camera']},
     {id:'d1f',day:1,time:'18:00',title:'晚餐：河內烤魚',desc:'百年老店風味，薑黃烤魚配蒔蘿與米線。',detail:'',tags:['meal']},
     {id:'d1g',day:1,time:'20:00',title:'入住河內飯店',desc:'分發房卡，明早晨喚時間請看首頁。',detail:'',tags:['bed']}
   ,
     {id:'d2a',day:2,time:'07:30',title:'出發前往沙壩',desc:'車程約 5.5 小時，途中休息站停 2 次，可上洗手間。',detail:'容易暈車的長輩請坐前排；建議上車前吃暈車藥、少看手機。\n休息站洗手間有時需付 5,000 盾，請準備小鈔。',tags:['bus','pill','toilet']},
     {id:'d2b',day:2,time:'12:30',title:'午餐：老街市區',desc:'越式家常菜，補充體力後再上山。',detail:'',tags:['meal']},
-    {id:'d2c',day:2,time:'15:00',title:'抵達沙壩入住飯店',desc:'法式殖民風格飯店，位在纜車站正對面。',detail:'飯店大廳往右走 2 分鐘就是 Sun Plaza 纜車站；步行 8 分鐘可到沙壩石教堂與湖區。',tags:['bed','toilet']},
-    {id:'d2d',day:2,time:'16:30',title:'石教堂・湖區散步',desc:'鎮中心地標，傍晚常有苗族婦女擺攤賣手工藝品。',detail:'沙壩傍晚溫度會快速下降，出門請帶外套。\n手工藝品建議在店面買、標價清楚；路邊「跟著走一路推銷」的攤販可以微笑婉拒（Không cần, cảm ơn）。',tags:['coat','walk','camera']},
+    {id:'d2c',day:2,place:'Hotel de la Coupole MGallery, Sa Pa',time:'15:00',title:'抵達沙壩入住飯店',desc:'法式殖民風格飯店，位在纜車站正對面。',detail:'飯店大廳往右走 2 分鐘就是 Sun Plaza 纜車站；步行 8 分鐘可到沙壩石教堂與湖區。',tags:['bed','toilet']},
+    {id:'d2d',day:2,place:'Sa Pa Stone Church',time:'16:30',title:'石教堂・湖區散步',desc:'鎮中心地標，傍晚常有苗族婦女擺攤賣手工藝品。',detail:'沙壩傍晚溫度會快速下降，出門請帶外套。\n手工藝品建議在店面買、標價清楚；路邊「跟著走一路推銷」的攤販可以微笑婉拒（Không cần, cảm ơn）。',tags:['coat','walk','camera']},
     {id:'d2e',day:2,time:'18:30',title:'晚餐：鮭魚火鍋',desc:'沙壩高山冷水養殖鮭魚，是當地招牌。',detail:'',tags:['meal']}
   ,
-    {id:'d3a',day:3,time:'08:30',title:'番西邦纜車登頂',desc:'搭世界級三索纜車直上「印度支那屋脊」，俯瞰梯田雲海。',detail:'番西邦峰海拔 3,143 公尺，是中南半島最高峰。纜車 2016 年由 Sun World 建成，全長 6,292 公尺，約 15 分鐘直達山上站。\n山頂比鎮上低約 8～10 度，請務必穿厚外套；山上站到最高點還有約 600 階階梯，可選擇再搭一段登山小火車（需另付費）。\n拍照機位：大佛平台看雲海、山頂三角點合照請排隊、纜車內靠窗左側看梯田。\n高海拔小提醒：動作放慢、多喝水，覺得頭暈就坐下休息。',tags:['coat','shoes','toilet','alt','camera'],isCurrent:true},
+    {id:'d3a',day:3,place:'Sun World Fansipan Legend',time:'08:30',title:'番西邦纜車登頂',desc:'搭世界級三索纜車直上「印度支那屋脊」，俯瞰梯田雲海。',detail:'番西邦峰海拔 3,143 公尺，是中南半島最高峰。纜車 2016 年由 Sun World 建成，全長 6,292 公尺，約 15 分鐘直達山上站。\n山頂比鎮上低約 8～10 度，請務必穿厚外套；山上站到最高點還有約 600 階階梯，可選擇再搭一段登山小火車（需另付費）。\n拍照機位：大佛平台看雲海、山頂三角點合照請排隊、纜車內靠窗左側看梯田。\n高海拔小提醒：動作放慢、多喝水，覺得頭暈就坐下休息。',tags:['coat','shoes','toilet','alt','camera'],isCurrent:true},
     {id:'d3b',day:3,time:'12:00',title:'午餐：山上自助餐',desc:'纜車上站餐廳，餐後搭纜車下山。',detail:'',tags:['meal','toilet']},
-    {id:'d3c',day:3,time:'14:30',title:'貓貓村健行',desc:'沿石板步道下坡穿過梯田、水車與法國時期小水電站。',detail:'貓貓村是黑苗族（H\'Mông Đen）聚落，村內可看到靛藍染布、麻織與銀飾工藝；1920 年代法國人在瀑布旁建的水電站遺址仍在。\n步道多為下坡石階、約 1.5 小時，雨後濕滑請穿防滑鞋、走慢一點。體力較弱的長輩可選「咖啡悠閒組」在村口咖啡館看梯田等大家。\n購物：村內明碼標價的手工藝品店比路邊攤穩妥。',tags:['shoes','rain','toilet','walk','camera']},
-    {id:'d3d',day:3,time:'18:00',title:'沙壩夜市自由活動',desc:'烤肉串、烤玉米、竹筒飯，逛完自行回飯店。',detail:'走散或想先回飯店，打開「工具 → 計程車回飯店卡」出示給司機即可。',tags:['meal','coat','cash']}
+    {id:'d3c',day:3,place:'Cat Cat Village, Sa Pa',time:'14:30',title:'貓貓村健行',desc:'沿石板步道下坡穿過梯田、水車與法國時期小水電站。',detail:'貓貓村是黑苗族（H\'Mông Đen）聚落，村內可看到靛藍染布、麻織與銀飾工藝；1920 年代法國人在瀑布旁建的水電站遺址仍在。\n步道多為下坡石階、約 1.5 小時，雨後濕滑請穿防滑鞋、走慢一點。體力較弱的長輩可選「咖啡悠閒組」在村口咖啡館看梯田等大家。\n購物：村內明碼標價的手工藝品店比路邊攤穩妥。',tags:['shoes','rain','toilet','walk','camera']},
+    {id:'d3d',day:3,place:'Sa Pa Market',time:'18:00',title:'沙壩夜市自由活動',desc:'烤肉串、烤玉米、竹筒飯，逛完自行回飯店。',detail:'走散或想先回飯店，打開「工具 → 計程車回飯店卡」出示給司機即可。',tags:['meal','coat','cash']}
   ,
-    {id:'d4a',day:4,time:'08:00',title:'銀瀑布・天門觀景',desc:'沿黃連山公路看百米瀑布與峽谷雲霧。',detail:'銀瀑布落差約 200 公尺，觀景台階梯較陡，可在下方平台拍照即可。\n天門（O Quy Ho 山口）海拔近 2,000 公尺、風大，請戴帽子、穿外套。',tags:['coat','shoes','camera','toilet']},
+    {id:'d4a',day:4,place:'Silver Waterfall, Sa Pa',time:'08:00',title:'銀瀑布・天門觀景',desc:'沿黃連山公路看百米瀑布與峽谷雲霧。',detail:'銀瀑布落差約 200 公尺，觀景台階梯較陡，可在下方平台拍照即可。\n天門（O Quy Ho 山口）海拔近 2,000 公尺、風大，請戴帽子、穿外套。',tags:['coat','shoes','camera','toilet']},
     {id:'d4b',day:4,time:'11:00',title:'出發返回河內',desc:'車程約 5.5 小時，中途休息與午餐。',detail:'',tags:['bus','pill','toilet']},
-    {id:'d4c',day:4,time:'17:30',title:'水上木偶劇場',desc:'河內千年傳統藝術，約 50 分鐘。',detail:'水上木偶戲起源於紅河三角洲農村，藝師站在水中操偶，配樂為傳統民樂。\n劇場內不可用閃光燈；座位較窄，行動不便的長輩請告知領隊安排走道位。',tags:['ticket','camera']},
+    {id:'d4c',day:4,place:'Thang Long Water Puppet Theatre',time:'17:30',title:'水上木偶劇場',desc:'河內千年傳統藝術，約 50 分鐘。',detail:'水上木偶戲起源於紅河三角洲農村，藝師站在水中操偶，配樂為傳統民樂。\n劇場內不可用閃光燈；座位較窄，行動不便的長輩請告知領隊安排走道位。',tags:['ticket','camera']},
     {id:'d4d',day:4,time:'19:00',title:'晚餐・入住飯店',desc:'明天最後一天，請開始整理行李。',detail:'',tags:['meal','bed']}
   ,
     {id:'d5a',day:5,time:'06:30',title:'早餐・退房',desc:'行李請依晨間時程放房門口，退房前再檢查保險箱。',detail:'',tags:['meal','toilet']},
-    {id:'d5b',day:5,time:'07:30',title:'出發前往內排機場',desc:'車程約 45 分鐘，剩餘越盾可在機場花掉。',detail:'越盾出境後幾乎無法在台灣兌換，建議在機場咖啡店或免稅店用完；小額可捐入機場捐款箱。',tags:['bus','ticket','cash']},
-    {id:'d5c',day:5,time:'08:30',title:'華航辦登機',desc:'🔴 華航團員 08:30 到華航櫃檯集合，統一辦登機與託運（11:30 起飛）。',detail:'',tags:['ticket']},
-    {id:'d5d',day:5,time:'09:00',title:'長榮辦登機',desc:'🟢 長榮團員 09:00 到長榮櫃檯集合，統一辦登機與託運（12:05 起飛）。',detail:'',tags:['ticket']},
+    {id:'d5b',day:5,place:'Noi Bai International Airport',time:'07:30',title:'出發前往內排機場',desc:'車程約 45 分鐘，剩餘越盾可在機場花掉。',detail:'越盾出境後幾乎無法在台灣兌換，建議在機場咖啡店或免稅店用完；小額可捐入機場捐款箱。',tags:['bus','ticket','cash']},
+    {id:'d5c',day:5,place:'Noi Bai International Airport Terminal 2',time:'08:30',title:'華航辦登機',desc:'🔴 華航團員 08:30 到華航櫃檯集合，統一辦登機與託運（11:30 起飛）。',detail:'',tags:['ticket']},
+    {id:'d5d',day:5,place:'Noi Bai International Airport Terminal 2',time:'09:00',title:'長榮辦登機',desc:'🟢 長榮團員 09:00 到長榮櫃檯集合，統一辦登機與託運（12:05 起飛）。',detail:'',tags:['ticket']},
     {id:'d5e',day:5,time:'11:30',title:'華航起飛回台',desc:'11:30 起飛，台灣時間約 15:45 抵達桃園第一航廈，領行李後解散。',detail:'',tags:['ticket']},
     {id:'d5f',day:5,time:'12:05',title:'長榮起飛回台',desc:'12:05 起飛，台灣時間約 16:20 抵達桃園第二航廈，領行李後解散，辛苦大家！',detail:'',tags:['ticket']}
   ]},
@@ -698,10 +720,21 @@ function countdown(){
 }
 function toast(msg){ var t=el('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._tm); t._tm=setTimeout(function(){t.classList.remove('show');},2200); }
 function telHref(p){ return 'tel:'+String(p||'').replace(/[^\d+]/g,''); }
+/* 從 LINE 內建瀏覽器開啟？（iOS 是 " Line/13.x"，Android 是 "Line/13.x/IAB"） */
+function isInLine(){ try{ return /\bLine\//i.test(navigator.userAgent||''); }catch(e){ return false; } }
+/* 已經「加入主畫面」後開啟就不必再提示 */
+function isStandalone(){ try{ return (window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true; }catch(e){ return false; } }
+/* 顯示「加入主畫面」提示的條件：從 LINE 開啟，或這支手機第一次打開 */
+function showTip(){ if(P.tipDismissed) return false; if(isStandalone()) return false; return isInLine()||FIRST_VISIT; }
+/* Google 地圖路線（預設步行）；destination 用地名字串，起點交給手機定位 */
+function mapHref(place,mode){ return 'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(place)+'&travelmode='+(mode||'walking'); }
+function mapBtn(place,cls){ if(!place) return ''; return '<a class="map-btn'+(cls?' '+cls:'')+'" href="'+mapHref(place)+'" target="_blank" rel="noopener" aria-label="用 Google 地圖走到「'+esc(place)+'」" title="Google 地圖步行路線">'+ic('pin')+'</a>'; }
 function fmtPhone(p){ return String(p||'').replace(/^(\+886|\+84|\+\d{1,3})(\d{3})(\d{3})(\d+)$/,'$1 $2 $3 $4'); }
 
 /* ===== 本機偏好（每支手機各自保存；LINE 內建瀏覽器可能清空，所以全部都是可有可無的便利設定） ===== */
 var P={fs:'md',theme:'',meId:'',leader:false,tipDismissed:false,checks:{},cards:{},tab:'home',planMode:'simple',planDay:0,roomsSeg:'rooms',tool:'menu',q:'',money:[],nbPage:''};
+var FIRST_VISIT=false;
+try{ FIRST_VISIT=!localStorage.getItem('sapa-prefs'); }catch(e){}
 (function(){ try{ var p=JSON.parse(localStorage.getItem('sapa-prefs')||'{}'); ['fs','theme','meId','leader','tipDismissed','planMode','checks','cards'].forEach(function(k){ if(p[k]!==undefined) P[k]=p[k]; }); }catch(e){} })();
 function savePrefs(){ try{ localStorage.setItem('sapa-prefs',JSON.stringify({fs:P.fs,theme:P.theme,meId:P.meId,leader:P.leader,tipDismissed:P.tipDismissed,planMode:P.planMode,checks:P.checks||{},cards:P.cards||{}})); }catch(e){} }
 
@@ -769,7 +802,7 @@ function getMe(){ return P.meId?member(P.meId):null; }
 function items(){ return (S().itinerary&&S().itinerary.items)||[]; }
 function scenario(id){ var g=S().groups||{scenarios:[]}; var want=id||P.scn||g.activeId; var sc=(g.scenarios||[]).filter(function(x){return x.id===want;})[0]; return sc||(id?null:(g.scenarios||[])[0]); }
 function groupNameOf(scnId,mid){ var sc=scenario(scnId); if(!sc) return ''; var gi=sc.assign&&sc.assign[mid]; if(gi===undefined||gi===null||gi<0) return ''; return sc.names[gi]||('第 '+(gi+1)+' 組'); }
-function contacts(){ var st=S().settings; if(st.contacts&&st.contacts.length) return st.contacts.filter(function(c){return c&&c.phone;}); var out=[]; if(st.leaderPhone) out.push({name:st.leaderName||'領隊',label:'',phone:st.leaderPhone}); if(st.guidePhone) out.push({name:st.guideName||'導遊',label:'',phone:st.guidePhone}); return out; }
+function contacts(){ var st=S().settings; if(st.contacts&&st.contacts.length) return st.contacts.filter(function(c){return c&&(c.phone||c.line);}); var out=[]; if(st.leaderPhone) out.push({name:st.leaderName||'領隊',label:'',phone:st.leaderPhone}); if(st.guidePhone) out.push({name:st.guideName||'導遊',label:'',phone:st.guidePhone}); return out; }
 function nbPages(){ var n=S().notebook; return (n&&n.pages)||[]; }
 function nbPage(id){ var ps=nbPages(); return ps.filter(function(p){return p.id===(id||P.nbPage);})[0]||ps[0]; }
 function checkStats(pg){ var items=(pg.items||[]).filter(function(i){return i.kind!=='head';}); var ck=(P.checks||{})[pg.id]||{}; var done=items.filter(function(i){return ck[i.id];}).length; return {done:done,total:items.length}; }
@@ -833,11 +866,11 @@ function foldCard(id,icon,title,sub,sum,inner,auto){
       '<span class="cv">'+(open?'▲':'▼')+'</span>'+
     '</button>'+
     (open?'<div class="cbody">'+inner+'</div>':'')+
-    (P.leader?'<div class="lead-sw"><span>團員預設：'+(L.ts===0&&(auto===0||auto===1)?(auto?'展開':'收起')+'（自動）':(L.o?'展開':'收起'))+'</span><span class="sp"></span><button class="sw'+((L.ts===0&&(auto===0||auto===1))?(auto?' on':''):(L.o?' on':''))+'" data-act="cardDef" data-id="'+id+'" aria-label="切換團員預設"></button></div>':'')+
+    (P.leader?'<div class="lead-sw"><span>團員預設：'+(L.ts===0&&(auto===0||auto===1)?(auto?'展開':'收起')+'（自動）':(L.o?'展開':'收起'))+'</span><span class="sp"></span><button class="tgl'+((L.ts===0&&(auto===0||auto===1))?(auto?' on':''):(L.o?' on':''))+'" data-act="cardDef" data-id="'+id+'" aria-label="切換團員預設"></button></div>':'')+
   '</section>';
 }
 function zlab(t){ return '<div class="zlab"><span>'+t+'</span><i></i></div>'; }
-function grp(key,label,cards){ cards=cards.filter(Boolean); if(!cards.length) return ''; return '<div class="grp g-'+key+'">'+zlab(label)+cards.join('')+'</div>'; }
+function grp(key,label,cards){ cards=cards.filter(Boolean); if(!cards.length) return ''; return '<div class="zsec g-'+key+'">'+zlab(label)+cards.join('')+'</div>'; }
 function renderSync(){
   var bar=el('syncBar'), tx=el('syncText'); bar.className='sync';
   var at=Store.lastSync?tzParts(VN).hm:'';
@@ -858,7 +891,12 @@ setInterval(tick,15000);
 
 /* ===== 各分頁 ===== */
 var VIEWS={};
-function tagsHTML(tags){ return '<div class="tags">'+(tags||[]).map(function(t){ var d=TAGS[t]; return d?'<span class="tag">'+ic(d.icon)+esc(d.label)+'</span>':'<span class="tag">'+esc(t)+'</span>'; }).join('')+'</div>'; }
+/* 防呆標籤：優先用領隊自訂的 settings.tags，沒有就退回內建 TAGS */
+function tagList(){ var t=S().settings.tags; if(t&&t.length) return t;
+  return Object.keys(TAGS).map(function(k){ return {id:k,icon:TAGS[k].icon,label:TAGS[k].label}; }); }
+function tagDef(id){ var l=tagList(); for(var i=0;i<l.length;i++) if(l[i].id===id) return l[i]; return TAGS[id]?{id:id,icon:TAGS[id].icon,label:TAGS[id].label}:null; }
+function tagsHTML(tags){ var out=(tags||[]).map(function(t){ var d=tagDef(t); return d?'<span class="tag">'+ic(d.icon)+esc(d.label)+'</span>':''; }).join('');
+  return out?'<div class="tags">'+out+'</div>':''; }
 function memberCard(m,opt){
   opt=opt||{}; if(!m) return '';
   var cls='mc '+(m.bg||'bg-white')+' '+(m.border||'bd-grey')+(opt.sm?' sm':'')+(P.meId===m.id?' me':'')+(opt.pk?' pk':'');
@@ -875,16 +913,19 @@ function airlineBadge(a,lg){ var d=AIRLINES[a]; if(!d) return ''; return '<span 
 /* --- 首頁 --- */
 VIEWS.home=function(){
   var s=S(), b=s.broadcast||{}, st=s.settings, di=dayInfo(), h=[];
-  if(!P.tipDismissed) h.push('<div class="tip-banner">'+ic('info')+'<span>從 LINE 打開請點右上角「⋯」→「用瀏覽器開啟」，再「加入主畫面」，之後一鍵打開。</span><button data-act="tipClose" aria-label="關閉">✕</button></div>');
+  if(showTip()) h.push('<div class="tip-banner">'+ic('info')+'<span>從 LINE 打開請點右上角「⋯」→「用瀏覽器開啟」，再「加入主畫面」，之後一鍵打開。</span><button data-act="tipClose" aria-label="關閉">✕</button></div>');
   /* 置頂即時廣播（永遠展開，不可收合） */
   var tm=(b.time||'');
   h.push('<section class="hero" aria-label="領隊即時廣播">'+
     '<div class="lab">'+ic('megaphone')+'領隊即時廣播'+(b.updatedAt?'<span class="upd">'+esc(b.updatedAt)+' 更新</span>':'')+'</div>'+
-    (tm?'<div class="time">'+esc(tm)+'<small>'+esc(b.label||'集合')+'</small></div>':'<div class="time" style="font-size:1.6rem">集合時間待公布</div>')+
+    (tm?'<div class="time">'+esc(tm)+'<small>'+esc(b.label||'集合')+'</small></div>'
+       :'<div class="time" style="font-size:1.9rem">'+(b.idle?'自由活動':'集合時間待公布')+'</div>')+
     '<div class="count" id="countdown" hidden></div>'+
-    '<div class="loc'+((b.location||'').length>12?' long':'')+'">'+ic('pin')+'<span>'+esc(b.location||'集合地點待公布')+'</span></div>'+
+    (tm||!b.idle
+      ?'<div class="loc'+((b.location||'').length>12?' long':'')+'">'+ic('pin')+'<span>'+esc(b.location||'集合地點待公布')+'</span></div>'
+      :'<div class="loc"><span>目前沒有集合安排，請等領隊下次廣播通知。</span></div>')+
     (b.tip?'<div class="tip">'+ic('thermo')+'<span>'+esc(b.tip)+'</span></div>':'')+
-    (P.leader?'<div class="ctl"><button class="btn" data-act="editBroadcast">'+ic('edit')+'修改廣播</button><button class="btn" data-act="bumpTime" data-min="15">現在＋15分</button><button class="btn" data-act="bumpTime" data-min="30">現在＋30分</button><button class="btn" data-act="tool" data-tool="rollcall">'+ic('clipboard')+'點名</button></div>':'')+
+    (P.leader?'<div class="ctl"><button class="btn" data-act="editBroadcast">'+ic('edit')+'修改廣播</button><button class="btn" data-act="bumpTime" data-min="15">現在＋15分</button><button class="btn" data-act="bumpTime" data-min="30">現在＋30分</button><button class="btn" data-act="tool" data-tool="rollcall">'+ic('clipboard')+'點名</button><button class="btn" data-act="clearBroadcast">'+ic('trash')+'清空</button></div>':'')+
   '</section>');
   /* 我的資訊 */
   var me=getMe();
@@ -936,7 +977,7 @@ function todayCard(di,day){
     '<div class="stack">'+todays.map(function(x){
       return '<div style="display:flex;gap:.6rem;align-items:baseline;'+(x.isCanceled?'opacity:.55;text-decoration:line-through;':'')+'">'+
         '<b style="font-variant-numeric:tabular-nums;min-width:3.2rem;color:'+(x.isCurrent?'var(--terrace)':'var(--indigo)')+'">'+esc(x.time)+'</b>'+
-        '<span style="font-weight:'+(x.isCurrent?'900':'600')+'">'+esc(x.title)+(x.isCurrent?' <span class="chip" style="min-height:1.5rem;padding:.05rem .5rem;font-size:.75rem;background:var(--terrace-2);color:var(--terrace)">進行中</span>':'')+(x.isCanceled?' <span class="muted">取消</span>':'')+'</span></div>';
+        '<span style="font-weight:'+(x.isCurrent?'900':'600')+';flex:1;min-width:0">'+esc(x.title)+(x.isCurrent?' <span class="chip" style="min-height:1.5rem;padding:.05rem .5rem;font-size:.75rem;background:var(--terrace-2);color:var(--terrace)">進行中</span>':'')+(x.isCanceled?' <span class="muted">取消</span>':'')+'</span>'+mapBtn(x.place)+'</div>';
     }).join('')+(todays.length?'':'<div class="muted">這天還沒有行程</div>')+'</div>'+
     '<button class="btn block soft" style="margin-top:.7rem" data-act="tab" data-tab="plan">看完整行程與注意事項 '+ic('arrow')+'</button></section>';
 }
@@ -969,7 +1010,7 @@ function hotelCard(){
   var sum=esc((ho.name||'').replace(/\s*[–—-]\s*.*$/,''))||'待公布';
   var inner='<div style="font-size:1.1rem;font-weight:900;margin-bottom:.5rem">'+esc(ho.name||'')+'</div>'+
     '<dl class="kv"><dt>Wi-Fi</dt><dd>'+esc(ho.wifi||'—')+'</dd><dt>早餐</dt><dd>'+esc(ho.breakfast||'—')+'</dd>'+(ho.leaderRoom?'<dt>領隊房號</dt><dd>'+esc(ho.leaderRoom)+'</dd>':'')+'</dl>'+
-    '<div class="row" style="margin-top:.7rem"><button class="btn warn" data-act="fullTaxi">'+ic('taxi')+'計程車回飯店卡</button>'+(cs[0]?'<a class="btn" href="'+telHref(cs[0].phone)+'">'+ic('phone')+'撥給'+esc(cs[0].name)+'</a>':'')+'</div>';
+    '<div class="row" style="margin-top:.7rem">'+(ho.addrVi||ho.nameVi||ho.name?'<a class="btn" href="'+mapHref((ho.nameVi||ho.name)+' '+(ho.addrVi||''))+'" target="_blank" rel="noopener">'+ic('pin')+'走回飯店</a>':'')+'<button class="btn warn" data-act="fullTaxi">'+ic('taxi')+'計程車回飯店卡</button>'+(cs[0]&&cs[0].phone?'<a class="btn" href="'+telHref(cs[0].phone)+'">'+ic('phone')+'撥給'+esc(cs[0].name)+'</a>':'')+'</div>';
   return foldCard('hotel','bed','目前住宿',esc(ho.nights||''),sum,inner,0);
 }
 
@@ -1025,7 +1066,7 @@ VIEWS.plan=function(){
     h.push('<article class="'+cls+'">'+
       (x.isCurrent&&!x.isCanceled?'<span class="badge">進行中</span>':'')+(x.isCanceled?'<span class="badge off">因天候取消</span>':'')+
       '<div class="t-time">'+esc(x.time)+(x.end?'<span>– '+esc(x.end)+'</span>':'')+'</div>'+
-      '<div><h3 class="t-title">'+esc(x.title)+'</h3><p class="t-desc">'+esc(x.desc||'')+'</p>'+tagsHTML(x.tags)+
+      '<div><h3 class="t-title">'+esc(x.title)+mapBtn(x.place,'lg')+'</h3><p class="t-desc">'+esc(x.desc||'')+'</p>'+tagsHTML(x.tags)+
       (P.planMode==='detail'&&x.detail?'<div class="t-detail">'+esc(x.detail)+'</div>':'')+'</div>'+
       (P.leader?'<div class="lead-ctl">'+
         '<button class="btn sm" data-act="moveItem" data-id="'+x.id+'" data-dir="-1"'+(i===0?' disabled':'')+'>'+ic('up')+'上移</button>'+
@@ -1130,6 +1171,7 @@ function toolMenu(){
       '<button class="btn big" data-act="editBroadcast">'+ic('megaphone')+'<span class="b2">修改廣播<small>時間、地點、叮嚀</small></span></button>'+
       '<button class="btn big" data-act="settings">'+ic('gear')+'<span class="b2">團務設定<small>日期、PIN、電話</small></span></button>'+
       '<button class="btn big" data-act="pickHotel">'+ic('bed')+'<span class="b2">飯店資料<small>入住切換、Wi-Fi</small></span></button>'+
+      '<button class="btn big" data-act="editTags">'+ic('flag')+'<span class="b2">防呆標籤<small>自訂增減、改名</small></span></button>'+
     '</div><div class="row"><button class="btn dng" data-act="resetDemo">'+ic('refresh')+'重置為初始資料</button><button class="btn" data-act="leaderLock">'+ic('lock')+'鎖定領隊模式</button></div>');
   }
   return h.join('');
@@ -1162,7 +1204,7 @@ function phraseFull(p){
     (p.lost?'<div class="fk">LIÊN HỆ · 請幫我打這些電話</div>'+contactLinks():'')+
     '<div class="foot">Xin cảm ơn! 謝謝您的幫忙。</div>';
 }
-function contactLinks(){ return contacts().map(function(c){ return '<a class="ph-big" href="'+telHref(c.phone)+'">'+ic('phone')+'<span>'+esc(fmtPhone(c.phone))+'<small style="display:block;font-size:.85rem;color:#666;font-weight:800">'+esc(c.name)+(c.label?' · '+esc(c.label):'')+'</small></span></a>'; }).join(''); }
+function contactLinks(){ return contacts().map(function(c){ return !c.phone?'':'<a class="ph-big" href="'+telHref(c.phone)+'">'+ic('phone')+'<span>'+esc(fmtPhone(c.phone))+'<small style="display:block;font-size:.85rem;color:#666;font-weight:800">'+esc(c.name)+(c.label?' · '+esc(c.label):'')+'</small></span></a>'; }).join(''); }
 function taxiFull(){
   var st=S().settings, ho=hotel();
   return '<div class="fh"><b>出示給計程車司機</b><button class="btn sm" data-act="fullClose">'+ic('x')+'關閉</button></div>'+
@@ -1176,12 +1218,12 @@ function taxiFull(){
 /* 緊急求助 */
 function toolSOS(){
   var st=S().settings;
-  function row(t,s2,p,cls){ return '<div class="em-row"><div class="t"><b>'+esc(t)+'</b><span>'+esc(s2)+'</span></div>'+(p?'<a class="btn '+(cls||'')+'" href="'+telHref(p)+'">'+ic('phone')+esc(fmtPhone(p))+'</a>':'<span class="muted">'+(P.leader?'<a href="#" data-act="settings">請填入</a>':'尚未填入')+'</span>')+'</div>'; }
+  function row(t,s2,p,cls,ln){ return '<div class="em-row"><div class="t"><b>'+esc(t)+'</b><span>'+esc(s2)+'</span></div>'+(p?'<a class="btn '+(cls||'')+'" href="'+telHref(p)+'">'+ic('phone')+esc(fmtPhone(p))+'</a>':(ln?'':'<span class="muted">'+(P.leader?'<a href="#" data-act="settings">請填入</a>':'尚未填入')+'</span>'))+(ln?'<a class="btn line" href="'+esc(ln)+'" target="_blank" rel="noopener">'+ic('chat')+'加 LINE</a>':'')+'</div>'; }
   var lostIdx=PHRASES.findIndex(function(p){return p.lost;});
   return backBar('緊急求助')+
     '<button class="btn big warn" data-act="phrase" data-i="'+lostIdx+'">'+ic('alert')+'<span class="b2">我走散了：出示這張卡<small>越文請路人幫忙打電話</small></span></button>'+
     '<h2 class="sec">'+ic('phone')+'緊急聯絡人</h2><div class="stack">'+
-    contacts().map(function(c){ return row(c.name,c.label||'',c.phone,'pri'); }).join('')+
+    contacts().map(function(c){ return row(c.name,c.label||'',c.phone,'pri',c.line||''); }).join('')+
     (contacts().length?'':'<div class="card muted">尚未設定聯絡人'+(P.leader?'，請到團務設定填入':'')+'</div>')+
     '</div><h2 class="sec">'+ic('alert')+'越南當地與官方專線</h2><div class="stack">'+
     row('越南報警','Công an · 24 小時','113')+
@@ -1262,11 +1304,36 @@ function sheetMorning(){
 function sheetItem(id){
   var x=id?items().filter(function(i){return i.id===id;})[0]:{day:P.planDay||1,time:'',title:'',desc:'',detail:'',tags:[]};
   if(!x) return;
-  var tagsHtml='<div class="chips">'+Object.keys(TAGS).map(function(k){ return '<button type="button" class="chip pick'+((x.tags||[]).indexOf(k)>=0?' on':'')+'" data-act="pickMulti" data-group="tags" data-val="'+k+'">'+ic(TAGS[k].icon)+esc(TAGS[k].label)+'</button>'; }).join('')+'</div><input type="hidden" name="tags" value="'+esc((x.tags||[]).join(','))+'">';
+  var tagsHtml='<div class="chips">'+tagList().map(function(d){ return '<button type="button" class="chip pick'+((x.tags||[]).indexOf(d.id)>=0?' on':'')+'" data-act="pickMulti" data-group="tags" data-val="'+d.id+'">'+ic(d.icon)+esc(d.label)+'</button>'; }).join('')+'</div><input type="hidden" name="tags" value="'+esc((x.tags||[]).join(','))+'">'+
+    '<button type="button" class="btn sm" style="margin-top:.5rem" data-act="editTags">'+ic('gear')+'管理標籤（增減／改名）</button>';
   openSheet({title:id?'編輯行程':'新增行程',focus:true,body:
     '<div class="grid2">'+fld('第幾天','<select class="in" name="day">'+Array.apply(null,{length:S().settings.days||5}).map(function(_,i){return '<option value="'+(i+1)+'"'+(x.day===i+1?' selected':'')+'>第 '+(i+1)+' 天</option>';}).join('')+'</select>')+fld('時間',timeField('time',x.time))+'</div>'+
-    fld('景點 / 活動名稱（建議 11 字以內）',inp('title',x.title))+fld('一句話說明',inp('desc',x.desc))+fld('防呆標籤',tagsHtml)+fld('詳細介紹（詳細模式才顯示）',ta('detail',x.detail)),
+    fld('景點 / 活動名稱（建議 11 字以內）',inp('title',x.title))+fld('一句話說明',inp('desc',x.desc))+fld('Google 地圖地點（留空＝不顯示地圖按鈕）',inp('place',x.place||'','text','placeholder="例：Sa Pa Stone Church"'))+fld('防呆標籤',tagsHtml)+fld('詳細介紹（詳細模式才顯示）',ta('detail',x.detail)),
     foot:footBtns('saveItem',id?'<button class="btn dng" data-act="delItem">刪除</button>':'')});
+  SHEET.id=id;
+}
+/* --- 防呆標籤管理（領隊） --- */
+function sheetTags(){
+  var list=tagList();
+  openSheet({title:'防呆標籤',body:
+    '<div class="muted">這些標籤會出現在每一段行程下方，提醒長輩帶什麼、注意什麼。改了全團手機同步更新。</div>'+
+    '<div class="it-wrap" style="margin-top:.6rem">'+list.map(function(d,i){
+      return '<div class="it-row"><div class="tagrow">'+ic(d.icon)+'<b>'+esc(d.label)+'</b></div>'+
+        '<button class="btn sm" data-act="moveTag" data-id="'+d.id+'" data-dir="-1"'+(i===0?' disabled':'')+' aria-label="上移">'+ic('up')+'</button>'+
+        '<button class="btn sm" data-act="moveTag" data-id="'+d.id+'" data-dir="1"'+(i===list.length-1?' disabled':'')+' aria-label="下移">'+ic('down')+'</button>'+
+        '<button class="btn sm edit" data-act="editTag" data-id="'+d.id+'" aria-label="編輯">'+ic('edit')+'</button></div>';
+    }).join('')+'</div>'+
+    '<button class="btn block" style="margin-top:.7rem" data-act="editTag" data-id="">'+ic('plus')+'新增一個標籤</button>'});
+}
+function sheetTagEdit(id){
+  var list=tagList(), d=id?tagDef(id):{id:'',icon:'coat',label:''};
+  if(!d) return;
+  var used=id?items().filter(function(x){return (x.tags||[]).indexOf(id)>=0;}).length:0;
+  openSheet({title:id?'編輯標籤':'新增標籤',focus:true,body:
+    fld('標籤文字（建議 4 字以內，不換行）',inp('label',d.label,'text','maxlength="8" placeholder="例：帶雨傘"'))+
+    fld('圖示',swatches('icon',TAG_ICONS.map(function(k){return [k,k];}),d.icon,function(v){return ic(v);}))+
+    (id?'<div class="muted">目前有 '+used+' 段行程使用這個標籤；刪除會一併從那些行程移除。</div>':''),
+    foot:footBtns('saveTag',id?'<button class="btn dng" data-act="delTag">刪除</button>':'')});
   SHEET.id=id;
 }
 function sheetMember(id){
@@ -1330,7 +1397,7 @@ function sheetMoveMember(id){
   openSheet({title:'移動：'+esc(m.name),body:'<div class="muted">'+esc(sc.name)+'</div><div class="stack">'+sc.names.slice(0,sc.count).map(function(n,i){ return '<button class="btn'+(sc.assign&&sc.assign[id]===i?' pri':'')+'" data-act="setGroup" data-id="'+id+'" data-g="'+i+'">'+esc(n||('第 '+(i+1)+' 組'))+'</button>'; }).join('')+'<button class="btn dng" data-act="setGroup" data-id="'+id+'" data-g="-1">移出分組</button></div>'});
 }
 function sheetSettings(){
-  var st=S().settings, cs=(st.contacts&&st.contacts.length?st.contacts:contacts()).slice(); while(cs.length<4) cs.push({name:'',label:'',phone:''});
+  var st=S().settings, cs=(st.contacts&&st.contacts.length?st.contacts:contacts()).slice(); while(cs.length<4) cs.push({name:'',label:'',phone:'',line:''});
   var f=st.flights||{}; f.eva=f.eva||{}; f.ci=f.ci||{};
   openSheet({title:'團務設定',focus:true,body:
     fld('團名',inp('tripName',st.tripName))+
@@ -1340,7 +1407,7 @@ function sheetSettings(){
     '<h2 class="sec">'+ic('plane')+'航班（起飛時間）</h2>'+
     '<div class="grid2">'+fld('長榮 去程 桃園起飛',timeField('eva_out',f.eva.out))+fld('長榮 回程 河內起飛',timeField('eva_back',f.eva.back))+fld('華航 去程 桃園起飛',timeField('ci_out',f.ci.out))+fld('華航 回程 河內起飛',timeField('ci_back',f.ci.back))+'</div>'+fld('團體報到說明（顯示在航班卡下方）',ta('flight_note',f.note))+
     '<h2 class="sec">'+ic('phone')+'緊急聯絡人（留白＝不顯示）</h2>'+
-    cs.map(function(c,i){ return '<div class="f" style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem">'+inp('c_name_'+i,c.name,'text','placeholder="姓名"')+inp('c_label_'+i,c.label,'text','placeholder="例：越南電話"')+'<div style="grid-column:1/-1">'+inp('c_phone_'+i,c.phone,'tel','placeholder="+84 或 +886 開頭"')+'</div></div>'; }).join('')+
+    cs.map(function(c,i){ return '<div class="f" style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem">'+inp('c_name_'+i,c.name,'text','placeholder="姓名"')+inp('c_label_'+i,c.label,'text','placeholder="例：越南電話"')+'<div style="grid-column:1/-1">'+inp('c_phone_'+i,c.phone,'tel','placeholder="+84 或 +886 開頭"')+'</div><div style="grid-column:1/-1">'+inp('c_line_'+i,c.line,'url','placeholder="LINE 加好友網址（選填）"')+'</div></div>'; }).join('')+
     fld('駐越南台北經濟文化辦事處 急難救助電話',inp('embassyPhone',st.embassyPhone,'tel','placeholder="出發前請至外交部領事事務局網站確認"'))+
     '<h2 class="sec">'+ic('clipboard')+'備份與還原</h2><div class="row"><button type="button" class="btn" data-act="exportData">'+ic('down')+'匯出備份檔</button><label class="btn" style="cursor:pointer">'+ic('up')+'匯入備份檔<input type="file" id="importFile" accept="application/json,.json" hidden></label></div><div class="muted">匯出會下載一個 JSON 檔（含名單、行程、電話）；匯入會覆蓋並同步給全團。</div>',
     foot:footBtns('saveSettings')});
@@ -1404,8 +1471,15 @@ var ACT={
   setAirline:function(t){ var m=member(t.getAttribute('data-id')); if(!m) return; m.airline=t.getAttribute('data-v')||''; closeSheet(); Store.save('members'); toast(m.name+'：'+(AIRLINES[m.airline]?AIRLINES[m.airline].label:'未設定')); },
   delMember:function(){ var id=SHEET.id; S().members.items=members().filter(function(m){return m.id!==id;}); closeSheet(); Store.save('members'); toast('已移出名單'); },
   editBroadcast:function(){ sheetBroadcast(); },
-  saveBroadcast:function(){ var b=S().broadcast; b.time=sv('time'); b.label=sv('label')||'集合'; b.location=sv('location'); b.tip=sv('tip'); b.updatedAt=stamp(); closeSheet(); Store.save('broadcast'); toast('廣播已更新，全團手機會同步'); },
-  bumpTime:function(t){ var b=S().broadcast; b.time=nowPlus(Number(t.getAttribute('data-min'))); b.updatedAt=stamp(); Store.save('broadcast'); toast('集合時間改為 '+b.time); },
+  saveBroadcast:function(){ var b=S().broadcast; b.time=sv('time'); b.idle=false; b.label=sv('label')||'集合'; b.location=sv('location'); b.tip=sv('tip'); b.updatedAt=stamp(); closeSheet(); Store.save('broadcast'); toast('廣播已更新，全團手機會同步'); },
+  clearBroadcast:function(){ openSheet({title:'清空目前廣播？',body:
+    '<div class="muted">清空後，首頁廣播卡會改成顯示：</div>'+
+    '<div class="hero" style="margin-top:.6rem"><div class="lab">'+ic('megaphone')+'領隊即時廣播</div><div class="time" style="font-size:1.9rem">自由活動</div><div class="loc"><span>目前沒有集合安排，請等領隊下次廣播通知。</span></div></div>'+
+    '<div class="muted" style="margin-top:.6rem">下一次設定集合時間時會自動恢復正常顯示。</div>',
+    foot:'<button class="btn" data-act="sheetClose">取消</button><button class="btn warn" data-act="clearBroadcastGo">'+ic('trash')+'確定清空</button>'}); },
+  clearBroadcastGo:function(){ var b=S().broadcast; b.time=''; b.label=''; b.location=''; b.tip=''; b.idle=true; b.updatedAt=stamp();
+    closeSheet(); Store.save('broadcast'); toast('已清空，現在顯示「自由活動」'); },
+  bumpTime:function(t){ var b=S().broadcast; b.time=nowPlus(Number(t.getAttribute('data-min'))); b.idle=false; b.updatedAt=stamp(); Store.save('broadcast'); toast('集合時間改為 '+b.time); },
   chipSet:function(t){ var e=el('sheetRoot').querySelector('[name="'+t.getAttribute('data-target')+'"]'); if(e){ e.value=t.getAttribute('data-val'); e.focus(); } },
   chipTimeFromNow:function(t){ setTimeField('time',nowPlus(Number(t.getAttribute('data-min')))); },
   pick:function(t){ var g=t.parentNode; g.querySelectorAll('button').forEach(function(b){b.classList.remove('on');}); t.classList.add('on'); var h=el('sheetRoot').querySelector('input[name="'+g.getAttribute('data-group')+'"]'); if(h) h.value=t.getAttribute('data-val'); },
@@ -1416,8 +1490,27 @@ var ACT={
   setCurrent:function(t){ var id=t.getAttribute('data-id'); var cur=null; items().forEach(function(x){ x.isCurrent=(x.id===id&&!x.isCurrent)?true:false; if(x.isCurrent) cur=x; }); if(cur){ var b=S().broadcast; b.location=cur.title; b.updatedAt=stamp(); Store.save('broadcast'); } Store.save('itinerary'); toast(cur?'已設為當前站，首頁地點已連動':'已取消當前站'); },
   cancelItem:function(t){ var id=t.getAttribute('data-id'); items().forEach(function(x){ if(x.id===id){ x.isCanceled=!x.isCanceled; if(x.isCanceled) x.isCurrent=false; } }); Store.save('itinerary'); },
   editItem:function(t){ sheetItem(t.getAttribute('data-id')||''); },
+  editTags:function(){ sheetTags(); },
+  editTag:function(t){ sheetTagEdit(t.getAttribute('data-id')||''); },
+  saveTag:function(){ var label=sv('label'); if(!label){ toast('請輸入標籤文字'); return; }
+    var st=S().settings; if(!st.tags||!st.tags.length) st.tags=tagList().slice();
+    var d=SHEET.id?st.tags.filter(function(x){return x.id===SHEET.id;})[0]:null;
+    if(!d){ d={id:uid()}; st.tags.push(d); }
+    d.label=label; d.icon=sv('icon')||'coat';
+    closeSheet(); Store.save('settings'); sheetTags(); toast('標籤已儲存'); },
+  delTag:function(){ var id=SHEET.id, st=S().settings;
+    if(!st.tags||!st.tags.length) st.tags=tagList().slice();
+    st.tags=st.tags.filter(function(x){return x.id!==id;});
+    var touched=false; items().forEach(function(x){ if((x.tags||[]).indexOf(id)>=0){ x.tags=x.tags.filter(function(t){return t!==id;}); touched=true; } });
+    closeSheet(); Store.save('settings'); if(touched) Store.save('itinerary'); sheetTags(); toast('已刪除標籤'); },
+  moveTag:function(t){ var id=t.getAttribute('data-id'), dir=Number(t.getAttribute('data-dir')), st=S().settings;
+    if(!st.tags||!st.tags.length) st.tags=tagList().slice();
+    var i=-1; st.tags.forEach(function(x,k){ if(x.id===id) i=k; }); var j=i+dir;
+    if(i<0||j<0||j>=st.tags.length) return;
+    var tmp=st.tags[i]; st.tags[i]=st.tags[j]; st.tags[j]=tmp;
+    Store.save('settings'); sheetTags(); },
   saveItem:function(){ var title=sv('title'); if(!title){ toast('請輸入名稱'); return; } var all=items(); var x=SHEET.id?all.filter(function(i){return i.id===SHEET.id;})[0]:null; if(!x){ x={id:uid(),tags:[]}; all.push(x); }
-    x.day=Number(sv('day'))||1; x.time=sv('time'); x.title=title; x.desc=sv('desc'); x.detail=sv('detail'); x.tags=sv('tags')?sv('tags').split(','):[]; all.sort(function(a,b){ return a.day-b.day; }); closeSheet(); P.planDay=x.day; Store.save('itinerary'); toast('行程已儲存'); },
+    x.day=Number(sv('day'))||1; x.time=sv('time'); x.title=title; x.desc=sv('desc'); x.place=sv('place'); x.detail=sv('detail'); x.tags=sv('tags')?sv('tags').split(','):[]; all.sort(function(a,b){ return a.day-b.day; }); closeSheet(); P.planDay=x.day; Store.save('itinerary'); toast('行程已儲存'); },
   delItem:function(){ var id=SHEET.id; S().itinerary.items=items().filter(function(x){return x.id!==id;}); closeSheet(); Store.save('itinerary'); toast('已刪除'); },
   editRooms:function(){ sheetRooms(); },
   saveRooms:function(){ var map={}; el('sheetRoot').querySelectorAll('input[data-old]').forEach(function(i){ if(i.value.trim()) map[i.getAttribute('data-old')]=i.value.trim(); }); members().forEach(function(m){ var k=m.room||''; if(map[k]!==undefined) m.room=map[k]; }); closeSheet(); Store.save('members'); toast('房號已更新'); },
@@ -1441,7 +1534,7 @@ var ACT={
   settings:function(){ sheetSettings(); },
   saveSettings:function(){ var st=S().settings; st.tripName=sv('tripName')||st.tripName; st.startDate=sv('startDate'); st.days=Math.max(1,Number(sv('days'))||5); st.dayOverride=Number(sv('dayOverride'))||0; st.pin=sv('pin')||'8888'; st.vndPerTwd=Number(sv('vndPerTwd'))||820;
     st.flights={eva:{out:sv('eva_out'),back:sv('eva_back')},ci:{out:sv('ci_out'),back:sv('ci_back')},note:sv('flight_note')};
-    var cs=[]; for(var i=0;i<(SHEET.nContacts||0);i++){ var ph=sv('c_phone_'+i); if(ph) cs.push({name:sv('c_name_'+i)||'聯絡人',label:sv('c_label_'+i),phone:ph}); } st.contacts=cs; delete st.leaderName; delete st.leaderPhone; delete st.guideName; delete st.guidePhone;
+    var cs=[]; for(var i=0;i<(SHEET.nContacts||0);i++){ var ph=sv('c_phone_'+i), ln=sv('c_line_'+i); if(ph||ln) cs.push({name:sv('c_name_'+i)||'聯絡人',label:sv('c_label_'+i),phone:ph,line:ln}); } st.contacts=cs; delete st.leaderName; delete st.leaderPhone; delete st.guideName; delete st.guidePhone;
     st.embassyPhone=sv('embassyPhone'); P.planDay=0; closeSheet(); Store.save('settings'); toast('設定已儲存'); },
   themeToggle:function(){ P.theme = (!P.theme) ? 'light' : (P.theme==='light' ? 'dark' : ''); savePrefs(); render();
     toast(!P.theme?'主題：跟隨系統設定':(P.theme==='dark'?'主題：固定深色':'主題：固定淺色')); },
@@ -1492,6 +1585,27 @@ window.addEventListener('online',renderSync); window.addEventListener('offline',
 Store.init();
 render();
 Store.connect();
+
+/* ===== 鎖定畫面縮放 =====
+   長輩連按兩下或兩指誤觸常把畫面放大後不會還原。字級請用右上角「AA」三段調整。
+   viewport meta 擋住 Android；iOS Safari 會忽略 meta，所以另外攔 gesture 事件與雙擊。 */
+(function(){
+  ['gesturestart','gesturechange','gestureend'].forEach(function(ev){
+    document.addEventListener(ev,function(e){ e.preventDefault(); },{passive:false});
+  });
+  /* 雙擊放大：只有「同一個位置、350ms 內的第二下」才擋，
+     避免長輩快速連點兩個相鄰按鈕時第二下被吃掉 */
+  var lastT=0,lastX=0,lastY=0;
+  document.addEventListener('touchend',function(e){
+    var t=(e.changedTouches&&e.changedTouches[0])||null; if(!t) return;
+    var now=Date.now();
+    if(now-lastT<=350 && Math.abs(t.clientX-lastX)<30 && Math.abs(t.clientY-lastY)<30) e.preventDefault();
+    lastT=now; lastX=t.clientX; lastY=t.clientY;
+  },{passive:false});
+  document.addEventListener('touchmove',function(e){
+    if(e.touches&&e.touches.length>1) e.preventDefault();   /* 兩指縮放 */
+  },{passive:false});
+})();
 /* PWA：離線快取（只在 https 且非預覽環境註冊） */
 if('serviceWorker' in navigator && location.protocol==='https:' && !(window.claude&&window.claude.use)){
   window.addEventListener('load',function(){ navigator.serviceWorker.register('./sw.js').catch(function(){}); });
