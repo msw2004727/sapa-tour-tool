@@ -300,6 +300,12 @@ dl.kv2 dd:last-child{border-bottom:0;padding-bottom:0;margin-bottom:0}
 .wifi-card .wf-v{flex:1;min-width:0;font-weight:900;font-size:1.05rem;word-break:break-all;font-variant-numeric:tabular-nums}
 .wifi-card .wf-row .btn{flex-shrink:0}
 .wifi-card .wf-note{margin-top:.5rem;color:var(--ink-3);font-weight:700;font-size:.9rem;line-height:1.45}
+.wifi-card .wf-note.ed{display:flex;align-items:flex-start;gap:.35rem;width:100%;text-align:left;background:none;border:1px dashed var(--line);border-radius:10px;padding:.4rem .5rem;font:inherit;color:var(--ink-3);font-weight:700;font-size:.9rem;cursor:pointer}
+.wifi-card .wf-note.ed svg.i{flex-shrink:0;margin-top:.1rem;color:var(--indigo)}
+.air-note{display:flex;align-items:flex-start;gap:.5rem}
+.air-note svg.i{flex-shrink:0;margin-top:.15rem;color:var(--indigo)}
+.air-note>span{flex:1;min-width:0}
+.air-note .btn{flex-shrink:0;align-self:center}
 .warn-box{background:var(--alert-2);border-left:4px solid var(--alert);border-radius:10px;padding:.6rem .75rem;font-weight:800;line-height:1.45;font-size:.95rem;display:flex;gap:.45rem;align-items:flex-start}
 .warn-box svg.i{color:var(--alert);margin-top:.15rem}
 /* phrase list */
@@ -618,8 +624,8 @@ var DEFAULTS = {
     embassyPhone:'',
     currentHotelId:'sapa',
     hotels:[
-      {id:'sapa',name:"沙壩 Pao's Sapa Leisure Hotel",nameVi:"Khách sạn Pao's Sapa Leisure",addrVi:'Tổ dân phố Cầu Mây 1, Sa Pa, Lào Cai 31752, Việt Nam',phone:'',wifi:'入住時公布',wifiPass:'入住時公布',breakfast:'06:00–09:00',leaderRoom:'',nights:'第 1、2、3 晚'},
-      {id:'train',name:'夜臥火車 Chapa Express',nameVi:'Tàu Chapa Express · Ga Lào Cai',addrVi:'Ga Lào Cai, Phố Mới, TP. Lào Cai, Lào Cai',phone:'',wifi:'車上沒有 Wi-Fi',wifiPass:'',breakfast:'車上不供餐，抵達河內後用早餐',leaderRoom:'',nights:'第 4 晚（老街 → 河內）'}
+      {id:'sapa',name:"沙壩 Pao's Sapa Leisure Hotel",nameVi:"Khách sạn Pao's Sapa Leisure",addrVi:'Tổ dân phố Cầu Mây 1, Sa Pa, Lào Cai 31752, Việt Nam',phone:'',wifi:'入住時公布',wifiPass:'入住時公布',wifiNote:'連不上請到櫃台問，或跟領隊說。',breakfast:'06:00–09:00',leaderRoom:'',nights:'第 1、2、3 晚'},
+      {id:'train',name:'夜臥火車 Chapa Express',nameVi:'Tàu Chapa Express · Ga Lào Cai',addrVi:'Ga Lào Cai, Phố Mới, TP. Lào Cai, Lào Cai',phone:'',wifi:'車上沒有 Wi-Fi',wifiPass:'',wifiNote:'火車上沒有 Wi-Fi，請先在飯店把要看的東西下載好。',breakfast:'車上不供餐，抵達河內後用早餐',leaderRoom:'',nights:'第 4 晚（老街 → 河內）'}
     ],
     morning:{wake:'',breakfast:'',luggage:'',depart:'',note:'領隊每晚會在這裡公布明早時間。'}
   },
@@ -1326,11 +1332,12 @@ VIEWS.plan=function(){
 /* 飯店 Wi-Fi（領隊可編輯） */
 function wifiCard(ho){
   var n=(ho.wifi||'').trim(), pw=(ho.wifiPass||'').trim();
+  var nt=(ho.wifiNote===undefined||ho.wifiNote===null?'連不上請到櫃台問，或跟領隊說。':ho.wifiNote).trim();
   return '<section class="wifi-card">'+
     '<div class="wf-h">'+ic('wifi')+'<b>飯店 Wi-Fi</b>'+(P.leader?'<span class="sp"></span><button class="btn sm" data-act="editHotel" data-id="'+esc(ho.id||'')+'">'+ic('edit')+'編輯</button>':'')+'</div>'+
     '<div class="wf-row"><span class="wf-k">名稱</span><span class="wf-v">'+(n?esc(n):'待公布')+'</span>'+(n?'<button class="btn sm" data-act="copyTxt" data-v="'+esc(n)+'">複製</button>':'')+'</div>'+
     '<div class="wf-row"><span class="wf-k">密碼</span><span class="wf-v">'+(pw?esc(pw):'待公布')+'</span>'+(pw?'<button class="btn sm" data-act="copyTxt" data-v="'+esc(pw)+'">複製</button>':'')+'</div>'+
-    '<div class="wf-note">連不上請到櫃台問，或跟領隊說。</div>'+
+    (nt?'<div class="wf-note'+(P.leader?' ed':'')+'"'+(P.leader?' data-act="editHotel" data-id="'+esc(ho.id||'')+'"':'')+'>'+esc(nt)+(P.leader?ic('edit'):'')+'</div>':'')+
   '</section>';
 }
 
@@ -1358,6 +1365,9 @@ VIEWS.rooms=function(){
   return h.join('');
 };
 
+var AIR_NOTE_DEF='提醒：桃園機場長榮多在第二航廈、華航多在第一航廈，出發前請再對一次航班上的航廈；兩航廈之間有免費電車，約 5 分鐘。';
+function airNote(){ var v=S().settings.airNote; return (v===undefined||v===null)?AIR_NOTE_DEF:v; }
+
 /* 航空公司分流：不是隨機分組，而是每個人固定的屬性；徽章會顯示在所有卡片上 */
 function airlineView(){
   var me=getMe(), cols=[['eva','長榮航空'],['ci','中華航空'],['','尚未設定']], h=[];
@@ -1368,7 +1378,8 @@ function airlineView(){
     var mine=me&&list.some(function(m){return m.id===me.id;});
     h.push('<section class="grp'+(mine?' me-grp':'')+'"><h3>'+(c[0]?airlineBadge(c[0]):'')+esc(c[1])+'<span class="n">'+list.length+' 人</span></h3><div class="gm">'+list.map(function(m){return memberCard(m,{sm:true,pk:P.leader,act:P.leader?'setAirlineAsk':'memberTap'});}).join('')+(list.length?'':'<div class="muted">（尚無）</div>')+'</div></section>');
   });
-  h.push('<div class="card muted" style="line-height:1.5">✈️ 提醒：桃園機場<b>長榮多在第二航廈、華航多在第一航廈</b>，出發前請再對一次航班上的航廈；兩航廈之間有免費電車，約 5 分鐘。</div>');
+  var an=airNote();
+  if(an||P.leader) h.push('<div class="card muted air-note" style="line-height:1.5">'+ic('plane')+'<span>'+(an?esc(an):'（提醒已留白，團員看不到這段）')+'</span>'+(P.leader?'<button class="btn sm" data-act="editAirNote">'+ic('edit')+'編輯</button>':'')+'</div>');
   return h.join('');
 }
 function memberListHTML(){
@@ -1707,7 +1718,7 @@ function sheetMemberView(id){
   var m=member(id); if(!m) return;
   var st=S().settings;
   openSheet({title:'團員',body:memberCard(m,{right:'groups',tag:'div',act:'noop'})+
-    '<dl class="kv"><dt>航空公司</dt><dd>'+(AIRLINES[m.airline]?airlineBadge(m.airline)+' '+(m.airline==='eva'?'長榮航空 · 桃園第二航廈':'中華航空 · 桃園第一航廈'):'尚未設定')+'</dd><dt>房號</dt><dd>'+esc(m.room||'待分配')+'</dd><dt>用餐</dt><dd>'+esc(groupNameOf('meal',m.id)||'未分')+'</dd><dt>接駁車</dt><dd>'+esc(groupNameOf('shuttle',m.id)||'未分')+'</dd>'+(m.remark?'<dt>備註</dt><dd>'+esc(m.remark)+'</dd>':'')+'</dl>'+
+    '<dl class="kv"><dt>航空公司</dt><dd>'+(AIRLINES[m.airline]?airlineBadge(m.airline)+' '+(m.airline==='eva'?'長榮航空 · 桃園第二航廈':'中華航空 · 桃園第一航廈'):'尚未設定')+'</dd><dt>房號</dt><dd>'+esc(m.room||'待分配')+'</dd>'+(m.remark?'<dt>備註</dt><dd>'+esc(m.remark)+'</dd>':'')+'</dl>'+
     '<div class="stack">'+(P.meId===m.id?'<button class="btn" data-act="setMe" data-id="">取消「這是我」</button>':'<button class="btn pri" data-act="setMe" data-id="'+m.id+'">'+ic('star')+'這是我</button>')+(m.phone?'<a class="btn" href="'+telHref(m.phone)+'">'+ic('phone')+'撥打電話</a>':'')+'</div>'});
 }
 function sheetPickMe(){
@@ -1727,11 +1738,12 @@ function sheetHotel(){
     '<div class="stack">'+(st.hotels||[]).map(function(h){ return '<button class="btn" data-act="editHotel" data-id="'+h.id+'">'+ic('edit')+'編輯：'+esc(h.name)+'</button>'; }).join('')+'<button class="btn" data-act="editHotel" data-id="">'+ic('plus')+'新增飯店</button></div>'});
 }
 function sheetHotelEdit(id){
-  var st=S().settings, h=(st.hotels||[]).filter(function(x){return x.id===id;})[0]||{name:'',nameVi:'',addrVi:'',phone:'',wifi:'',wifiPass:'',breakfast:'',leaderRoom:'',nights:''};
+  var st=S().settings, h=(st.hotels||[]).filter(function(x){return x.id===id;})[0]||{name:'',nameVi:'',addrVi:'',phone:'',wifi:'',wifiPass:'',wifiNote:'',breakfast:'',leaderRoom:'',nights:''};
   openSheet({title:id?'編輯飯店':'新增飯店',focus:true,body:
     fld('飯店名稱（中文＋英文）',inp('name',h.name))+fld('越文全名（給司機看）',inp('nameVi',h.nameVi))+fld('越文地址',inp('addrVi',h.addrVi))+
     '<div class="grid2">'+fld('飯店電話',inp('phone',h.phone,'tel'))+fld('領隊房號',inp('leaderRoom',h.leaderRoom))+'</div>'+
     '<div class="grid2">'+fld('Wi-Fi 名稱',inp('wifi',h.wifi,'text','placeholder="例：PaosSapa-Guest"'))+fld('Wi-Fi 密碼',inp('wifiPass',h.wifiPass,'text','placeholder="例：sapa2026"'))+'</div>'+
+    fld('Wi-Fi 補充說明（留白就不顯示）',inp('wifiNote',(h.wifiNote===undefined||h.wifiNote===null?'連不上請到櫃台問，或跟領隊說。':h.wifiNote),'text','placeholder="例：連不上請到櫃台問"'))+
     fld('入住晚數',inp('nights',h.nights,'text','placeholder="例：第 2、3 晚"'))+
     fld('早餐時間／地點',inp('breakfast',h.breakfast)),
     foot:footBtns('saveHotel',id?'<button class="btn dng" data-act="delHotel">刪除</button>':'')});
@@ -1876,11 +1888,16 @@ var ACT={
     try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(v); toast('已複製：'+v); return; } }catch(e){}
     try{ var ta=document.createElement('textarea'); ta.value=v; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); toast('已複製：'+v); }
     catch(e){ toast('請長按文字手動複製'); } },
+  editAirNote:function(){ var st=S().settings;
+    openSheet({title:'編輯機場提醒',focus:true,
+      body:'<div class="muted">這段字會顯示在「分組 → 航空公司」最下面。留白就整段不顯示。</div>'+fld('提醒內容',ta('airNote',airNote())),
+      foot:footBtns('saveAirNote')}); },
+  saveAirNote:function(){ S().settings.airNote=sv('airNote'); closeSheet(); Store.save('settings'); toast('提醒已更新'); },
   pickHotel:function(){ sheetHotel(); },
   setHotel:function(t){ S().settings.currentHotelId=t.getAttribute('data-id'); closeSheet(); Store.save('settings'); toast('已切換入住飯店'); },
   editHotel:function(t){ sheetHotelEdit(t.getAttribute('data-id')||''); },
   saveHotel:function(){ var st=S().settings; st.hotels=st.hotels||[]; var h=SHEET.id?st.hotels.filter(function(x){return x.id===SHEET.id;})[0]:null; if(!h){ h={id:uid()}; st.hotels.push(h); if(!st.currentHotelId) st.currentHotelId=h.id; }
-    ['name','nameVi','addrVi','phone','leaderRoom','wifi','wifiPass','nights','breakfast'].forEach(function(k){ h[k]=sv(k); }); closeSheet(); Store.save('settings'); toast('飯店資料已儲存'); },
+    ['name','nameVi','addrVi','phone','leaderRoom','wifi','wifiPass','wifiNote','nights','breakfast'].forEach(function(k){ h[k]=sv(k); }); closeSheet(); Store.save('settings'); toast('飯店資料已儲存'); },
   delHotel:function(){ var st=S().settings; st.hotels=(st.hotels||[]).filter(function(x){return x.id!==SHEET.id;}); if(st.currentHotelId===SHEET.id) st.currentHotelId=(st.hotels[0]||{}).id||''; closeSheet(); Store.save('settings'); },
   shuffle:function(){ var sc=scenario(); if(!sc) return; var units={}, list=[]; members().forEach(function(m){ var k=m.room||('_'+m.id); (units[k]=units[k]||[]).push(m.id); }); Object.keys(units).forEach(function(k){list.push(units[k]);});
     for(var i=list.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var tmp=list[i]; list[i]=list[j]; list[j]=tmp; }
