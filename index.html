@@ -555,7 +555,7 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
 <script src="./config.js"></script>
 <script>
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '2.7';
+var APP_VERSION = '2.8';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -1024,9 +1024,11 @@ function isInLine(){ try{ return /\bLine\//i.test(navigator.userAgent||''); }cat
 function isStandalone(){ try{ return (window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true; }catch(e){ return false; } }
 /* 顯示「加入主畫面」提示的條件：從 LINE 開啟，或這支手機第一次打開 */
 function showTip(){ if(P.tipDismissed) return false; if(isStandalone()) return false; return isInLine()||FIRST_VISIT; }
-/* Google 地圖路線（預設步行）；destination 用地名字串，起點交給手機定位 */
-function mapHref(place,mode){ return 'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(place)+'&travelmode='+(mode||'walking'); }
-function mapBtn(place,cls){ if(!place) return ''; return '<a class="map-btn'+(cls?' '+cls:'')+'" href="'+mapHref(place)+'" target="_blank" rel="noopener" aria-label="用 Google 地圖走到「'+esc(place)+'」" title="Google 地圖步行路線">'+ic('pin')+'</a>'; }
+/* 地圖連結：預設只做「搜尋這個地點」，開起來就是地圖上的位置，要不要導航、用什麼交通方式由使用者自己決定 */
+function mapHref(place){ return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(place); }
+/* 需要直接給路線時才用這個（目前只有住宿卡的「走回飯店」） */
+function mapDirHref(place,mode){ return 'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(place)+'&travelmode='+(mode||'walking'); }
+function mapBtn(place,cls){ if(!place) return ''; return '<a class="map-btn'+(cls?' '+cls:'')+'" href="'+mapHref(place)+'" target="_blank" rel="noopener" aria-label="在 Google 地圖上看「'+esc(place)+'」的位置" title="Google 地圖看位置">'+ic('pin')+'</a>'; }
 function fmtPhone(p){ return String(p||'').replace(/^(\+886|\+84|\+\d{1,3})(\d{3})(\d{3})(\d+)$/,'$1 $2 $3 $4'); }
 
 /* ===== 本機偏好（每支手機各自保存；LINE 內建瀏覽器可能清空，所以全部都是可有可無的便利設定） ===== */
@@ -1296,7 +1298,7 @@ function tagList(){ var t=S().settings.tags; if(t&&t.length) return t;
   return Object.keys(TAGS).map(function(k){ return {id:k,icon:TAGS[k].icon,label:TAGS[k].label}; }); }
 function tagDef(id){ var l=tagList(); for(var i=0;i<l.length;i++) if(l[i].id===id) return l[i]; return TAGS[id]?{id:id,icon:TAGS[id].icon,label:TAGS[id].label}:null; }
 function tagsHTML(tags,place){ var out=(tags||[]).map(function(t){ var d=tagDef(t); return d?'<span class="tag">'+ic(d.icon)+esc(d.label)+'</span>':''; }).join('');
-  if(place) out+='<a class="tag map" href="'+mapHref(place)+'" target="_blank" rel="noopener" aria-label="用 Google 地圖走到「'+esc(place)+'」">'+ic('pin')+'地圖路線</a>';
+  if(place) out+='<a class="tag map" href="'+mapHref(place)+'" target="_blank" rel="noopener" aria-label="在 Google 地圖上看「'+esc(place)+'」的位置">'+ic('pin')+'地圖位置</a>';
   return out?'<div class="tags">'+out+'</div>':''; }
 /* 徽章：吃新的 id，也吃舊資料存的 emoji 字元 */
 function badgeDef(v){ if(!v) return null; var k=BADGE_FROM_EMOJI[v]||v;
@@ -1461,7 +1463,7 @@ function hotelCard(){
   var sum=(ho.name||'').replace(/\s*[–—-]\s*.*$/,'')||'待公布';
   var inner='<div style="font-size:1.1rem;font-weight:900;margin-bottom:.5rem">'+esc(ho.name||'')+'</div>'+
     '<dl class="kv"><dt>Wi-Fi</dt><dd>'+esc(ho.wifi||'—')+'</dd>'+(ho.wifiPass?'<dt>密碼</dt><dd>'+esc(ho.wifiPass)+'</dd>':'')+'<dt>早餐</dt><dd>'+esc(ho.breakfast||'—')+'</dd>'+(ho.leaderRoom?'<dt>領隊房號</dt><dd>'+esc(ho.leaderRoom)+'</dd>':'')+'</dl>'+
-    '<div class="row" style="margin-top:.7rem">'+(ho.addrVi||ho.nameVi||ho.name?'<a class="btn" href="'+mapHref((ho.nameVi||ho.name)+' '+(ho.addrVi||''))+'" target="_blank" rel="noopener">'+ic('pin')+'走回飯店</a>':'')+'<button class="btn warn" data-act="fullTaxi">'+ic('taxi')+'計程車回飯店卡</button>'+(cs[0]&&cs[0].phone?'<a class="btn" href="'+telHref(cs[0].phone)+'">'+ic('phone')+'撥給'+esc(cs[0].name)+'</a>':'')+'</div>';
+    '<div class="row" style="margin-top:.7rem">'+(ho.addrVi||ho.nameVi||ho.name?'<a class="btn" href="'+mapDirHref((ho.nameVi||ho.name)+' '+(ho.addrVi||''))+'" target="_blank" rel="noopener">'+ic('pin')+'走回飯店</a>':'')+'<button class="btn warn" data-act="fullTaxi">'+ic('taxi')+'計程車回飯店卡</button>'+(cs[0]&&cs[0].phone?'<a class="btn" href="'+telHref(cs[0].phone)+'">'+ic('phone')+'撥給'+esc(cs[0].name)+'</a>':'')+'</div>';
   return foldCard('hotel','bed','目前住宿',(ho.nights||''),sum,inner,0);
 }
 
