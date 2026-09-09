@@ -230,6 +230,9 @@ h2.sec{margin:.25rem 0 0;font-size:1rem;font-weight:900;color:var(--ink-2);displ
 .al.lg{width:2.6rem;height:2.6rem;font-size:.85rem}
 .mc .al{margin-left:auto}
 .mc .al+.rt{margin-left:.35rem}
+.mc .mtags{display:flex;flex-wrap:wrap;gap:.25rem;margin-top:.28rem}
+.mc .mtag{font-size:.74rem;font-weight:900;line-height:1.25;padding:.1rem .4rem;border-radius:6px;background:rgba(47,68,121,.1);color:#2F4479;white-space:nowrap;word-break:keep-all}
+.mc.bg-yellow .mtag,.mc.bg-pink .mtag,.mc.bg-green .mtag,.mc.bg-blue .mtag{background:rgba(27,36,55,.12)}
 .mc.me::after{content:"我";position:absolute;top:-.55rem;left:-.35rem;background:#2F4479;color:#fff;font-size:.72rem;font-weight:900;border-radius:999px;padding:.12rem .5rem;box-shadow:0 1px 3px rgba(0,0,0,.25)}
 .mc.sm{min-height:3rem;padding:.4rem .55rem;gap:.4rem;border-width:2px}
 .mc.sm.bd-gold,.mc.sm.bd-red,.mc.sm.bd-black{border-width:2.5px}
@@ -570,7 +573,8 @@ var BADGE_FROM_EMOJI = {'👑':'lead','🚩':'group','🌟':'star','🥗':'veg',
 var BGS = [['bg-white','白'],['bg-yellow','鵝黃'],['bg-pink','粉紅'],['bg-green','草綠'],['bg-blue','淺藍']];
 var BDS = [['bd-grey','一般'],['bd-gold','金框'],['bd-red','紅虛線'],['bd-black','粗黑框']];
 /* 航空公司小圓徽章：同團分搭兩家航空時，機場分航廈集合用 */
-var AIRLINES = {eva:{label:'長榮',cls:'eva'},ci:{label:'華航',cls:'ci'}};
+var AIRLINES = {eva:{label:'長榮',name:'長榮航空',note:'桃園第二航廈',term:'T2',cls:'eva'},ci:{label:'華航',name:'中華航空',note:'桃園第一航廈',term:'T1',cls:'ci'}};
+var MEAL_TAGS = ['素食','不吃牛','不吃辣','要溫水','已點餐','已上菜','還沒到','要打包'];
 
 /* 越南鈔票（顏色為近似值，重點是提醒「同色系」的混淆組） */
 var NOTES = [
@@ -613,6 +617,7 @@ var DEFAULTS = {
       {id:'walk',icon:'walk',label:'步行多'},{id:'camera',icon:'camera',label:'拍照點'},{id:'pill',icon:'thermo',label:'易暈車'},
       {id:'bed',icon:'bed',label:'入住'}
     ],
+    airlines:{eva:{short:'長榮',name:'長榮航空',note:'桃園第二航廈'},ci:{short:'華航',name:'中華航空',note:'桃園第一航廈'}},
     vndPerTwd:820,
     /* 電話刻意留白：正式版請領隊進管理模式 → 團務設定 填入，資料只存在同步後端，不會出現在原始碼 */
     contacts:[
@@ -797,7 +802,7 @@ var DEFAULTS = {
     {id:'m33',name:'鐘立承',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''}
   ]},
   groups:{ activeId:'meal', scenarios:[
-    {id:'meal',name:'用餐分桌',count:4,names:['第 1 桌','第 2 桌','第 3 桌','第 4 桌'],assign:{}},
+    {id:'meal',name:'用餐分桌',count:4,names:['第 1 桌','第 2 桌','第 3 桌','第 4 桌'],assign:{},fixed:1,useTags:1,mtags:{},tagOpts:MEAL_TAGS.slice()},
     {id:'shuttle',name:'接駁車',count:2,names:['A 車','B 車'],assign:{}},
     {id:'hike',name:'健行分流',count:2,names:['健走組','咖啡悠閒組'],assign:{}}
   ]},
@@ -1139,9 +1144,19 @@ function memberCard(m,opt){
   var tag=opt.tag||'button';
   return '<'+tag+' class="'+cls+'" data-act="'+(opt.act||'memberTap')+'" data-id="'+m.id+'"'+(opt.extra||'')+'>'+
     '<span class="em'+(badgeDef(m.emoji)?'':' none')+'">'+badgeSVG(m.emoji)+'</span>'+
-    '<span class="tx"><span class="nm">'+esc(m.name)+'</span>'+(!opt.sm&&m.remark?'<span class="rk">'+esc(m.remark)+'</span>':'')+'</span>'+airlineBadge(m.airline)+right+'</'+tag+'>';
+    '<span class="tx"><span class="nm">'+esc(m.name)+'</span>'+(!opt.sm&&m.remark?'<span class="rk">'+esc(m.remark)+'</span>':'')+
+    ((opt.mtags&&opt.mtags.length)?'<span class="mtags">'+opt.mtags.map(function(x){return '<span class="mtag">'+esc(x)+'</span>';}).join('')+'</span>':'')+
+    '</span>'+airlineBadge(m.airline)+right+'</'+tag+'>';
 }
-function airlineBadge(a,lg){ var d=AIRLINES[a]; if(!d) return ''; return '<span class="al '+d.cls+(lg?' lg':'')+'" title="'+d.label+'">'+d.label+'</span>'; }
+function airDef(k){ var d=AIRLINES[k]; if(!d) return null; var o=((S().settings||{}).airlines||{})[k]||{};
+  return {cls:d.cls, short:(o.short||d.label), name:(o.name||d.name), note:(o.note===undefined||o.note===null?d.note:o.note)}; }
+function airlineBadge(a,lg){ var d=airDef(a); if(!d) return ''; return '<span class="al '+d.cls+(lg?' lg':'')+'" title="'+esc(d.name)+'">'+esc(d.short)+'</span>'; }
+/* 分組情境：固定不可刪除、臨時標籤 */
+var FIXED_SCN={meal:1};
+function scnFixed(sc){ return !!(sc && (sc.fixed || FIXED_SCN[sc.id])); }
+function scnUseTags(sc){ if(!sc) return false; return sc.useTags===undefined||sc.useTags===null ? sc.id==='meal' : !!sc.useTags; }
+function scnTagOpts(sc){ var t=sc&&sc.tagOpts; return (t&&t.length)?t:MEAL_TAGS.slice(); }
+function mtagsOf(sc,id){ return (sc&&sc.mtags&&sc.mtags[id])||[]; }
 
 /* --- 首頁 --- */
 VIEWS.home=function(){
@@ -1267,7 +1282,12 @@ function flightCard(soon){
   function col(key,name,term){ var x=f[key]||{}; return '<div class="fl-col"><div class="fl-h">'+airlineBadge(key)+esc(name)+'</div>'+
     '<div class="fl-r"><span class="k">去程 '+esc(dayDate(1).split('（')[0])+'</span><b>'+esc(x.out||'--:--')+'</b><span class="w">桃園 '+term+'</span></div>'+
     '<div class="fl-r"><span class="k">回程 '+esc(dayDate(days).split('（')[0])+'</span><b>'+esc(x.back||'--:--')+'</b><span class="w">河內起飛</span></div></div>'; }
-  var inner='<div class="fl">'+col('eva','長榮航空','T2')+col('ci','中華航空','T1')+'</div>'+
+  function alN(k){ var d=airDef(k)||{}; return d.name||''; }
+  function alT(k){ var d=airDef(k)||{}, n=d.note||'', mm=n.match(/第([一二三四五六七八九])/);
+    if(mm) return 'T'+('一二三四五六七八九'.indexOf(mm[1])+1);
+    mm=n.match(/T\s*([1-9])/i); if(mm) return 'T'+mm[1];
+    return (AIRLINES[k]||{}).term||''; }
+  var inner='<div class="fl">'+col('eva',alN('eva'),alT('eva'))+col('ci',alN('ci'),alT('ci'))+'</div>'+
     (f.note?'<div class="warn-box" style="margin-top:.6rem">'+ic('clock')+'<span>'+esc(f.note)+'</span></div>':'');
   var ci=(f.ci||{}).out||'--:--', eva=(f.eva||{}).out||'--:--';
   return foldCard('flight','plane','航班資訊',esc(dayDate(1))+' – '+esc(dayDate(days)),ci+' / '+eva+' 起飛',inner,soon?1:0);
@@ -1370,8 +1390,10 @@ function airNote(){ var v=S().settings.airNote; return (v===undefined||v===null)
 
 /* 航空公司分流：不是隨機分組，而是每個人固定的屬性；徽章會顯示在所有卡片上 */
 function airlineView(){
-  var me=getMe(), cols=[['eva','長榮航空'],['ci','中華航空'],['','尚未設定']], h=[];
-  h.push('<div class="hint-lead">'+ic('info')+(P.leader?'點團員即可設定長榮／華航，徽章會出現在每一張卡片上':'圓形徽章：🟢 長榮、🔴 華航；機場集合請看自己的徽章')+'</div>');
+  var me=getMe(), ae=airDef('eva')||{}, ac=airDef('ci')||{};
+  var cols=[['eva',ae.name],['ci',ac.name],['','尚未設定']], h=[];
+  h.push('<div class="hint-lead">'+ic('info')+(P.leader?'點團員即可設定航空公司，徽章會出現在每一張卡片上':'圓形徽章代表你搭哪一家；機場集合請看自己的徽章')+'</div>');
+  if(P.leader) h.push('<div class="row"><button class="btn" data-act="editAirlines">'+ic('edit')+'改航空公司名稱</button></div>');
   cols.forEach(function(c){
     var list=members().filter(function(m){ return (m.airline||'')===c[0]; });
     if(!c[0]&&!list.length) return;
@@ -1400,14 +1422,15 @@ VIEWS.groups=function(){
     (P.leader?'<button class="chip pick" data-act="editScenario" data-id="">'+ic('plus')+'情境</button>':'')+'</div>');
   if(isAir) return h.join('')+airlineView();
   if(!sc) return h.join('')+'<div class="card muted">尚無分組情境</div>';
-  if(P.leader) h.push('<div class="row"><button class="btn pri" data-act="shuffle">'+ic('shuffle')+'一鍵隨機分組</button><button class="btn" data-act="clearGroups">'+ic('refresh')+'一鍵清除分組</button><button class="btn" data-act="editScenario" data-id="'+sc.id+'">'+ic('edit')+'組數／名稱</button></div><div class="hint-lead">'+ic('info')+'隨機分組會讓同房的人在同一組；點任一位團員可移到別組</div>');
+  var useTag=scnUseTags(sc), anyTag=useTag&&Object.keys(sc.mtags||{}).some(function(k){return (sc.mtags[k]||[]).length;});
+  if(P.leader) h.push('<div class="row"><button class="btn pri" data-act="shuffle">'+ic('shuffle')+'一鍵隨機分組</button><button class="btn" data-act="clearGroups">'+ic('refresh')+'一鍵清除分組</button><button class="btn" data-act="editScenario" data-id="'+sc.id+'">'+ic('edit')+'組數／名稱</button>'+(anyTag?'<button class="btn" data-act="clearTags">'+ic('flag')+'清空所有標籤</button>':'')+'</div><div class="hint-lead">'+ic('info')+(useTag?'點任一位團員可移到別組，也可以貼上「素食、已點餐」等臨時標籤':'隨機分組會讓同房的人在同一組；點任一位團員可移到別組')+'</div>');
   var buckets=[], un=[]; for(var i=0;i<sc.count;i++) buckets.push([]);
   members().forEach(function(m){ var gi=sc.assign?sc.assign[m.id]:undefined; if(gi===undefined||gi===null||gi<0||gi>=sc.count) un.push(m); else buckets[gi].push(m); });
   buckets.forEach(function(b,i){
     var mine=me&&b.some(function(m){return m.id===me.id;});
-    h.push('<section class="grp'+(mine?' me-grp':'')+'"><h3>'+ic('flag')+esc(sc.names[i]||('第 '+(i+1)+' 組'))+'<span class="n">'+b.length+' 人</span></h3><div class="gm">'+b.map(function(m){return memberCard(m,{sm:true,pk:P.leader,act:P.leader?'moveMember':'memberTap'});}).join('')+(b.length?'':'<div class="muted">（空）</div>')+'</div></section>');
+    h.push('<section class="grp'+(mine?' me-grp':'')+'"><h3>'+ic('flag')+esc(sc.names[i]||('第 '+(i+1)+' 組'))+'<span class="n">'+b.length+' 人</span></h3><div class="gm">'+b.map(function(m){return memberCard(m,{sm:true,pk:P.leader,act:P.leader?'moveMember':'memberTap',mtags:useTag?mtagsOf(sc,m.id):null});}).join('')+(b.length?'':'<div class="muted">（空）</div>')+'</div></section>');
   });
-  if(un.length) h.push('<section class="grp"><h3>'+ic('users')+'尚未分組<span class="n">'+un.length+' 人</span></h3><div class="gm">'+un.map(function(m){return memberCard(m,{sm:true,pk:P.leader,act:P.leader?'moveMember':'memberTap'});}).join('')+'</div></section>');
+  if(un.length) h.push('<section class="grp"><h3>'+ic('users')+'尚未分組<span class="n">'+un.length+' 人</span></h3><div class="gm">'+un.map(function(m){return memberCard(m,{sm:true,pk:P.leader,act:P.leader?'moveMember':'memberTap',mtags:useTag?mtagsOf(sc,m.id):null});}).join('')+'</div></section>');
   return h.join('');
 };
 /* ===== 工具分頁 ===== */
@@ -1708,7 +1731,7 @@ function sheetMember(id){
       '<div class="bdg-hint">'+BADGES.map(function(d){return '<span>'+badgeSVG(d.id)+esc(d.label)+'</span>';}).join('')+'</div>')+
     fld('底色',swatches('bg',BGS,m.bg||'bg-white',function(v,l){return '<span class="mc sm '+v+'" style="min-height:2rem;padding:.2rem .5rem;width:auto;border-width:1px">'+l+'</span>';}))+
     fld('邊框',swatches('border',BDS,m.border||'bd-grey',function(v,l){return '<span class="mc sm '+v+'" style="min-height:2rem;padding:.2rem .5rem;width:auto">'+l+'</span>';}))+
-    fld('航空公司（小圓徽章）',swatches('airline',[['','無'],['eva','長榮'],['ci','華航']],m.airline||'',function(v,l){return v?airlineBadge(v,true):'<span class="al lg none">無</span>';}))+
+    fld('航空公司（小圓徽章）',swatches('airline',[['','無'],['eva',(airDef('eva')||{}).short],['ci',(airDef('ci')||{}).short]],m.airline||'',function(v,l){return v?airlineBadge(v,true):'<span class="al lg none">無</span>';}))+
     fld('公開備註（一行）',inp('remark',m.remark)+chipsFill('remark',['A 車車長','負責收護照','全素勿蒜','鍋邊素','需溫熱開水','容易暈車，請坐前排']))+
     '<div class="grid2">'+fld('房號',inp('room',m.room))+fld('電話（選填）',inp('phone',m.phone,'tel'))+'</div>',
     foot:footBtns('saveMember',id?'<button class="btn dng" data-act="delMember">移出</button>':'')});
@@ -1718,7 +1741,7 @@ function sheetMemberView(id){
   var m=member(id); if(!m) return;
   var st=S().settings;
   openSheet({title:'團員',body:memberCard(m,{right:'groups',tag:'div',act:'noop'})+
-    '<dl class="kv"><dt>航空公司</dt><dd>'+(AIRLINES[m.airline]?airlineBadge(m.airline)+' '+(m.airline==='eva'?'長榮航空 · 桃園第二航廈':'中華航空 · 桃園第一航廈'):'尚未設定')+'</dd><dt>房號</dt><dd>'+esc(m.room||'待分配')+'</dd>'+(m.remark?'<dt>備註</dt><dd>'+esc(m.remark)+'</dd>':'')+'</dl>'+
+    '<dl class="kv"><dt>航空公司</dt><dd>'+(airDef(m.airline)?airlineBadge(m.airline)+' '+esc(airDef(m.airline).name)+(airDef(m.airline).note?' · '+esc(airDef(m.airline).note):''):'尚未設定')+'</dd><dt>房號</dt><dd>'+esc(m.room||'待分配')+'</dd>'+(m.remark?'<dt>備註</dt><dd>'+esc(m.remark)+'</dd>':'')+'</dl>'+
     '<div class="stack">'+(P.meId===m.id?'<button class="btn" data-act="setMe" data-id="">取消「這是我」</button>':'<button class="btn pri" data-act="setMe" data-id="'+m.id+'">'+ic('star')+'這是我</button>')+(m.phone?'<a class="btn" href="'+telHref(m.phone)+'">'+ic('phone')+'撥打電話</a>':'')+'</div>'});
 }
 function sheetPickMe(){
@@ -1751,11 +1774,30 @@ function sheetHotelEdit(id){
 }
 function sheetScenario(id){
   var sc=id?scenario(id):{name:'',count:3,names:[]};
+  var fixed=id&&scnFixed(sc), ut=id?scnUseTags(sc):false;
   openSheet({title:id?'分組情境設定':'新增分組情境',focus:true,body:
     fld('情境名稱',inp('name',sc.name,'text','placeholder="例：用餐分桌"'))+
     fld('組數','<select class="in" name="count">'+[2,3,4,5,6,7,8].map(function(n){return '<option value="'+n+'"'+(sc.count===n?' selected':'')+'>'+n+' 組</option>';}).join('')+'</select>')+
-    fld('各組名稱（用「、」分隔，可留白）',inp('names',(sc.names||[]).join('、'),'text','placeholder="第 1 桌、第 2 桌、第 3 桌"')),
-    foot:footBtns('saveScenario',id?'<button class="btn dng" data-act="delScenario">刪除</button>':'')});
+    fld('各組名稱（用「、」分隔，可留白）',inp('names',(sc.names||[]).join('、'),'text','placeholder="第 1 桌、第 2 桌、第 3 桌"'))+
+    fld('臨時標籤','<select class="in" name="useTags"><option value="1"'+(ut?' selected':'')+'>開啟（可貼素食、已點餐…）</option><option value="0"'+(ut?'':' selected')+'>關閉</option></select>')+
+    (fixed?'<div class="hint-lead">'+ic('lock')+'這是固定情境，可以改名稱與組數，但不能刪除。</div>':''),
+    foot:footBtns('saveScenario',(id&&!fixed)?'<button class="btn dng" data-act="delScenario">刪除</button>':'')});
+  SHEET.id=id;
+}
+function sheetMoveMember2(id){
+  var sc=scenario(), m=member(id); if(!sc||!m) return;
+  var cur=mtagsOf(sc,id), opts=scnTagOpts(sc);
+  var body='<div class="muted">'+esc(sc.name)+'</div><div class="stack">'+
+    sc.names.slice(0,sc.count).map(function(n,i){ return '<button class="btn'+(sc.assign&&sc.assign[id]===i?' pri':'')+'" data-act="setGroup" data-id="'+id+'" data-g="'+i+'">'+esc(n||('第 '+(i+1)+' 組'))+'</button>'; }).join('')+
+    '<button class="btn dng" data-act="setGroup" data-id="'+id+'" data-g="-1">移出分組</button></div>';
+  if(scnUseTags(sc)){
+    body+='<h2 class="sec" style="margin-top:.9rem">'+ic('flag')+'臨時標籤</h2>'+
+      '<div class="muted">點一下貼上或取消，只在「'+esc(sc.name)+'」看得到。</div>'+
+      '<div class="chips">'+opts.map(function(t){ return '<button class="chip pick'+(cur.indexOf(t)>=0?' on':'')+'" data-act="mtagToggle" data-id="'+id+'" data-v="'+esc(t)+'">'+esc(t)+'</button>'; }).join('')+'</div>'+
+      '<div class="f" style="margin-top:.6rem"><label>自己打一個標籤</label><div class="row"><input class="in" name="newtag" placeholder="例：加點一份炒飯"><button class="btn" data-act="mtagAdd" data-id="'+id+'">'+ic('plus')+'加上去</button></div></div>'+
+      (cur.length?'<button class="btn block dng" data-act="mtagClearOne" data-id="'+id+'">清空 '+esc(m.name)+' 的標籤</button>':'');
+  }
+  openSheet({title:esc(m.name),body:body});
   SHEET.id=id;
 }
 function sheetMoveMember(id){
@@ -1833,8 +1875,9 @@ var ACT={
   saveMember:function(){ var name=sv('name'); if(!name){ toast('請輸入姓名'); return; } var ms=members(); var m=SHEET.id?member(SHEET.id):null; if(!m){ m={id:uid()}; ms.push(m); }
     m.name=name; m.emoji=sv('emoji'); m.bg=sv('bg')||'bg-white'; m.border=sv('border')||'bd-grey'; m.airline=sv('airline'); m.remark=sv('remark'); m.room=sv('room'); m.phone=sv('phone'); closeSheet(); Store.save('members'); toast('已儲存'); },
   setAirlineAsk:function(t){ var m=member(t.getAttribute('data-id')); if(!m) return;
-    openSheet({title:'✈️ '+esc(m.name)+' 搭哪一家？',body:'<div class="stack">'+[['eva','長榮航空','第二航廈'],['ci','中華航空','第一航廈'],['','尚未設定','']].map(function(c){ return '<button class="btn big'+((m.airline||'')===c[0]?' pri':'')+'" data-act="setAirline" data-id="'+m.id+'" data-v="'+c[0]+'">'+(c[0]?airlineBadge(c[0],true):'<span class="al lg none">無</span>')+'<span class="b2">'+c[1]+(c[2]?'<small>桃園機場 '+c[2]+'</small>':'')+'</span></button>'; }).join('')+'</div>'}); },
-  setAirline:function(t){ var m=member(t.getAttribute('data-id')); if(!m) return; m.airline=t.getAttribute('data-v')||''; closeSheet(); Store.save('members'); toast(m.name+'：'+(AIRLINES[m.airline]?AIRLINES[m.airline].label:'未設定')); },
+    var ae=airDef('eva')||{}, ac=airDef('ci')||{};
+    openSheet({title:'✈️ '+esc(m.name)+' 搭哪一家？',body:'<div class="stack">'+[['eva',ae.name,ae.note],['ci',ac.name,ac.note],['','尚未設定','']].map(function(c){ return '<button class="btn big'+((m.airline||'')===c[0]?' pri':'')+'" data-act="setAirline" data-id="'+m.id+'" data-v="'+c[0]+'">'+(c[0]?airlineBadge(c[0],true):'<span class="al lg none">無</span>')+'<span class="b2">'+esc(c[1]||'')+(c[2]?'<small>'+esc(c[2])+'</small>':'')+'</span></button>'; }).join('')+'</div>'}); },
+  setAirline:function(t){ var m=member(t.getAttribute('data-id')); if(!m) return; m.airline=t.getAttribute('data-v')||''; closeSheet(); Store.save('members'); toast(m.name+'：'+(airDef(m.airline)?airDef(m.airline).short:'未設定')); },
   delMember:function(){ var id=SHEET.id; S().members.items=members().filter(function(m){return m.id!==id;}); closeSheet(); Store.save('members'); toast('已移出名單'); },
   editBroadcast:function(){ sheetBroadcast(); },
   saveBroadcast:function(){ var b=S().broadcast; b.time=sv('time'); b.idle=false; b.label=sv('label')||'集合'; b.location=sv('location'); b.tip=sv('tip'); b.updatedAt=stamp(); closeSheet(); Store.save('broadcast'); toast('廣播已更新，全團手機會同步'); },
@@ -1905,14 +1948,44 @@ var ACT={
     list.forEach(function(u){ var gi=0; for(var g2=1;g2<sc.count;g2++) if(sizes[g2]<sizes[gi]) gi=g2; u.forEach(function(id){assign[id]=gi;}); sizes[gi]+=u.length; });
     sc.assign=assign; Store.save('groups'); toast('已隨機分成 '+sc.count+' 組（同房不拆）'); },
   editScenario:function(t){ sheetScenario(t.getAttribute('data-id')||''); },
+  mtagToggle:function(t){ var sc=scenario(); if(!sc) return; var id=t.getAttribute('data-id'), v=t.getAttribute('data-v');
+    sc.mtags=sc.mtags||{}; var a=(sc.mtags[id]||[]).slice(); var i=a.indexOf(v);
+    if(i>=0) a.splice(i,1); else a.push(v);
+    if(a.length) sc.mtags[id]=a; else delete sc.mtags[id];
+    Store.save('groups'); sheetMoveMember2(id); },
+  mtagAdd:function(t){ var sc=scenario(); if(!sc) return; var id=t.getAttribute('data-id');
+    var f=el('sheetRoot').querySelector('[name=newtag]'), v=f?f.value.trim():'';
+    if(!v){ toast('請先輸入標籤文字'); return; }
+    sc.tagOpts=scnTagOpts(sc).slice(); if(sc.tagOpts.indexOf(v)<0) sc.tagOpts.push(v);
+    sc.mtags=sc.mtags||{}; var a=(sc.mtags[id]||[]).slice(); if(a.indexOf(v)<0) a.push(v); sc.mtags[id]=a;
+    Store.save('groups'); sheetMoveMember2(id); },
+  mtagClearOne:function(t){ var sc=scenario(); if(!sc) return; var id=t.getAttribute('data-id');
+    if(sc.mtags) delete sc.mtags[id]; Store.save('groups'); sheetMoveMember2(id); },
+  clearTags:function(){ var sc=scenario(); if(!sc) return;
+    openSheet({title:'清空「'+esc(sc.name)+'」的所有標籤？',body:'<div class="muted">會把這個情境裡每個人身上的臨時標籤都拿掉，分組本身不會變。</div>',
+      foot:'<button class="btn" data-act="sheetClose">取消</button><button class="btn dng" data-act="clearTagsGo">確定清空</button>'}); },
+  clearTagsGo:function(){ var sc=scenario(); if(!sc) return; sc.mtags={}; closeSheet(); Store.save('groups'); toast('標籤已清空'); },
+  editAirlines:function(){ var e=airDef('eva')||{}, c=airDef('ci')||{};
+    openSheet({title:'航空公司名稱',focus:true,body:
+      '<div class="muted">改成這次實際搭的航空公司即可，徽章顏色不變（綠色 / 紅色）。</div>'+
+      '<h2 class="sec">'+airlineBadge('eva')+'綠色徽章</h2>'+
+      '<div class="grid2">'+fld('徽章短名（2–3 字）',inp('eva_short',e.short,'text','maxlength="3"'))+fld('航廈／備註',inp('eva_note',e.note))+'</div>'+
+      fld('全名',inp('eva_name',e.name))+
+      '<h2 class="sec">'+airlineBadge('ci')+'紅色徽章</h2>'+
+      '<div class="grid2">'+fld('徽章短名（2–3 字）',inp('ci_short',c.short,'text','maxlength="3"'))+fld('航廈／備註',inp('ci_note',c.note))+'</div>'+
+      fld('全名',inp('ci_name',c.name)),
+      foot:footBtns('saveAirlines')}); },
+  saveAirlines:function(){ var st=S().settings; st.airlines=st.airlines||{};
+    ['eva','ci'].forEach(function(k){ st.airlines[k]={short:sv(k+'_short')||AIRLINES[k].label,name:sv(k+'_name')||AIRLINES[k].name,note:sv(k+'_note')}; });
+    closeSheet(); Store.save('settings'); toast('航空公司已更新'); },
   clearGroups:function(){ var sc=scenario(); if(!sc) return;
     openSheet({title:'清除「'+esc(sc.name)+'」的分組？',body:'<div class="muted">會把這個情境裡所有人的分組拿掉，全部回到「尚未分組」。其他情境不受影響，可以再按一次「一鍵隨機分組」重排。</div>',
       foot:'<button class="btn" data-act="sheetClose">取消</button><button class="btn dng" data-act="clearGroupsGo">確定清除</button>'}); },
   clearGroupsGo:function(){ var sc=scenario(); if(!sc) return; sc.assign={}; closeSheet(); Store.save('groups'); toast('已清除分組'); },
   saveScenario:function(){ var g=S().groups; g.scenarios=g.scenarios||[]; var sc=SHEET.id?scenario(SHEET.id):null; if(!sc){ sc={id:uid(),assign:{}}; g.scenarios.push(sc); P.scn=sc.id; }
-    sc.name=sv('name')||'分組'; sc.count=Number(sv('count'))||2; var names=sv('names')?sv('names').split(/[、,，]/).map(function(s){return s.trim();}):[]; sc.names=[]; for(var i=0;i<sc.count;i++) sc.names.push(names[i]||('第 '+(i+1)+' 組')); closeSheet(); Store.save('groups'); },
-  delScenario:function(){ var g=S().groups; g.scenarios=(g.scenarios||[]).filter(function(x){return x.id!==SHEET.id;}); P.scn=''; closeSheet(); Store.save('groups'); },
-  moveMember:function(t){ sheetMoveMember(t.getAttribute('data-id')); },
+    sc.name=sv('name')||'分組'; sc.count=Number(sv('count'))||2; var names=sv('names')?sv('names').split(/[、,，]/).map(function(s){return s.trim();}):[]; sc.names=[]; for(var i=0;i<sc.count;i++) sc.names.push(names[i]||('第 '+(i+1)+' 組')); sc.useTags=(sv('useTags')==='1')?1:0; closeSheet(); Store.save('groups'); },
+  delScenario:function(){ var g=S().groups; if(scnFixed(scenario(SHEET.id))){ toast('固定情境不能刪除'); return; } g.scenarios=(g.scenarios||[]).filter(function(x){return x.id!==SHEET.id;}); P.scn=''; closeSheet(); Store.save('groups'); },
+  moveMember:function(t){ sheetMoveMember2(t.getAttribute('data-id')); },
   setGroup:function(t){ var sc=scenario(); if(!sc) return; sc.assign=sc.assign||{}; var gi=Number(t.getAttribute('data-g')); var id=t.getAttribute('data-id'); if(gi<0) delete sc.assign[id]; else sc.assign[id]=gi; closeSheet(); Store.save('groups'); },
   settings:function(){ sheetSettings(); },
   saveSettings:function(){ var st=S().settings; st.tripName=sv('tripName')||st.tripName; st.startDate=sv('startDate'); st.days=Math.max(1,Number(sv('days'))||5); st.dayOverride=Number(sv('dayOverride'))||0; st.pin=sv('pin')||'8888'; st.vndPerTwd=Number(sv('vndPerTwd'))||820;
