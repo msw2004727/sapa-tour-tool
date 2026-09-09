@@ -24,6 +24,7 @@
   --danger:#C62828;
   --soft:#F2F5F9;
   --band:#2F4479; --lcd-ink:#7DE0C0; --lcd-glow:rgba(125,224,192,.32); --lcd-dim:#7C8C9C; --lcd-amber:#FFB648; --lcd-amber-glow:rgba(255,182,72,.35); --lcd-red:#FF6B5B; --lcd-red-glow:rgba(255,107,91,.4);
+  --indigo-ink:#FFFFFF; --dome:0 -2px 10px rgba(47,68,121,.18),0 6px 18px rgba(47,68,121,.34);
   --shadow:0 1px 2px rgba(27,36,55,.06),0 6px 16px rgba(27,36,55,.07);
   --lift:0 1px 2px rgba(27,36,55,.08),0 8px 20px rgba(27,36,55,.10);
   --r:14px;
@@ -38,6 +39,7 @@
     --danger:#FF6B6B;
     --soft:#131A26;
     --band:#1E2C48; --lcd-ink:#6FD9B8; --lcd-glow:rgba(111,217,184,.3); --lcd-dim:#8496A6; --lcd-amber:#FFC062; --lcd-amber-glow:rgba(255,192,98,.32); --lcd-red:#FF7F70; --lcd-red-glow:rgba(255,127,112,.35);
+    --indigo-ink:#101828; --dome:0 -2px 10px rgba(0,0,0,.5),0 6px 18px rgba(0,0,0,.55);
     --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
     --lift:0 1px 2px rgba(0,0,0,.5),0 10px 24px rgba(0,0,0,.45);
   }
@@ -51,6 +53,7 @@
   --danger:#FF6B6B;
   --soft:#131A26;
   --band:#1E2C48; --lcd-ink:#6FD9B8; --lcd-glow:rgba(111,217,184,.3); --lcd-dim:#8496A6; --lcd-amber:#FFC062; --lcd-amber-glow:rgba(255,192,98,.32); --lcd-red:#FF7F70; --lcd-red-glow:rgba(255,127,112,.35);
+  --indigo-ink:#101828; --dome:0 -2px 10px rgba(0,0,0,.5),0 6px 18px rgba(0,0,0,.55);
   --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
   --lift:0 1px 2px rgba(0,0,0,.5),0 10px 24px rgba(0,0,0,.45);
 }
@@ -106,10 +109,19 @@ svg.i{width:1.25rem;height:1.25rem;flex-shrink:0;fill:none;stroke:currentColor;s
 .leader-bar button{border:0;background:transparent;color:var(--indigo);font-weight:900;font-size:13.5px;min-height:2rem;padding:0 .3rem}
 /* main + tabs */
 main{flex:1;padding:.75rem .75rem calc(80px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:.8rem}
-.tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:440px;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:20}
+.tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:440px;background:var(--card);border-top:1px solid var(--line);display:flex;align-items:flex-end;padding-bottom:env(safe-area-inset-bottom);z-index:20}
 .tab{flex:1;min-height:58px;border:0;background:none;color:var(--ink-3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:13px;font-weight:800;white-space:nowrap;word-break:keep-all;padding:6px 0 5px}
 .tab svg.i{width:23px;height:23px}
 .tab.on{color:var(--indigo)}
+.tab-home{flex:1;min-width:0;position:relative;border:0;background:none;font:inherit;cursor:pointer;min-height:58px;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:6px 0 5px}
+.tab-home .dome{position:absolute;top:-22px;left:50%;transform:translateX(-50%);width:54px;height:54px;border-radius:50%;
+  background:var(--indigo);color:var(--indigo-ink);display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--dome);border:3px solid var(--card)}
+.tab-home .dome svg.i{width:26px;height:26px}
+.tab-home .lb{font-size:13px;font-weight:800;color:var(--ink-3);white-space:nowrap;word-break:keep-all;line-height:1.2}
+.tab-home.on .lb{color:var(--indigo);font-weight:900}
+.tab-home:focus-visible{outline:2px solid var(--indigo);outline-offset:-3px;border-radius:8px}
 /* cards + buttons */
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:.9rem}
 .card-h{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.65rem}
@@ -1014,7 +1026,7 @@ function checkStats(pg){ var items=(pg.items||[]).filter(function(i){return i.ki
 function hotel(){ var st=S().settings; return (st.hotels||[]).filter(function(h){return h.id===st.currentHotelId;})[0]||(st.hotels||[])[0]||{}; }
 
 /* ===== 畫面渲染 ===== */
-var TABS=[['home','首頁','home'],['plan','行程','calendar'],['rooms','房號','key'],['groups','分組','users'],['tools','工具','grid']];
+var TABS=[['plan','行程','calendar'],['rooms','房號','key'],['groups','分組','users'],['tools','工具','grid']];
 function render(){
   document.documentElement.setAttribute('data-fs',P.fs);
   if(P.theme) document.documentElement.setAttribute('data-theme',P.theme);
@@ -1105,7 +1117,10 @@ function renderSync(){
   } else { rt.textContent=''; }
 }
 function renderTabs(){
-  el('tabbar').innerHTML=TABS.map(function(t){ return '<button class="tab'+(P.tab===t[0]?' on':'')+'" data-act="tab" data-tab="'+t[0]+'" aria-label="'+t[1]+'">'+ic(t[2])+'<span>'+t[1]+'</span></button>'; }).join('');
+  function one(t){ return '<button class="tab'+(P.tab===t[0]?' on':'')+'" data-act="tab" data-tab="'+t[0]+'" aria-label="'+t[1]+'">'+ic(t[2])+'<span>'+t[1]+'</span></button>'; }
+  var mid=Math.ceil(TABS.length/2);
+  var home='<button class="tab-home'+(P.tab==='home'?' on':'')+'" data-act="tab" data-tab="home" aria-label="首頁"><span class="dome">'+ic('home')+'</span><span class="lb">首頁</span></button>';
+  el('tabbar').innerHTML=TABS.slice(0,mid).map(one).join('')+home+TABS.slice(mid).map(one).join('');
 }
 function tick(){
   var vn=tzParts(VN), tw=tzParts(TW);
