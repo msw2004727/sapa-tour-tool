@@ -548,7 +548,7 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
 <script src="./config.js"></script>
 <script>
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '2.0';
+var APP_VERSION = '2.1';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -1405,22 +1405,15 @@ function prepCard(){
   if(!prep) return '';
   var cs=checkStats(prep), pct=cs.total?Math.round(cs.done/cs.total*100):0;
   var done=(cs.done>=cs.total&&cs.total);
-  var ck=(P.checks||{})[prep.id]||{};
-  var todo=(prep.items||[]).filter(function(i){ return i.kind!=='head' && !ck[i.id]; });
-  var SHOW=4, show=todo.slice(0,SHOW);
   var inner='<div class="prep-top"><span class="n">'+cs.done+'</span><span class="d">/ '+cs.total+' 項已備妥</span>'+
       '<span class="sp"></span><span class="pc">'+pct+'%</span></div>'+
     '<div class="prog"><i style="width:'+pct+'%"></i></div>';
   if(done){
     inner+='<div class="prep-done">'+ic('check')+'<span>全部備妥，可以安心出發了。</span></div>';
-  } else {
-    inner+='<div class="prep-lab">還沒準備的（點一下就打勾）</div>'+
-      '<div class="stack" style="gap:.45rem">'+show.map(function(it){
-        return '<button class="ck-row sm" data-act="nbCheck" data-pg="'+prep.id+'" data-id="'+it.id+'"><span class="box">'+ic('check')+'</span><span class="tx">'+esc(it.text)+'</span></button>';
-      }).join('')+'</div>';
   }
-  inner+='<button class="btn block soft" style="margin-top:.6rem" data-act="nbGo" data-id="'+prep.id+'">'+
-      (done?'重看完整清單':'看全部 '+cs.total+' 項')+' '+ic('arrow')+'</button>'+
+  /* 首頁只顯示進度，實際打勾一律在完整清單頁面進行，避免長輩誤以為首頁這幾項就是全部 */
+  inner+='<button class="btn block '+(done?'soft':'pri')+'" style="margin-top:.6rem" data-act="nbGo" data-id="'+prep.id+'">'+
+      (done?'重看完整清單':'前往清單逐項打勾（還有 '+(cs.total-cs.done)+' 項）')+' '+ic('arrow')+'</button>'+
     '<div class="prep-note">'+ic('info')+'<span>勾選只存在你自己的手機，清單內容由領隊更新。</span></div>';
   return foldCard('prep','check',(prep.title||'出發前準備'),(done?'全部備妥':'已備 '+cs.done+' / '+cs.total),(done?'全部備妥':cs.done+' / '+cs.total+' 已備妥'),inner,1);
 }
@@ -1595,7 +1588,7 @@ VIEWS.groups=function(){
   if(isAir) return h.join('')+airlineView();
   if(!sc) return h.join('')+'<div class="card muted">尚無分組情境</div>';
   var useTag=scnUseTags(sc), anyTag=useTag&&Object.keys(sc.mtags||{}).some(function(k){return (sc.mtags[k]||[]).length;});
-  if(P.leader) h.push('<div class="row"><button class="btn pri" data-act="shuffle">'+ic('shuffle')+'一鍵隨機分組</button><button class="btn" data-act="clearGroups">'+ic('refresh')+'一鍵清除分組</button><button class="btn" data-act="editScenario" data-id="'+sc.id+'">'+ic('edit')+'組數／名稱</button>'+(anyTag?'<button class="btn" data-act="clearTags">'+ic('flag')+'清空所有標籤</button>':'')+'</div><div class="hint-lead">'+ic('info')+(useTag?'點任一位團員可移到別組，也可以貼上「素食、已點餐」等臨時標籤':'隨機分組會讓同房的人在同一組；點任一位團員可移到別組')+'</div>');
+  if(P.leader) h.push('<div class="row"><button class="btn pri" data-act="shuffle">'+ic('shuffle')+'一鍵隨機分組</button><button class="btn" data-act="clearGroups">'+ic('refresh')+'一鍵清除分組</button><button class="btn" data-act="editScenario" data-id="'+sc.id+'">'+ic('edit')+'組數／名稱</button>'+(useTag?'<button class="btn" data-act="manageTagOpts">'+ic('edit')+'管理標籤</button>':'')+(anyTag?'<button class="btn" data-act="clearTags">'+ic('flag')+'清空所有標籤</button>':'')+'</div><div class="hint-lead">'+ic('info')+(useTag?'點任一位團員可移到別組，也可以貼上「素食、已點餐」等臨時標籤':'隨機分組會讓同房的人在同一組；點任一位團員可移到別組')+'</div>');
   var buckets=[], un=[]; for(var i=0;i<sc.count;i++) buckets.push([]);
   members().forEach(function(m){ var gi=sc.assign?sc.assign[m.id]:undefined; if(gi===undefined||gi===null||gi<0||gi>=sc.count) un.push(m); else buckets[gi].push(m); });
   buckets.forEach(function(b,i){
@@ -1990,6 +1983,27 @@ function sheetMoveMember2(id){
   openSheet({title:esc(m.name),body:body});
   SHEET.id=id;
 }
+/* --- 臨時標籤管理（領隊，例：用餐分桌的素食／已點餐…選項） --- */
+function sheetTagOpts(){
+  var sc=scenario(); if(!sc) return;
+  var opts=scnTagOpts(sc);
+  openSheet({title:'管理「'+esc(sc.name)+'」標籤',body:
+    '<div class="muted">這些是可以貼在團員身上的標籤選項，改了全團手機同步更新。</div>'+
+    '<div class="it-wrap" style="margin-top:.6rem">'+opts.map(function(t){
+      return '<div class="it-row"><div class="tagrow"><b>'+esc(t)+'</b></div>'+
+        '<button class="btn sm edit" data-act="editTagOpt" data-v="'+esc(t)+'" aria-label="編輯">'+ic('edit')+'</button></div>';
+    }).join('')+(opts.length?'':'<div class="muted">還沒有標籤，點下面新增一個。</div>')+'</div>'+
+    '<button class="btn block" style="margin-top:.7rem" data-act="editTagOpt" data-v="">'+ic('plus')+'新增一個標籤</button>'});
+}
+function sheetTagOptEdit(v){
+  var sc=scenario(); if(!sc) return;
+  var used=v?Object.keys(sc.mtags||{}).filter(function(id){ return (sc.mtags[id]||[]).indexOf(v)>=0; }).length:0;
+  openSheet({title:v?'編輯標籤':'新增標籤',focus:true,body:
+    fld('標籤文字',inp('label',v,'text','maxlength="10" placeholder="例：加點一份炒飯"'))+
+    (v?'<div class="muted">目前有 '+used+' 位團員貼著這個標籤；刪除會一併從他們身上移除。</div>':''),
+    foot:footBtns('saveTagOpt',v?'<button class="btn dng" data-act="delTagOpt">刪除</button>':'')});
+  SHEET.old=v||'';
+}
 function sheetMoveMember(id){
   var sc=scenario(), m=member(id); if(!sc||!m) return;
   openSheet({title:'移動：'+esc(m.name),body:'<div class="muted">'+esc(sc.name)+'</div><div class="stack">'+sc.names.slice(0,sc.count).map(function(n,i){ return '<button class="btn'+(sc.assign&&sc.assign[id]===i?' pri':'')+'" data-act="setGroup" data-id="'+id+'" data-g="'+i+'">'+esc(n||('第 '+(i+1)+' 組'))+'</button>'; }).join('')+'<button class="btn dng" data-act="setGroup" data-id="'+id+'" data-g="-1">移出分組</button></div>'});
@@ -2160,6 +2174,26 @@ var ACT={
     openSheet({title:'清空「'+esc(sc.name)+'」的所有標籤？',body:'<div class="muted">會把這個情境裡每個人身上的臨時標籤都拿掉，分組本身不會變。</div>',
       foot:'<button class="btn" data-act="sheetClose">取消</button><button class="btn dng" data-act="clearTagsGo">確定清空</button>'}); },
   clearTagsGo:function(){ var sc=scenario(); if(!sc) return; sc.mtags={}; closeSheet(); Store.save('groups'); toast('標籤已清空'); },
+  manageTagOpts:function(){ sheetTagOpts(); },
+  editTagOpt:function(t){ sheetTagOptEdit(t.getAttribute('data-v')||''); },
+  saveTagOpt:function(){ var sc=scenario(); if(!sc) return; var v=(sv('label')||'').trim(); if(!v){ toast('請輸入標籤文字'); return; }
+    var old=SHEET.old||'', opts=scnTagOpts(sc).slice();
+    if(old){
+      if(v!==old && opts.indexOf(v)>=0){ toast('已經有這個標籤了'); return; }
+      var i=opts.indexOf(old); if(i>=0) opts[i]=v;
+    } else if(opts.indexOf(v)<0){ opts.push(v); }
+    Store.savePath('groups',scnPath(sc)+'/tagOpts',opts);
+    if(old && old!==v){
+      var mt=sc.mtags||{};
+      Object.keys(mt).forEach(function(id){ var a=mt[id]||[]; if(a.indexOf(old)>=0) Store.savePath('groups',scnPath(sc)+'/mtags/'+id, a.map(function(x){return x===old?v:x;})); });
+    }
+    closeSheet(); sheetTagOpts(); toast('標籤已儲存'); },
+  delTagOpt:function(){ var sc=scenario(); if(!sc) return; var old=SHEET.old; if(!old) return;
+    var opts=scnTagOpts(sc).filter(function(x){return x!==old;});
+    Store.savePath('groups',scnPath(sc)+'/tagOpts',opts);
+    var mt=sc.mtags||{};
+    Object.keys(mt).forEach(function(id){ var a=mt[id]||[]; if(a.indexOf(old)>=0){ var na=a.filter(function(x){return x!==old;}); Store.savePath('groups',scnPath(sc)+'/mtags/'+id, na.length?na:null); } });
+    closeSheet(); sheetTagOpts(); toast('已刪除標籤'); },
   editAirlines:function(){ var e=airDef('eva')||{}, c=airDef('ci')||{};
     openSheet({title:'航空公司名稱',focus:true,body:
       '<div class="muted">改成這次實際搭的航空公司即可，徽章顏色不變（綠色 / 紅色）。</div>'+
