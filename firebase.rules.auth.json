@@ -1,0 +1,15 @@
+{
+  "rules": {
+    "trip": {
+      ".read": true,
+      ".write": "auth != null",
+      "$doc": {
+        ".validate": "newData.hasChildren() && newData.child('_ts').isNumber()"
+      }
+    },
+    "$other": {
+      ".read": false,
+      ".write": false
+    }
+  }
+}

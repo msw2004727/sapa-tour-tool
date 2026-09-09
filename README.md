@@ -81,3 +81,11 @@
 ## 授權
 
 MIT
+
+
+## 六、v2.0 之後的安全選項（建議出發前打開）
+
+1. **PIN 已改為雜湊保存**：資料庫裡只有 `settings.pinHash`，看不到明文。舊資料的明文 `pin` 會在領隊第一次用舊 PIN 解鎖後自動升級刪除。
+2. **匿名登入**（可選）：Firebase 主控台 → Authentication → 登入方式 → 啟用「匿名」；把 `firebase.rules.auth.json` 的內容貼到 Realtime Database → 規則並發布；`config.js` 的 `auth` 改成 `'anon'`。之後只有開過網頁（自動匿名登入）的裝置能寫入，掃描網址的機器人寫不進來。
+3. **旅程結束後**：把規則的 `".write"` 改成 `false`，資料庫就變唯讀，不會被事後改動。
+4. **強制更新**：領隊在資料庫 `trip/settings/minVersion` 填入版本號（例如 `2.1`），舊版手機會跳出「有新版本，點此重新載入」。

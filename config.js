@@ -19,5 +19,6 @@ window.SAPA_CONFIG = {
     appId: '1:301019651563:web:984b972fea9f6593ee8dae'
   },
   path: 'trip',               // 資料庫裡的根節點名稱，一團一個（第二團可改成 trip2）
+  auth: '',                   // '' = 不登入（知道網址就能讀寫）；'anon' = 匿名登入（搭配 firebase.rules.auth.json，只有登入過的裝置能寫）
   firebaseVersion: '10.14.1'  // Firebase SDK 版本，正常不用改
 };
