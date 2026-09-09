@@ -548,7 +548,7 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
 <script src="./config.js"></script>
 <script>
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '2.5';
+var APP_VERSION = '2.6';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -951,8 +951,11 @@ function tzParts(tz){
   }
 }
 function parseDate(s){ var p=(s||'').split('-').map(Number); if(p.length<3||isNaN(p[0])) return NaN; return Date.UTC(p[0],p[1]-1,p[2]); }
+function ymd(t){ if(isNaN(t)) return ''; var d=new Date(t); return d.getUTCFullYear()+'-'+pad(d.getUTCMonth()+1)+'-'+pad(d.getUTCDate()); }
 var WD=['日','一','二','三','四','五','六'];
-function dayDate(n){ var st=S().settings; var t=parseDate(st.startDate); if(isNaN(t)) return ''; var d=new Date(t+(n-1)*86400000); return (d.getUTCMonth()+1)+'/'+d.getUTCDate()+'（'+WD[d.getUTCDay()]+'）'; }
+/* 2026-09-24 → 9/24（四） */
+function mdw(s){ var t=parseDate(s); if(isNaN(t)) return ''; var d=new Date(t); return (d.getUTCMonth()+1)+'/'+d.getUTCDate()+'（'+WD[d.getUTCDay()]+'）'; }
+function dayDate(n){ var t=parseDate(S().settings.startDate); if(isNaN(t)) return ''; return mdw(ymd(t+(n-1)*86400000)); }
 function dayInfo(){
   var st=S().settings, vn=tzParts(VN), days=st.days||5;
   var start=parseDate(st.startDate), today=parseDate(vn.date);
@@ -963,24 +966,44 @@ function dayInfo(){
   if(diff>=days) return {idx:days,status:'after',days:days,diff:diff};
   return {idx:diff+1,status:'on',days:days,diff:diff};
 }
-function fmtDur(min){ if(min>=60) return Math.floor(min/60)+' 小時 '+(min%60?(min%60)+' 分':''); return min+' 分鐘'; }
-function countdown(){
+function fmtDur(min){
+  if(min>=1440){ var dd=Math.floor(min/1440), hh=Math.floor((min%1440)/60); return dd+' 天'+(hh?' '+hh+' 小時':''); }
+  if(min>=60) return Math.floor(min/60)+' 小時 '+(min%60?(min%60)+' 分':'');
+  return min+' 分鐘';
+}
+/* 集合日期：優先用領隊在廣播裡選的 b.date；舊廣播沒有日期時，出發前一律當成第 1 天（出發日），
+   旅程中／結束後當成今天——這樣既有的廣播不用重存也能算對。 */
+function bcDate(){
+  var b=S().broadcast||{}, st=S().settings;
+  if(b.date&&!isNaN(parseDate(b.date))) return b.date;
+  if(dayInfo().status==='before'&&!isNaN(parseDate(st.startDate))) return st.startDate;
+  return tzParts(VN).date;
+}
+/* 距離集合還有幾分鐘（負數＝已經過了）；沒設集合時間就回 null。跨日靠 bcDate() 補上天數差。 */
+function bcDiffMin(){
   var b=S().broadcast; if(!b||!b.time||b.time.indexOf(':')<0) return null;
   var vn=tzParts(VN), p=b.time.split(':').map(Number);
-  var diff=(p[0]*60+p[1])-(vn.h*60+vn.m);
-  if(diff>0) return {text:'還有 '+fmtDur(diff),late:false};
+  var d0=parseDate(vn.date), d1=parseDate(bcDate());
+  var days=(isNaN(d0)||isNaN(d1))?0:Math.round((d1-d0)/86400000);
+  return days*1440+(p[0]*60+p[1])-(vn.h*60+vn.m);
+}
+function countdown(){
+  var diff=bcDiffMin(); if(diff===null) return null;
+  var bd=bcDate(), pre=(bd===tzParts(VN).date)?'':(mdw(bd)+' · ');
+  if(diff>0) return {text:pre+'還有 '+fmtDur(diff),late:false};
   if(diff===0) return {text:'集合時間到了！',late:true};
   if(diff>-240) return {text:'已過 '+fmtDur(-diff),late:true};
   return null;
 }
-/* 標頭用的短倒數：1 小時以上 12h22、不足 1 小時 45分、過了就 已過 5 分 */
+/* 標頭用的短倒數：跨日 15天／2天8h、1 小時以上 12h22、不足 1 小時 45分、過了就 已過 5分 */
 function countdownShort(){
   var b=S().broadcast;
   if(!b||b.idle) return {text:'自由活動',cls:'none'};
-  if(!b.time||b.time.indexOf(':')<0) return {text:'待公布',cls:'none'};
-  var vn=tzParts(VN), p=b.time.split(':').map(Number);
-  var diff=(p[0]*60+p[1])-(vn.h*60+vn.m);
-  function hm(n){ var h=Math.floor(n/60), m=n%60; return h>0 ? h+'h'+pad(m) : m+'分'; }
+  var diff=bcDiffMin();
+  if(diff===null) return {text:'待公布',cls:'none'};
+  function hm(n){ var d=Math.floor(n/1440), h=Math.floor((n%1440)/60), m=n%60;
+    if(d>0) return d+'天'+((d<3&&h>0)?h+'h':'');
+    return h>0 ? h+'h'+pad(m) : m+'分'; }
   if(diff>0) return {text:hm(diff), cls:(diff<=30?'late':'')};
   if(diff===0) return {text:'時間到',cls:'late'};
   if(diff>-240) return {text:'已過 '+hm(-diff),cls:'late'};
@@ -1842,7 +1865,12 @@ function sheetLeaderMenu(){
 }
 function sheetBroadcast(){
   var b=S().broadcast||{}, cur=items().filter(function(x){return x.isCurrent;})[0];
+  /* 集合日期：有日期才算得出跨日倒數（例如出發前先公布出發當天 05:30 的機場集合） */
+  var st=S().settings, today=tzParts(VN).date, tmr=ymd(parseDate(today)+86400000);
+  var picks=[[today,'今天'],[tmr,'明天']];
+  if(st.startDate&&!isNaN(parseDate(st.startDate))&&st.startDate!==today&&st.startDate!==tmr) picks.push([st.startDate,'出發日 '+dayDate(1).split('（')[0]]);
   openSheet({title:'修改即時廣播',focus:true,body:
+    fld('集合日期',inp('date',b.date||bcDate(),'date')+'<div class="chips" style="margin-top:.4rem">'+picks.map(function(x){ return '<button type="button" class="chip pick" data-act="chipSet" data-target="date" data-val="'+esc(x[0])+'">'+esc(x[1])+'</button>'; }).join('')+'</div>')+
     fld('集合時間（當地，24 小時制）',timeField('time',b.time)+'<div class="chips" style="margin-top:.4rem">'+[15,30,45,60].map(function(m){return '<button type="button" class="chip pick" data-act="chipTimeFromNow" data-min="'+m+'">現在＋'+m+'分</button>';}).join('')+'</div>')+
     fld('動作',inp('label',b.label||'原地集合')+chipsFill('label',['原地集合','大廳集合','上車','餐廳集合','纜車站集合']))+
     fld('集合地點（建議 12 字以內，手機才不換行）',inp('location',b.location)+(cur?'<div class="chips" style="margin-top:.4rem"><button type="button" class="chip pick" data-act="chipSet" data-target="location" data-val="'+esc(cur.title)+'">帶入目前站：'+esc(cur.title)+'</button></div>':''))+
@@ -2059,6 +2087,8 @@ function sheetNbItem(pgId,id,head){
 /* ===== 事件處理 ===== */
 function scnPath(sc){ var g=S().groups||{}; return 'scenarios/'+(g.scenarios||[]).indexOf(sc); }
 function nowPlus(min){ var vn=tzParts(VN); var t=vn.h*60+vn.m+min; t=t%1440; return pad(Math.floor(t/60))+':'+pad(t%60); }
+/* 「現在＋N 分」跨過午夜時，日期要跟著進位，不然倒數會變成「已過」 */
+function nowPlusDate(min){ var vn=tzParts(VN); var t=vn.h*60+vn.m+min; return ymd(parseDate(vn.date)+Math.floor(t/1440)*86400000); }
 function stamp(){ return tzParts(VN).hm; }
 var ACT={
   tab:function(t){ P.tab=t.getAttribute('data-tab'); if(t.getAttribute('data-scn')) P.scn=t.getAttribute('data-scn'); if(P.tab==='tools') P.tool='menu'; closeSheet(); render(); window.scrollTo(0,0); },
@@ -2098,7 +2128,7 @@ var ACT={
   setAirline:function(t){ var m=member(t.getAttribute('data-id')); if(!m) return; closeSheet(); Store.savePath('members','items/'+members().indexOf(m)+'/airline', t.getAttribute('data-v')||''); toast(m.name+'：'+(airDef(m.airline)?airDef(m.airline).short:'未設定')); },
   delMember:function(){ var id=SHEET.id; S().members.items=members().filter(function(m){return m.id!==id;}); closeSheet(); Store.save('members'); toast('已移出名單'); },
   editBroadcast:function(){ sheetBroadcast(); },
-  saveBroadcast:function(){ var b=S().broadcast; b.time=sv('time'); b.idle=false; b.label=sv('label')||'集合'; b.location=sv('location'); b.tip=sv('tip'); b.updatedAt=stamp(); closeSheet(); Store.save('broadcast'); toast('廣播已更新，全團手機會同步'); },
+  saveBroadcast:function(){ var b=S().broadcast; b.date=sv('date'); b.time=sv('time'); b.idle=false; b.label=sv('label')||'集合'; b.location=sv('location'); b.tip=sv('tip'); b.updatedAt=stamp(); closeSheet(); Store.save('broadcast'); toast('廣播已更新，全團手機會同步'); },
   clearBroadcast:function(){ openSheet({title:'清空目前廣播？',body:
     '<div class="muted">清空後，首頁廣播卡會改成顯示：</div>'+
     '<div class="hero" style="margin-top:.6rem"><div class="lab">'+ic('megaphone')+'領隊即時廣播</div><div class="time" style="font-size:1.9rem">自由活動</div><div class="loc"><span>目前沒有集合安排，請等領隊下次廣播通知。</span></div></div>'+
@@ -2106,9 +2136,9 @@ var ACT={
     foot:'<button class="btn" data-act="sheetClose">取消</button><button class="btn warn" data-act="clearBroadcastGo">'+ic('trash')+'確定清空</button>'}); },
   clearBroadcastGo:function(){ var b=S().broadcast; b.time=''; b.label=''; b.location=''; b.tip=''; b.idle=true; b.updatedAt=stamp();
     closeSheet(); Store.save('broadcast'); toast('已清空，現在顯示「自由活動」'); },
-  bumpTime:function(t){ var b=S().broadcast; b.time=nowPlus(Number(t.getAttribute('data-min'))); b.idle=false; b.updatedAt=stamp(); Store.save('broadcast'); toast('集合時間改為 '+b.time); },
+  bumpTime:function(t){ var b=S().broadcast, n=Number(t.getAttribute('data-min')); b.time=nowPlus(n); b.date=nowPlusDate(n); b.idle=false; b.updatedAt=stamp(); Store.save('broadcast'); toast('集合時間改為 '+b.time); },
   chipSet:function(t){ var e=el('sheetRoot').querySelector('[name="'+t.getAttribute('data-target')+'"]'); if(e){ e.value=t.getAttribute('data-val'); e.focus(); } },
-  chipTimeFromNow:function(t){ setTimeField('time',nowPlus(Number(t.getAttribute('data-min')))); },
+  chipTimeFromNow:function(t){ var n=Number(t.getAttribute('data-min')); setTimeField('time',nowPlus(n)); var d=el('sheetRoot').querySelector('[name="date"]'); if(d) d.value=nowPlusDate(n); },
   pick:function(t){ var g=t.parentNode; g.querySelectorAll('button').forEach(function(b){b.classList.remove('on');}); t.classList.add('on'); var h=el('sheetRoot').querySelector('input[name="'+g.getAttribute('data-group')+'"]'); if(h) h.value=t.getAttribute('data-val'); },
   pickMulti:function(t){ t.classList.toggle('on'); var g=t.getAttribute('data-group'); var vals=[]; t.parentNode.querySelectorAll('.on').forEach(function(b){vals.push(b.getAttribute('data-val'));}); var h=el('sheetRoot').querySelector('input[name="'+g+'"]'); if(h) h.value=vals.join(','); },
   editMorning:function(){ sheetMorning(); },
