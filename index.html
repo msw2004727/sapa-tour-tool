@@ -275,6 +275,31 @@ h2.sec{margin:.25rem 0 0;font-size:1rem;font-weight:900;color:var(--ink-2);displ
 .total .v{font-size:1.75rem;font-weight:900;font-variant-numeric:tabular-nums;line-height:1.1}
 .total .t{font-size:1.35rem;font-weight:900;color:var(--indigo);margin-top:.2rem}
 .total .r{font-size:.8rem;color:var(--ink-3);font-weight:700;margin-top:.3rem}
+/* 資訊卡（工具箱長文） */
+.info-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:.85rem .9rem;line-height:1.6}
+.info-card .ic-h{display:flex;align-items:center;gap:.4rem;font-weight:900;font-size:1.02rem;margin-bottom:.4rem;white-space:nowrap;word-break:keep-all}
+.info-card .ic-h svg.i{color:var(--indigo);flex-shrink:0}
+.info-card p{margin:0;font-weight:600;color:var(--ink-2)}
+.info-card b{font-weight:900;color:var(--ink)}
+ol.steps{margin:0;padding-left:1.4rem;display:grid;gap:.55rem;font-weight:600;color:var(--ink-2)}
+ol.steps li::marker{font-weight:900;color:var(--indigo)}
+ul.dots{margin:0;padding-left:1.15rem;display:grid;gap:.6rem;font-weight:600;color:var(--ink-2)}
+ul.dots li::marker{color:var(--indigo)}
+dl.kv2{margin:0;display:grid;gap:0}
+dl.kv2 dt{font-weight:900;color:var(--ink);white-space:nowrap;word-break:keep-all;margin-top:.55rem}
+dl.kv2 dt:first-child{margin-top:0}
+dl.kv2 dd{margin:.15rem 0 .55rem;font-weight:700;color:var(--ink-2);line-height:1.5;border-bottom:1px dashed var(--line);padding-bottom:.55rem}
+dl.kv2 dd:last-child{border-bottom:0;padding-bottom:0;margin-bottom:0}
+/* 飯店 Wi-Fi 卡 */
+.wifi-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:.75rem .9rem}
+.wifi-card .wf-h{display:flex;align-items:center;gap:.4rem;font-size:1.02rem;margin-bottom:.5rem;white-space:nowrap}
+.wifi-card .wf-h svg.i{color:var(--indigo)}
+.wifi-card .wf-h .sp{flex:1}
+.wifi-card .wf-row{display:flex;align-items:center;gap:.5rem;padding:.4rem 0;border-top:1px solid var(--line)}
+.wifi-card .wf-k{color:var(--ink-3);font-weight:800;white-space:nowrap;word-break:keep-all;flex-shrink:0}
+.wifi-card .wf-v{flex:1;min-width:0;font-weight:900;font-size:1.05rem;word-break:break-all;font-variant-numeric:tabular-nums}
+.wifi-card .wf-row .btn{flex-shrink:0}
+.wifi-card .wf-note{margin-top:.5rem;color:var(--ink-3);font-weight:700;font-size:.9rem;line-height:1.45}
 .warn-box{background:var(--alert-2);border-left:4px solid var(--alert);border-radius:10px;padding:.6rem .75rem;font-weight:800;line-height:1.45;font-size:.95rem;display:flex;gap:.45rem;align-items:flex-start}
 .warn-box svg.i{color:var(--alert);margin-top:.15rem}
 /* phrase list */
@@ -491,6 +516,7 @@ var ICONS = {
   shuffle:'<path d="M16 3h5v5"/><path d="M4 20L21 3"/><path d="M21 16v5h-5"/><path d="M15 15l6 6"/><path d="M4 4l5 5"/>',
   taxi:'<path d="M5 11l2-5h10l2 5"/><rect x="3" y="11" width="18" height="7" rx="2"/><path d="M7 18v2M17 18v2M7 14h.01M17 14h.01"/>',
   wifi:'<path d="M5 10a10 10 0 0 1 14 0"/><path d="M8 13a6 6 0 0 1 8 0"/><path d="M12 17h.01"/>',
+  plug:'<path d="M9 3v6"/><path d="M15 3v6"/><path d="M6 9h12v3a6 6 0 0 1-6 6 6 6 0 0 1-6-6z"/><path d="M12 18v3"/>',
   sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
   bed:'<path d="M3 18V8"/><path d="M3 12h18v6"/><path d="M3 12V9a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v3"/>',
   plus:'<path d="M12 5v14M5 12h14"/>',
@@ -592,8 +618,8 @@ var DEFAULTS = {
     embassyPhone:'',
     currentHotelId:'sapa',
     hotels:[
-      {id:'sapa',name:"沙壩 Pao's Sapa Leisure Hotel",nameVi:"Khách sạn Pao's Sapa Leisure",addrVi:'Tổ dân phố Cầu Mây 1, Sa Pa, Lào Cai 31752, Việt Nam',phone:'',wifi:'入住時公布',breakfast:'06:00–09:00',leaderRoom:'',nights:'第 1、2、3 晚'},
-      {id:'train',name:'夜臥火車 Chapa Express',nameVi:'Tàu Chapa Express · Ga Lào Cai',addrVi:'Ga Lào Cai, Phố Mới, TP. Lào Cai, Lào Cai',phone:'',wifi:'車上沒有 Wi-Fi',breakfast:'車上不供餐，抵達河內後用早餐',leaderRoom:'',nights:'第 4 晚（老街 → 河內）'}
+      {id:'sapa',name:"沙壩 Pao's Sapa Leisure Hotel",nameVi:"Khách sạn Pao's Sapa Leisure",addrVi:'Tổ dân phố Cầu Mây 1, Sa Pa, Lào Cai 31752, Việt Nam',phone:'',wifi:'入住時公布',wifiPass:'入住時公布',breakfast:'06:00–09:00',leaderRoom:'',nights:'第 1、2、3 晚'},
+      {id:'train',name:'夜臥火車 Chapa Express',nameVi:'Tàu Chapa Express · Ga Lào Cai',addrVi:'Ga Lào Cai, Phố Mới, TP. Lào Cai, Lào Cai',phone:'',wifi:'車上沒有 Wi-Fi',wifiPass:'',breakfast:'車上不供餐，抵達河內後用早餐',leaderRoom:'',nights:'第 4 晚（老街 → 河內）'}
     ],
     morning:{wake:'',breakfast:'',luggage:'',depart:'',note:'領隊每晚會在這裡公布明早時間。'}
   },
@@ -977,7 +1003,7 @@ function checkStats(pg){ var items=(pg.items||[]).filter(function(i){return i.ki
 function hotel(){ var st=S().settings; return (st.hotels||[]).filter(function(h){return h.id===st.currentHotelId;})[0]||(st.hotels||[])[0]||{}; }
 
 /* ===== 畫面渲染 ===== */
-var TABS=[['home','首頁','home'],['plan','行程','calendar'],['rooms','房號','key'],['groups','分組','users'],['notes','提醒','book'],['tools','工具','grid']];
+var TABS=[['home','首頁','home'],['plan','行程','calendar'],['rooms','房號','key'],['groups','分組','users'],['tools','工具','grid']];
 function render(){
   document.documentElement.setAttribute('data-fs',P.fs);
   if(P.theme) document.documentElement.setAttribute('data-theme',P.theme);
@@ -1224,7 +1250,7 @@ function hotelCard(){
   var ho=hotel(), cs=contacts();
   var sum=esc((ho.name||'').replace(/\s*[–—-]\s*.*$/,''))||'待公布';
   var inner='<div style="font-size:1.1rem;font-weight:900;margin-bottom:.5rem">'+esc(ho.name||'')+'</div>'+
-    '<dl class="kv"><dt>Wi-Fi</dt><dd>'+esc(ho.wifi||'—')+'</dd><dt>早餐</dt><dd>'+esc(ho.breakfast||'—')+'</dd>'+(ho.leaderRoom?'<dt>領隊房號</dt><dd>'+esc(ho.leaderRoom)+'</dd>':'')+'</dl>'+
+    '<dl class="kv"><dt>Wi-Fi</dt><dd>'+esc(ho.wifi||'—')+'</dd>'+(ho.wifiPass?'<dt>密碼</dt><dd>'+esc(ho.wifiPass)+'</dd>':'')+'<dt>早餐</dt><dd>'+esc(ho.breakfast||'—')+'</dd>'+(ho.leaderRoom?'<dt>領隊房號</dt><dd>'+esc(ho.leaderRoom)+'</dd>':'')+'</dl>'+
     '<div class="row" style="margin-top:.7rem">'+(ho.addrVi||ho.nameVi||ho.name?'<a class="btn" href="'+mapHref((ho.nameVi||ho.name)+' '+(ho.addrVi||''))+'" target="_blank" rel="noopener">'+ic('pin')+'走回飯店</a>':'')+'<button class="btn warn" data-act="fullTaxi">'+ic('taxi')+'計程車回飯店卡</button>'+(cs[0]&&cs[0].phone?'<a class="btn" href="'+telHref(cs[0].phone)+'">'+ic('phone')+'撥給'+esc(cs[0].name)+'</a>':'')+'</div>';
   return foldCard('hotel','bed','目前住宿',esc(ho.nights||''),sum,inner,0);
 }
@@ -1244,6 +1270,7 @@ function flightCard(soon){
 /* --- 旅遊提醒記事本 --- */
 VIEWS.notes=function(){
   var ps=nbPages(), pg=nbPage(), h=[];
+  h.push('<div style="display:flex;align-items:center;gap:.5rem"><button class="btn sm" data-act="tab" data-tab="tools">‹ 工具</button><b style="font-size:1.15rem">旅遊提醒記事本</b></div>');
   h.push('<div class="nb-tabs">'+ps.map(function(p){ var cs=p.type==='check'?checkStats(p):null; return '<button class="chip pick'+(pg&&p.id===pg.id?' on':'')+'" data-act="nbTab" data-id="'+p.id+'">'+esc(p.icon||'')+' '+esc(p.title)+(cs?' <span style="opacity:.75">'+cs.done+'/'+cs.total+'</span>':'')+'</button>'; }).join('')+(P.leader?'<button class="chip pick" data-act="nbEditPage" data-id="">'+ic('plus')+'頁籤</button>':'')+'</div>');
   if(!pg) return h.join('')+'<div class="card muted">記事本還沒有內容'+(P.leader?'，點上方「＋頁籤」開始':'')+'</div>';
   var isCheck=pg.type==='check', cs=isCheck?checkStats(pg):null;
@@ -1296,6 +1323,17 @@ VIEWS.plan=function(){
   return h.join('');
 };
 
+/* 飯店 Wi-Fi（領隊可編輯） */
+function wifiCard(ho){
+  var n=(ho.wifi||'').trim(), pw=(ho.wifiPass||'').trim();
+  return '<section class="wifi-card">'+
+    '<div class="wf-h">'+ic('wifi')+'<b>飯店 Wi-Fi</b>'+(P.leader?'<span class="sp"></span><button class="btn sm" data-act="editHotel" data-id="'+esc(ho.id||'')+'">'+ic('edit')+'編輯</button>':'')+'</div>'+
+    '<div class="wf-row"><span class="wf-k">名稱</span><span class="wf-v">'+(n?esc(n):'待公布')+'</span>'+(n?'<button class="btn sm" data-act="copyTxt" data-v="'+esc(n)+'">複製</button>':'')+'</div>'+
+    '<div class="wf-row"><span class="wf-k">密碼</span><span class="wf-v">'+(pw?esc(pw):'待公布')+'</span>'+(pw?'<button class="btn sm" data-act="copyTxt" data-v="'+esc(pw)+'">複製</button>':'')+'</div>'+
+    '<div class="wf-note">連不上請到櫃台問，或跟領隊說。</div>'+
+  '</section>';
+}
+
 /* --- 房號 / 名單 --- */
 VIEWS.rooms=function(){
   var h=[], st=S().settings, ho=hotel();
@@ -1303,6 +1341,7 @@ VIEWS.rooms=function(){
   if(P.roomsSeg==='rooms'){
     h.push('<div class="card" style="padding:.7rem .9rem"><div style="font-weight:900;font-size:1.05rem">'+esc(ho.name||'')+'</div><div class="muted">'+esc(ho.nights||'')+(ho.leaderRoom?' · 領隊 '+esc(ho.leaderRoom)+' 房':'')+(members().some(function(m){return m.room;})?'':' · 房號待領隊分配')+'</div>'+
       (P.leader?'<div class="row" style="margin-top:.6rem"><button class="btn sm" data-act="editRooms">'+ic('edit')+'批次改房號</button><button class="btn sm" data-act="pickHotel">'+ic('bed')+'切換入住飯店</button></div>':'')+'</div>');
+    h.push(wifiCard(ho));
     var byRoom={}, none=[];
     members().forEach(function(m){ if(m.room){ (byRoom[m.room]=byRoom[m.room]||[]).push(m); } else none.push(m); });
     var keys=Object.keys(byRoom).sort(function(a,b){ return a.localeCompare(b,undefined,{numeric:true}); });
@@ -1350,7 +1389,7 @@ VIEWS.groups=function(){
     (P.leader?'<button class="chip pick" data-act="editScenario" data-id="">'+ic('plus')+'情境</button>':'')+'</div>');
   if(isAir) return h.join('')+airlineView();
   if(!sc) return h.join('')+'<div class="card muted">尚無分組情境</div>';
-  if(P.leader) h.push('<div class="row"><button class="btn pri" data-act="shuffle">'+ic('shuffle')+'一鍵隨機分組</button><button class="btn" data-act="editScenario" data-id="'+sc.id+'">'+ic('edit')+'組數／名稱</button></div><div class="hint-lead">'+ic('info')+'隨機分組會讓同房的人在同一組；點任一位團員可移到別組</div>');
+  if(P.leader) h.push('<div class="row"><button class="btn pri" data-act="shuffle">'+ic('shuffle')+'一鍵隨機分組</button><button class="btn" data-act="clearGroups">'+ic('refresh')+'一鍵清除分組</button><button class="btn" data-act="editScenario" data-id="'+sc.id+'">'+ic('edit')+'組數／名稱</button></div><div class="hint-lead">'+ic('info')+'隨機分組會讓同房的人在同一組；點任一位團員可移到別組</div>');
   var buckets=[], un=[]; for(var i=0;i<sc.count;i++) buckets.push([]);
   members().forEach(function(m){ var gi=sc.assign?sc.assign[m.id]:undefined; if(gi===undefined||gi===null||gi<0||gi>=sc.count) un.push(m); else buckets[gi].push(m); });
   buckets.forEach(function(b,i){
@@ -1367,17 +1406,23 @@ VIEWS.tools=function(){
     case 'money': return toolMoney();
     case 'phrases': return toolPhrases();
     case 'sos': return toolSOS();
+    case 'esim': return toolESIM();
+    case 'tips': return toolTips();
+    case 'power': return toolPower();
     case 'rollcall': return P.leader?toolRollcall():toolMenu();
     default: return toolMenu();
   }
 };
 function toolMenu(){
   var st=S().settings, h=[];
-  h.push('<h2 class="sec">'+ic('grid')+'沙壩在地救命工具箱</h2><div class="stack">'+
+  h.push('<h2 class="sec">'+ic('grid')+'越南實用工具箱</h2><div class="stack">'+
     '<button class="btn big warn" data-act="fullTaxi">'+ic('taxi')+'<span class="b2">計程車回飯店卡<small>全螢幕越文，直接出示給司機</small></span></button>'+
     '<button class="btn big" data-act="tool" data-tool="money">'+ic('cash')+'<span class="b2">越幣點鈔速算<small>按鈔票就算台幣，不用打字</small></span></button>'+
     '<button class="btn big" data-act="tool" data-tool="phrases">'+ic('chat')+'<span class="b2">越語點餐與溝通圖卡<small>溫水、不要香菜、多少錢…</small></span></button>'+
     '<button class="btn big" data-act="tool" data-tool="sos">'+ic('alert')+'<span class="b2">緊急求助與走失卡<small>聯絡電話、113 / 115、駐外館處</small></span></button>'+
+    '<button class="btn big" data-act="tool" data-tool="esim">'+ic('wifi')+'<span class="b2">eSIM 網路卡怎麼買<small>KKday、Saily，安裝步驟與注意</small></span></button>'+
+    '<button class="btn big" data-act="tool" data-tool="tips">'+ic('cash')+'<span class="b2">越南小費文化<small>該給多少、哪些場合要給</small></span></button>'+
+    '<button class="btn big" data-act="tool" data-tool="power">'+ic('plug')+'<span class="b2">電壓與插頭<small>220V、雙圓孔、能不能直接插</small></span></button>'+
   '</div>');
   h.push('<button class="btn big block" data-act="tab" data-tab="notes">'+ic('book')+'<span class="b2">旅遊提醒記事本<small>小常識、走散處理、行前準備</small></span></button>');
   if(P.leader){
@@ -1390,6 +1435,86 @@ function toolMenu(){
     '</div><div class="row"><button class="btn dng" data-act="resetDemo">'+ic('refresh')+'重置為初始資料</button><button class="btn" data-act="leaderLock">'+ic('lock')+'鎖定領隊模式</button></div>');
   }
   return h.join('');
+}
+/* eSIM 網路卡 */
+function toolESIM(){
+  return backBar('eSIM 網路卡怎麼買')+
+  '<div class="info-card"><div class="ic-h">'+ic('info')+'什麼是 eSIM</div>'+
+    '<p>不用換實體 SIM 卡，直接在手機裡「下載」一組越南門號上網。出國前在台灣就能買好，落地開機就有網路，不必到機場排隊買卡，也不會弄丟原本的 SIM 卡。</p></div>'+
+
+  '<h2 class="sec">'+ic('cash')+'方法一：KKday</h2>'+
+  '<div class="info-card"><p style="margin-bottom:.6rem">買完把 QR Code 寄到你的 email，自己掃描安裝。</p><ol class="steps">'+
+    '<li>打開 KKday 網站或 App，搜尋「<b>越南 eSIM</b>」。</li>'+
+    '<li>挑天數與流量。我們是 5 天 4 夜，選 <b>5～7 天</b>、每日 1～2GB 的方案就很夠用（看影片多的人選吃到飽）。</li>'+
+    '<li>結帳後 <b>QR Code 會寄到你的 email</b>，沒收到請先看垃圾郵件匣。</li>'+
+    '<li>出發前一天在家用 Wi-Fi 掃描 QR Code 安裝（安裝要有網路）。</li>'+
+    '<li>落地越南後，到「設定 → 行動網路」把這張新的 eSIM 打開、開啟數據漫遊就會通。</li>'+
+  '</ol>'+
+  '<div class="warn-box" style="margin-top:.6rem">'+ic('alert')+'<span><b>QR Code 只能掃一次</b>，掃了就綁定那支手機，不能換機也不能刪掉重來。掃之前先確定是要用的那支手機。</span></div></div>'+
+
+  '<h2 class="sec">'+ic('wifi')+'方法二：Saily App</h2>'+
+  '<div class="info-card"><p style="margin-bottom:.6rem">買、裝、開通全部在同一個 App 裡完成。</p><ol class="steps">'+
+    '<li>App Store／Google Play 下載 <b>Saily</b>，用 Apple ID 或 Google 帳號註冊。</li>'+
+    '<li>點「Explore Plans」→ 搜尋 <b>Vietnam（越南）</b>，選流量與天數。</li>'+
+    '<li>用信用卡、Apple Pay 或 Google Pay 付款。</li>'+
+    '<li>付完在 App 裡點「<b>Install eSIM</b>」，iPhone 會自動加入行動方案；Android 到「設定 → 網路 → SIM → 下載 eSIM」。</li>'+
+    '<li>Saily 的流量是<b>第一次連上越南電信時才開始算</b>，所以可以在台灣提早裝好，不會浪費天數。</li>'+
+  '</ol></div>'+
+
+  '<h2 class="sec">'+ic('alert')+'eSIM 注意須知</h2>'+
+  '<div class="info-card"><ul class="dots">'+
+    '<li><b>先確認手機支援 eSIM。</b>iPhone XS（2018）以後大多支援，但<b>中國大陸版 iPhone 不支援</b>；Android 看 Google Pixel 3 以後、三星 S20 以後的國際版，<b>台灣買的三星多半不支援</b>。不確定就撥 <b>*#06#</b>，畫面有出現「EID」才代表支援。</li>'+
+    '<li><b>安裝一定要有網路。</b>在台灣用家裡或飯店 Wi-Fi 裝好最保險，落地後才裝可能連不上網而卡住。</li>'+
+    '<li><b>不要刪掉原本的台灣門號。</b>eSIM 是額外加一組，台灣號碼留著才能收簡訊驗證碼；只要把「行動數據」切到越南那張、台灣那張<b>關掉數據漫遊</b>就不會被扣漫遊費。</li>'+
+    '<li><b>KKday 的 QR Code 只能掃一次</b>，Saily 可以在 App 內重新安裝，怕操作失誤的人選 Saily 比較保險。</li>'+
+    '<li><b>eSIM 多半只有數據、沒有電話號碼</b>，不能打電話或收簡訊。要打電話請用 LINE、Messenger 語音通話。</li>'+
+    '<li>落地後如果沒網路：關飛航模式再開一次 → 確認新 eSIM 已開啟 → 打開「數據漫遊」 → 還是不行就重開機。</li>'+
+    '<li>沙壩山區、番西邦纜車上訊號會變差，這是正常的，不是卡有問題。</li>'+
+    '<li>不想自己弄的人可以直接用飯店 Wi-Fi，或跟領隊說，出發前一起處理。</li>'+
+  '</ul></div>';
+}
+/* 小費文化 */
+function toolTips(){
+  return backBar('越南小費文化')+
+  '<div class="info-card"><div class="ic-h">'+ic('info')+'一句話結論</div>'+
+    '<p>越南<b>沒有強制小費</b>的規定，不給也不會被白眼。但在觀光區給一點是常見的禮貌，金額小、心意到就好。</p></div>'+
+  '<h2 class="sec">'+ic('cash')+'常見場合與行情</h2>'+
+  '<div class="info-card"><dl class="kv2">'+
+    '<dt>飯店房務</dt><dd>每天 20,000～50,000 越盾，放在枕頭上或桌上</dd>'+
+    '<dt>行李員</dt><dd>每件行李 20,000～50,000 越盾</dd>'+
+    '<dt>餐廳</dt><dd>帳單如果已收 5～10% service charge 就不用再給；沒收的話留零錢即可</dd>'+
+    '<dt>按摩</dt><dd>50,000～100,000 越盾，做得舒服再給</dd>'+
+    '<dt>計程車 / Grab</dt><dd>不用給，湊整數不用找零就很夠</dd>'+
+    '<dt>導遊 / 司機</dt><dd>團體行程通常由領隊統一處理，個人不必另外給</dd>'+
+  '</dl></div>'+
+  '<h2 class="sec">'+ic('alert')+'給小費的眉角</h2>'+
+  '<div class="info-card"><ul class="dots">'+
+    '<li><b>準備小面額。</b>10,000、20,000、50,000 越盾各留幾張，不然只有 500,000 大鈔會很尷尬。</li>'+
+    '<li><b>用越盾，不要給台幣或硬幣。</b>外幣硬幣他們換不掉，等於沒給。</li>'+
+    '<li><b>雙手遞、面帶微笑</b>，或直接放在桌上；不要丟或塞。</li>'+
+    '<li>服務讓你不舒服就<b>不用給</b>，不要有壓力。</li>'+
+    '<li>小心「找零陷阱」：越盾 20,000 和 500,000 顏色接近，付錢與找零時<b>看清楚位數</b>再收。</li>'+
+  '</ul></div>';
+}
+/* 電壓與插頭 */
+function toolPower(){
+  return backBar('電壓與插頭')+
+  '<div class="info-card"><div class="ic-h">'+ic('info')+'越南的電</div>'+
+    '<p><b>電壓 220V、頻率 50Hz</b>（台灣是 110V、60Hz）。插座大多是<b>雙圓孔</b>，很多飯店是圓孔與扁孔通用的萬用插座。</p></div>'+
+  '<h2 class="sec">'+ic('check')+'哪些東西可以直接插</h2>'+
+  '<div class="info-card"><ul class="dots">'+
+    '<li><b>手機、平板、筆電、相機充電器：可以直接用。</b>這類變壓器上都印著「INPUT 100–240V」，本來就吃全球電壓。</li>'+
+    '<li>台灣的<b>兩腳扁插頭</b>大多可以直接插進越南的萬用插座；插不進去就用一個小圓轉接頭（台灣的百元商店或機場都買得到）。</li>'+
+    '<li>行動電源、行李秤、電動牙刷等 USB 充電的東西也都沒問題。</li>'+
+  '</ul></div>'+
+  '<h2 class="sec">'+ic('alert')+'這些千萬不要直接插</h2>'+
+  '<div class="info-card"><ul class="dots">'+
+    '<li><b>台灣帶去的吹風機、電湯匙、捲髮棒、小電鍋</b>——這類只吃 110V，直接插 220V 會燒掉甚至冒煙。飯店都有吹風機，不用自己帶。</li>'+
+    '<li>插上去前先<b>看變壓器上的字</b>：有「100–240V」才安全，只寫「110V」就不能用。</li>'+
+    '<li>轉接頭<b>只轉形狀、不會降電壓</b>，不要以為插了轉接頭就安全。真的要用 110V 電器要買「變壓器」。</li>'+
+  '</ul></div>'+
+  '<div class="info-card"><div class="ic-h">'+ic('info')+'順帶提醒</div>'+
+    '<p>沙壩山區偶爾會短暫停電，手機與行動電源<b>睡前先充飽</b>。夜臥火車上的插座不一定每個舖位都有，建議帶一顆行動電源。</p></div>';
 }
 /* 越幣速算 */
 function twd(vnd){ var r=Number(S().settings.vndPerTwd)||820; return Math.round(vnd/r); }
@@ -1602,11 +1727,12 @@ function sheetHotel(){
     '<div class="stack">'+(st.hotels||[]).map(function(h){ return '<button class="btn" data-act="editHotel" data-id="'+h.id+'">'+ic('edit')+'編輯：'+esc(h.name)+'</button>'; }).join('')+'<button class="btn" data-act="editHotel" data-id="">'+ic('plus')+'新增飯店</button></div>'});
 }
 function sheetHotelEdit(id){
-  var st=S().settings, h=(st.hotels||[]).filter(function(x){return x.id===id;})[0]||{name:'',nameVi:'',addrVi:'',phone:'',wifi:'',breakfast:'',leaderRoom:'',nights:''};
+  var st=S().settings, h=(st.hotels||[]).filter(function(x){return x.id===id;})[0]||{name:'',nameVi:'',addrVi:'',phone:'',wifi:'',wifiPass:'',breakfast:'',leaderRoom:'',nights:''};
   openSheet({title:id?'編輯飯店':'新增飯店',focus:true,body:
     fld('飯店名稱（中文＋英文）',inp('name',h.name))+fld('越文全名（給司機看）',inp('nameVi',h.nameVi))+fld('越文地址',inp('addrVi',h.addrVi))+
     '<div class="grid2">'+fld('飯店電話',inp('phone',h.phone,'tel'))+fld('領隊房號',inp('leaderRoom',h.leaderRoom))+'</div>'+
-    '<div class="grid2">'+fld('Wi-Fi',inp('wifi',h.wifi))+fld('入住晚數',inp('nights',h.nights,'text','placeholder="例：第 2、3 晚"'))+'</div>'+
+    '<div class="grid2">'+fld('Wi-Fi 名稱',inp('wifi',h.wifi,'text','placeholder="例：PaosSapa-Guest"'))+fld('Wi-Fi 密碼',inp('wifiPass',h.wifiPass,'text','placeholder="例：sapa2026"'))+'</div>'+
+    fld('入住晚數',inp('nights',h.nights,'text','placeholder="例：第 2、3 晚"'))+
     fld('早餐時間／地點',inp('breakfast',h.breakfast)),
     foot:footBtns('saveHotel',id?'<button class="btn dng" data-act="delHotel">刪除</button>':'')});
   SHEET.id=id;
@@ -1746,11 +1872,15 @@ var ACT={
   delItem:function(){ var id=SHEET.id; S().itinerary.items=items().filter(function(x){return x.id!==id;}); closeSheet(); Store.save('itinerary'); toast('已刪除'); },
   editRooms:function(){ sheetRooms(); },
   saveRooms:function(){ var map={}; el('sheetRoot').querySelectorAll('input[data-old]').forEach(function(i){ if(i.value.trim()) map[i.getAttribute('data-old')]=i.value.trim(); }); members().forEach(function(m){ var k=m.room||''; if(map[k]!==undefined) m.room=map[k]; }); closeSheet(); Store.save('members'); toast('房號已更新'); },
+  copyTxt:function(t){ var v=t.getAttribute('data-v')||'';
+    try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(v); toast('已複製：'+v); return; } }catch(e){}
+    try{ var ta=document.createElement('textarea'); ta.value=v; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); toast('已複製：'+v); }
+    catch(e){ toast('請長按文字手動複製'); } },
   pickHotel:function(){ sheetHotel(); },
   setHotel:function(t){ S().settings.currentHotelId=t.getAttribute('data-id'); closeSheet(); Store.save('settings'); toast('已切換入住飯店'); },
   editHotel:function(t){ sheetHotelEdit(t.getAttribute('data-id')||''); },
   saveHotel:function(){ var st=S().settings; st.hotels=st.hotels||[]; var h=SHEET.id?st.hotels.filter(function(x){return x.id===SHEET.id;})[0]:null; if(!h){ h={id:uid()}; st.hotels.push(h); if(!st.currentHotelId) st.currentHotelId=h.id; }
-    ['name','nameVi','addrVi','phone','leaderRoom','wifi','nights','breakfast'].forEach(function(k){ h[k]=sv(k); }); closeSheet(); Store.save('settings'); toast('飯店資料已儲存'); },
+    ['name','nameVi','addrVi','phone','leaderRoom','wifi','wifiPass','nights','breakfast'].forEach(function(k){ h[k]=sv(k); }); closeSheet(); Store.save('settings'); toast('飯店資料已儲存'); },
   delHotel:function(){ var st=S().settings; st.hotels=(st.hotels||[]).filter(function(x){return x.id!==SHEET.id;}); if(st.currentHotelId===SHEET.id) st.currentHotelId=(st.hotels[0]||{}).id||''; closeSheet(); Store.save('settings'); },
   shuffle:function(){ var sc=scenario(); if(!sc) return; var units={}, list=[]; members().forEach(function(m){ var k=m.room||('_'+m.id); (units[k]=units[k]||[]).push(m.id); }); Object.keys(units).forEach(function(k){list.push(units[k]);});
     for(var i=list.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var tmp=list[i]; list[i]=list[j]; list[j]=tmp; }
@@ -1758,6 +1888,10 @@ var ACT={
     list.forEach(function(u){ var gi=0; for(var g2=1;g2<sc.count;g2++) if(sizes[g2]<sizes[gi]) gi=g2; u.forEach(function(id){assign[id]=gi;}); sizes[gi]+=u.length; });
     sc.assign=assign; Store.save('groups'); toast('已隨機分成 '+sc.count+' 組（同房不拆）'); },
   editScenario:function(t){ sheetScenario(t.getAttribute('data-id')||''); },
+  clearGroups:function(){ var sc=scenario(); if(!sc) return;
+    openSheet({title:'清除「'+esc(sc.name)+'」的分組？',body:'<div class="muted">會把這個情境裡所有人的分組拿掉，全部回到「尚未分組」。其他情境不受影響，可以再按一次「一鍵隨機分組」重排。</div>',
+      foot:'<button class="btn" data-act="sheetClose">取消</button><button class="btn dng" data-act="clearGroupsGo">確定清除</button>'}); },
+  clearGroupsGo:function(){ var sc=scenario(); if(!sc) return; sc.assign={}; closeSheet(); Store.save('groups'); toast('已清除分組'); },
   saveScenario:function(){ var g=S().groups; g.scenarios=g.scenarios||[]; var sc=SHEET.id?scenario(SHEET.id):null; if(!sc){ sc={id:uid(),assign:{}}; g.scenarios.push(sc); P.scn=sc.id; }
     sc.name=sv('name')||'分組'; sc.count=Number(sv('count'))||2; var names=sv('names')?sv('names').split(/[、,，]/).map(function(s){return s.trim();}):[]; sc.names=[]; for(var i=0;i<sc.count;i++) sc.names.push(names[i]||('第 '+(i+1)+' 組')); closeSheet(); Store.save('groups'); },
   delScenario:function(){ var g=S().groups; g.scenarios=(g.scenarios||[]).filter(function(x){return x.id!==SHEET.id;}); P.scn=''; closeSheet(); Store.save('groups'); },
