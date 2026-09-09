@@ -217,11 +217,11 @@ h2.sec{margin:.25rem 0 0;font-size:1rem;font-weight:900;color:var(--ink-2);displ
 .mc{display:flex;align-items:center;gap:.6rem;border-radius:12px;padding:.6rem .7rem;min-height:3.6rem;background:#fff;color:#1B2437;border:2px solid #D9E0E8;position:relative;text-align:left;width:100%}
 .mc.bg-yellow{background:#FFF1A8}.mc.bg-pink{background:#FFD9E3}.mc.bg-green{background:#DDF3C9}.mc.bg-blue{background:#D8E9FF}
 .mc.bd-gold{border:3px solid #C99A1E}.mc.bd-red{border:3px dashed #D32F2F}.mc.bd-black{border:3px solid #1B2437}
-.mc .em{font-size:1.5rem;width:2rem;text-align:center;flex-shrink:0;line-height:1}
+.mc .em{width:2rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1}
 .mc .em.none{width:.2rem}
 .mc .tx{min-width:0;flex:1}
-.mc .nm{font-size:1.125rem;font-weight:900;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mc .rk{font-size:.85rem;color:#4A5568;font-weight:700;margin-top:.1rem;line-height:1.25}
+.mc .nm{display:block;font-size:1.125rem;font-weight:900;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mc .rk{display:block;font-size:.85rem;color:#4A5568;font-weight:700;margin-top:.22rem;line-height:1.3}
 .mc .rt{text-align:right;font-size:.8rem;font-weight:900;color:#4A5568;flex-shrink:0;white-space:nowrap;line-height:1.25}
 .al{display:inline-flex;align-items:center;justify-content:center;width:1.8rem;height:1.8rem;border-radius:50%;font-size:.62rem;font-weight:900;color:#fff;flex-shrink:0;letter-spacing:.02em;line-height:1;box-shadow:0 1px 2px rgba(0,0,0,.2)}
 .al.eva{background:#0A7A4C}
@@ -313,7 +313,7 @@ h2.sec{margin:.25rem 0 0;font-size:1rem;font-weight:900;color:var(--ink-2);displ
 .nb-tabs{display:flex;gap:.4rem;flex-wrap:wrap;padding:.1rem 0 .2rem}
 .nb-title{display:flex;align-items:center;gap:.5rem;margin:.2rem 0 0}
 .nb-title h2{margin:0;font-size:1.25rem;font-weight:900;flex:1;min-width:0}
-.prog{height:.6rem;background:var(--indigo-2);border-radius:999px;overflow:hidden;margin-top:.45rem}
+.prog{height:.55rem;background:var(--line);border-radius:999px;overflow:hidden;margin-top:0}
 .prog i{display:block;height:100%;background:var(--terrace);border-radius:999px;transition:width .2s}
 .nb-head{font-size:.85rem;font-weight:900;color:var(--ink-3);letter-spacing:.08em;margin:.7rem 0 -.15rem;display:flex;align-items:center;gap:.4rem}
 .nb-head::after{content:"";flex:1;height:1px;background:var(--line)}
@@ -403,6 +403,29 @@ select.in{appearance:none;-webkit-appearance:none}
 .btn.line svg.i{width:1.1rem;height:1.1rem}
 .tag.map{background:var(--indigo-2);color:var(--indigo);border-color:transparent;text-decoration:none;font-weight:900}
 .tag.map svg.i{color:var(--indigo)}
+/* 彩色徽章 SVG */
+svg.bdg{width:1.7rem;height:1.7rem;display:block;flex-shrink:0}
+svg.bdg.lg{width:2.1rem;height:2.1rem}
+.icon-btn svg.bdg{width:19px;height:19px}
+.leader-bar svg.bdg,h2.sec svg.bdg{width:1.15rem;height:1.15rem}
+.bdg-hint{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.3rem .6rem;margin-top:.45rem}
+.bdg-hint span{display:flex;align-items:center;gap:.35rem;font-size:.82rem;font-weight:700;color:var(--ink-3);white-space:nowrap;word-break:keep-all}
+.bdg-hint svg.bdg{width:1.2rem;height:1.2rem}
+.sw button svg.bdg{margin:0 auto}
+/* 出發前準備卡 */
+.prep-top{display:flex;align-items:baseline;gap:.35rem;margin-bottom:.4rem}
+.prep-top .n{font-size:1.6rem;font-weight:900;line-height:1;font-variant-numeric:tabular-nums;color:var(--terrace)}
+.prep-top .d{font-size:.95rem;font-weight:800;color:var(--ink-2)}
+.prep-top .sp{flex:1}
+.prep-top .pc{font-size:.85rem;font-weight:900;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.prep-lab{font-size:.82rem;font-weight:900;color:var(--ink-3);margin:.7rem 0 .4rem;white-space:nowrap;word-break:keep-all}
+.prep-done{display:flex;align-items:center;gap:.45rem;margin-top:.7rem;background:var(--terrace-2);color:var(--terrace);
+  border-radius:12px;padding:.6rem .7rem;font-weight:900;font-size:.95rem}
+.prep-note{display:flex;align-items:flex-start;gap:.35rem;margin-top:.55rem;font-size:.8rem;font-weight:700;color:var(--ink-3);line-height:1.4}
+.prep-note svg.i{width:1rem;height:1rem;flex-shrink:0;margin-top:.1rem}
+.ck-row.sm{min-height:2.9rem;padding:.5rem .65rem;font-size:.95rem}
+.ck-row.sm .box{width:1.35rem;height:1.35rem;border-radius:5px}
+.ck-row.sm .box svg.i{width:.85rem;height:.85rem}
 </style>
 </head>
 <body>
@@ -425,7 +448,7 @@ select.in{appearance:none;-webkit-appearance:none}
     </div>
   </header>
   <div class="sync" id="syncBar"><span class="dot"></span><span id="syncText">讀取中…</span><span class="sp"></span><span class="sync-r" id="syncRight"></span></div>
-  <div class="leader-bar" id="leaderBar" hidden>👑 領隊管理模式：可直接點卡片修改<span class="sp"></span><button data-act="leaderLock">鎖定</button></div>
+  <div class="leader-bar" id="leaderBar" hidden><span id="leaderBarIcon"></span>領隊管理模式：可直接點卡片修改<span class="sp"></span><button data-act="leaderLock">鎖定</button></div>
   <main id="view"></main>
   <nav class="tabbar" id="tabbar" aria-label="主選單"></nav>
 </div>
@@ -499,8 +522,19 @@ var TAGS = {
   bed:{icon:'bed',label:'入住'}
 };
 var TAG_ICONS = ['coat','shoes','toilet','rain','meal','ticket','mountain','bus','cash','walk','camera','thermo','bed','cup','wifi','taxi','clock','flag','star','alert','info','pin','phone','key','plane','book','check','users','calendar'];
-var EMOJIS = ['👑','🚩','🌟','🥗','🍵','💊','🧳','📸'];
-var EMOJI_HINT = {'👑':'總隊長 / 車長','🚩':'小組長','🌟':'壽星','🥗':'素食','🍵':'需溫熱水','💊':'易暈車','🧳':'行李協助','📸':'攝影'};
+/* 長輩卡片徽章：彩色 inline SVG（不用 emoji，各手機顯示才會一致） */
+var BADGES = [
+  {id:'lead',label:'總隊長 / 車長',svg:'<path d="M2.6 8.4l3.6 2.6 4.2-5.6a1.9 1.9 0 0 1 3.2 0l4.2 5.6 3.6-2.6a1 1 0 0 1 1.6 1L20.8 18H3.2L1 9.4a1 1 0 0 1 1.6-1z" fill="#E0A82E"/><rect x="3" y="18.6" width="18" height="2.6" rx="1.1" fill="#B8860F"/>'},
+  {id:'group',label:'小組長',svg:'<rect x="4.4" y="3" width="2.2" height="18" rx="1.1" fill="#6B7280"/><path d="M7.4 4.2h11.4a.7.7 0 0 1 .55 1.13L17 8.2l2.35 2.87a.7.7 0 0 1-.55 1.13H7.4z" fill="#E03B2F"/>'},
+  {id:'star',label:'壽星',svg:'<rect x="3" y="12" width="18" height="8.6" rx="2.2" fill="#EC5C8D"/><rect x="3" y="15.4" width="18" height="1.7" fill="#FAB6CE"/><rect x="11.1" y="6.4" width="1.8" height="5.6" rx=".9" fill="#F5C542"/><path d="M12 2.6c1.6 1.5 2.2 2.4 2.2 3.2a2.2 2.2 0 1 1-4.4 0c0-.8.6-1.7 2.2-3.2z" fill="#F5822B"/>'},
+  {id:'veg',label:'素食',svg:'<path d="M4 20C4 11 9.5 4 20 4c0 10.5-7 16-16 16z" fill="#2F9E4F"/><path d="M4.8 19.4C8.2 14 12.2 10.6 17 8.2" stroke="#EAF7EE" stroke-width="1.7" stroke-linecap="round" fill="none"/>'},
+  {id:'warm',label:'需溫熱水',svg:'<path d="M3.4 9h13.2v7a4 4 0 0 1-4 4H7.4a4 4 0 0 1-4-4z" fill="#EA7317"/><path d="M17.2 10.6h1.4a2.3 2.3 0 0 1 0 4.6h-1.4" fill="none" stroke="#EA7317" stroke-width="1.8"/><path d="M7.6 6.6c0-1 1.2-1.4 1.2-2.5M12 6.6c0-1 1.2-1.4 1.2-2.5" stroke="#F7B071" stroke-width="1.7" stroke-linecap="round" fill="none"/>'},
+  {id:'pill',label:'易暈車',svg:'<g transform="rotate(-45 12 12)"><rect x="2.5" y="8.5" width="19" height="7" rx="3.5" fill="#6D4CB0"/><path d="M12 8.5h6a3.5 3.5 0 0 1 0 7h-6z" fill="#C9B7EC"/></g>'},
+  {id:'bag',label:'行李協助',svg:'<rect x="9" y="3.2" width="6" height="4.6" rx="1.5" fill="none" stroke="#1A66D0" stroke-width="1.9"/><rect x="3" y="7.4" width="18" height="12.6" rx="2.2" fill="#1A66D0"/><rect x="11.1" y="9.4" width="1.8" height="8.7" rx=".9" fill="#A9CBF5"/>'},
+  {id:'photo',label:'攝影',svg:'<path d="M9.2 4h5.6l1.3 2.2H20a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.2a2 2 0 0 1 2-2h3.9z" fill="#00796B"/><circle cx="12" cy="13" r="4.1" fill="#FFFFFF"/><circle cx="12" cy="13" r="2.3" fill="#00796B"/>'}
+];
+/* 舊資料相容：先前存的是 emoji 字元 */
+var BADGE_FROM_EMOJI = {'👑':'lead','🚩':'group','🌟':'star','🥗':'veg','🍵':'warm','💊':'pill','🧳':'bag','📸':'photo'};
 var BGS = [['bg-white','白'],['bg-yellow','鵝黃'],['bg-pink','粉紅'],['bg-green','草綠'],['bg-blue','淺藍']];
 var BDS = [['bd-grey','一般'],['bd-gold','金框'],['bd-red','紅虛線'],['bd-black','粗黑框']];
 /* 航空公司小圓徽章：同團分搭兩家航空時，機場分航廈集合用 */
@@ -980,7 +1014,8 @@ function renderHeader(){
   if(!P.theme){ tb.innerHTML=ic('auto'); tb.title='目前：跟隨系統'; tb.setAttribute('aria-label','主題：跟隨系統'); }
   else if(P.theme==='light'){ tb.innerHTML=ic('sun'); tb.title='目前：淺色'; tb.setAttribute('aria-label','主題：淺色'); }
   else { tb.innerHTML=ic('moon'); tb.title='目前：深色'; tb.setAttribute('aria-label','主題：深色'); }
-  var b=el('btnLeader'); b.innerHTML=P.leader?'👑':ic('lock'); b.classList.toggle('on',!!P.leader);
+  var b=el('btnLeader'); b.innerHTML=P.leader?badgeSVG('lead'):ic('lock'); b.classList.toggle('on',!!P.leader);
+  var lb=el('leaderBarIcon'); if(lb&&!lb.innerHTML) lb.innerHTML=badgeSVG('lead');
 }
 function isDark(){ if(P.theme) return P.theme==='dark'; var h=document.documentElement.getAttribute('data-theme'); if(h==='dark'||h==='light') return h==='dark'; try{ return window.matchMedia('(prefers-color-scheme: dark)').matches; }catch(e){ return false; } }
 /* 系統深淺色改變時，若目前是「跟隨系統」就重畫（CSS 會自己換色，這裡只是同步標題列的圖示） */
@@ -1057,6 +1092,12 @@ function tagDef(id){ var l=tagList(); for(var i=0;i<l.length;i++) if(l[i].id===i
 function tagsHTML(tags,place){ var out=(tags||[]).map(function(t){ var d=tagDef(t); return d?'<span class="tag">'+ic(d.icon)+esc(d.label)+'</span>':''; }).join('');
   if(place) out+='<a class="tag map" href="'+mapHref(place)+'" target="_blank" rel="noopener" aria-label="用 Google 地圖走到「'+esc(place)+'」">'+ic('pin')+'地圖路線</a>';
   return out?'<div class="tags">'+out+'</div>':''; }
+/* 徽章：吃新的 id，也吃舊資料存的 emoji 字元 */
+function badgeDef(v){ if(!v) return null; var k=BADGE_FROM_EMOJI[v]||v;
+  for(var i=0;i<BADGES.length;i++) if(BADGES[i].id===k) return BADGES[i];
+  return null; }
+function badgeSVG(v,cls){ var d=badgeDef(v); if(!d) return '';
+  return '<svg class="bdg'+(cls?' '+cls:'')+'" viewBox="0 0 24 24" role="img" aria-label="'+esc(d.label)+'"><title>'+esc(d.label)+'</title>'+d.svg+'</svg>'; }
 function memberCard(m,opt){
   opt=opt||{}; if(!m) return '';
   var cls='mc '+(m.bg||'bg-white')+' '+(m.border||'bd-grey')+(opt.sm?' sm':'')+(P.meId===m.id?' me':'')+(opt.pk?' pk':'');
@@ -1065,7 +1106,7 @@ function memberCard(m,opt){
   else if(opt.right==='groups'){ var g1=groupNameOf('meal',m.id), g2=groupNameOf('shuttle',m.id); right='<div class="rt">'+(m.room?esc(m.room)+' 房<br>':'')+esc([g1,g2].filter(Boolean).join(' · '))+'</div>'; }
   var tag=opt.tag||'button';
   return '<'+tag+' class="'+cls+'" data-act="'+(opt.act||'memberTap')+'" data-id="'+m.id+'"'+(opt.extra||'')+'>'+
-    '<span class="em'+(m.emoji?'':' none')+'">'+esc(m.emoji||'')+'</span>'+
+    '<span class="em'+(badgeDef(m.emoji)?'':' none')+'">'+badgeSVG(m.emoji)+'</span>'+
     '<span class="tx"><span class="nm">'+esc(m.name)+'</span>'+(!opt.sm&&m.remark?'<span class="rk">'+esc(m.remark)+'</span>':'')+'</span>'+airlineBadge(m.airline)+right+'</'+tag+'>';
 }
 function airlineBadge(a,lg){ var d=AIRLINES[a]; if(!d) return ''; return '<span class="al '+d.cls+(lg?' lg':'')+'" title="'+d.label+'">'+d.label+'</span>'; }
@@ -1148,9 +1189,23 @@ function prepCard(){
   if(!prep) return '';
   var cs=checkStats(prep), pct=cs.total?Math.round(cs.done/cs.total*100):0;
   var done=(cs.done>=cs.total&&cs.total);
-  var inner='<div class="prog"><i style="width:'+pct+'%"></i></div>'+
-    '<div class="muted" style="margin:.45rem 0 .6rem">勾選只存在你自己的手機。</div>'+
-    '<button class="btn block soft" data-act="nbGo" data-id="'+prep.id+'">逐項勾選 '+ic('arrow')+'</button>';
+  var ck=(P.checks||{})[prep.id]||{};
+  var todo=(prep.items||[]).filter(function(i){ return i.kind!=='head' && !ck[i.id]; });
+  var SHOW=4, show=todo.slice(0,SHOW);
+  var inner='<div class="prep-top"><span class="n">'+cs.done+'</span><span class="d">/ '+cs.total+' 項已備妥</span>'+
+      '<span class="sp"></span><span class="pc">'+pct+'%</span></div>'+
+    '<div class="prog"><i style="width:'+pct+'%"></i></div>';
+  if(done){
+    inner+='<div class="prep-done">'+ic('check')+'<span>全部備妥，可以安心出發了。</span></div>';
+  } else {
+    inner+='<div class="prep-lab">還沒準備的（點一下就打勾）</div>'+
+      '<div class="stack" style="gap:.45rem">'+show.map(function(it){
+        return '<button class="ck-row sm" data-act="nbCheck" data-pg="'+prep.id+'" data-id="'+it.id+'"><span class="box">'+ic('check')+'</span><span class="tx">'+esc(it.text)+'</span></button>';
+      }).join('')+'</div>';
+  }
+  inner+='<button class="btn block soft" style="margin-top:.6rem" data-act="nbGo" data-id="'+prep.id+'">'+
+      (done?'重看完整清單':'看全部 '+cs.total+' 項')+' '+ic('arrow')+'</button>'+
+    '<div class="prep-note">'+ic('info')+'<span>勾選只存在你自己的手機，清單內容由領隊更新。</span></div>';
   return foldCard('prep','check',esc(prep.title||'出發前準備'),(done?'全部備妥':'已備 '+cs.done+' / '+cs.total),(done?'✅ 全部備妥':cs.done+' / '+cs.total+' 已備妥'),inner,1);
 }
 
@@ -1326,7 +1381,7 @@ function toolMenu(){
   '</div>');
   h.push('<button class="btn big block" data-act="tab" data-tab="notes">'+ic('book')+'<span class="b2">旅遊提醒記事本<small>小常識、走散處理、行前準備</small></span></button>');
   if(P.leader){
-    h.push('<h2 class="sec">👑 領隊專區</h2><div class="stack">'+
+    h.push('<h2 class="sec">'+badgeSVG('lead')+'領隊專區</h2><div class="stack">'+
       '<button class="btn big" data-act="tool" data-tool="rollcall">'+ic('clipboard')+'<span class="b2">集合點名<small>誰還沒到</small></span></button>'+
       '<button class="btn big" data-act="editBroadcast">'+ic('megaphone')+'<span class="b2">修改廣播<small>時間、地點、叮嚀</small></span></button>'+
       '<button class="btn big" data-act="settings">'+ic('gear')+'<span class="b2">團務設定<small>日期、PIN、電話</small></span></button>'+
@@ -1437,7 +1492,7 @@ function sheetPin(){
   SHEET.pin='';
 }
 function sheetLeaderMenu(){
-  openSheet({title:'👑 領隊管理',body:'<div class="stack">'+
+  openSheet({title:'領隊管理',body:'<div class="stack">'+
     '<button class="btn big" data-act="tool" data-tool="rollcall">'+ic('clipboard')+'<span class="b2">集合點名</span></button>'+
     '<button class="btn big" data-act="editBroadcast">'+ic('megaphone')+'<span class="b2">修改即時廣播</span></button>'+
     '<button class="btn big" data-act="editMorning">'+ic('sun')+'<span class="b2">明早時程</span></button>'+
@@ -1513,7 +1568,8 @@ function sheetMember(id){
   if(!m) return;
   openSheet({title:id?'編輯長輩卡片':'新增團員',focus:true,body:
     fld('姓名或暱稱',inp('name',m.name))+
-    fld('徽章',swatches('emoji',[['','無']].concat(EMOJIS.map(function(e){return [e,EMOJI_HINT[e]||e];})),m.emoji||'',function(v,l){return v||'無';})+'<div class="muted" style="margin-top:.3rem">'+EMOJIS.map(function(e){return e+' '+EMOJI_HINT[e];}).join('　')+'</div>')+
+    fld('徽章',swatches('emoji',[['','無']].concat(BADGES.map(function(d){return [d.id,d.label];})),badgeDef(m.emoji)?badgeDef(m.emoji).id:'',function(v,l){ return v?badgeSVG(v,'lg'):'無'; })+
+      '<div class="bdg-hint">'+BADGES.map(function(d){return '<span>'+badgeSVG(d.id)+esc(d.label)+'</span>';}).join('')+'</div>')+
     fld('底色',swatches('bg',BGS,m.bg||'bg-white',function(v,l){return '<span class="mc sm '+v+'" style="min-height:2rem;padding:.2rem .5rem;width:auto;border-width:1px">'+l+'</span>';}))+
     fld('邊框',swatches('border',BDS,m.border||'bd-grey',function(v,l){return '<span class="mc sm '+v+'" style="min-height:2rem;padding:.2rem .5rem;width:auto">'+l+'</span>';}))+
     fld('航空公司（小圓徽章）',swatches('airline',[['','無'],['eva','長榮'],['ci','華航']],m.airline||'',function(v,l){return v?airlineBadge(v,true):'<span class="al lg none">無</span>';}))+
