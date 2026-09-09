@@ -555,7 +555,7 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
 <script src="./config.js"></script>
 <script>
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '2.8';
+var APP_VERSION = '2.9';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -1517,7 +1517,7 @@ VIEWS.plan=function(){
   var h=[];
   var fit=days<=6;
   h.push('<div class="dayrow'+(fit?' fit':'')+'" style="--days:'+days+'">'+Array.apply(null,{length:days}).map(function(_,i){ var n=i+1, today=(di.idx===n&&di.status==='on'); return '<button data-act="planDay" data-day="'+n+'" class="'+(P.planDay===n?'on':'')+(today?' today':'')+'" aria-label="第 '+n+' 天 '+esc(dayDate(n))+(today?' 今天':'')+'">'+(fit?'第'+n+'天':'第 '+n+' 天')+'<small>'+esc(fit?dayDate(n).split('（')[0]:dayDate(n))+(today?(fit?'':' 今天'):'')+'</small>'+(today?'<i class="td"></i>':'')+'</button>'; }).join('')+'</div>');
-  h.push('<div class="seg"><button class="'+(P.planMode==='simple'?'on':'')+'" data-act="planMode" data-mode="simple">'+ic('grid')+'長輩字卡</button><button class="'+(P.planMode==='detail'?'on':'')+'" data-act="planMode" data-mode="detail">'+ic('book')+'詳細介紹</button></div>');
+  h.push('<div class="seg"><button class="'+(P.planMode==='simple'?'on':'')+'" data-act="planMode" data-mode="simple">'+ic('grid')+'重點字卡</button><button class="'+(P.planMode==='detail'?'on':'')+'" data-act="planMode" data-mode="detail">'+ic('book')+'詳細介紹</button></div>');
   var list=items().filter(function(x){return x.day===P.planDay;});
   var hotelFor=(st.hotels||[]).filter(function(x){ return (x.nights||'').indexOf(String(P.planDay))>=0; })[0];
   h.push('<div class="day-title"><b>第 '+P.planDay+' 天</b><span class="muted">'+esc(dayDate(P.planDay))+(hotelFor?' · 夜宿 '+esc(hotelFor.name.split(' ')[0]):'')+'</span></div>');
