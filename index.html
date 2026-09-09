@@ -96,6 +96,13 @@ svg.i{width:1.25rem;height:1.25rem;flex-shrink:0;fill:none;stroke:currentColor;s
 .lcd .cd .k{font-size:9.5px;font-weight:900;color:var(--lcd-dim);letter-spacing:.06em;margin-right:.22rem;text-shadow:none}
 .lcd .cd.late{color:var(--lcd-red);text-shadow:0 0 8px var(--lcd-red-glow)}
 .lcd .cd.none{color:var(--lcd-dim);text-shadow:none}
+/* 窄螢幕＋放大字級時（例如 320px 配特大字），面板外圍的 rem 間距會變大，四段容易被切掉；
+   這裡整體縮一點，讓越南／台灣／集合倒數／連線狀態四段都還看得到，而不是把最後一段裁掉 */
+@media (max-width:360px){
+  html[data-fs="lg"] .lcd,html[data-fs="xl"] .lcd{gap:.18rem;padding-left:.3rem;padding-right:.3rem}
+  html[data-fs="lg"] .lcd .n,html[data-fs="xl"] .lcd .n{font-size:18px}
+  html[data-fs="lg"] .lcd .dv,html[data-fs="xl"] .lcd .dv{margin:0}
+}
 .sync .me{color:var(--ink);font-weight:900;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .icon-btn{position:relative;width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--ink-2);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:900;font-size:12px;padding:0;line-height:1}
 .icon-btn svg.i{width:17px;height:17px}
@@ -530,10 +537,10 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
     </div>
     <div class="top-r2">
       <div class="lcd" aria-live="off">
-        <span class="dot" id="hdDot"></span><span class="sy" id="hdSyncTx">連線中</span>
-        <span class="dv"></span><span class="cd" id="hdCountdown" hidden></span>
+        <span class="lb">越南</span><span class="n" id="clockVN">--:--</span>
         <span class="dv"></span><span class="tw">台灣 <span id="clockTW">--:--</span></span>
-        <span class="dv"></span><span class="lb">越南</span><span class="n" id="clockVN">--:--</span>
+        <span class="dv"></span><span class="cd" id="hdCountdown" hidden></span>
+        <span class="dv"></span><span class="dot" id="hdDot"></span><span class="sy" id="hdSyncTx">連線中</span>
       </div>
     </div>
   </header>
@@ -548,7 +555,7 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
 <script src="./config.js"></script>
 <script>
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '2.6';
+var APP_VERSION = '2.7';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
