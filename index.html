@@ -558,8 +558,8 @@ var DEFAULTS = {
     embassyPhone:'',
     currentHotelId:'sapa',
     hotels:[
-      {id:'hanoi',name:'河內飯店（待確認）',nameVi:'',addrVi:'',phone:'',wifi:'入住時公布',breakfast:'06:00–10:00 · 1F 餐廳',leaderRoom:'',nights:'第 1、4 晚'},
-      {id:'sapa',name:'沙壩 Hotel de la Coupole – MGallery',nameVi:'Khách sạn Hotel de la Coupole - MGallery Sapa',addrVi:'Số 1 Hoàng Liên, Thị xã Sa Pa, Lào Cai',phone:'+842143629999',wifi:'Coupole-Guest（免密碼）',breakfast:'06:30–10:00 · 1F Chic 餐廳',leaderRoom:'',nights:'第 2、3 晚'}
+      {id:'sapa',name:"沙壩 Pao's Sapa Leisure Hotel",nameVi:"Khách sạn Pao's Sapa Leisure",addrVi:'Tổ dân phố Cầu Mây 1, Sa Pa, Lào Cai 31752, Việt Nam',phone:'',wifi:'入住時公布',breakfast:'06:00–09:00',leaderRoom:'',nights:'第 1、2、3 晚'},
+      {id:'train',name:'夜臥火車 Chapa Express',nameVi:'Tàu Chapa Express · Ga Lào Cai',addrVi:'Ga Lào Cai, Phố Mới, TP. Lào Cai, Lào Cai',phone:'',wifi:'車上沒有 Wi-Fi',breakfast:'車上不供餐，抵達河內後用早餐',leaderRoom:'',nights:'第 4 晚（老街 → 河內）'}
     ],
     morning:{wake:'',breakfast:'',luggage:'',depart:'',note:'領隊每晚會在這裡公布明早時間。'}
   },
@@ -582,8 +582,8 @@ var DEFAULTS = {
      desc:'車程約 6 小時，中途休息站停 2 次可上洗手間。',
      detail:'河內到沙壩約 320 公里，走高速公路約 5.5～6 小時，是這趟最長的一段車程。\n容易暈車的人請在上車前 30 分鐘先吃暈車藥，坐前排、看遠方、少滑手機。\n山路後半段彎道多，隨身行李請放腳邊或行李架綁好。\n休息站有洗手間但不一定有衛生紙，請自備一小包。',
      tags:['bus','pill','toilet']},
-    {id:'d1e',day:1,place:'To dan pho Cau May 1, Sa Pa, Lao Cai',time:'18:00',title:'抵達沙壩入住',
-     desc:'抵達沙壩飯店，領隊發房卡。',
+    {id:'d1e',day:1,place:"Pao's Sapa Leisure Hotel, To dan pho Cau May 1, Sa Pa, Lao Cai",time:'18:00',title:'抵達沙壩入住',
+     desc:"入住 Pao's Sapa Leisure Hotel，領隊發房卡。",
      detail:'沙壩海拔約 1,500 公尺，晚上常降到 15 度以下，下車第一件事就是把外套拿出來。\n進房先確認：熱水、吹風機、插座、保險箱。有問題馬上跟領隊說，不要忍到隔天。\n這間飯店會住 3 個晚上（9/24、9/25、9/26），行李可以整個攤開，不用每天收。',
      tags:['bed','coat']},
     {id:'d1f',day:1,time:'19:00',title:'晚餐：飯店',
@@ -648,7 +648,7 @@ var DEFAULTS = {
      desc:'自由使用飯店設施，或自費去玻璃橋。',
      detail:'玻璃橋（Rồng Mây 龍雲玻璃橋）在沙壩往萊州的公路上，車程約 40 分鐘，門票需自費。\n想去的人請在前一晚跟領隊登記，人數夠才會安排車輛。\n懼高、有心臟病或高血壓的長輩不建議前往。\n不去的人可以留在飯店泡湯、泡咖啡，或到附近散步，12:00 前回房間收行李。',
      tags:['cash','camera']},
-    {id:'d4c',day:4,place:'To dan pho Cau May 1, Sa Pa, Lao Cai',time:'12:00',title:'退房・寄行李',
+    {id:'d4c',day:4,place:"Pao's Sapa Leisure Hotel, To dan pho Cau May 1, Sa Pa, Lao Cai",time:'12:00',title:'退房・寄行李',
      desc:'12:00 退房，行李統一寄放在飯店。',
      detail:'退房前請務必檢查：保險箱（很多人把護照忘在裡面）、浴室、床頭櫃、插座上的充電器。\n退房後行李寄放在飯店大廳，下午還可以自由活動，16:00 上車前再一起取。\n護照、錢包、藥品、當晚換洗衣物請放隨身包，不要放進寄放的大行李。',
      tags:['bed','ticket']},
@@ -665,8 +665,8 @@ var DEFAULTS = {
      detail:'上車前請把水裝滿、想吃的零食先買好，火車上沒有餐車。\n建議先換上舒服好睡的衣服。',
      tags:['meal']},
     {id:'d4g',day:4,place:'Lao Cai Railway Station',time:'21:30',title:'搭夜臥火車',
-     desc:'21:30 從老街發車，隔天清晨 05:30 抵達河內。',
-     detail:'臥鋪車廂是四人一間的上下舖，領隊會分配舖位，行李放在下舖底下或走道行李架。\n上舖有爬梯，長輩請睡下舖，上車先跟領隊講。\n貴重物品（護照、錢包、手機）請放在枕頭邊或隨身腰包，不要放在走道上。\n火車會搖晃且有聲音，帶耳塞和眼罩會好睡很多。\n車廂冷氣偏強，睡覺記得蓋好被子或加件外套。\n洗手間在車廂兩端，晚上走動請扶著扶手。',
+     desc:'Chapa Express 臥鋪，21:30 發車，隔天 05:30 抵達河內。',
+     detail:'搭的是 Chapa Express 觀光臥鋪列車，四人一間的上下舖，領隊會分配舖位，行李放在下舖底下或走道行李架。\n上舖有爬梯，長輩請睡下舖，上車先跟領隊講。\n貴重物品（護照、錢包、手機）請放在枕頭邊或隨身腰包，不要放在走道上。\n火車會搖晃且有聲音，帶耳塞和眼罩會好睡很多。\n車廂冷氣偏強，睡覺記得蓋好被子或加件外套。\n洗手間在車廂兩端，晚上走動請扶著扶手。',
      tags:['bed','coat','toilet','ticket']},
 
     /* ===== 第 5 天 9/28（日）河內 → 桃園 ===== */
