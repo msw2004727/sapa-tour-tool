@@ -605,7 +605,7 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
 <script src="./config.js"></script>
 <script>
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '3.5';
+var APP_VERSION = '3.6';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -1139,18 +1139,18 @@ function countdownShort(){
    這段只負責排版，實際傳送由 ACT.lineSend / ACT.copyShare 處理。 */
 function appUrl(){ try{ if(location.protocol.indexOf('http')===0) return location.origin+location.pathname; }catch(e){} return 'https://750hd.com/'; }
 function bcShareText(){
-  var s=S(), b=s.broadcast||{}, st=s.settings, name=st.tripName||'月半越南團旅', L=[];
+  var b=S().broadcast||{}, L=[];
+  /* 標題只留重點：貼到群組時前面不再掛團名，倒數也不寫
+     （群組訊息會留在對話紀錄裡，「還有幾小時」過幾分鐘就是錯的） */
   if(b.idle||!b.time){
-    L.push('📢 '+name+'｜'+(b.idle?'自由活動':'集合時間待公布'));
+    L.push('📢 '+(b.idle?'自由活動':'集合時間待公布'));
     L.push('');
     L.push(b.idle?'目前沒有集合安排，有事請直接聯絡領隊。':'集合時間還沒確定，確定後會再通知大家。');
   }else{
-    L.push('📢 '+name+'｜'+(b.label||'集合')+'通知');
+    L.push('📢 '+(b.label||'集合')+'通知');
     L.push('');
     L.push('🕒 '+mdw(bcDate())+b.time);
     L.push('📍 '+(b.location||'集合地點待公布'));
-    var d=bcDiffMin();
-    if(d!==null&&d>0) L.push('⏳ 距離現在還有 '+fmtDur(d));
     if(b.tip){ L.push(''); L.push('⚠️ '+b.tip); }
   }
   L.push('');
