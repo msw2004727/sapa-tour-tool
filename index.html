@@ -366,6 +366,9 @@ dl.kv2 dd:last-child{border-bottom:0;padding-bottom:0;margin-bottom:0}
 .ph .e{font-size:1.5rem;flex-shrink:0;width:2rem;text-align:center}
 .ph .zh{font-weight:900;font-size:1.05rem}
 .ph .vi{font-size:.9rem;color:var(--ink-3);font-weight:700}
+.ph .tx{flex:1;min-width:0}
+.ph .say-s{font-size:.88rem;color:var(--terrace);font-weight:800}
+.ph .phn{margin-left:auto;font-size:.8rem;font-weight:900;color:var(--ink-3);flex-shrink:0;white-space:nowrap}
 .ph svg.i{margin-left:auto;color:var(--ink-3)}
 /* emergency */
 .em-row{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem .6rem;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.6rem .8rem;min-height:3.6rem}
@@ -555,7 +558,7 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
 <script src="./config.js"></script>
 <script>
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '2.9';
+var APP_VERSION = '3.0';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -653,19 +656,79 @@ var NOTES = [
 ];
 
 /* 越語圖卡：出示給對方看為主，讀音只是輔助 */
+/* 溝通圖卡分類：先點分類、再點圖卡（張數多了才不會滑不完） */
+var PHRASE_CATS = [
+  {id:'hi',   e:'🙏', name:'基本禮貌',  sub:'你好、謝謝、聽不懂'},
+  {id:'eat',  e:'🍜', name:'點餐與飲食', sub:'溫水、不要香菜、過敏'},
+  {id:'shop', e:'🛒', name:'購物與殺價', sub:'多少錢、便宜一點、刷卡'},
+  {id:'go',   e:'🚕', name:'交通與問路', sub:'載我去、計費表、廁所'},
+  {id:'stay', e:'🏨', name:'飯店',      sub:'退房、寄行李、沒熱水'},
+  {id:'sick', e:'🤒', name:'身體不適',   sub:'頭暈、肚子痛、藥局'},
+  {id:'sos',  e:'🧭', name:'走散與緊急', sub:'走散卡、報警、救護車'}
+];
+/* say = 空耳中文：照著念就有七八分像，長輩不用學越南文也講得出口 */
 var PHRASES = [
-  {e:'🍵',zh:'溫開水，不加冰',vi:'Cho tôi xin nước ấm, không đá.',say:'糗 兜依 新 呢 暗，空 達'},
-  {e:'♨️',zh:'請給我熱水',vi:'Cho tôi xin nước nóng.',say:'糗 兜依 新 呢 弄'},
-  {e:'🌿',zh:'請不要放香菜',vi:'Xin đừng cho rau mùi.',say:'新 登 糗 繞 妹'},
-  {e:'🌶️',zh:'不要辣',vi:'Không cay.',say:'空 該'},
-  {e:'🥗',zh:'我吃素（全素）',vi:'Tôi ăn chay. Không thịt, không cá, không nước mắm.',say:'兜依 安 齋'},
-  {e:'💰',zh:'多少錢？',vi:'Bao nhiêu tiền?',say:'包 妞 電'},
-  {e:'😮',zh:'太貴了，便宜一點',vi:'Đắt quá! Bớt chút đi.',say:'達 瓜！播 竹 低'},
-  {e:'🚻',zh:'洗手間在哪裡？',vi:'Nhà vệ sinh ở đâu?',say:'呀 唯 星 兒 鬥'},
-  {e:'🧾',zh:'買單，謝謝',vi:'Tính tiền. Cảm ơn!',say:'丁 電，感 恩'},
-  {e:'🙏',zh:'謝謝 / 不用了',vi:'Cảm ơn. / Không cần, cảm ơn.',say:'感 恩 / 空 艮，感 恩'},
-  {e:'🧑‍🤝‍🧑',zh:'走散了，請幫我打電話',vi:'Tôi bị lạc đoàn du lịch. Xin gọi giúp hướng dẫn viên của tôi.',say:'（出示此卡並指向下方電話）',lost:true},
-  {e:'🆘',zh:'請幫我叫救護車 115',vi:'Tôi không khỏe. Xin gọi cấp cứu 115 giúp tôi.',say:'（出示此卡）'}
+  /* --- 基本禮貌 --- */
+  {cat:'hi',e:'👋',zh:'你好',vi:'Xin chào.',say:'新 照'},
+  {cat:'hi',e:'🙏',zh:'謝謝',vi:'Cảm ơn.',say:'感 恩'},
+  {cat:'hi',e:'🙇',zh:'對不起',vi:'Xin lỗi.',say:'新 羅依'},
+  {cat:'hi',e:'🙅',zh:'不用了，謝謝',vi:'Không cần, cảm ơn.',say:'空 艮，感 恩'},
+  {cat:'hi',e:'❓',zh:'我聽不懂',vi:'Tôi không hiểu.',say:'兜依 空 修'},
+  {cat:'hi',e:'✍️',zh:'請寫在這裡',vi:'Xin viết ra đây.',say:'新 越 匝 呆'},
+  {cat:'hi',e:'🐢',zh:'請說慢一點',vi:'Xin nói chậm lại.',say:'新 諾依 讚 賴'},
+  {cat:'hi',e:'⭕',zh:'好 / 不是',vi:'Vâng. / Không.',say:'翁 / 空'},
+  /* --- 點餐與飲食 --- */
+  {cat:'eat',e:'🍵',zh:'溫開水，不加冰',vi:'Cho tôi xin nước ấm, không đá.',say:'糗 兜依 新 呢 暗，空 達'},
+  {cat:'eat',e:'♨️',zh:'請給我熱水',vi:'Cho tôi xin nước nóng.',say:'糗 兜依 新 呢 弄'},
+  {cat:'eat',e:'🌿',zh:'請不要放香菜',vi:'Xin đừng cho rau mùi.',say:'新 登 糗 繞 妹'},
+  {cat:'eat',e:'🌶️',zh:'不要辣',vi:'Không cay.',say:'空 該'},
+  {cat:'eat',e:'🧂',zh:'請不要加味精',vi:'Xin đừng cho bột ngọt.',say:'新 登 糗 撥 諾'},
+  {cat:'eat',e:'🥗',zh:'我吃素（全素）',vi:'Tôi ăn chay. Không thịt, không cá, không nước mắm.',say:'兜依 安 齋'},
+  {cat:'eat',e:'🦐',zh:'我對海鮮過敏',vi:'Tôi bị dị ứng hải sản.',say:'兜依 逼 基 恩 嗨 賞'},
+  {cat:'eat',e:'🥜',zh:'我對花生過敏',vi:'Tôi bị dị ứng đậu phộng.',say:'兜依 逼 基 恩 豆 風'},
+  {cat:'eat',e:'👥',zh:'兩人份',vi:'Cho hai người ăn.',say:'糗 嗨 額 安'},
+  {cat:'eat',e:'👍',zh:'有什麼推薦的？',vi:'Có món gì ngon?',say:'果 蒙 記 濃'},
+  {cat:'eat',e:'🥢',zh:'請再給我一雙筷子',vi:'Cho tôi thêm một đôi đũa.',say:'糗 兜依 添 莫 堆 度'},
+  {cat:'eat',e:'🥡',zh:'請幫我打包',vi:'Cho tôi mang về.',say:'糗 兜依 芒 為'},
+  {cat:'eat',e:'🧾',zh:'買單，謝謝',vi:'Tính tiền. Cảm ơn!',say:'丁 電，感 恩'},
+  /* --- 購物與殺價 --- */
+  {cat:'shop',e:'💰',zh:'多少錢？',vi:'Bao nhiêu tiền?',say:'包 妞 電'},
+  {cat:'shop',e:'😮',zh:'太貴了，便宜一點',vi:'Đắt quá! Bớt chút đi.',say:'達 瓜！播 竹 低'},
+  {cat:'shop',e:'👀',zh:'我看看就好，謝謝',vi:'Tôi chỉ xem thôi, cảm ơn.',say:'兜依 機 顯 拖依，感 恩'},
+  {cat:'shop',e:'💳',zh:'可以刷卡嗎？',vi:'Tôi trả bằng thẻ được không?',say:'兜依 匝 幫 鐵 得 空'},
+  {cat:'shop',e:'🎨',zh:'有別的顏色嗎？',vi:'Có màu khác không?',say:'果 毛 卡 空'},
+  {cat:'shop',e:'👕',zh:'可以試穿嗎？',vi:'Tôi mặc thử được không?',say:'兜依 麥 圖 得 空'},
+  {cat:'shop',e:'🛍️',zh:'請幫我裝袋',vi:'Cho tôi cái túi.',say:'糗 兜依 蓋 堆'},
+  {cat:'shop',e:'✅',zh:'我要這個',vi:'Tôi lấy cái này.',say:'兜依 雷 蓋 耐'},
+  /* --- 交通與問路 --- */
+  {cat:'go',e:'🚕',zh:'請載我去這裡',vi:'Làm ơn đưa tôi đến đây.',say:'藍 恩 度 兜依 頂 呆'},
+  {cat:'go',e:'🧮',zh:'請開計費表',vi:'Xin bật đồng hồ tính tiền.',say:'新 拔 動 賀 丁 電'},
+  {cat:'go',e:'💵',zh:'到這裡多少錢？',vi:'Đến đây bao nhiêu tiền?',say:'頂 呆 包 妞 電'},
+  {cat:'go',e:'🛑',zh:'請在這裡停',vi:'Dừng ở đây.',say:'仲 兒 呆'},
+  {cat:'go',e:'⏱️',zh:'還要多久？',vi:'Còn bao lâu nữa?',say:'共 包 撈 呢'},
+  {cat:'go',e:'📍',zh:'這個地方在哪裡？',vi:'Chỗ này ở đâu?',say:'主 耐 兒 鬥'},
+  {cat:'go',e:'📱',zh:'請幫我叫一台車',vi:'Gọi giúp tôi một chiếc taxi.',say:'軌 族 兜依 莫 這 taxi'},
+  {cat:'go',e:'🚻',zh:'洗手間在哪裡？',vi:'Nhà vệ sinh ở đâu?',say:'呀 唯 星 兒 鬥'},
+  /* --- 飯店 --- */
+  {cat:'stay',e:'🏨',zh:'我住在這間飯店',vi:'Tôi ở khách sạn này.',say:'兜依 兒 卡 上 耐'},
+  {cat:'stay',e:'🕙',zh:'幾點要退房？',vi:'Mấy giờ phải trả phòng?',say:'埋 者 費 匝 峰'},
+  {cat:'stay',e:'🧳',zh:'可以寄放行李嗎？',vi:'Tôi gửi hành lý ở đây được không?',say:'兜依 規 漢 里 兒 呆 得 空'},
+  {cat:'stay',e:'🚿',zh:'房間沒有熱水',vi:'Phòng tôi không có nước nóng.',say:'峰 兜依 空 果 呢 弄'},
+  {cat:'stay',e:'📶',zh:'Wi-Fi 密碼是什麼？',vi:'Mật khẩu wifi là gì?',say:'麥 靠 wifi 拉 記'},
+  {cat:'stay',e:'🧻',zh:'請再給我一條毛巾',vi:'Cho tôi thêm một cái khăn tắm.',say:'糗 兜依 添 莫 蓋 看 膽'},
+  {cat:'stay',e:'❄️',zh:'冷氣壞了',vi:'Điều hòa bị hỏng.',say:'丟 華 逼 紅'},
+  /* --- 身體不適 --- */
+  {cat:'sick',e:'🤒',zh:'我不舒服',vi:'Tôi không khỏe.',say:'兜依 空 傀'},
+  {cat:'sick',e:'😵',zh:'我頭暈',vi:'Tôi bị chóng mặt.',say:'兜依 逼 中 麥'},
+  {cat:'sick',e:'🤢',zh:'我肚子痛',vi:'Tôi bị đau bụng.',say:'兜依 逼 到 崩'},
+  {cat:'sick',e:'💊',zh:'附近有藥局嗎？',vi:'Gần đây có nhà thuốc không?',say:'亙 呆 果 呀 拖 空'},
+  {cat:'sick',e:'🩺',zh:'我需要看醫生',vi:'Tôi cần đi khám bác sĩ.',say:'兜依 艮 低 康 拔 西'},
+  {cat:'sick',e:'🆘',zh:'請幫我叫救護車 115',vi:'Tôi không khỏe. Xin gọi cấp cứu 115 giúp tôi.',say:'（出示此卡）'},
+  /* --- 走散與緊急 --- */
+  {cat:'sos',e:'🧑‍🤝‍🧑',zh:'走散了，請幫我打電話',vi:'Tôi bị lạc đoàn du lịch. Xin gọi giúp hướng dẫn viên của tôi.',say:'（出示此卡並指向下方電話）',lost:true},
+  {cat:'sos',e:'🇹🇼',zh:'我是台灣來的旅客',vi:'Tôi là khách du lịch Đài Loan.',say:'兜依 拉 卡 租 力 呆 巒'},
+  {cat:'sos',e:'👮',zh:'請幫我報警 113',vi:'Xin gọi công an 113 giúp tôi.',say:'新 軌 工 安 113 族 兜依'},
+  {cat:'sos',e:'🗺️',zh:'請幫我看地圖，我迷路了',vi:'Tôi bị lạc đường. Xin xem giúp bản đồ này.',say:'兜依 逼 辣 冷。新 顯 族 半 抖 耐'}
 ];
 
 /* ===== 預設示範資料（正式使用時由領隊在管理模式修改，或由雲端資料覆蓋） ===== */
@@ -1032,7 +1095,7 @@ function mapBtn(place,cls){ if(!place) return ''; return '<a class="map-btn'+(cl
 function fmtPhone(p){ return String(p||'').replace(/^(\+886|\+84|\+\d{1,3})(\d{3})(\d{3})(\d+)$/,'$1 $2 $3 $4'); }
 
 /* ===== 本機偏好（每支手機各自保存；LINE 內建瀏覽器可能清空，所以全部都是可有可無的便利設定） ===== */
-var P={fs:'md',theme:'',meId:'',leader:false,tipDismissed:false,checks:{},cards:{},tab:'home',planMode:'simple',planDay:0,roomsSeg:'rooms',tool:'menu',q:'',money:[],nbPage:''};
+var P={fs:'md',theme:'',meId:'',leader:false,tipDismissed:false,checks:{},cards:{},tab:'home',planMode:'simple',planDay:0,roomsSeg:'rooms',tool:'menu',phCat:'',q:'',money:[],nbPage:''};
 var FIRST_VISIT=false;
 try{ FIRST_VISIT=!localStorage.getItem('sapa-prefs'); }catch(e){}
 (function(){ try{ var p=JSON.parse(localStorage.getItem('sapa-prefs')||'{}'); ['fs','theme','meId','leader','tipDismissed','planMode','checks','cards'].forEach(function(k){ if(p[k]!==undefined) P[k]=p[k]; }); }catch(e){} })();
@@ -1762,17 +1825,34 @@ function toolMoney(){
     '<button class="btn block soft" data-act="nbGo" data-id="money">'+ic('book')+'更多金錢與購物小技巧</button>';
 }
 /* 越語圖卡 */
+/* 兩層：先選類別（P.phCat 空字串＝還在類別清單），再看該類的圖卡 */
 function toolPhrases(){
-  return backBar('越語溝通圖卡')+'<div class="muted">點一下會放大成全螢幕，直接把手機拿給店員看。</div><div class="stack">'+
-    PHRASES.map(function(p,i){ return '<button class="ph" data-act="phrase" data-i="'+i+'"><span class="e">'+p.e+'</span><span><span class="zh">'+esc(p.zh)+'</span><br><span class="vi">'+esc(p.vi)+'</span></span>'+ic('arrow')+'</button>'; }).join('')+'</div>';
+  var cat=PHRASE_CATS.filter(function(c){return c.id===P.phCat;})[0];
+  if(!cat) return backBar('越語溝通圖卡')+
+    '<div class="muted">先選類別，再點你要說的那一句。點下去會放大成全螢幕，直接把手機拿給對方看；每一句都附空耳中文，照著念也通。</div>'+
+    '<div class="stack">'+PHRASE_CATS.map(function(c){
+      var n=PHRASES.filter(function(p){return p.cat===c.id;}).length;
+      return '<button class="ph" data-act="phCat" data-cat="'+c.id+'"><span class="e">'+c.e+'</span>'+
+        '<span class="tx"><span class="zh">'+esc(c.name)+'</span><br><span class="vi">'+esc(c.sub)+'</span></span>'+
+        '<span class="phn">'+n+' 句</span>'+ic('arrow')+'</button>';
+    }).join('')+'</div>';
+  return '<div style="display:flex;align-items:center;gap:.5rem"><button class="btn sm" data-act="phCat" data-cat="">‹ 類別</button><b style="font-size:1.15rem">'+c_e(cat)+esc(cat.name)+'</b></div>'+
+    '<div class="muted" style="margin-top:.5rem">綠色那行是空耳中文，照著念就有七八分像。</div>'+
+    '<div class="stack">'+PHRASES.map(function(p,i){
+      if(p.cat!==cat.id) return '';
+      return '<button class="ph" data-act="phrase" data-i="'+i+'"><span class="e">'+p.e+'</span>'+
+        '<span class="tx"><span class="zh">'+esc(p.zh)+'</span><br><span class="vi">'+esc(p.vi)+'</span>'+
+        (p.say&&p.say.charAt(0)!=='（'?'<br><span class="say-s">'+esc(p.say)+'</span>':'')+'</span>'+ic('arrow')+'</button>';
+    }).join('')+'</div>';
 }
+function c_e(c){ return '<span style="margin-right:.3rem">'+c.e+'</span>'; }
 function phraseFull(p){
   var st=S().settings;
   return '<div class="fh"><b>出示給對方看</b><button class="btn sm" data-act="fullClose">'+ic('x')+'關閉</button></div>'+
     '<div style="font-size:3rem;text-align:center">'+p.e+'</div>'+
     '<div class="fk">TIẾNG VIỆT · 越文</div><div class="vi xl">'+esc(p.vi)+'</div>'+
     '<div class="fk">中文意思</div><div class="zh">'+esc(p.zh)+'</div>'+
-    (p.say?'<div class="fk">讀音提示</div><div class="say">'+esc(p.say)+'</div>':'')+
+    (p.say?'<div class="fk">空耳中文 · 照著念</div><div class="say">'+esc(p.say)+'</div>':'')+
     (p.lost?'<div class="fk">LIÊN HỆ · 請幫我打這些電話</div>'+contactLinks():'')+
     '<div class="foot">Xin cảm ơn! 謝謝您的幫忙。</div>';
 }
@@ -2105,7 +2185,8 @@ var ACT={
   planMode:function(t){ P.planMode=t.getAttribute('data-mode'); savePrefs(); render(); },
   roomsSeg:function(t){ P.roomsSeg=t.getAttribute('data-seg'); render(); },
   scn:function(t){ P.scn=t.getAttribute('data-id'); render(); },
-  tool:function(t){ P.tab='tools'; P.tool=t.getAttribute('data-tool'); closeSheet(); render(); window.scrollTo(0,0); },
+  tool:function(t){ P.tab='tools'; P.tool=t.getAttribute('data-tool'); P.phCat=''; closeSheet(); render(); window.scrollTo(0,0); },
+  phCat:function(t){ P.phCat=t.getAttribute('data-cat')||''; render(); window.scrollTo(0,0); },
   tipClose:function(){ P.tipDismissed=true; savePrefs(); render(); },
   fontCycle:function(){ P.fs=P.fs==='md'?'lg':(P.fs==='lg'?'xl':'md'); savePrefs(); render(); toast('字體：'+({md:'標準',lg:'大',xl:'特大'})[P.fs]); },
   leaderToggle:function(){ if(P.leader) sheetLeaderMenu(); else sheetPin(); },
