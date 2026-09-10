@@ -201,6 +201,9 @@ h2.sec{margin:.25rem 0 0;font-size:1rem;font-weight:900;color:var(--ink-2);displ
 .hero .ctl .btn{background:rgba(255,255,255,.95);color:#1B2437;border-color:transparent;min-height:2.9rem;font-size:.95rem;padding:0 .5rem}
 .hero .clr{display:inline-flex;align-items:center;gap:.25rem;margin-top:.5rem;border:0;background:transparent;color:rgba(255,255,255,.85);font-weight:800;font-size:.82rem;padding:.3rem .2rem;min-height:2.2rem}
 .hero .clr svg.i{width:1rem;height:1rem}
+/* 清空廣播（左）與貼到 LINE（右）左右鏡像；只剩一顆時貼到 LINE 仍靠右 */
+.hero .hero-foot{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+.hero .hero-foot .clr.shr{margin-left:auto;white-space:nowrap;word-break:keep-all}
 .hero.pre{background:var(--indigo)}
 .hero.done{background:var(--terrace)}
 .hero.pre .tip svg.i,.hero.done .tip svg.i{color:var(--indigo)}
@@ -469,6 +472,8 @@ select.in{appearance:none;-webkit-appearance:none}
 .tip-banner button{margin-left:auto;border:0;background:transparent;color:var(--ink-3);font-weight:900;min-width:2.5rem;min-height:2.5rem;flex-shrink:0}
 .tip-banner span{flex:1;min-width:0}
 .tip-banner .tb-go{margin-left:0;color:var(--indigo);text-decoration:underline;min-width:0;padding:0 .35rem;white-space:nowrap}
+/* 廣播貼到 LINE 的預覽框：讓領隊送出前先看一眼實際會長什麼樣 */
+.share-prev{margin-top:.7rem;white-space:pre-wrap;word-break:break-word;background:var(--soft);border:1px solid var(--line);border-radius:.7rem;padding:.75rem .85rem;font-size:.92rem;line-height:1.7;font-weight:600;color:var(--ink);-webkit-user-select:text;user-select:text}
 /* ===== 安裝成 App／加到主畫面 ===== */
 /* 按鈕字級固定用 px，不跟著「AA」放大，320px 小螢幕才不會把區塊標題擠爆 */
 .inst-btn{margin-left:auto;flex:none;display:inline-flex;align-items:center;gap:.2rem;font-size:12px;font-weight:900;line-height:1;color:var(--indigo-ink);background:var(--indigo);border:0;border-radius:999px;padding:.4rem .6rem;white-space:nowrap;word-break:keep-all}
@@ -600,7 +605,7 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
 <script src="./config.js"></script>
 <script>
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '3.4';
+var APP_VERSION = '3.5';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -660,7 +665,9 @@ var ICONS = {
   install:'<path d="M12 3v10"/><path d="M8 9l4 4 4-4"/><rect x="4" y="16" width="16" height="5" rx="1.5"/>',
   dots:'<circle cx="12" cy="5" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="12" cy="19" r="1.3"/>',
   dotsh:'<circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/>',
-  boxplus:'<rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="M12 9v6M9 12h6"/>'
+  boxplus:'<rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="M12 9v6M9 12h6"/>',
+  /* 「把訊息傳到聊天室」：對話框 + 往外送出的箭頭。自己畫的，不是任何 App 的商標 */
+  lineshare:'<path d="M3 5h11v9H8l-5 4V5z"/><path d="M15.5 3.5H21V9"/><path d="M21 3.5l-7 7"/>'
 };
 function ic(n, cls){ return '<svg class="i'+(cls?' '+cls:'')+'" viewBox="0 0 24 24" aria-hidden="true">'+(ICONS[n]||'')+'</svg>'; }
 
@@ -1126,6 +1133,31 @@ function countdownShort(){
   if(diff>-240) return {text:'已過 '+hm(-diff),cls:'late'};
   return {text:'待公布',cls:'none'};
 }
+/* ===== 廣播轉成一段可以貼進 LINE 群組的文字 =====
+   推播（Web Push）在 iOS 上要先加主畫面、還要按同意，估計只有三分之一的人收得到；
+   LINE 群組是 33 個人都在的地方，所以領隊改完廣播後最可靠的作法還是貼一則到群組。
+   這段只負責排版，實際傳送由 ACT.lineSend / ACT.copyShare 處理。 */
+function appUrl(){ try{ if(location.protocol.indexOf('http')===0) return location.origin+location.pathname; }catch(e){} return 'https://750hd.com/'; }
+function bcShareText(){
+  var s=S(), b=s.broadcast||{}, st=s.settings, name=st.tripName||'月半越南團旅', L=[];
+  if(b.idle||!b.time){
+    L.push('📢 '+name+'｜'+(b.idle?'自由活動':'集合時間待公布'));
+    L.push('');
+    L.push(b.idle?'目前沒有集合安排，有事請直接聯絡領隊。':'集合時間還沒確定，確定後會再通知大家。');
+  }else{
+    L.push('📢 '+name+'｜'+(b.label||'集合')+'通知');
+    L.push('');
+    L.push('🕒 '+mdw(bcDate())+b.time);
+    L.push('📍 '+(b.location||'集合地點待公布'));
+    var d=bcDiffMin();
+    if(d!==null&&d>0) L.push('⏳ 距離現在還有 '+fmtDur(d));
+    if(b.tip){ L.push(''); L.push('⚠️ '+b.tip); }
+  }
+  L.push('');
+  L.push('完整行程、房號、分組👇');
+  L.push(appUrl());
+  return L.join('\n');
+}
 function toast(msg){ var t=el('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._tm); t._tm=setTimeout(function(){t.classList.remove('show');},2200); }
 function telHref(p){ return 'tel:'+String(p||'').replace(/[^\d+]/g,''); }
 /* 從 LINE 內建瀏覽器開啟？（iOS 是 " Line/13.x"，Android 是 "Line/13.x/IAB"） */
@@ -1494,7 +1526,7 @@ VIEWS.home=function(){
       ?'<div class="loc'+((b.location||'').length>12?' long':'')+'">'+ic('pin')+'<span>'+esc(b.location||'集合地點待公布')+'</span></div>'
       :'<div class="loc"><span>目前沒有集合安排，請等領隊下次廣播通知。</span></div>')+
     (b.tip?'<div class="tip">'+ic('thermo')+'<span>'+esc(b.tip)+'</span></div>':'')+
-    (P.leader?'<div class="ctl"><button class="btn" data-act="editBroadcast">'+ic('edit')+'修改廣播</button><button class="btn" data-act="tool" data-tool="rollcall">'+ic('clipboard')+'點名</button><button class="btn" data-act="bumpTime" data-min="15">現在＋15分</button><button class="btn" data-act="bumpTime" data-min="30">現在＋30分</button></div>'+(tm||b.location||b.tip?'<button class="clr" data-act="clearBroadcast">'+ic('trash')+'清空廣播</button>':''):'')+
+    (P.leader?'<div class="ctl"><button class="btn" data-act="editBroadcast">'+ic('edit')+'修改廣播</button><button class="btn" data-act="tool" data-tool="rollcall">'+ic('clipboard')+'點名</button><button class="btn" data-act="bumpTime" data-min="15">現在＋15分</button><button class="btn" data-act="bumpTime" data-min="30">現在＋30分</button></div>'+(tm||b.location||b.tip?'<div class="hero-foot"><button class="clr" data-act="clearBroadcast">'+ic('trash')+'清空廣播</button><button class="clr shr" data-act="shareBroadcast" aria-label="把這則廣播貼到 LINE 群組">'+ic('lineshare')+'LINE</button></div>':''):'')+
   '</section>');
   }
   /* 我的資訊：不分出發前後，固定顯示航空公司／報到航廈／房號，再加上「我被分配到的每一個分組」；
@@ -2507,6 +2539,21 @@ function sheetHomeScn(){
         '<button class="tgl'+(homeScnHidden(sc.id)?'':' on')+'" data-act="toggleHomeScn" data-id="'+esc(sc.id)+'" aria-label="切換是否顯示在首頁"></button></div>';
     }).join(''):'<div class="muted">目前還沒有分組情境。</div>')+'</div>'});
 }
+/* 通知團員：把廣播排版好，一鍵丟進 LINE 群組。
+   「開啟 LINE 傳送」用 LINE 的分享網址（line.me/R/msg/text/），點下去會直接跳到 LINE 選聊天室，
+   文字已經填好，領隊只要選群組按送出；萬一那支手機沒裝 LINE，還有「複製文字」可以退。 */
+function sheetShare(){
+  var txt=bcShareText();
+  openSheet({title:'通知團員',body:
+    '<div class="muted">廣播已經同步到大家手機了。<b>已經打開 App 的人馬上就看得到</b>；沒打開的人，建議再貼一則到 LINE 群組比較保險。</div>'+
+    '<div class="share-prev">'+esc(txt)+'</div>'+
+    '<div class="stack" style="margin-top:.7rem">'+
+      '<button class="btn big ok" data-act="lineSend">'+ic('chat')+'<span class="b2">開啟 LINE 傳送<small>選好群組按送出，不用自己貼</small></span></button>'+
+      '<button class="btn block" data-act="copyShare">'+ic('clipboard')+'複製文字</button>'+
+    '</div>'+
+    '<div class="muted" style="margin-top:.6rem">小提醒：貼到群組後長按訊息可以「置頂」，長輩往上滑就找得到。</div>',
+    foot:'<button class="btn" data-act="sheetClose">關閉</button>'});
+}
 /* 加到主畫面 / 安裝 App 的圖文教學。
    小圖示是用 div 模擬瀏覽器的那一排按鈕，橘框標出「要按哪裡」，
    長輩照著比對就找得到，不必再拍螢幕問人。 */
@@ -2638,7 +2685,16 @@ var ACT={
   setAirline:function(t){ var m=member(t.getAttribute('data-id')); if(!m) return; closeSheet(); Store.savePath('members','items/'+members().indexOf(m)+'/airline', t.getAttribute('data-v')||''); toast(m.name+'：'+(airDef(m.airline)?airDef(m.airline).short:'未設定')); },
   delMember:function(){ var id=SHEET.id; S().members.items=members().filter(function(m){return m.id!==id;}); closeSheet(); Store.save('members'); toast('已移出名單'); },
   editBroadcast:function(){ sheetBroadcast(); },
-  saveBroadcast:function(){ var b=S().broadcast; b.date=sv('date'); b.time=sv('time'); b.idle=false; b.label=sv('label')||'集合'; b.location=sv('location'); b.tip=sv('tip'); b.updatedAt=stamp(); closeSheet(); Store.save('broadcast'); toast('廣播已更新，全團手機會同步'); },
+  saveBroadcast:function(){ var b=S().broadcast; b.date=sv('date'); b.time=sv('time'); b.idle=false; b.label=sv('label')||'集合'; b.location=sv('location'); b.tip=sv('tip'); b.updatedAt=stamp(); closeSheet(); Store.save('broadcast'); toast('廣播已更新，全團手機會同步');
+    /* 存完直接把「貼到 LINE」端到領隊面前：沒開 App 的人只能靠群組通知 */
+    render(); setTimeout(sheetShare,350); },
+  shareBroadcast:function(){ sheetShare(); },
+  lineSend:function(){ var u='https://line.me/R/msg/text/?'+encodeURIComponent(bcShareText());
+    try{ var w=window.open(u,'_blank'); if(!w) location.href=u; }catch(e){ location.href=u; } },
+  copyShare:function(){ var v=bcShareText();
+    try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(v); toast('已複製，貼到 LINE 群組就好'); return; } }catch(e){}
+    try{ var ta=document.createElement('textarea'); ta.value=v; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); toast('已複製，貼到 LINE 群組就好'); }
+    catch(e){ toast('請長按上面那段文字手動複製'); } },
   clearBroadcast:function(){ openSheet({title:'清空目前廣播？',body:
     '<div class="muted">清空後，首頁廣播卡會改成顯示：</div>'+
     '<div class="hero" style="margin-top:.6rem"><div class="lab">'+ic('megaphone')+'領隊即時廣播</div><div class="time" style="font-size:1.9rem">自由活動</div><div class="loc"><span>目前沒有集合安排，請等領隊下次廣播通知。</span></div></div>'+
