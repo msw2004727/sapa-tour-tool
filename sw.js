@@ -1,7 +1,7 @@
-/* 沙壩隨身團務 — Service Worker
+/* 月半越南團旅 — Service Worker
    目的：山區網路不穩時，網頁本身（殼）永遠打得開；資料則由 localStorage 快取 + 雲端同步負責。
    策略：頁面與設定檔「網路優先、離線回退快取」；圖示「快取優先」。 */
-var CACHE = 'sapa-tour-v1';
+var CACHE = 'sapa-tour-v2';   /* 換 logo／改標題時要進版，舊快取才會被清掉 */
 var SHELL = ['./', './index.html', './config.js', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', function (e) {

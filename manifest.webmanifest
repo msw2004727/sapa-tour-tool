@@ -1,13 +1,13 @@
 {
-  "name": "沙壩隨身團務",
-  "short_name": "沙壩團務",
-  "description": "越南沙壩旅遊團的隨身工具：即時廣播、行程、房號分組、點名與在地救命卡",
+  "name": "月半越南團旅",
+  "short_name": "月半越南",
+  "description": "我們是一群在越南吃吃喝喝團體自由行的旅遊好咖",
   "lang": "zh-Hant",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#EEF2F5",
+  "background_color": "#F8EFDC",
   "theme_color": "#2F4479",
   "icons": [
     { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },

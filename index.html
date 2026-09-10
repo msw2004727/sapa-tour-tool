@@ -7,11 +7,27 @@
 <meta name="robots" content="noindex,nofollow">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="沙壩團務">
+<meta name="apple-mobile-web-app-title" content="月半越南團旅">
+<meta name="description" content="我們是一群在越南吃吃喝喝團體自由行的旅遊好咖">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="月半越南團旅">
+<meta property="og:title" content="月半越南團旅">
+<meta property="og:description" content="我們是一群在越南吃吃喝喝團體自由行的旅遊好咖">
+<meta property="og:url" content="https://750hd.com/">
+<meta property="og:image" content="https://750hd.com/icons/og-cover.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="月半越南團旅">
+<meta property="og:locale" content="zh_TW">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="月半越南團旅">
+<meta name="twitter:description" content="我們是一群在越南吃吃喝喝團體自由行的旅遊好咖">
+<meta name="twitter:image" content="https://750hd.com/icons/og-cover.png">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" type="image/png" href="./icons/icon-192.png">
 <link rel="apple-touch-icon" href="./icons/icon-192.png">
-<title>沙壩隨身團務</title>
+<title>月半越南團旅</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
 <style>
@@ -451,6 +467,30 @@ select.in{appearance:none;-webkit-appearance:none}
 .tip-banner{background:var(--card);border:1px dashed var(--indigo);border-radius:var(--r);padding:.75rem .85rem;font-size:.9rem;line-height:1.5;color:var(--ink-2);font-weight:600;display:flex;gap:.5rem;align-items:flex-start}
 .tip-banner svg.i{color:var(--indigo);flex-shrink:0;margin-top:.15rem}
 .tip-banner button{margin-left:auto;border:0;background:transparent;color:var(--ink-3);font-weight:900;min-width:2.5rem;min-height:2.5rem;flex-shrink:0}
+.tip-banner span{flex:1;min-width:0}
+.tip-banner .tb-go{margin-left:0;color:var(--indigo);text-decoration:underline;min-width:0;padding:0 .35rem;white-space:nowrap}
+/* ===== 安裝成 App／加到主畫面 ===== */
+/* 按鈕字級固定用 px，不跟著「AA」放大，320px 小螢幕才不會把區塊標題擠爆 */
+.inst-btn{margin-left:auto;flex:none;display:inline-flex;align-items:center;gap:.2rem;font-size:12px;font-weight:900;line-height:1;color:var(--indigo-ink);background:var(--indigo);border:0;border-radius:999px;padding:.4rem .6rem;white-space:nowrap;word-break:keep-all}
+.inst-btn svg.i{width:14px;height:14px;stroke-width:2.4}
+.ig-why{display:flex;gap:.45rem;align-items:flex-start;background:var(--indigo-2);color:var(--indigo);border-radius:.7rem;padding:.6rem .7rem;font-size:.88rem;font-weight:700;line-height:1.5;margin-bottom:.85rem}
+.ig-why svg.i{flex:none;margin-top:.15rem}
+.ig{display:flex;flex-direction:column;gap:.85rem}
+.ig-s{display:flex;gap:.55rem;align-items:flex-start}
+.ig-n{flex:none;width:1.6rem;height:1.6rem;border-radius:50%;background:var(--indigo);color:var(--indigo-ink);font-weight:900;font-size:.9rem;display:flex;align-items:center;justify-content:center;margin-top:.1rem}
+.ig-s .tx{flex:1;min-width:0}
+.ig-s b{display:block;font-size:1rem;font-weight:900;line-height:1.4}
+.ig-s small{display:block;color:var(--ink-2);font-size:.85rem;font-weight:600;line-height:1.5;margin-top:.15rem}
+.ig-fig{margin-top:.45rem;border:1px solid var(--line);border-radius:.6rem;background:var(--soft);padding:.5rem .55rem;display:flex;align-items:center;gap:.5rem;font-size:.88rem;font-weight:800;min-width:0;color:var(--ink)}
+.ig-fig.row2{justify-content:space-between}
+.ig-fig.bar{justify-content:space-between;color:var(--ink-3)}
+.ig-fig .dim{color:var(--ink-3);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.ig-fig .go{color:var(--indigo);font-weight:900}
+.ig-fig>.ig-hi{outline:2px solid var(--alert);outline-offset:2px;border-radius:.35rem;padding:.05rem .3rem}
+.ig-fig>.ig-hi.ic{display:inline-flex;align-items:center;padding:.15rem}
+.ig-fig.ig-hi{outline:2px solid var(--alert);outline-offset:-1px}
+.ig-alt{display:flex;flex-direction:column;align-items:flex-start;gap:.35rem;margin:-.35rem 0 0 2.15rem}
+.ig-alt small{color:var(--ink-3);font-size:.82rem;font-weight:600;line-height:1.45}
 .toast{position:fixed;left:50%;bottom:6rem;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:.65rem 1.1rem;border-radius:999px;font-weight:800;z-index:70;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis}
 .toast.show{opacity:1}
 .hint-lead{font-size:.82rem;color:var(--ink-3);font-weight:700;display:flex;align-items:center;gap:.3rem}
@@ -558,7 +598,7 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
 <script src="./config.js"></script>
 <script>
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '3.1';
+var APP_VERSION = '3.2';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -613,7 +653,11 @@ var ICONS = {
   gift:'<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/>',
   heart:'<path d="M19.5 12.6 12 20l-7.5-7.4a4.6 4.6 0 0 1 6.5-6.5l1 1 1-1a4.6 4.6 0 0 1 6.5 6.5z"/>',
   plane:'<path d="M10 14L3 11l1-2 7 1 5-6h3l-3 7 4 4-1 2-5-2-3 4H9z"/>',
-  trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/><path d="M10 11v6M14 11v6"/>'
+  trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/><path d="M10 11v6M14 11v6"/>',
+  share:'<path d="M12 16V3"/><path d="M8.5 6.5 12 3l3.5 3.5"/><path d="M8 10H5v11h14V10h-3"/>',
+  install:'<path d="M12 3v10"/><path d="M8 9l4 4 4-4"/><rect x="4" y="16" width="16" height="5" rx="1.5"/>',
+  dots:'<circle cx="12" cy="5" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="12" cy="19" r="1.3"/>',
+  boxplus:'<rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="M12 9v6M9 12h6"/>'
 };
 function ic(n, cls){ return '<svg class="i'+(cls?' '+cls:'')+'" viewBox="0 0 24 24" aria-hidden="true">'+(ICONS[n]||'')+'</svg>'; }
 
@@ -1087,6 +1131,26 @@ function isInLine(){ try{ return /\bLine\//i.test(navigator.userAgent||''); }cat
 function isStandalone(){ try{ return (window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true; }catch(e){ return false; } }
 /* 顯示「加入主畫面」提示的條件：從 LINE 開啟，或這支手機第一次打開 */
 function showTip(){ if(P.tipDismissed) return false; if(isStandalone()) return false; return isInLine()||FIRST_VISIT; }
+/* ===== 安裝成 App =====
+   Chrome / Edge / Samsung 這類瀏覽器會先丟一個 beforeinstallprompt 事件，
+   接住它就能在使用者按按鈕時直接叫出系統安裝視窗。
+   iOS Safari 沒有這個事件（Apple 不提供），只能教使用者自己按分享鍵，
+   所以 installApp 會依照瀏覽器分流：能直接裝就直接裝，不能就開圖文教學。 */
+var INSTALL_PROMPT=null;
+window.addEventListener('beforeinstallprompt',function(e){ try{ e.preventDefault(); }catch(x){} INSTALL_PROMPT=e; });
+window.addEventListener('appinstalled',function(){ INSTALL_PROMPT=null; try{ toast('安裝完成，之後從主畫面的圖示打開'); }catch(x){} });
+/* 瀏覽器環境判斷。只用來決定「教學要教哪一套」，判斷錯了頂多教學不對版，不影響功能 */
+function uaEnv(){
+  var u=''; try{ u=navigator.userAgent||''; }catch(e){}
+  var ios=/iPad|iPhone|iPod/.test(u)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  return {
+    ios:ios,
+    android:/Android/.test(u),
+    line:isInLine(),
+    /* LINE / FB / IG / 微信 的內建瀏覽器都不能安裝，要先跳去 Safari 或 Chrome */
+    inapp:isInLine()||/FBAN|FBAV|FB_IAB|Instagram|MicroMessenger|KAKAOTALK/i.test(u)
+  };
+}
 /* 地圖連結：預設只做「搜尋這個地點」，開起來就是地圖上的位置，要不要導航、用什麼交通方式由使用者自己決定 */
 function mapHref(place){ return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(place); }
 /* 需要直接給路線時才用這個（目前只有住宿卡的「走回飯店」） */
@@ -1395,7 +1459,7 @@ function mtagsOf(sc,id){ return (sc&&sc.mtags&&sc.mtags[id])||[]; }
 /* --- 首頁 --- */
 VIEWS.home=function(){
   var s=S(), b=s.broadcast||{}, st=s.settings, di=dayInfo(), h=[];
-  if(showTip()) h.push('<div class="tip-banner">'+ic('info')+'<span>從 LINE 打開請點右上角「⋯」→「用瀏覽器開啟」，再「加入主畫面」，之後一鍵打開。</span><button data-act="tipClose" aria-label="關閉">'+ic('x')+'</button></div>');
+  if(showTip()) h.push('<div class="tip-banner">'+ic('info')+'<span>把這個網頁裝成 App，之後一鍵打開，名字也不用再選一次。</span><button class="tb-go" data-act="installApp">看教學</button><button data-act="tipClose" aria-label="關閉">'+ic('x')+'</button></div>');
   var before=(di.status==='before'), after=(di.status==='after'), day=di.idx;
   /* 出發前：領隊還沒廣播時，改顯示第 1 天第一站（例：05:30 桃園機場集合），不會是一大塊「待公布」 */
   var pre=null;
@@ -1714,7 +1778,10 @@ VIEWS.tools=function(){
 };
 function toolMenu(){
   var st=S().settings, h=[];
-  h.push('<h2 class="sec">'+ic('grid')+'現場馬上用</h2><div class="stack">'+
+  /* 裝成 App 的入口放在這裡：工具頁是團員最常回來的一頁，
+     已經從主畫面開啟（standalone）就不用再出現 */
+  var instBtn=isStandalone()?'':'<button class="inst-btn" data-act="installApp">'+ic(uaEnv().ios?'share':'install')+(uaEnv().ios?'加到主畫面':'安裝 App')+'</button>';
+  h.push('<h2 class="sec">'+ic('grid')+'現場馬上用'+instBtn+'</h2><div class="stack">'+
     '<button class="btn big warn" data-act="fullTaxi">'+ic('taxi')+'<span class="b2">計程車回飯店卡<small>全螢幕越文，直接出示給司機</small></span></button>'+
     '<button class="btn big" data-act="tool" data-tool="money">'+ic('cash')+'<span class="b2">越幣點鈔速算<small>按鈔票就算台幣，不用打字</small></span></button>'+
     '<button class="btn big" data-act="tool" data-tool="phrases">'+ic('chat')+'<span class="b2">越語點餐與溝通圖卡<small>溫水、不要香菜、多少錢…</small></span></button>'+
@@ -1746,7 +1813,7 @@ function toolMenu(){
       '<button class="btn big" data-act="homeScnVis">'+ic('users')+'<span class="b2">首頁分組顯示<small>選擇哪些分組情境出現在首頁</small></span></button>'+
     '</div><div class="row"><button class="btn dng" data-act="resetDemo">'+ic('refresh')+'重置為初始資料</button><button class="btn" data-act="leaderLock">'+ic('lock')+'鎖定領隊模式</button></div>');
   }
-  h.push('<div class="ver">沙壩隨身團務 v'+APP_VERSION+' · '+(Store.backend==='firebase'?'雲端同步':(Store.backend==='claude'?'預覽同步':'單機'))+'</div>');
+  h.push('<div class="ver">月半越南團旅 v'+APP_VERSION+' · '+(Store.backend==='firebase'?'雲端同步':(Store.backend==='claude'?'預覽同步':'單機'))+'</div>');
   return h.join('');
 }
 /* eSIM 網路卡 */
@@ -2437,6 +2504,44 @@ function sheetHomeScn(){
         '<button class="tgl'+(homeScnHidden(sc.id)?'':' on')+'" data-act="toggleHomeScn" data-id="'+esc(sc.id)+'" aria-label="切換是否顯示在首頁"></button></div>';
     }).join(''):'<div class="muted">目前還沒有分組情境。</div>')+'</div>'});
 }
+/* 加到主畫面 / 安裝 App 的圖文教學。
+   小圖示是用 div 模擬瀏覽器的那一排按鈕，橘框標出「要按哪裡」，
+   長輩照著比對就找得到，不必再拍螢幕問人。 */
+function sheetInstall(){
+  var e=uaEnv(), n=0, h=[];
+  function step(title,desc,fig){ n++; return '<div class="ig-s"><span class="ig-n">'+n+'</span><div class="tx"><b>'+title+'</b>'+(desc?'<small>'+desc+'</small>':'')+(fig||'')+'</div></div>'; }
+  var why='<div class="ig-why">'+ic('info')+'<span>裝起來以後：<b>不用再選一次自己的名字</b>、沒訊號也打得開、打開沒有網址列，跟一般 App 一樣。</span></div>';
+  var host=''; try{ host=location.hostname||'750hd.com'; }catch(x){ host='750hd.com'; }
+  var url=''; try{ url=location.href.split('#')[0]; }catch(x){}
+
+  if(e.inapp){
+    var app=e.line?'LINE':'這個 App';
+    h.push(step('先跳出 '+app+' 的瀏覽器','在 '+app+' 裡面沒辦法安裝。請按畫面'+(e.ios?'右下角':'右上角')+'的「⋯」，選「用其他瀏覽器開啟」或「用預設瀏覽器開啟」。',
+      '<div class="ig-fig row2"><span class="dim">'+esc(host)+'</span><span class="ig-hi">⋯</span></div>'));
+    h.push('<div class="ig-alt"><button class="btn sm" data-act="copyTxt" data-v="'+esc(url)+'">'+ic('clipboard')+'複製網址</button><small>找不到「⋯」的話，複製網址後自己貼到 '+(e.ios?'Safari':'Chrome')+' 的網址列開啟，再接著做下面的步驟。</small></div>');
+  }
+
+  if(e.ios){
+    h.push(step('按「分享」鍵','螢幕最下面那一排，中間那個「往上箭頭」的圖示。',
+      '<div class="ig-fig bar"><span>‹</span><span>›</span><span class="ig-hi ic">'+ic('share')+'</span><span>'+ic('book')+'</span><span>'+ic('grid')+'</span></div>'));
+    h.push(step('往下滑，找「加入主畫面」','選單裡要往下捲一點才看得到。',
+      '<div class="ig-fig row2 ig-hi"><span>加入主畫面</span>'+ic('boxplus')+'</div>'));
+    h.push(step('右上角按「加入」','主畫面就會多一個圖示，以後直接點它進來。',
+      '<div class="ig-fig row2"><span class="dim">取消</span><b>加入主畫面</b><span class="ig-hi go">加入</span></div>'));
+  } else if(e.android){
+    h.push(step('按右上角的「⋮」','Chrome 網址列最右邊，三個直的點。',
+      '<div class="ig-fig row2"><span class="dim">'+esc(host)+'</span><span class="ig-hi ic">'+ic('dots')+'</span></div>'));
+    h.push(step('選「安裝應用程式」','有的手機寫「加到主畫面」，兩個都一樣。',
+      '<div class="ig-fig row2 ig-hi"><span>安裝應用程式</span>'+ic('install')+'</div>'));
+    h.push(step('按「安裝」','主畫面就會多一個圖示，以後直接點它進來。',
+      '<div class="ig-fig row2"><span class="dim">取消</span><span class="ig-hi go">安裝</span></div>'));
+  } else {
+    h.push(step('看網址列的右邊','Chrome 或 Edge 的網址列最右邊，會有一個「安裝」的小圖示。',
+      '<div class="ig-fig row2"><span class="dim">'+esc(host)+'</span><span class="ig-hi ic">'+ic('install')+'</span></div>'));
+    h.push(step('按下去，再按「安裝」','沒看到圖示的話，改按右上角「⋮」→「投放、儲存及分享」→「安裝網頁應用程式」。'));
+  }
+  openSheet({title:e.ios?'加到主畫面（照著做）':'安裝成 App（照著做）',tall:e.inapp,body:why+'<div class="ig">'+h.join('')+'</div>'});
+}
 function sheetNbPage(id){
   var pg=id?nbPage(id):{icon:'📝',title:'',type:'notes'};
   var ps=nbPages(), idx=ps.indexOf(pg);
@@ -2475,6 +2580,23 @@ var ACT={
   tool:function(t){ P.tab='tools'; P.tool=t.getAttribute('data-tool'); P.phCat=''; closeSheet(); render(); window.scrollTo(0,0); },
   phCat:function(t){ P.phCat=t.getAttribute('data-cat')||''; render(); window.scrollTo(0,0); },
   tipClose:function(){ P.tipDismissed=true; savePrefs(); render(); },
+  /* 能直接叫系統安裝視窗就直接叫（Chrome 系列），叫不出來才開圖文教學（iOS Safari、LINE 內建瀏覽器） */
+  installApp:function(){
+    if(isStandalone()){ toast('這支手機已經裝好了'); return; }
+    var p=INSTALL_PROMPT;
+    if(p&&p.prompt){
+      INSTALL_PROMPT=null;
+      try{
+        p.prompt();
+        if(p.userChoice&&p.userChoice.then) p.userChoice.then(function(r){
+          if(r&&r.outcome==='accepted') toast('安裝中，稍後看主畫面');
+          else INSTALL_PROMPT=p;   /* 使用者按取消：留著讓他等一下還能再按 */
+        },function(){ INSTALL_PROMPT=p; });
+        return;
+      }catch(x){ INSTALL_PROMPT=null; }
+    }
+    sheetInstall();
+  },
   fontCycle:function(){ P.fs=P.fs==='md'?'lg':(P.fs==='lg'?'xl':'md'); savePrefs(); render(); toast('字體：'+({md:'標準',lg:'大',xl:'特大'})[P.fs]); },
   leaderToggle:function(){ if(P.leader) sheetLeaderMenu(); else sheetPin(); },
   leaderLock:function(){ P.leader=false; savePrefs(); closeSheet(); if(P.tool==='rollcall') P.tool='menu'; render(); toast('已鎖定，回到團員模式'); },
