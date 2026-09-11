@@ -456,6 +456,10 @@ dl.kv2 dd:last-child{border-bottom:0;padding-bottom:0;margin-bottom:0}
 .sheet-h{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1rem .5rem;font-weight:900;font-size:1.15rem;gap:.5rem}
 .sheet-h .icon-btn{width:2.5rem;height:2.5rem}
 .sheet-b{padding:.25rem 1rem 1rem;overflow-y:auto;display:flex;flex-direction:column;gap:.85rem;-webkit-overflow-scrolling:touch}
+/* 表單內容是直向 flex 的子項，預設 flex-shrink:1。只要子項自己設了 min-height，
+   自動最小尺寸就會被蓋掉，表單一高過螢幕子項就被壓扁、內容疊在一起。
+   這裡一律不准縮，高度不夠就讓 .sheet-b 自己捲。 */
+.sheet-b>*{flex:none}
 .sheet-f{padding:.6rem 1rem calc(.75rem + env(safe-area-inset-bottom));border-top:1px solid var(--line);display:flex;gap:.5rem}
 .sheet-f .btn{flex:1}
 .f label{display:block;font-size:.85rem;font-weight:900;color:var(--ink-2);margin-bottom:.3rem}
@@ -553,8 +557,10 @@ select.in{appearance:none;-webkit-appearance:none;padding-right:1.9rem;
 /* ===== 首頁卡片位置：分區看板 =====
    這塊同時是「目前的結果」與編輯區，所以不另外再放一份預覽。 */
 select.in.sm{min-height:2.5rem;font-size:.88rem;padding:0 1.6rem 0 .55rem;width:auto;flex:none;max-width:7rem}
-.zb-t{font-size:.84rem;font-weight:900;color:var(--ink-2);margin:.9rem 0 .1rem}
-.zb-h{display:flex;align-items:center;gap:.4rem;margin:.7rem 0 .15rem;font-size:.76rem;font-weight:900;letter-spacing:.08em;color:var(--ink-3)}
+/* 看板整塊包成一個子項：分區標題要貼著自己的框，不要被 .sheet-b 的 gap 拆開 */
+.zb-wrap{display:block}
+.zb-t{font-size:.84rem;font-weight:900;color:var(--ink-2);margin:.2rem 0 .1rem}
+.zb-h{display:flex;align-items:center;gap:.4rem;margin:.75rem 0 .2rem;font-size:.76rem;font-weight:900;letter-spacing:.08em;color:var(--ink-3)}
 .zb-h i{flex:1;height:1px;background:var(--line);font-style:normal}
 .zb{border:1px dashed var(--line);border-radius:10px;padding:.15rem .55rem;min-height:2.4rem}
 .zb.now{border-style:solid;border-color:var(--alert);background:var(--alert-2)}
@@ -660,7 +666,7 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
 <script src="./config.js"></script>
 <script>
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '3.9';
+var APP_VERSION = '3.10';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -2748,7 +2754,7 @@ function sheetCardZones(){
     h.push('<div class="muted">手動模式下卡片不會再自己移動，旅程結束後也維持你指定的位置。</div>');
   }
   /* 分區看板：這塊同時是「目前的結果」也是編輯區，不再另外放一份預覽 */
-  h.push('<div class="zb-t">'+esc(di.status==='before'?'出發前':(di.status==='after'?'旅程結束後':'第 '+di.idx+' / '+di.days+' 天'))+'的排法</div>');
+  h.push('<div class="zb-wrap"><div class="zb-t">'+esc(di.status==='before'?'出發前':(di.status==='after'?'旅程結束後':'第 '+di.idx+' / '+di.days+' 天'))+'的排法</div>');
   h.push('<div class="zb-h">現在<i></i></div><div class="zb now"><div class="zb-fixed">今日行程（固定，不可調整）</div></div>');
   ['later','ref','hide'].forEach(function(zone){
     var list=ord.filter(function(id){ return cardZone(id,di)===zone; });
@@ -2770,6 +2776,7 @@ function sheetCardZones(){
     });
     h.push('</div>');
   });
+  h.push('</div>');
   openSheet({title:'首頁卡片位置',tall:true,body:h.join(''),
     foot:'<button class="btn dng" data-act="zoneReset">恢復預設</button><button class="btn pri" data-act="sheetClose">完成</button>'});
 }
