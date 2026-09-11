@@ -268,12 +268,7 @@ h2.sec{margin:.25rem 0 0;font-size:1rem;font-weight:900;color:var(--ink-2);displ
 .stop.has-bg>*{position:relative;z-index:1}
 /* 「進行中」那張本來就有綠底，圖再疊上去會混濁，濃度砍一半 */
 .stop.has-bg.cur::before{opacity:calc(var(--dop,.09) * .55)}
-/* 首頁「今日行程」主卡的底圖。這張卡的 ::before 是頂部彩條，所以底圖改用 .cbg 子元素。 */
-.card.has-bg{position:relative;overflow:hidden}
-.card>.cbg{position:absolute;inset:0;z-index:0;pointer-events:none;
-  background-image:var(--dbg);background-size:cover;background-position:center;
-  opacity:var(--dop,.09);filter:grayscale(1)}
-.card.has-bg>*:not(.cbg){position:relative;z-index:1}
+/* 首頁的「今日行程」主卡不套底圖，所以這裡沒有 .card 的規則。 */
 @media (prefers-reduced-motion: no-preference){.stop.has-bg::before{transition:opacity .18s}}
 
 /* ===== 底圖編輯（行程編輯表單內）===== */
@@ -719,7 +714,7 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
 <script src="./config.js"></script>
 <script>
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '3.14';
+var APP_VERSION = '3.15';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -1833,10 +1828,9 @@ VIEWS.home=function(){
 
 /* 今日行程（主卡） */
 function todayCard(di,day){
-  var todays=items().filter(function(x){return x.day===day;}), bg=dayHeroBg(day);
-  /* 底圖用真的子元素而不是 ::before：.g-now>.card 的 ::before 已經拿去畫頂部彩條了 */
-  return '<section class="card'+(bg?' has-bg':'')+'">'+
-    (bg?'<i class="cbg" style="--dbg:url(\''+bg.src+'\');--dop:'+(bgOp(bg)/100)+'"></i>':'')+
+  var todays=items().filter(function(x){return x.day===day;});
+  /* 首頁這張主卡刻意不放底圖（小麥指定）：底圖只出現在「行程」分頁的每一站卡片上 */
+  return '<section class="card">'+
     '<div class="card-h"><h2>'+ic('calendar')+(di.status==='before'?'第 1 天預告':'今日行程')+'</h2><span class="sub">第 '+day+' 天 · '+esc(dayDate(day))+'</span></div>'+
     '<div class="stack">'+todays.map(function(x){
       return '<div style="display:flex;gap:.6rem;align-items:baseline;'+(x.isCanceled?'opacity:.55;text-decoration:line-through;':'')+'">'+
@@ -1911,15 +1905,8 @@ function itemBg(id){ var b=photoMap()[id]; return (b&&b.src)?b:null; }
 function bgOp(b){ var n=Number(b&&b.op); return (n>=1&&n<=40)?n:9; }
 /* 資料 URI 只有 base64 字元，放進行內 style 的 url('') 不用跳脫 */
 function bgStyle(b){ return b?(' style="--dbg:url(\''+b.src+'\');--dop:'+(bgOp(b)/100)+'"'):''; }
-/* 首頁「今日行程」是一整天的清單，沒有單一張圖：用「進行中」那站的圖，
-   沒有進行中就用當天第一個有圖的行程。 */
-function dayHeroBg(day){
-  var list=items().filter(function(x){return x.day===day&&!x.isCanceled;});
-  var cur=list.filter(function(x){return x.isCurrent;})[0];
-  if(cur&&itemBg(cur.id)) return itemBg(cur.id);
-  for(var i=0;i<list.length;i++){ var b=itemBg(list[i].id); if(b) return b; }
-  return null;
-}
+/* 首頁「今日行程」主卡不放底圖：那張卡是一整天的清單，挑哪一張都是猜的，
+   而且它會跟高亮的金色底、頂部彩條疊在一起。底圖只出現在「行程」分頁的每一站卡片上。 */
 /* 全部底圖合計多大（設定面板顯示用，也是容量的煞車） */
 function photoTotal(){
   var m=photoMap(), n=0, kb=0;
