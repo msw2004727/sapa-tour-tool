@@ -258,17 +258,23 @@ h2.sec{margin:.25rem 0 0;font-size:1rem;font-weight:900;color:var(--ink-2);displ
 .t-detail{font-size:.98rem;line-height:1.6;color:var(--ink);border-top:1px dashed var(--line);padding-top:.55rem;margin-top:.45rem;white-space:pre-line}
 .badge{position:absolute;top:-.65rem;right:.8rem;background:var(--terrace);color:#fff;font-size:.75rem;font-weight:900;border-radius:999px;padding:.22rem .65rem;letter-spacing:.04em}
 .badge.off{background:var(--ink-3)}
-/* ===== 行程卡片底圖（每天一張，整面極淡）=====
+/* ===== 行程卡片底圖（每個行程項目一張，整面極淡）=====
    畫在 ::before：卡片不能設 overflow:hidden，不然「進行中」徽章（top:-.65rem）會被裁掉。
    內容統一抬到 z-index:1，文字永遠蓋在圖上面。實測 9% + 去彩度時，
    標題對比度 13:1、說明 6.3:1，深淺色都遠高於 WCAG 的 4.5:1。 */
-.day-bg .stop::before{content:"";position:absolute;inset:0;border-radius:inherit;z-index:0;pointer-events:none;
+.stop.has-bg::before{content:"";position:absolute;inset:0;border-radius:inherit;z-index:0;pointer-events:none;
   background-image:var(--dbg);background-size:cover;background-position:center;
   opacity:var(--dop,.09);filter:grayscale(1)}
-.day-bg .stop>*{position:relative;z-index:1}
+.stop.has-bg>*{position:relative;z-index:1}
 /* 「進行中」那張本來就有綠底，圖再疊上去會混濁，濃度砍一半 */
-.day-bg .stop.cur::before{opacity:calc(var(--dop,.09) * .55)}
-@media (prefers-reduced-motion: no-preference){.day-bg .stop::before{transition:opacity .18s}}
+.stop.has-bg.cur::before{opacity:calc(var(--dop,.09) * .55)}
+/* 首頁「今日行程」主卡的底圖。這張卡的 ::before 是頂部彩條，所以底圖改用 .cbg 子元素。 */
+.card.has-bg{position:relative;overflow:hidden}
+.card>.cbg{position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-image:var(--dbg);background-size:cover;background-position:center;
+  opacity:var(--dop,.09);filter:grayscale(1)}
+.card.has-bg>*:not(.cbg){position:relative;z-index:1}
+@media (prefers-reduced-motion: no-preference){.stop.has-bg::before{transition:opacity .18s}}
 
 /* ===== 底圖編輯（行程編輯表單內）===== */
 .dbg-sub{display:block;font-size:.76rem;font-weight:700;color:var(--ink-3);margin-top:.1rem}
@@ -498,7 +504,10 @@ dl.kv2 dd:last-child{border-bottom:0;padding-bottom:0;margin-bottom:0}
 .sheet-b>*{flex:none}
 .sheet-f{padding:.6rem 1rem calc(.75rem + env(safe-area-inset-bottom));border-top:1px solid var(--line);display:flex;gap:.5rem}
 .sheet-f .btn{flex:1}
-.f label{display:block;font-size:.85rem;font-weight:900;color:var(--ink-2);margin-bottom:.3rem}
+/* 用直接子代選擇器：欄位裡若有 <label class="btn">（例：選照片）不能被 display:block 打回方塊，
+   不然裡面的 SVG 就不會置中。 */
+.f>label{display:block;font-size:.85rem;font-weight:900;color:var(--ink-2);margin-bottom:.3rem}
+.f>label.btn{display:inline-flex;margin-bottom:0}
 .in{width:100%;min-height:3rem;border:1.5px solid var(--line);border-radius:10px;padding:.5rem .7rem;font-size:1.05rem;font-family:inherit;background:var(--card);color:var(--ink);font-weight:600}
 textarea.in{min-height:5.5rem;line-height:1.45;resize:vertical}
 /* 下拉選單原本 appearance:none 之後完全沒有箭頭，看起來像唯讀欄位。
@@ -710,7 +719,7 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
 <script src="./config.js"></script>
 <script>
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '3.13';
+var APP_VERSION = '3.14';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -891,11 +900,14 @@ var PHRASES = [
 ];
 
 /* ===== 預設示範資料（正式使用時由領隊在管理模式修改，或由雲端資料覆蓋） ===== */
-var DOC_KEYS = ['settings','broadcast','itinerary','members','groups','rollcall','notebook'];
+/* photos 獨立成一份文件：底圖不能塞在 itinerary 裡，
+   因為新增／編輯行程會用 Store.save('itinerary') 整份覆寫，那樣每改一個字都要重傳所有圖。 */
+var DOC_KEYS = ['settings','broadcast','itinerary','members','groups','rollcall','notebook','photos'];
 /* ===== 預設示範資料（seed）=====
    換一團時只改這個檔：團名、日期、名單、行程、記事本。程式碼在 parts/ 不用動。
    正式使用時由領隊在管理模式修改，或由雲端資料覆蓋；這裡刻意不含任何電話。 */
 var DEFAULTS = {
+  photos:{items:{}},
   settings:{
     tripName:'沙壩雲海五日', startDate:'2026-09-24', days:5, dayOverride:0, pin:'8888',
     /* 領隊決定團員第一次看到時，卡片是展開(1)還是收起(0)；ts 變動時團員自己的選擇會重置 */
@@ -1353,6 +1365,9 @@ var Store={
     Store.q.forEach(function(op){ var d=Store.s[op.key]; if(!d||typeof d!=='object'){ d=Store.s[op.key]={}; }
       if(op.path){ setPath(d,op.path,op.val); if((d._ts||0)<op.ts) d._ts=op.ts; }
       else if(op.ts>=(d._ts||0)) Store.s[op.key]=clone(op.val); });
+    /* 3.14 以前底圖是「每天一張」存在 settings.dayBg，改成每個行程一張之後那份資料沒人在用了。
+       由領隊的裝置清掉一次就好，免得 33 支手機每次開 App 都白白下載那幾十 KB。 */
+    if(P.leader&&Store.s.settings&&Store.s.settings.dayBg){ delete Store.s.settings.dayBg; Store.savePath('settings','dayBg',null); }
     Store.mode='cloud'; Store.lastSync=new Date(); Store.cache(); render(); Store.checkVersion(); Store.flush(); return got;
   },
   checkVersion:function(){ var st=Store.s.settings||{}; var min=st.minVersion; if(!min||Store._verToasted) return;
@@ -1818,8 +1833,11 @@ VIEWS.home=function(){
 
 /* 今日行程（主卡） */
 function todayCard(di,day){
-  var todays=items().filter(function(x){return x.day===day;});
-  return '<section class="card"><div class="card-h"><h2>'+ic('calendar')+(di.status==='before'?'第 1 天預告':'今日行程')+'</h2><span class="sub">第 '+day+' 天 · '+esc(dayDate(day))+'</span></div>'+
+  var todays=items().filter(function(x){return x.day===day;}), bg=dayHeroBg(day);
+  /* 底圖用真的子元素而不是 ::before：.g-now>.card 的 ::before 已經拿去畫頂部彩條了 */
+  return '<section class="card'+(bg?' has-bg':'')+'">'+
+    (bg?'<i class="cbg" style="--dbg:url(\''+bg.src+'\');--dop:'+(bgOp(bg)/100)+'"></i>':'')+
+    '<div class="card-h"><h2>'+ic('calendar')+(di.status==='before'?'第 1 天預告':'今日行程')+'</h2><span class="sub">第 '+day+' 天 · '+esc(dayDate(day))+'</span></div>'+
     '<div class="stack">'+todays.map(function(x){
       return '<div style="display:flex;gap:.6rem;align-items:baseline;'+(x.isCanceled?'opacity:.55;text-decoration:line-through;':'')+'">'+
         '<b style="font-variant-numeric:tabular-nums;min-width:3.2rem;color:'+(x.isCurrent?'var(--terrace)':'var(--indigo)')+'">'+esc(x.time)+'</b>'+
@@ -1884,18 +1902,29 @@ function flightCard(){
   return foldCard('flight','plane','航班資訊',dayDate(1).split('（')[0]+'–'+dayDate(days).split('（')[0],eva+' / '+ci+' 起飛',inner);
 }
 
-/* ===== 每天一張的行程卡片底圖 =====
-   刻意做成「一天共用一張」而不是「每個行程一張」：同步的監聽掛在根節點，
-   任何一次修改都會讓 33 支手機重抓整份資料。30 張圖塞進去，等於每發一次廣播
-   全團就多下載幾百 KB。5 張、每張壓到 10KB 以內才撐得住。
-   圖片在上傳時就已經裁切好、縮小、轉成 WebP，這裡只負責畫出來。 */
-function dayBg(day){ var m=(S().settings.dayBg||{})[String(day)]; return (m&&m.src)?m:null; }
-function dayBgOp(b){ var n=Number(b&&b.op); return (n>=1&&n<=40)?n:9; }
-/* 資料 URI 只含 base64 字元，放進行內 style 的 url('') 不需要跳脫。
-   整天只輸出一次（掛在外層 .day-bg），不要每張卡都重複一份十幾 KB 的字串。 */
-function dayBgStyle(day){
-  var b=dayBg(day); if(!b) return '';
-  return ' style="--dbg:url(\''+b.src+'\');--dop:'+(dayBgOp(b)/100)+'"';
+/* ===== 行程卡片底圖（每個行程項目一張）=====
+   圖存在獨立的 photos 文件（不是 itinerary），因為新增／編輯行程是整份覆寫，
+   放一起的話改一個字就要重傳所有圖。上傳時已經裁切＋縮到 360×203＋轉 WebP，
+   這裡只負責畫出來。 */
+function photoMap(){ var p=S().photos||{}; return p.items||(p.items={}); }
+function itemBg(id){ var b=photoMap()[id]; return (b&&b.src)?b:null; }
+function bgOp(b){ var n=Number(b&&b.op); return (n>=1&&n<=40)?n:9; }
+/* 資料 URI 只有 base64 字元，放進行內 style 的 url('') 不用跳脫 */
+function bgStyle(b){ return b?(' style="--dbg:url(\''+b.src+'\');--dop:'+(bgOp(b)/100)+'"'):''; }
+/* 首頁「今日行程」是一整天的清單，沒有單一張圖：用「進行中」那站的圖，
+   沒有進行中就用當天第一個有圖的行程。 */
+function dayHeroBg(day){
+  var list=items().filter(function(x){return x.day===day&&!x.isCanceled;});
+  var cur=list.filter(function(x){return x.isCurrent;})[0];
+  if(cur&&itemBg(cur.id)) return itemBg(cur.id);
+  for(var i=0;i<list.length;i++){ var b=itemBg(list[i].id); if(b) return b; }
+  return null;
+}
+/* 全部底圖合計多大（設定面板顯示用，也是容量的煞車） */
+function photoTotal(){
+  var m=photoMap(), n=0, kb=0;
+  Object.keys(m).forEach(function(k){ if(m[k]&&m[k].src){ n++; kb+=m[k].src.length/1024; } });
+  return {n:n, kb:Math.round(kb)};
 }
 /* --- 旅遊提醒記事本 --- */
 VIEWS.notes=function(){
@@ -1934,10 +1963,10 @@ VIEWS.plan=function(){
   var list=items().filter(function(x){return x.day===P.planDay;});
   var hotelFor=(st.hotels||[]).filter(function(x){ return (x.nights||'').indexOf(String(P.planDay))>=0; })[0];
   h.push('<div class="day-title"><b>第 '+P.planDay+' 天</b><span class="muted">'+esc(dayDate(P.planDay))+(hotelFor?' · 夜宿 '+esc(hotelFor.name.split(' ')[0]):'')+'</span></div>');
-  h.push('<div class="day-bg"'+dayBgStyle(P.planDay)+'>');
   list.forEach(function(x,i){
-    var cls='stop'+(x.isCurrent&&!x.isCanceled?' cur':'')+(x.isCanceled?' off':'');
-    h.push('<article class="'+cls+'">'+
+    var xb=itemBg(x.id);
+    var cls='stop'+(x.isCurrent&&!x.isCanceled?' cur':'')+(x.isCanceled?' off':'')+(xb?' has-bg':'');
+    h.push('<article class="'+cls+'"'+bgStyle(xb)+'>'+
       (x.isCurrent&&!x.isCanceled?'<span class="badge">進行中</span>':'')+(x.isCanceled?'<span class="badge off">因天候取消</span>':'')+
       '<div class="t-time">'+esc(x.time)+(x.end?'<span>– '+esc(x.end)+'</span>':'')+'</div>'+
       '<div><h3 class="t-title">'+esc(x.title)+'</h3><p class="t-desc">'+esc(x.desc||'')+'</p>'+tagsHTML(x.tags,x.place)+
@@ -1950,7 +1979,6 @@ VIEWS.plan=function(){
         '<button class="btn sm" data-act="editItem" data-id="'+x.id+'">'+ic('edit')+'編輯</button></div>':'')+
     '</article>');
   });
-  h.push('</div>');
   if(!list.length) h.push('<div class="card muted">這天還沒有行程'+(P.leader?'，點下方新增':'')+'</div>');
   if(P.leader) h.push('<button class="btn block" data-act="editItem" data-id="">'+ic('plus')+'新增這一天的行程</button>');
   return h.join('');
@@ -2616,24 +2644,27 @@ function sheetMorning(){
     fld('叮嚀',ta('note',m.note)+chipsFill('note',['行李放房門口，貴重物品自己帶','退房請檢查保險箱、充電線','明天走很多路，請穿好走的鞋'])),
     foot:footBtns('saveMorning')});
 }
-/* ===== 這一天的底圖（放在行程編輯表單裡）=====
-   底圖是「天」的資料不是「單一行程」的資料，所以套用後直接存，
-   不跟著表單的「儲存」按鈕走——避免領隊改完圖又按取消，結果圖也一起不見。 */
-var DBG=null;   /* 正在裁切中的狀態：{day,img,s0,z,tx,ty} */
-function dbgField(day){
-  var b=dayBg(day), op=dayBgOp(b), has=!!b;
+/* ===== 行程底圖（放在行程編輯表單裡，每個行程項目一張）=====
+   底圖存在獨立的 photos 文件、套用後直接寫回，不跟著表單的「儲存」按鈕走——
+   避免領隊改完圖又按取消，結果圖也一起不見；也避免每改一個字就要重傳圖片。 */
+var DBG=null;   /* 正在裁切中的狀態：{id,img,s0,z,tx,ty,px,py} */
+function dbgField(id){
+  if(!id) return '<div class="f"><label>行程底圖</label><div class="muted dbg-tip">先按下面的「儲存」把這個行程建立起來，再回來編輯就能加底圖。</div></div>';
+  var b=itemBg(id), op=bgOp(b), has=!!b, tot=photoTotal();
   var url=has?"url('"+b.src+"')":'none';
-  return '<div class="f" id="dbgF" data-day="'+day+'">'+
-    '<label>第 '+day+' 天的底圖<span class="dbg-sub">這一天的所有行程共用一張，不是單一個行程</span></label>'+
+  return '<div class="f" id="dbgF" data-id="'+esc(id)+'">'+
+    '<label>這個行程的底圖<span class="dbg-sub">一個行程一張，極淡地墊在卡片後面</span></label>'+
     '<div class="dbg-frame" id="dbgFrame"'+(has?' style="background-image:'+url+'"':'')+'>'+
       '<img id="dbgImg" alt="" hidden>'+
       '<span class="dbg-hint" id="dbgHint"'+(has?' hidden':'')+'>還沒有底圖</span>'+
     '</div>'+
     '<div id="dbgCrop" hidden>'+
       '<div class="dbg-row"><span>縮放</span><input type="range" id="dbgZ" min="100" max="300" value="100"><output id="dbgZV">100%</output></div>'+
-      '<div class="muted dbg-tip">在上面那格直接拖曳可以移動位置。按「套用」時只會存下框裡看到的那一塊。</div>'+
+      '<div class="dbg-row"><span>左右</span><input type="range" id="dbgX" min="-100" max="100" value="0" disabled><output id="dbgXV">置中</output></div>'+
+      '<div class="dbg-row"><span>上下</span><input type="range" id="dbgY" min="-100" max="100" value="0" disabled><output id="dbgYV">置中</output></div>'+
+      '<div class="muted dbg-tip">也可以直接在上面那格拖曳。放大到蓋滿整格之後，左右／上下才有得移動。按「套用」時只會存下框裡看到的那一塊。</div>'+
     '</div>'+
-    '<div class="dbg-row"><span>濃度</span><input type="range" id="dbgOp" min="3" max="20" value="'+op+'"'+(has?'':' disabled')+'><output id="dbgOpV">'+op+'%</output></div>'+
+    '<div class="dbg-row"><span>濃度</span><input type="range" id="dbgOp" min="3" max="30" value="'+op+'"'+(has?'':' disabled')+'><output id="dbgOpV">'+op+'%</output></div>'+
     '<div class="dbg-prev" id="dbgPrev" style="--dbg:'+url+';--dop:'+(has?op/100:0)+'">'+
       '<div class="pv-t">08:00</div><div><b>番西邦峰纜車</b><span>山頂約 10 度，請備妥外套與保溫水壺</span></div>'+
     '</div>'+
@@ -2642,14 +2673,38 @@ function dbgField(day){
       '<button type="button" class="btn sm pri" id="dbgApply" data-act="dbgApply" hidden>'+ic('check')+'套用這一塊</button>'+
       '<button type="button" class="btn sm dng" data-act="dbgRemove"'+(has?'':' hidden')+' id="dbgDel">'+ic('trash')+'移除底圖</button>'+
     '</div>'+
-    '<div class="muted dbg-size" id="dbgSize">'+(has&&b.kb?('目前這張約 '+b.kb+' KB'):'')+'</div>'+
+    '<div class="muted dbg-size" id="dbgSize">'+(has&&b.kb?('這張約 '+b.kb+' KB'):'')+'</div>'+
+    '<div class="muted dbg-size" id="dbgTot">'+dbgTotText(tot)+'</div>'+
   '</div>';
+}
+/* 全團容量提醒：整包資料每次開 App 都要下載一次，所以底圖總量要看得見。 */
+var DBG_BUDGET=600;   /* KB，超過就變成警告字樣 */
+function dbgTotText(t){
+  if(!t.n) return '目前全團還沒有任何底圖。';
+  return '全團共 '+t.n+' 張底圖，合計約 '+t.kb+' KB'+(t.kb>DBG_BUDGET?'（偏多了，建議控制在 '+DBG_BUDGET+' KB 以內）':'')+'。';
+}
+function dbgRefresh(){
+  var f=el('dbgF'); if(!f) return;
+  var id=f.getAttribute('data-id'), b=itemBg(id), has=!!b, op=bgOp(b);
+  var url=has?"url('"+b.src+"')":'none';
+  var fr=el('dbgFrame'); if(fr) fr.style.backgroundImage=url;
+  var im=el('dbgImg'); if(im){ im.hidden=true; im.removeAttribute('src'); }
+  if(el('dbgHint')) el('dbgHint').hidden=has;
+  if(el('dbgCrop')) el('dbgCrop').hidden=true;
+  if(el('dbgApply')) el('dbgApply').hidden=true;
+  if(el('dbgDel')) el('dbgDel').hidden=!has;
+  var o=el('dbgOp'); if(o){ o.disabled=!has; o.value=op; }
+  if(el('dbgOpV')) el('dbgOpV').textContent=op+'%';
+  var pv=el('dbgPrev');
+  if(pv){ pv.style.setProperty('--dbg',url); pv.style.setProperty('--dop',has?op/100:0); }
+  if(el('dbgSize')) el('dbgSize').textContent=(has&&b.kb)?('這張約 '+b.kb+' KB'):'';
+  if(el('dbgTot')) el('dbgTot').textContent=dbgTotText(photoTotal());
 }
 /* 把框裡看到的那一塊畫成 420×236，轉成 WebP。
    舊版 Safari 的 canvas 不支援 WebP 編碼會「默默吐出 PNG」，所以要檢查回傳的型別，
    不對就退回 JPEG；超過容量上限就自動降品質再壓一次。 */
 function dbgEncode(canvas,cb){
-  var CAP=11000, TYPES=['image/webp','image/jpeg'];
+  var CAP=9000, TYPES=['image/webp','image/jpeg'];
   function go(ti,q){
     if(ti>=TYPES.length) return cb(null);
     canvas.toBlob(function(b){
@@ -2663,6 +2718,9 @@ function dbgEncode(canvas,cb){
   }
   go(0,0.6);
 }
+/* 左右／上下滑桿跟拖曳共用同一份 tx/ty：
+   滑桿是「可移動範圍的百分比」，拖曳完再換算回百分比寫回滑桿，兩邊永遠同步。 */
+function dbgPos(v){ return v===0?'置中':((v>0?'+':'')+v+'%'); }
 function dbgLayout(){
   if(!DBG) return;
   var f=el('dbgFrame'), im=el('dbgImg');
@@ -2671,21 +2729,32 @@ function dbgLayout(){
   var sc=DBG.s0*DBG.z, dw=DBG.img.naturalWidth*sc, dh=DBG.img.naturalHeight*sc;
   /* 不讓框看到圖片以外的空白 */
   var mx=Math.max(0,(dw-fw)/2), my=Math.max(0,(dh-fh)/2);
+  if(DBG.bySlider){ DBG.tx=mx*DBG.px/100; DBG.ty=my*DBG.py/100; DBG.bySlider=false; }
   DBG.tx=Math.max(-mx,Math.min(mx,DBG.tx));
   DBG.ty=Math.max(-my,Math.min(my,DBG.ty));
+  DBG.px=mx?Math.round(DBG.tx/mx*100):0;
+  DBG.py=my?Math.round(DBG.ty/my*100):0;
+  var xs=el('dbgX'), ys=el('dbgY');
+  if(xs){ xs.value=DBG.px; xs.disabled=mx<1; }
+  if(ys){ ys.value=DBG.py; ys.disabled=my<1; }
+  if(el('dbgXV')) el('dbgXV').textContent=(mx<1?'—':dbgPos(DBG.px));
+  if(el('dbgYV')) el('dbgYV').textContent=(my<1?'—':dbgPos(DBG.py));
   im.style.width=dw+'px'; im.style.height=dh+'px';
   im.style.transform='translate('+(-dw/2+DBG.tx)+'px,'+(-dh/2+DBG.ty)+'px)';
 }
 function dbgOpenFile(file){
   var fr=new FileReader();
   fr.onload=function(){
-    var im=el('dbgImg');
+    var im=el('dbgImg'), cur=itemBg(el('dbgF').getAttribute('data-id'));
     im.onload=function(){
-      DBG={day:Number(el('dbgF').getAttribute('data-day')),img:im,s0:1,z:1,tx:0,ty:0};
+      DBG={id:el('dbgF').getAttribute('data-id'),img:im,s0:1,z:1,tx:0,ty:0,px:0,py:0};
       im.hidden=false; el('dbgHint').hidden=true;
       el('dbgFrame').style.backgroundImage='none';
       el('dbgCrop').hidden=false; el('dbgApply').hidden=false;
       el('dbgZ').value=100; el('dbgZV').textContent='100%';
+      /* 第一次上傳時濃度滑桿原本是 disabled（因為那時還沒有圖），這裡一定要打開，
+         不然濃度會卡在預設值調不動。 */
+      var o=el('dbgOp'); if(o){ o.disabled=false; if(!cur){ o.value=bgOp(null); if(el('dbgOpV')) el('dbgOpV').textContent=o.value+'%'; } }
       el('dbgSize').textContent='調好位置後按「套用這一塊」';
       dbgLayout(); dbgPreview();
     };
@@ -2712,19 +2781,21 @@ function dbgApply(){
   var sc=DBG.s0*DBG.z, dw=DBG.img.naturalWidth*sc, dh=DBG.img.naturalHeight*sc;
   /* 框的左上角換算回原圖座標 */
   var sx=(dw/2-fw/2-DBG.tx)/sc, sy=(dh/2-fh/2-DBG.ty)/sc, sw=fw/sc, sh=fh/sc;
-  var OW=420, OH=Math.round(OW*9/16);
+  var OW=360, OH=Math.round(OW*9/16);
   var cv=document.createElement('canvas'); cv.width=OW; cv.height=OH;
   var cx=cv.getContext('2d');
   cx.imageSmoothingQuality='high';
   cx.drawImage(DBG.img,sx,sy,sw,sh,0,0,OW,OH);
   el('dbgSize').textContent='壓縮中…';
+  var id=DBG.id;
   dbgEncode(cv,function(uri,size,type){
     if(!uri){ toast('這張照片壓不下來，換一張試試'); el('dbgSize').textContent=''; return; }
-    var st=S().settings; if(!st.dayBg) st.dayBg={};
     var op=Number(el('dbgOp').value)||9, kb=Math.round(size/1024*10)/10;
-    st.dayBg[String(DBG.day)]={src:uri,op:op,kb:kb};
-    Store.savePath('settings','dayBg/'+DBG.day,st.dayBg[String(DBG.day)]);
-    DBG=null; render(); sheetItem(SHEET&&SHEET.id);
+    photoMap()[id]={src:uri,op:op,kb:kb};
+    Store.savePath('photos','items/'+id,photoMap()[id]);
+    DBG=null; render();
+    /* 只更新底圖那一區，不重開整張表單——重開會把還沒儲存的文字改動丟掉 */
+    dbgRefresh();
     toast('底圖已套用（'+kb+' KB · '+(type==='image/webp'?'WebP':'JPEG')+'）');
   });
 }
@@ -2735,7 +2806,7 @@ function sheetItem(id){
     '<button type="button" class="btn sm" style="margin-top:.5rem" data-act="editTags">'+ic('gear')+'管理標籤（增減／改名）</button>';
   openSheet({title:id?'編輯行程':'新增行程',focus:true,body:
     '<div class="grid2">'+fld('第幾天','<select class="in" name="day">'+Array.apply(null,{length:S().settings.days||5}).map(function(_,i){return '<option value="'+(i+1)+'"'+(x.day===i+1?' selected':'')+'>第 '+(i+1)+' 天</option>';}).join('')+'</select>')+fld('時間',timeField('time',x.time))+'</div>'+
-    fld('景點 / 活動名稱（建議 11 字以內）',inp('title',x.title))+fld('一句話說明',inp('desc',x.desc))+fld('Google 地圖地點（留空＝不顯示地圖按鈕）',inp('place',x.place||'','text','placeholder="例：Sa Pa Stone Church"'))+fld('防呆標籤',tagsHtml)+fld('詳細介紹（詳細模式才顯示）',ta('detail',x.detail))+dbgField(x.day),
+    fld('景點 / 活動名稱（建議 11 字以內）',inp('title',x.title))+fld('一句話說明',inp('desc',x.desc))+fld('Google 地圖地點（留空＝不顯示地圖按鈕）',inp('place',x.place||'','text','placeholder="例：Sa Pa Stone Church"'))+fld('防呆標籤',tagsHtml)+fld('詳細介紹（詳細模式才顯示）',ta('detail',x.detail))+dbgField(id),
     foot:footBtns('saveItem',id?'<button class="btn dng" data-act="delItem">刪除</button>':'')});
   SHEET.id=id;
 }
@@ -3156,12 +3227,15 @@ var ACT={
     Store.save('settings'); sheetTags(); },
   saveItem:function(){ var title=sv('title'); if(!title){ toast('請輸入名稱'); return; } var all=items(); var x=SHEET.id?all.filter(function(i){return i.id===SHEET.id;})[0]:null; if(!x){ x={id:uid(),tags:[]}; all.push(x); }
     x.day=Number(sv('day'))||1; x.time=sv('time'); x.title=title; x.desc=sv('desc'); x.place=sv('place'); x.detail=sv('detail'); x.tags=sv('tags')?sv('tags').split(','):[]; all.sort(function(a,b){ return a.day-b.day; }); closeSheet(); P.planDay=x.day; Store.save('itinerary'); toast('行程已儲存'); },
-  delItem:function(){ var id=SHEET.id; S().itinerary.items=items().filter(function(x){return x.id!==id;}); closeSheet(); Store.save('itinerary'); toast('已刪除'); },
+  delItem:function(){ var id=SHEET.id; S().itinerary.items=items().filter(function(x){return x.id!==id;});
+    /* 行程刪掉了，它的底圖也要一起清掉，不然那 10 幾 KB 會永遠留在資料庫裡 */
+    if(itemBg(id)){ delete photoMap()[id]; Store.savePath('photos','items/'+id,null); }
+    closeSheet(); Store.save('itinerary'); toast('已刪除'); },
   dbgApply:function(){ if(!P.leader) return; dbgApply(); },
   dbgRemove:function(){ if(!P.leader) return;
-    var d=Number((el('dbgF')||{}).getAttribute?el('dbgF').getAttribute('data-day'):0); if(!d) return;
-    var st=S().settings; if(st.dayBg) delete st.dayBg[String(d)];
-    Store.savePath('settings','dayBg/'+d,null); DBG=null; render(); sheetItem(SHEET&&SHEET.id); toast('已移除第 '+d+' 天的底圖'); },
+    var f=el('dbgF'); if(!f) return; var id=f.getAttribute('data-id'); if(!id) return;
+    delete photoMap()[id];
+    Store.savePath('photos','items/'+id,null); DBG=null; render(); dbgRefresh(); toast('已移除這個行程的底圖'); },
   editRooms:function(){ sheetRooms(); },
   saveRooms:function(){ var map={}; el('sheetRoot').querySelectorAll('input[data-old]').forEach(function(i){ if(i.value.trim()) map[i.getAttribute('data-old')]=i.value.trim(); }); members().forEach(function(m){ var k=m.room||''; if(map[k]!==undefined) m.room=map[k]; }); closeSheet(); Store.save('members'); toast('房號已更新'); },
   copyTxt:function(t){ var v=t.getAttribute('data-v')||'';
@@ -3309,6 +3383,7 @@ document.addEventListener('input',function(ev){
   else if(t.id==='twdIn'){ var v=Number(t.value)||0, r=Number(S().settings.vndPerTwd)||820; el('twdOut').textContent=v?fmtVND(Math.round(v*r/1000)*1000):'—'; }
   else if(t.id==='tnInput'){ var c=el('tnCount'); if(c) c.textContent=[].slice.call(t.value).length+' / 20 字'; }
   else if(t.id==='dbgZ'){ if(DBG){ DBG.z=(Number(t.value)||100)/100; dbgLayout(); } var zv=el('dbgZV'); if(zv) zv.textContent=t.value+'%'; }
+  else if(t.id==='dbgX'||t.id==='dbgY'){ if(DBG){ if(t.id==='dbgX') DBG.px=Number(t.value)||0; else DBG.py=Number(t.value)||0; DBG.bySlider=true; dbgLayout(); } }
   else if(t.id==='dbgOp'){ var ov=el('dbgOpV'); if(ov) ov.textContent=t.value+'%';
     var pv=el('dbgPrev'); if(pv) pv.style.setProperty('--dop',(Number(t.value)||9)/100); }
   else if(t.id==='rcLabel'){ clearTimeout(window._rcT); window._rcT=setTimeout(function(){ var rc=S().rollcall; if(rc&&rc.label!==t.value.trim()) Store.savePath('rollcall','label',t.value.trim()); },700); }
@@ -3317,11 +3392,11 @@ document.addEventListener('change',function(ev){ var t=ev.target;
   /* 下拉選單型的動作（例如首頁卡片位置）走 change，不走 click */
   if(t&&t.tagName==='SELECT'&&t.getAttribute('data-act')&&ACT[t.getAttribute('data-act')]){ ACT[t.getAttribute('data-act')](t,ev); return; }
   if(t&&t.id==='dbgFile'&&t.files&&t.files[0]){ dbgOpenFile(t.files[0]); t.value=''; return; }
-  if(t&&t.id==='dbgZ'){ if(DBG) dbgPreview(); return; }
+  if(t&&(t.id==='dbgZ'||t.id==='dbgX'||t.id==='dbgY')){ if(DBG) dbgPreview(); return; }
   if(t&&t.id==='dbgOp'){ if(DBG){ dbgPreview(); return; }   /* 裁切中只更新預覽，還沒存 */
     /* 放開才存，免得拖一次寫十幾筆 */
-    var dF=el('dbgF'); if(dF){ var d=dF.getAttribute('data-day'), b=dayBg(d);
-      if(b){ b.op=Number(t.value)||9; Store.savePath('settings','dayBg/'+d+'/op',b.op); render(); } }
+    var dF=el('dbgF'); if(dF){ var pid=dF.getAttribute('data-id'), b=itemBg(pid);
+      if(b){ b.op=Number(t.value)||9; Store.savePath('photos','items/'+pid+'/op',b.op); render(); } }
     return; }
   if(t&&t.id==='importFile'&&t.files&&t.files[0]){ var fr=new FileReader(); fr.onload=function(){ try{ var n=Store.importJSON(fr.result); closeSheet(); toast('已匯入 '+n+' 份資料並同步'); }catch(e){ toast('匯入失敗：'+e.message); } }; fr.readAsText(t.files[0]); return; } if(t&&t.getAttribute&&t.getAttribute('data-tf')){ var n=t.getAttribute('data-tf'); var root=el('sheetRoot'); var hs=root.querySelector('select[data-tf="'+n+'"][data-part="h"]'), ms=root.querySelector('select[data-tf="'+n+'"][data-part="m"]'), h=root.querySelector('input[name="'+n+'"]'); if(hs&&ms&&h){ if(hs.value&&!ms.value) ms.value='00'; h.value=(hs.value&&ms.value)?hs.value+':'+ms.value:''; } } });
 document.addEventListener('keydown',function(ev){ if(ev.key==='Escape'){ if(SHEET) closeSheet(); else if(!FULL_LOCK) closeFull(); } });
