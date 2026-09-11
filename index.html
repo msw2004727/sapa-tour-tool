@@ -674,7 +674,7 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
 <script src="./config.js"></script>
 <script>
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '3.11';
+var APP_VERSION = '3.12';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -1511,11 +1511,33 @@ function zoneCfg(){
   o.manual={}; for(var m in ZONE_MANUAL_DEF) o.manual[m]=((z.manual||{})[m]||ZONE_MANUAL_DEF[m]);
   return o;
 }
+/* 每張卡各自決定要不要跟著行程自動跑。
+   'auto' ＝ 照下面的條件；其他值 ＝ 釘死在那一區，連旅程結束後也維持。
+   z.mode 只用來讀舊資料：'auto'（或沒有）代表全部自動、'manual' 是舊版的全域手動、
+   'card' 是新版逐卡設定。setPin() 會在第一次改動時把舊資料固化成 'card'。 */
+function cardPin(id){
+  var z=S().settings.zones||{}, m=(z.manual||{})[id];
+  if(z.mode==='card') return m||'auto';
+  if(z.mode==='manual') return m||ZONE_MANUAL_DEF[id]||'auto';
+  return 'auto';
+}
+function setPin(id,v){
+  var st=S().settings; if(!st.zones) st.zones={};
+  var z=st.zones;
+  if(z.mode!=='card'){
+    /* 從舊的全域模式搬過來：先把每張卡「現在的位置」固化，免得動一張其他張跟著跳 */
+    var m={}; ['prep','hotel','flight','morning'].forEach(function(x){ m[x]=cardPin(x); });
+    z.manual=m; z.mode='card';
+  }
+  if(!z.manual) z.manual={};
+  z.manual[id]=v;
+}
 function cardZone(id,di){
   /* 今日行程是首頁主要內容，鎖在「現在」不讓搬走；旅程結束後這張卡本來就不產生 */
   if(id==='today') return (di&&di.status==='after')?'hide':'now';
+  var pin=cardPin(id);
+  if(pin!=='auto') return pin;
   var z=zoneCfg();
-  if(z.mode==='manual') return z.manual[id]||'ref';
   var before=(di.status==='before'), after=(di.status==='after'), idx=di.idx, days=di.days;
   /* 旅程結束後：回程航班最重要，擺到最上面；只留住宿備查，其餘收起 */
   if(after) return id==='flight'?'now':(id==='hotel'?'ref':'hide');
@@ -1538,14 +1560,39 @@ function zoneOrder(){
   ZONE_ORDER_DEF.forEach(function(x){ if(out.indexOf(x)<0) out.push(x); });   /* 補齊漏掉的，順序設定壞掉也不會少卡片 */
   return out;
 }
+/* 看板上的 ↑↓ 可以穿過分區標題：在該區第一張再按 ↑ 就跳到上一區的最後一張之後。
+   跨區＝把那張卡從「自動」改成釘死在新分區。「不顯示」不在 ↑↓ 的路線上，
+   要收起來只能用下拉，避免長輩一路按 ↓ 把卡片按不見。 */
+var ZONE_VIS=['now','later','ref'];
 function zoneMove(id,dir){
-  var di=dayInfo(), ord=zoneOrder(), z=cardZone(id,di);
+  var di=dayInfo(), ord=zoneOrder(), z=cardZone(id,di), zi=ZONE_VIS.indexOf(z);
+  if(zi<0) return;
   var sib=ord.filter(function(x){ return cardZone(x,di)===z; });
-  var i=sib.indexOf(id), j=i+dir; if(i<0||j<0||j>=sib.length) return;
-  var a=ord.indexOf(id), b=ord.indexOf(sib[j]);
-  ord[a]=sib[j]; ord[b]=id;
-  var st=S().settings; if(!st.zones) st.zones={}; st.zones.order=ord;
-  Store.save('settings'); render(); sheetCardZones();
+  var i=sib.indexOf(id), j=i+dir; if(i<0) return;
+  var st=S().settings; if(!st.zones) st.zones={};
+  if(j>=0&&j<sib.length){
+    var a=ord.indexOf(id), b=ord.indexOf(sib[j]);
+    ord[a]=sib[j]; ord[b]=id;
+  }else{
+    if(!cardMovable(id)) return;              /* 今日行程只能在現在區內換先後 */
+    var nz=ZONE_VIS[zi+dir]; if(!nz) return;
+    setPin(id,nz);                            /* 先釘住，cardZone 才會回報新分區 */
+    ord.splice(ord.indexOf(id),1);
+    var grp=ord.filter(function(x){ return cardZone(x,di)===nz; }), at;
+    if(grp.length){ at = dir<0 ? ord.indexOf(grp[grp.length-1])+1 : ord.indexOf(grp[0]); }
+    else{ /* 目標區是空的：排在所有更上面的區之後 */
+      at=0; ord.forEach(function(x,k){ var xi=ZONE_VIS.indexOf(cardZone(x,di));
+        if(xi>=0&&xi<ZONE_VIS.indexOf(nz)) at=k+1; });
+    }
+    ord.splice(at,0,id);
+  }
+  st.zones.order=ord;
+  Store.save('settings'); render(); sheetCardZones(); nowCrowdCheck();
+}
+/* 「現在」區塞太多張，浮起的重點就散了。只提醒、不阻止。 */
+function nowCrowdCheck(){
+  var di=dayInfo(), n=zoneOrder().filter(function(x){ return cardZone(x,di)==='now'; }).length;
+  if(n>=3) toast('「現在」區已經有 '+n+' 張卡，重點會分散');
 }
 /* 領隊沒設定過展開預設時，依卡片性質自動決定。foldCard 與設定面板共用同一個答案。 */
 function cardAutoOpen(id,di){
@@ -2759,33 +2806,41 @@ function sheetInstall(){
 /* 首頁卡片位置：把 cardZone() 的規則開放給領隊調整。
    下面「現在的結果」是即時算出來的，領隊改完不用回首頁就能確認。 */
 function sheetCardZones(){
-  var z=zoneCfg(), di=dayInfo(), auto=(z.mode==='auto'), ord=zoneOrder(), h=[];
+  var z=zoneCfg(), di=dayInfo(), ord=zoneOrder(), h=[];
   function sl(k,cur,opts,cls){ return '<select class="in'+(cls?' '+cls:'')+'" data-act="zoneSet" data-k="'+esc(k)+'">'+
     opts.map(function(o){ return '<option value="'+esc(o[0])+'"'+(cur===o[0]?' selected':'')+'>'+esc(o[1])+'</option>'; }).join('')+'</select>'; }
-  h.push('<div class="f"><label>模式</label>'+sl('mode',z.mode,[['auto','自動（跟著行程走）'],['manual','手動指定']])+'</div>');
-  if(auto){
-    h.push('<div class="f"><label>出發前準備｜什麼時候收起來</label>'+sl('prepUntil',z.prepUntil,[['start','出發當天收起'],['end','整趟都留著'],['off','不顯示']])+'</div>');
-    h.push('<div class="f"><label>航班資訊｜什麼時候排到「稍後」</label>'+sl('flightSoon',z.flightSoon,[['auto','出發前＋首尾兩天'],['ends','只有首尾兩天'],['always','整趟都在稍後'],['never','一律放隨時查']])+'</div>');
-    h.push('<div class="f"><label>明早時程｜什麼時候排到「稍後」</label>'+sl('morningSoon',z.morningSoon,[['trip','旅程中'],['always','整趟都在稍後'],['never','一律放隨時查']])+'</div>');
-    h.push('<div class="muted">位置由上面的條件決定，同一區裡有兩張以上時可以用 ↑↓ 調先後。旅程結束後固定是：回程航班移到「現在」、只留住宿。</div>');
+  /* 條件只對還在「自動」的卡片有意義，其他的不佔版面 */
+  var COND={
+    prep:['prepUntil','出發前準備｜什麼時候收起來',[['start','出發當天收起'],['end','整趟都留著'],['off','不顯示']]],
+    flight:['flightSoon','航班資訊｜什麼時候排到「稍後」',[['auto','出發前＋首尾兩天'],['ends','只有首尾兩天'],['always','整趟都在稍後'],['never','一律放隨時查']]],
+    morning:['morningSoon','明早時程｜什麼時候排到「稍後」',[['trip','旅程中'],['always','整趟都在稍後'],['never','一律放隨時查']]]
+  };
+  var autos=['prep','flight','morning'].filter(function(id){ return cardPin(id)==='auto'; });
+  h.push('<div class="muted">每張卡片可以自己決定要「自動跟著行程走」還是<b>釘死在某一區</b>。釘死的卡片旅程結束後也維持在你指定的位置。<br>看板上的 ↑↓ 可以直接穿過分區標題，跨過去就等於釘住。</div>');
+  if(autos.length){
+    autos.forEach(function(id){ var c=COND[id];
+      h.push('<div class="f"><label>'+esc(c[1])+'</label>'+sl(c[0],z[c[0]],c[2])+'</div>'); });
   }else{
-    h.push('<div class="muted">手動模式下卡片不會再自己移動，旅程結束後也維持你指定的位置。把卡片設成「現在」就會跟今日行程並列在最上面。</div>');
+    h.push('<div class="muted">目前每張卡都被釘死了，所以沒有自動條件要設定。</div>');
   }
-  /* 分區看板：這塊同時是「目前的結果」也是編輯區，不再另外放一份預覽 */
+  var ZOPT=[['auto','自動'],['now','現在'],['later','稍後'],['ref','隨時查'],['hide','不顯示']];
   h.push('<div class="zb-wrap"><div class="zb-t">'+esc(di.status==='before'?'出發前':(di.status==='after'?'旅程結束後':'第 '+di.idx+' / '+di.days+' 天'))+'的排法</div>');
-  var ZOPT=[['now','現在'],['later','稍後'],['ref','隨時查'],['hide','不顯示']];
   ['now','later','ref','hide'].forEach(function(zone){
-    var list=ord.filter(function(id){ return cardZone(id,di)===zone; });
+    var list=ord.filter(function(id){ return cardZone(id,di)===zone; }), vis=(ZONE_VIS.indexOf(zone)>=0);
     h.push('<div class="zb-h">'+esc(ZONE_LABELS[zone])+'<i></i></div><div class="zb'+(zone==='now'?' now':'')+(zone==='hide'?' off':'')+'">');
     if(!list.length){ h.push('<div class="zb-empty">（沒有卡片）</div>'); }
     list.forEach(function(id,i){
-      var L=cardLead(id), hide=(zone==='hide'), many=(list.length>1);
+      var L=cardLead(id), hide=(zone==='hide'), lock=!cardMovable(id);
+      /* ↑ 在最上面那一區的第一張才關掉；↓ 在最下面的可見區最後一張才關掉。
+         被鎖住的今日行程只在自己這一區內換先後。 */
+      var canUp = vis && !(zone==='now'&&i===0) && !(lock&&i===0);
+      var canDown = vis && !(zone==='ref'&&i===list.length-1) && !(lock&&i===list.length-1);
+      var showOrd = vis && (list.length>1 || (!lock && (canUp||canDown)));
       h.push('<div class="zb-c"><div class="zb-r">'+(L.hl&&!hide?'<span class="hdot"></span>':'')+
         '<span class="zb-n">'+esc(ZONE_NAMES[id])+'</span>'+
-        (!auto&&cardMovable(id)?sl('z.'+id,cardZone(id,di),ZOPT,'sm'):'')+
-        (cardMovable(id)?'':'<span class="zb-lock">固定</span>')+
-        (hide||!many?'':'<span class="ord"><button class="omv" data-act="zoneMove" data-id="'+id+'" data-d="-1"'+(i===0?' disabled':'')+' aria-label="'+esc(ZONE_NAMES[id])+'往上移">↑</button>'+
-          '<button class="omv" data-act="zoneMove" data-id="'+id+'" data-d="1"'+(i===list.length-1?' disabled':'')+' aria-label="'+esc(ZONE_NAMES[id])+'往下移">↓</button></span>')+
+        (lock?'<span class="zb-lock">固定</span>':sl('z.'+id,cardPin(id),ZOPT,'sm'))+
+        (showOrd?'<span class="ord"><button class="omv" data-act="zoneMove" data-id="'+id+'" data-d="-1"'+(canUp?'':' disabled')+' aria-label="'+esc(ZONE_NAMES[id])+'往上移">↑</button>'+
+          '<button class="omv" data-act="zoneMove" data-id="'+id+'" data-d="1"'+(canDown?'':' disabled')+' aria-label="'+esc(ZONE_NAMES[id])+'往下移">↓</button></span>':'')+
         '</div>'+
         (hide?'':'<div class="zb-s">'+
           (cardFoldable(id)?'<span class="lb">團員預設展開</span>'+
@@ -2798,7 +2853,7 @@ function sheetCardZones(){
   });
   h.push('</div>');
   openSheet({title:'首頁卡片位置',tall:true,body:h.join(''),
-    foot:'<button class="btn dng" data-act="zoneReset">恢復預設</button><button class="btn pri" data-act="sheetClose">完成</button>'});
+    foot:'<button class="btn dng" data-act="zoneReset">全部恢復自動</button><button class="btn pri" data-act="sheetClose">完成</button>'});
 }
 function sheetNbPage(id){
   var pg=id?nbPage(id):{icon:'📝',title:'',type:'notes'};
@@ -3041,10 +3096,10 @@ var ACT={
   zoneSet:function(t){ if(!P.leader) return;
     var k=t.getAttribute('data-k'), v=t.value, st=S().settings;
     if(!st.zones) st.zones={};
-    if(k.indexOf('z.')===0){ if(!st.zones.manual) st.zones.manual={}; st.zones.manual[k.slice(2)]=v; }
-    else st.zones[k]=v;
-    Store.save('settings'); render(); sheetCardZones(); },
-  zoneReset:function(){ if(!P.leader) return; S().settings.zones={}; Store.save('settings'); render(); sheetCardZones(); toast('已恢復預設規則'); },
+    if(k.indexOf('z.')===0) setPin(k.slice(2),v);   /* 單張卡：自動 or 釘在某一區 */
+    else st.zones[k]=v;                             /* 自動模式的觸發條件 */
+    Store.save('settings'); render(); sheetCardZones(); nowCrowdCheck(); },
+  zoneReset:function(){ if(!P.leader) return; S().settings.zones={}; Store.save('settings'); render(); sheetCardZones(); toast('全部改回自動，順序也復原了'); },
   nbTab:function(t){ P.nbPage=t.getAttribute('data-id'); render(); },
   nbGo:function(t){ P.tab='notes'; P.nbPage=t.getAttribute('data-id')||''; closeSheet(); render(); window.scrollTo(0,0); },
   nbCheck:function(t){ var pg=t.getAttribute('data-pg'), id=t.getAttribute('data-id'); P.checks=P.checks||{}; P.checks[pg]=P.checks[pg]||{}; if(P.checks[pg][id]) delete P.checks[pg][id]; else P.checks[pg][id]=true; savePrefs(); render(); },
