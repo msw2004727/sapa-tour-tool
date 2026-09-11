@@ -532,7 +532,11 @@ select.in{appearance:none;-webkit-appearance:none;padding-right:1.9rem;
 .tgl.on::after{left:25px}
 .it-row .tgl{align-self:center}
 /* 明度階梯：現在＝浮起、稍後＝沉一階、隨時查＝只留框 */
-.g-now>.card{box-shadow:var(--lift);border-color:transparent;position:relative;overflow:hidden}
+/* 「現在」區：主卡的浮起感。手動模式可以把可收合卡片也放進這一區，
+   高亮時外面多包一層 .hlw，選擇器要一併涵蓋，不然浮起感會掉。 */
+.g-now>.card,.g-now>.ccard,.g-now>.hlw>.card,.g-now>.hlw>.ccard{box-shadow:var(--lift);position:relative;overflow:hidden}
+.g-now>.card,.g-now>.ccard{border-color:transparent}
+/* 頂部彩條只給沒高亮的主卡；高亮時由金框代表，兩個一起會打架 */
 .g-now>.card::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,var(--alert),var(--indigo))}
 .g-later>.card,.g-later>.ccard{background:var(--soft);border-color:transparent}
 .g-ref>.card,.g-ref>.ccard{background:transparent;border-color:var(--line)}
@@ -546,7 +550,9 @@ select.in{appearance:none;-webkit-appearance:none;padding-right:1.9rem;
 .hlw::before{content:"";position:absolute;inset:-3px;border-radius:calc(var(--r) + 3px);pointer-events:none;z-index:0;
   box-shadow:0 0 0 2px var(--hl-edge),0 0 16px 3px var(--hl-glow);animation:hlbreath 2.6s ease-in-out infinite}
 @keyframes hlbreath{0%,100%{opacity:.32}50%{opacity:1}}
-.hlw>.ccard{position:relative;z-index:1;background:var(--hl-bg);border-color:var(--hl-edge)}
+.hlw>.ccard,.hlw>.card{position:relative;z-index:1;background:var(--hl-bg);border-color:var(--hl-edge)}
+/* 今日行程不是可收合卡片，標題直接貼著卡片上緣，要多留位置給「提醒 ON」 */
+.hlw>.card{padding-top:1.45rem}
 .hlw .chead{padding-top:1.15rem}
 .hlw .chead .ttl{color:var(--hl-ink)}
 .hl-tag{position:absolute;top:-9px;left:12px;z-index:3;display:inline-flex;align-items:center;gap:.22rem;
@@ -570,6 +576,8 @@ select.in.sm{min-height:2.5rem;font-size:.88rem;padding:0 1.6rem 0 .55rem;width:
 .zb-c{border-top:1px solid var(--line)}
 .zb-c:first-child{border-top:0}
 .zb-r{display:flex;align-items:center;gap:.45rem;padding:.4rem 0}
+.zb-lock{flex:none;font-size:.76rem;font-weight:800;color:var(--ink-3);white-space:nowrap;word-break:keep-all;
+  border:1px dashed var(--line);border-radius:999px;padding:.1rem .45rem}
 .zb-n{flex:1;min-width:0;font-size:.95rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .zb-s{display:flex;align-items:center;gap:.3rem;padding:0 0 .45rem;font-size:.74rem;font-weight:800;color:var(--ink-3)}
 .zb-s .lb{white-space:nowrap;word-break:keep-all}
@@ -666,7 +674,7 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
 <script src="./config.js"></script>
 <script>
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '3.10';
+var APP_VERSION = '3.11';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -1494,6 +1502,9 @@ function cardSetHL(id){ var st=S().settings; if(!st.cards) st.cards={};
    回傳 now / later / ref / hide 四種。 */
 var ZONE_DEF={mode:'auto',prepUntil:'start',flightSoon:'auto',morningSoon:'trip'};
 var ZONE_MANUAL_DEF={prep:'later',flight:'ref',morning:'later',hotel:'ref'};
+/* 今日行程不可收合、不可搬移，但可以高亮 */
+function cardFoldable(id){ return id!=='today'; }
+function cardMovable(id){ return id!=='today'; }
 function zoneCfg(){
   var z=S().settings.zones||{}, o={};
   for(var k in ZONE_DEF) o[k]=(z[k]===undefined||z[k]===null)?ZONE_DEF[k]:z[k];
@@ -1501,6 +1512,8 @@ function zoneCfg(){
   return o;
 }
 function cardZone(id,di){
+  /* 今日行程是首頁主要內容，鎖在「現在」不讓搬走；旅程結束後這張卡本來就不產生 */
+  if(id==='today') return (di&&di.status==='after')?'hide':'now';
   var z=zoneCfg();
   if(z.mode==='manual') return z.manual[id]||'ref';
   var before=(di.status==='before'), after=(di.status==='after'), idx=di.idx, days=di.days;
@@ -1517,7 +1530,7 @@ function cardZone(id,di){
   if(id==='morning') return z.morningSoon==='always'?'later':(z.morningSoon==='never'?'ref':(before?'ref':'later'));
   return 'ref';   /* hotel 及其他 */
 }
-var ZONE_ORDER_DEF=['prep','hotel','flight','morning'];
+var ZONE_ORDER_DEF=['today','prep','hotel','flight','morning'];
 /* 同一分區裡的先後。領隊可調（自動／手動模式都生效）；位置仍由 cardZone() 決定。 */
 function zoneOrder(){
   var o=(S().settings.zones||{}).order, out=[];
@@ -1542,12 +1555,12 @@ function cardAutoOpen(id,di){
   return 1;
 }
 function cardDefOpen(id,di){ var L=cardLead(id); return L.ts===0?!!cardAutoOpen(id,di):!!L.o; }
-var ZONE_NAMES={prep:'出發前準備',flight:'航班資訊',morning:'明早時程',hotel:'目前住宿'};
+var ZONE_NAMES={today:'今日行程',prep:'出發前準備',flight:'航班資訊',morning:'明早時程',hotel:'目前住宿'};
 var ZONE_LABELS={now:'現在',later:'稍後',ref:'隨時查',hide:'不顯示'};
 function foldCard(id,icon,title,sub,sum,inner){
   /* 展開預設與高亮提醒的開關已經搬到「領隊專區 → 首頁卡片位置」，
      卡片上不再掛那條金色列，團員與領隊看到的卡片長得一樣乾淨。 */
-  var open=cardOpen(id), hl=cardHL(id);
+  var open=cardOpen(id);
   var card='<section class="ccard'+(open?' open':'')+'">'+
     '<button class="chead" data-act="cardFold" data-id="'+id+'" aria-expanded="'+(open?'true':'false')+'">'+
       '<span class="ttl">'+ic(icon)+esc(title)+'</span>'+
@@ -1556,9 +1569,12 @@ function foldCard(id,icon,title,sub,sum,inner){
     '</button>'+
     (open?'<div class="cbody">'+inner+'</div>':'')+
   '</section>';
-  /* 發光那一圈畫在外層：.ccard 有 overflow:hidden，光暈畫在裡面會被裁掉 */
-  if(!hl) return card;
-  return '<div class="hlw"><span class="hl-tag">'+ic('star')+'提醒 ON</span>'+card+'</div>';
+  return wrapHL(id,card);
+}
+/* 發光那一圈畫在外層：卡片本身有 overflow:hidden，光暈畫在裡面會被裁掉 */
+function wrapHL(id,html){
+  if(!html||!cardHL(id)) return html;
+  return '<div class="hlw"><span class="hl-tag">'+ic('star')+'提醒 ON</span>'+html+'</div>';
 }
 function zlab(t){ return '<div class="zlab"><span>'+t+'</span><i></i></div>'; }
 function grp(key,label,cards){ cards=cards.filter(Boolean); if(!cards.length) return ''; return '<div class="zsec g-'+key+'">'+zlab(label)+cards.join('')+'</div>'; }
@@ -1702,8 +1718,10 @@ VIEWS.home=function(){
 
   /* 分區交給 cardZone()，同一區裡的先後交給 zoneOrder()（領隊可調）。 */
   var Z={now:[],later:[],ref:[]};
-  var BUILD={prep:prepCard,hotel:hotelCard,flight:flightCard,morning:morningCard};
-  if(!after) Z.now.push(todayCard(di,day));   /* 今日行程：主卡，不可收合也不進分區設定 */
+  var BUILD={
+    today:function(){ return wrapHL('today',todayCard(di,day)); },
+    prep:prepCard, hotel:hotelCard, flight:flightCard, morning:morningCard
+  };
   zoneOrder().forEach(function(id){
     var z=cardZone(id,di); if(z==='hide'||!Z[z]) return;
     var html=BUILD[id](); if(html) Z[z].push(html);
@@ -2749,27 +2767,29 @@ function sheetCardZones(){
     h.push('<div class="f"><label>出發前準備｜什麼時候收起來</label>'+sl('prepUntil',z.prepUntil,[['start','出發當天收起'],['end','整趟都留著'],['off','不顯示']])+'</div>');
     h.push('<div class="f"><label>航班資訊｜什麼時候排到「稍後」</label>'+sl('flightSoon',z.flightSoon,[['auto','出發前＋首尾兩天'],['ends','只有首尾兩天'],['always','整趟都在稍後'],['never','一律放隨時查']])+'</div>');
     h.push('<div class="f"><label>明早時程｜什麼時候排到「稍後」</label>'+sl('morningSoon',z.morningSoon,[['trip','旅程中'],['always','整趟都在稍後'],['never','一律放隨時查']])+'</div>');
-    h.push('<div class="muted">位置由上面的條件決定，同一區裡的先後可以在下面用 ↑↓ 調。旅程結束後固定是：回程航班移到「現在」、只留住宿。</div>');
+    h.push('<div class="muted">位置由上面的條件決定，同一區裡有兩張以上時可以用 ↑↓ 調先後。旅程結束後固定是：回程航班移到「現在」、只留住宿。</div>');
   }else{
-    h.push('<div class="muted">手動模式下卡片不會再自己移動，旅程結束後也維持你指定的位置。</div>');
+    h.push('<div class="muted">手動模式下卡片不會再自己移動，旅程結束後也維持你指定的位置。把卡片設成「現在」就會跟今日行程並列在最上面。</div>');
   }
   /* 分區看板：這塊同時是「目前的結果」也是編輯區，不再另外放一份預覽 */
   h.push('<div class="zb-wrap"><div class="zb-t">'+esc(di.status==='before'?'出發前':(di.status==='after'?'旅程結束後':'第 '+di.idx+' / '+di.days+' 天'))+'的排法</div>');
-  h.push('<div class="zb-h">現在<i></i></div><div class="zb now"><div class="zb-fixed">今日行程（固定，不可調整）</div></div>');
-  ['later','ref','hide'].forEach(function(zone){
+  var ZOPT=[['now','現在'],['later','稍後'],['ref','隨時查'],['hide','不顯示']];
+  ['now','later','ref','hide'].forEach(function(zone){
     var list=ord.filter(function(id){ return cardZone(id,di)===zone; });
-    h.push('<div class="zb-h">'+esc(ZONE_LABELS[zone])+'<i></i></div><div class="zb'+(zone==='hide'?' off':'')+'">');
+    h.push('<div class="zb-h">'+esc(ZONE_LABELS[zone])+'<i></i></div><div class="zb'+(zone==='now'?' now':'')+(zone==='hide'?' off':'')+'">');
     if(!list.length){ h.push('<div class="zb-empty">（沒有卡片）</div>'); }
     list.forEach(function(id,i){
-      var L=cardLead(id), hide=(zone==='hide');
+      var L=cardLead(id), hide=(zone==='hide'), many=(list.length>1);
       h.push('<div class="zb-c"><div class="zb-r">'+(L.hl&&!hide?'<span class="hdot"></span>':'')+
         '<span class="zb-n">'+esc(ZONE_NAMES[id])+'</span>'+
-        (auto?'':sl('z.'+id,cardZone(id,di),[['later','稍後'],['ref','隨時查'],['hide','不顯示']],'sm'))+
-        (hide?'':'<span class="ord"><button class="omv" data-act="zoneMove" data-id="'+id+'" data-d="-1"'+(i===0?' disabled':'')+' aria-label="'+esc(ZONE_NAMES[id])+'往上移">↑</button>'+
+        (!auto&&cardMovable(id)?sl('z.'+id,cardZone(id,di),ZOPT,'sm'):'')+
+        (cardMovable(id)?'':'<span class="zb-lock">固定</span>')+
+        (hide||!many?'':'<span class="ord"><button class="omv" data-act="zoneMove" data-id="'+id+'" data-d="-1"'+(i===0?' disabled':'')+' aria-label="'+esc(ZONE_NAMES[id])+'往上移">↑</button>'+
           '<button class="omv" data-act="zoneMove" data-id="'+id+'" data-d="1"'+(i===list.length-1?' disabled':'')+' aria-label="'+esc(ZONE_NAMES[id])+'往下移">↓</button></span>')+
         '</div>'+
-        (hide?'':'<div class="zb-s"><span class="lb">團員預設展開</span>'+
-          '<button class="tgl xs'+(cardDefOpen(id,di)?' on':'')+'" data-act="zCardDef" data-id="'+id+'" aria-label="切換'+esc(ZONE_NAMES[id])+'的團員預設展開"></button>'+
+        (hide?'':'<div class="zb-s">'+
+          (cardFoldable(id)?'<span class="lb">團員預設展開</span>'+
+            '<button class="tgl xs'+(cardDefOpen(id,di)?' on':'')+'" data-act="zCardDef" data-id="'+id+'" aria-label="切換'+esc(ZONE_NAMES[id])+'的團員預設展開"></button>':'<span class="lb">不可收合</span>')+
           '<span class="gap"></span><span class="lb">高亮提醒</span>'+
           '<button class="tgl xs'+(L.hl?' on':'')+'" data-act="zCardHl" data-id="'+id+'" aria-label="切換'+esc(ZONE_NAMES[id])+'的高亮提醒"></button></div>')+
       '</div>');
