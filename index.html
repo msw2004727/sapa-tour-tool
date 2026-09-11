@@ -210,7 +210,6 @@ h2.sec{margin:.25rem 0 0;font-size:1rem;font-weight:900;color:var(--ink-2);displ
 .hero.pre{background:var(--indigo)}
 .hero.done{background:var(--terrace)}
 .hero.pre .tip svg.i,.hero.done .tip svg.i{color:var(--indigo)}
-.td-desc{display:block;font-size:.85rem;color:var(--ink-3);font-weight:600;line-height:1.35;margin-top:.1rem}
 /* me strip */
 .me-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
 .me-strip button{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.55rem .3rem;min-height:4.2rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.1rem;color:var(--ink)}
@@ -714,7 +713,7 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
 <script src="./config.js"></script>
 <script>
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '3.15';
+var APP_VERSION = '3.16';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -1835,7 +1834,7 @@ function todayCard(di,day){
     '<div class="stack">'+todays.map(function(x){
       return '<div style="display:flex;gap:.6rem;align-items:baseline;'+(x.isCanceled?'opacity:.55;text-decoration:line-through;':'')+'">'+
         '<b style="font-variant-numeric:tabular-nums;min-width:3.2rem;color:'+(x.isCurrent?'var(--terrace)':'var(--indigo)')+'">'+esc(x.time)+'</b>'+
-        '<span style="font-weight:'+(x.isCurrent?'900':'600')+';flex:1;min-width:0">'+esc(x.title)+(x.isCurrent?' <span class="chip" style="min-height:1.5rem;padding:.05rem .5rem;font-size:.75rem;background:var(--terrace-2);color:var(--terrace)">進行中</span>':'')+(x.isCanceled?' <span class="muted">取消</span>':'')+(P.planMode==='detail'&&x.desc?'<span class="td-desc">'+esc(x.desc)+'</span>':'')+'</span>'+mapBtn(x.place)+'</div>';
+        '<span style="font-weight:'+(x.isCurrent?'900':'600')+';flex:1;min-width:0">'+esc(x.title)+(x.isCurrent?' <span class="chip" style="min-height:1.5rem;padding:.05rem .5rem;font-size:.75rem;background:var(--terrace-2);color:var(--terrace)">進行中</span>':'')+(x.isCanceled?' <span class="muted">取消</span>':'')+'</span>'+mapBtn(x.place)+'</div>';
     }).join('')+(todays.length?'':'<div class="muted">這天還沒有行程</div>')+'</div>'+
     '<button class="btn block soft" style="margin-top:.7rem" data-act="tab" data-tab="plan">看完整行程與注意事項 '+ic('arrow')+'</button></section>';
 }
