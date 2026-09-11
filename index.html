@@ -39,6 +39,7 @@
   --gold:#C99A1E; --gold-2:#FFF4CC;
   --danger:#C62828;
   --soft:#F2F5F9;
+  --hl-bg:#FFFBEC; --hl-edge:#F0C64A; --hl-glow:rgba(201,154,30,.55); --hl-ink:#7A5B08; --hl-sw:#FFEDB8;
   --band:#2F4479; --lcd-ink:#7DE0C0; --lcd-glow:rgba(125,224,192,.32); --lcd-dim:#7C8C9C; --lcd-amber:#FFB648; --lcd-amber-glow:rgba(255,182,72,.35); --lcd-red:#FF6B5B; --lcd-red-glow:rgba(255,107,91,.4);
   --indigo-ink:#FFFFFF; --dome:0 -2px 10px rgba(47,68,121,.18),0 6px 18px rgba(47,68,121,.34);
   --shadow:0 1px 2px rgba(27,36,55,.06),0 6px 16px rgba(27,36,55,.07);
@@ -54,6 +55,7 @@
     --gold:#E2B94A; --gold-2:#3A2F12;
     --danger:#FF6B6B;
     --soft:#131A26;
+    --hl-bg:#2A2413; --hl-edge:#C9A23C; --hl-glow:rgba(201,154,30,.45); --hl-ink:#F0D488; --hl-sw:#3F3317;
     --band:#1E2C48; --lcd-ink:#6FD9B8; --lcd-glow:rgba(111,217,184,.3); --lcd-dim:#8496A6; --lcd-amber:#FFC062; --lcd-amber-glow:rgba(255,192,98,.32); --lcd-red:#FF7F70; --lcd-red-glow:rgba(255,127,112,.35);
     --indigo-ink:#101828; --dome:0 -2px 10px rgba(0,0,0,.5),0 6px 18px rgba(0,0,0,.55);
     --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
@@ -68,6 +70,7 @@
   --gold:#E2B94A; --gold-2:#3A2F12;
   --danger:#FF6B6B;
   --soft:#131A26;
+  --hl-bg:#2A2413; --hl-edge:#C9A23C; --hl-glow:rgba(201,154,30,.45); --hl-ink:#F0D488; --hl-sw:#3F3317;
   --band:#1E2C48; --lcd-ink:#6FD9B8; --lcd-glow:rgba(111,217,184,.3); --lcd-dim:#8496A6; --lcd-amber:#FFC062; --lcd-amber-glow:rgba(255,192,98,.32); --lcd-red:#FF7F70; --lcd-red-glow:rgba(255,127,112,.35);
   --indigo-ink:#101828; --dome:0 -2px 10px rgba(0,0,0,.5),0 6px 18px rgba(0,0,0,.55);
   --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
@@ -514,7 +517,10 @@ select.in{appearance:none;-webkit-appearance:none}
 .chead .sm{flex:1;min-width:0;text-align:right;font-size:.82rem;font-weight:800;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
 .chead .cv{flex-shrink:0;color:var(--ink-3);font-size:.8rem;font-weight:900;width:1.1rem;text-align:center}
 .cbody{padding:0 .8rem .8rem}
-.lead-sw{display:flex;align-items:center;gap:.45rem;padding:.45rem .8rem;background:var(--gold-2);font-size:.82rem;font-weight:800;white-space:nowrap;word-break:keep-all}
+.lead-sw{display:flex;flex-direction:column;gap:.3rem;padding:.5rem .8rem;background:var(--gold-2);font-size:.82rem;font-weight:800;white-space:nowrap;word-break:keep-all}
+.ls-row{display:flex;align-items:center;gap:.45rem}
+.ls-row span:first-child{display:inline-flex;align-items:center;gap:.25rem}
+.ls-row svg.i{width:1rem;height:1rem;color:var(--gold)}
 .lead-sw .sp{flex:1}
 .tgl{width:52px;height:30px;border-radius:999px;border:0;background:var(--ink-3);position:relative;flex-shrink:0;padding:0}
 .tgl::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:left .16s ease}
@@ -528,6 +534,34 @@ select.in{appearance:none;-webkit-appearance:none}
 .g-ref>.card,.g-ref>.ccard{background:transparent;border-color:var(--line)}
 .g-ref .chead .ttl{color:var(--ink-3)}
 .g-ref .fl-col{background:var(--card)}
+/* ===== 高亮提醒：領隊指定「這張卡大家要看」 =====
+   呼吸光暈只動 opacity，不動 box-shadow 尺寸，手機負擔最小。
+   .hlw 是額外包的一層，因為 .ccard 有 overflow:hidden，光暈畫在卡片裡會被裁掉。
+   底色規則要寫在 .g-later/.g-ref 之後，特異性同分時才壓得過分區樣式。 */
+.hlw{position:relative;border-radius:var(--r);margin-top:.35rem}
+.hlw::before{content:"";position:absolute;inset:-3px;border-radius:calc(var(--r) + 3px);pointer-events:none;z-index:0;
+  box-shadow:0 0 0 2px var(--hl-edge),0 0 16px 3px var(--hl-glow);animation:hlbreath 2.6s ease-in-out infinite}
+@keyframes hlbreath{0%,100%{opacity:.32}50%{opacity:1}}
+.hlw>.ccard{position:relative;z-index:1;background:var(--hl-bg);border-color:var(--hl-edge)}
+.hlw .chead{padding-top:1.15rem}
+.hlw .chead .ttl{color:var(--hl-ink)}
+.hlw .lead-sw{background:var(--hl-sw)}
+.hl-tag{position:absolute;top:-9px;left:12px;z-index:3;display:inline-flex;align-items:center;gap:.22rem;
+  background:var(--hl-edge);color:#3D2C02;border-radius:999px;padding:.15rem .5rem;
+  font-size:12px;font-weight:900;line-height:1.4;white-space:nowrap;word-break:keep-all;
+  box-shadow:0 1px 3px rgba(27,36,55,.22)}
+.hl-tag svg.i{width:12px;height:12px;stroke-width:2.4;color:inherit}
+/* 首頁卡片位置設定：底部即時顯示目前每張卡會落在哪一區 */
+.zone-now{margin-top:.6rem;border:1px solid var(--line);border-radius:.7rem;padding:.6rem .7rem;background:var(--soft)}
+.zone-now>b{display:block;font-size:.86rem;font-weight:900;margin-bottom:.35rem}
+.zrow{display:flex;align-items:center;gap:.5rem;font-size:.88rem;font-weight:700;padding:.18rem 0}
+.zrow span{flex:1;min-width:0;color:var(--ink-2)}
+.zrow b{flex:none;font-weight:900;border-radius:999px;padding:.1rem .5rem;font-size:.8rem;white-space:nowrap;word-break:keep-all}
+.zrow b.z-now{background:var(--alert-2);color:var(--alert)}
+.zrow b.z-later{background:var(--indigo-2);color:var(--indigo)}
+.zrow b.z-ref{background:var(--soft);color:var(--ink-3);border:1px solid var(--line)}
+.zrow b.z-hide{background:transparent;color:var(--ink-3);border:1px dashed var(--line)}
+@media (prefers-reduced-motion: reduce){ .hlw::before{animation:none;opacity:1} }
 /* Google 地圖按鈕 */
 .map-btn{width:2.1rem;height:2.1rem;min-width:2.1rem;border-radius:10px;border:1px solid var(--line);background:var(--card);
   color:var(--indigo);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;text-decoration:none;vertical-align:middle}
@@ -605,7 +639,7 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
 <script src="./config.js"></script>
 <script>
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '3.6';
+var APP_VERSION = '3.8';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -1390,27 +1424,93 @@ function isDark(){ if(P.theme) return P.theme==='dark'; var h=document.documentE
    領隊在 settings.cards 決定團員的預設狀態；團員自己點過的存在 P.cards。
    領隊改預設時 ts 會更新，團員的選擇隨之失效，重新套用新預設。 */
 var CARD_DEF={prep:{o:1,ts:0},flight:{o:1,ts:0},morning:{o:1,ts:0},hotel:{o:0,ts:0}};
-function cardLead(id){ var c=(S().settings.cards||{})[id]; if(!c||typeof c.o==='undefined') c=CARD_DEF[id]||{o:1,ts:0}; return {o:c.o?1:0, ts:c.ts||0}; }
+function cardLead(id){
+  var c=(S().settings.cards||{})[id]||{}, d=CARD_DEF[id]||{o:1,ts:0};
+  var unset=(typeof c.o==='undefined');
+  /* hl（高亮提醒）跟 o（展開預設）各自獨立：領隊只開高亮時 o 仍然沿用預設值 */
+  return {o:(unset?d.o:c.o)?1:0, ts:(unset?(d.ts||0):(c.ts||0)), hl:c.hl?1:0, hts:c.hts||0};
+}
+/* 這張卡現在要不要對「我」發光。
+   領隊開了才會亮；團員自己把卡片收起來就等於「我知道了」，對他這一輪熄燈。
+   領隊關掉再開一次會產生新的 hts，收起來過的人會重新亮一次。
+   沒有時間到自動熄滅這件事——只有領隊關、或團員自己收起來，燈才會滅。 */
+function cardHL(id){
+  var L=cardLead(id); if(!L.hl) return false;
+  var M=(P.cards||{})[id];
+  return !(M && M.hseen===L.hts);
+}
 /* auto：領隊沒設定過時（ts=0）依旅程階段自動決定展開或收起 */
 function cardOpen(id,auto){ var L=cardLead(id), M=(P.cards||{})[id];
   if(M&&M.ts===L.ts) return !!M.o;
   if(L.ts===0 && (auto===0||auto===1)) return !!auto;
   return !!L.o; }
-function cardToggle(id,auto){ var L=cardLead(id); if(!P.cards) P.cards={}; P.cards[id]={o:cardOpen(id,auto)?0:1, ts:L.ts}; savePrefs(); render(); }
+function cardToggle(id,auto){
+  var L=cardLead(id); if(!P.cards) P.cards={};
+  var willOpen=!cardOpen(id,auto);
+  var rec=P.cards[id]||{}; rec.o=willOpen?1:0; rec.ts=L.ts;
+  /* 高亮中的卡片被團員收起來 → 記下這一輪的 hts，對他熄燈 */
+  if(!willOpen && L.hl) rec.hseen=L.hts;
+  P.cards[id]=rec; savePrefs(); render();
+}
 function cardSetLead(id){ var st=S().settings; if(!st.cards) st.cards={}; var L=cardLead(id);
-  st.cards[id]={o:L.o?0:1, ts:Date.now()}; Store.save('settings'); toast(st.cards[id].o?'團員預設：展開':'團員預設：收起'); }
+  var c=st.cards[id]||(st.cards[id]={});
+  c.o=L.o?0:1; c.ts=Date.now();
+  Store.save('settings'); toast(c.o?'團員預設：展開':'團員預設：收起'); }
+/* 高亮提醒開關（只有領隊看得到）。要亮幾張由領隊自己決定，不限制張數。 */
+function cardSetHL(id){ var st=S().settings; if(!st.cards) st.cards={};
+  var c=st.cards[id]||(st.cards[id]={});
+  if(c.hl){ c.hl=0; } else { c.hl=1; c.hts=Date.now(); }
+  Store.save('settings'); toast(c.hl?'已開啟高亮提醒，全團都會看到':'已關閉高亮提醒'); }
+/* ===== 首頁卡片要放在哪一區 =====
+   原本這段規則是寫死在 VIEWS.home 裡的 if/else，現在抽出來，領隊可以在
+   「領隊專區 → 首頁卡片位置」調整條件，或整個改成手動指定。
+   回傳 now / later / ref / hide 四種。 */
+var ZONE_DEF={mode:'auto',prepUntil:'start',flightSoon:'auto',morningSoon:'trip'};
+var ZONE_MANUAL_DEF={prep:'later',flight:'ref',morning:'later',hotel:'ref'};
+function zoneCfg(){
+  var z=S().settings.zones||{}, o={};
+  for(var k in ZONE_DEF) o[k]=(z[k]===undefined||z[k]===null)?ZONE_DEF[k]:z[k];
+  o.manual={}; for(var m in ZONE_MANUAL_DEF) o.manual[m]=((z.manual||{})[m]||ZONE_MANUAL_DEF[m]);
+  return o;
+}
+function cardZone(id,di){
+  var z=zoneCfg();
+  if(z.mode==='manual') return z.manual[id]||'ref';
+  var before=(di.status==='before'), after=(di.status==='after'), idx=di.idx, days=di.days;
+  /* 旅程結束後：回程航班最重要，擺到最上面；只留住宿備查，其餘收起 */
+  if(after) return id==='flight'?'now':(id==='hotel'?'ref':'hide');
+  if(id==='prep') return z.prepUntil==='off'?'hide':(z.prepUntil==='end'?'later':(before?'later':'hide'));
+  if(id==='flight'){
+    var soon = z.flightSoon==='always' ? true
+             : z.flightSoon==='never'  ? false
+             : z.flightSoon==='ends'   ? (!before&&(idx===1||idx===days))   /* before 的 idx 也是 1，要排除掉 */
+             : (before||idx===1||idx===days);
+    return soon?'later':'ref';
+  }
+  if(id==='morning') return z.morningSoon==='always'?'later':(z.morningSoon==='never'?'ref':(before?'ref':'later'));
+  return 'ref';   /* hotel 及其他 */
+}
+var ZONE_NAMES={prep:'出發前準備',flight:'航班資訊',morning:'明早時程',hotel:'目前住宿'};
+var ZONE_LABELS={now:'現在',later:'稍後',ref:'隨時查',hide:'不顯示'};
 function foldCard(id,icon,title,sub,sum,inner,auto){
-  var open=cardOpen(id,auto), L=cardLead(id);
+  var open=cardOpen(id,auto), L=cardLead(id), hl=cardHL(id);
   var autoAttr=(auto===0||auto===1)?' data-auto="'+auto+'"':'';
-  return '<section class="ccard'+(open?' open':'')+'">'+
+  var defOn=(L.ts===0&&(auto===0||auto===1))?!!auto:!!L.o;
+  var card='<section class="ccard'+(open?' open':'')+'">'+
     '<button class="chead" data-act="cardFold" data-id="'+id+'"'+autoAttr+' aria-expanded="'+(open?'true':'false')+'">'+
       '<span class="ttl">'+ic(icon)+esc(title)+'</span>'+
       '<span class="sm">'+esc(open?sub:sum)+'</span>'+
       '<span class="cv">'+(open?'▲':'▼')+'</span>'+
     '</button>'+
     (open?'<div class="cbody">'+inner+'</div>':'')+
-    (P.leader?'<div class="lead-sw"><span>團員預設：'+(L.ts===0&&(auto===0||auto===1)?(auto?'展開':'收起')+'（自動）':(L.o?'展開':'收起'))+'</span><span class="sp"></span><button class="tgl'+((L.ts===0&&(auto===0||auto===1))?(auto?' on':''):(L.o?' on':''))+'" data-act="cardDef" data-id="'+id+'" aria-label="切換團員預設"></button></div>':'')+
+    (P.leader?'<div class="lead-sw">'+
+      '<div class="ls-row"><span>團員預設：'+(L.ts===0&&(auto===0||auto===1)?(auto?'展開':'收起')+'（自動）':(L.o?'展開':'收起'))+'</span><span class="sp"></span><button class="tgl'+(defOn?' on':'')+'" data-act="cardDef" data-id="'+id+'" aria-label="切換團員預設展開或收起"></button></div>'+
+      '<div class="ls-row"><span>'+ic('star')+'高亮提醒</span><span class="sp"></span><button class="tgl'+(L.hl?' on':'')+'" data-act="cardHl" data-id="'+id+'" aria-label="切換高亮提醒"></button></div>'+
+    '</div>':'')+
   '</section>';
+  /* 發光那一圈畫在外層：.ccard 有 overflow:hidden，光暈畫在裡面會被裁掉 */
+  if(!hl) return card;
+  return '<div class="hlw"><span class="hl-tag">'+ic('star')+'提醒 ON</span>'+card+'</div>';
 }
 function zlab(t){ return '<div class="zlab"><span>'+t+'</span><i></i></div>'; }
 function grp(key,label,cards){ cards=cards.filter(Boolean); if(!cards.length) return ''; return '<div class="zsec g-'+key+'">'+zlab(label)+cards.join('')+'</div>'; }
@@ -1551,29 +1651,19 @@ VIEWS.home=function(){
     h.push('<button class="btn big block" data-act="pickMe">'+ic('search')+'<span class="b2">點這裡選你的名字<small>首頁就會顯示你的航空公司、房號、分組</small></span></button>');
   }
 
-  var flightsSoon=(before||di.idx===1||di.idx===di.days);
 
-  if(after){
-    /* 結束後：回程航班放最前面，其他收起 */
-    h.push(grp('now','現在',[flightCard(1)]));
-    h.push(grp('ref','隨時查',[hotelCard()]));
-  } else {
-    /* 現在 —— 唯一浮起來的主卡，不可收合 */
-    h.push(grp('now','現在',[todayCard(di,day)]));
-
-    /* 稍後 */
-    var later=[];
-    if(before) later.push(prepCard());
-    if(flightsSoon) later.push(flightCard(1));
-    if(!before) later.push(morningCard());
-    h.push(grp('later','稍後',later));
-
-    /* 隨時查 */
-    var ref=[hotelCard()];
-    if(!flightsSoon) ref.push(flightCard(0));
-    if(before) ref.push(morningCard());
-    h.push(grp('ref','隨時查',ref));
-  }
+  /* 卡片分區交給 cardZone()。put 的呼叫順序＝同一區裡的排列順序，
+     prep → hotel → flight → morning 這個順序剛好維持舊版的視覺排法。 */
+  var Z={now:[],later:[],ref:[]};
+  function put(id,html){ if(!html) return; var z=cardZone(id,di); if(z==='hide'||!Z[z]) return; Z[z].push(html); }
+  if(!after) Z.now.push(todayCard(di,day));   /* 今日行程：主卡，不可收合也不進分區設定 */
+  put('prep',prepCard());
+  put('hotel',hotelCard());
+  put('flight',flightCard(cardZone('flight',di)!=='ref'));
+  put('morning',morningCard());
+  h.push(grp('now','現在',Z.now));
+  h.push(grp('later','稍後',Z.later));
+  h.push(grp('ref','隨時查',Z.ref));
 
   return h.join('');
 };
@@ -1846,6 +1936,7 @@ function toolMenu(){
       '<button class="btn big" data-act="pickHotel">'+ic('bed')+'<span class="b2">飯店資料<small>入住切換、Wi-Fi</small></span></button>'+
       '<button class="btn big" data-act="editTags">'+ic('flag')+'<span class="b2">防呆標籤<small>自訂增減、改名</small></span></button>'+
       '<button class="btn big" data-act="homeScnVis">'+ic('users')+'<span class="b2">首頁分組顯示<small>選擇哪些分組情境出現在首頁</small></span></button>'+
+      '<button class="btn big" data-act="cardZones">'+ic('grid')+'<span class="b2">首頁卡片位置<small>卡片何時移到稍後／隨時查／收起</small></span></button>'+
     '</div><div class="row"><button class="btn dng" data-act="resetDemo">'+ic('refresh')+'重置為初始資料</button><button class="btn" data-act="leaderLock">'+ic('lock')+'鎖定領隊模式</button></div>');
   }
   h.push('<div class="ver">月半越南團旅 v'+APP_VERSION+' · '+(Store.backend==='firebase'?'雲端同步':(Store.backend==='claude'?'預覽同步':'單機'))+'</div>');
@@ -2600,6 +2691,37 @@ function sheetInstall(){
   }
   openSheet({title:e.ios?'加到主畫面（照著做）':'安裝成 App（照著做）',tall:(e.ios||e.inapp),body:why+'<div class="ig">'+h.join('')+'</div>'});
 }
+/* 首頁卡片位置：把 cardZone() 的規則開放給領隊調整。
+   下面「現在的結果」是即時算出來的，領隊改完不用回首頁就能確認。 */
+function sheetCardZones(){
+  var z=zoneCfg(), di=dayInfo(), h=[];
+  function chips(k,cur,opts){ return '<div class="chips">'+opts.map(function(o){
+    return '<button type="button" class="chip pick'+(cur===o[0]?' on':'')+'" data-act="zoneSet" data-k="'+esc(k)+'" data-v="'+esc(o[0])+'">'+esc(o[1])+'</button>'; }).join('')+'</div>'; }
+  h.push('<div class="muted">首頁的卡片會跟著旅程走，自動在「稍後」和「隨時查」之間換位置，或整張收起來。這裡可以改觸發條件，也可以改成完全手動指定。<br>「今日行程」和「領隊廣播」是固定主卡，不在這裡。</div>');
+  h.push('<div class="f"><label>模式</label>'+chips('mode',z.mode,[['auto','自動（跟著行程走）'],['manual','手動指定']])+'</div>');
+  if(z.mode==='manual'){
+    ['prep','flight','morning','hotel'].forEach(function(id){
+      h.push('<div class="f"><label>'+esc(ZONE_NAMES[id])+'</label>'+chips('manual.'+id,z.manual[id],[['later','稍後'],['ref','隨時查'],['hide','不顯示']])+'</div>');
+    });
+    h.push('<div class="muted">手動模式下卡片不會再自己移動，旅程結束後也維持你指定的位置。</div>');
+  }else{
+    h.push('<div class="f"><label>出發前準備｜什麼時候收起來</label>'+
+      chips('prepUntil',z.prepUntil,[['start','出發當天收起'],['end','整趟都留著'],['off','不顯示']])+
+      '<div class="muted">預設「出發當天收起」。這張卡要有「勾選清單」型的記事本頁籤才會出現。</div></div>');
+    h.push('<div class="f"><label>航班資訊｜什麼時候排到「稍後」</label>'+
+      chips('flightSoon',z.flightSoon,[['auto','出發前＋首尾兩天'],['ends','只有首尾兩天'],['always','整趟都在稍後'],['never','一律放隨時查']])+
+      '<div class="muted">預設「出發前＋首尾兩天」。其他天會退到「隨時查」。</div></div>');
+    h.push('<div class="f"><label>明早時程｜什麼時候排到「稍後」</label>'+
+      chips('morningSoon',z.morningSoon,[['trip','旅程中'],['always','整趟都在稍後'],['never','一律放隨時查']])+
+      '<div class="muted">預設「旅程中」。出發前放在「隨時查」。</div></div>');
+    h.push('<div class="muted">旅程結束後（超過最後一天）自動模式固定是：回程航班移到「現在」、只留住宿，其餘收起。</div>');
+  }
+  h.push('<div class="zone-now"><b>現在的結果（'+esc(di.status==='before'?'出發前':(di.status==='after'?'旅程結束後':'第 '+di.idx+' / '+di.days+' 天'))+'）</b>'+
+    ['prep','flight','morning','hotel'].map(function(id){ var zz=cardZone(id,di);
+      return '<div class="zrow"><span>'+esc(ZONE_NAMES[id])+'</span><b class="z-'+zz+'">'+esc(ZONE_LABELS[zz])+'</b></div>'; }).join('')+'</div>');
+  openSheet({title:'首頁卡片位置',tall:true,body:h.join(''),
+    foot:'<button class="btn dng" data-act="zoneReset">恢復預設</button><button class="btn pri" data-act="sheetClose">完成</button>'});
+}
 function sheetNbPage(id){
   var pg=id?nbPage(id):{icon:'📝',title:'',type:'notes'};
   var ps=nbPages(), idx=ps.indexOf(pg);
@@ -2831,6 +2953,15 @@ var ACT={
     toast(!P.theme?'主題：跟隨系統設定':(P.theme==='dark'?'主題：固定深色':'主題：固定淺色')); },
   cardFold:function(b){ var a=b.getAttribute('data-auto'); cardToggle(b.getAttribute('data-id'), a===null?undefined:Number(a)); },
   cardDef:function(b){ if(!P.leader) return; cardSetLead(b.getAttribute('data-id')); },
+  cardHl:function(b){ if(!P.leader) return; cardSetHL(b.getAttribute('data-id')); },
+  cardZones:function(){ if(!P.leader) return; sheetCardZones(); },
+  zoneSet:function(t){ if(!P.leader) return;
+    var k=t.getAttribute('data-k'), v=t.getAttribute('data-v'), st=S().settings;
+    if(!st.zones) st.zones={};
+    if(k.indexOf('manual.')===0){ if(!st.zones.manual) st.zones.manual={}; st.zones.manual[k.slice(7)]=v; }
+    else st.zones[k]=v;
+    Store.save('settings'); render(); sheetCardZones(); },
+  zoneReset:function(){ if(!P.leader) return; S().settings.zones={}; Store.save('settings'); render(); sheetCardZones(); toast('已恢復預設規則'); },
   nbTab:function(t){ P.nbPage=t.getAttribute('data-id'); render(); },
   nbGo:function(t){ P.tab='notes'; P.nbPage=t.getAttribute('data-id')||''; closeSheet(); render(); window.scrollTo(0,0); },
   nbCheck:function(t){ var pg=t.getAttribute('data-pg'), id=t.getAttribute('data-id'); P.checks=P.checks||{}; P.checks[pg]=P.checks[pg]||{}; if(P.checks[pg][id]) delete P.checks[pg][id]; else P.checks[pg][id]=true; savePrefs(); render(); },
