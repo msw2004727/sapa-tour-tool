@@ -52,7 +52,7 @@ function sheetBroadcast(){
   if(st.startDate&&!isNaN(parseDate(st.startDate))&&st.startDate!==today&&st.startDate!==tmr) picks.push([st.startDate,'出發日 '+dayDate(1).split('（')[0]]);
   openSheet({title:'修改即時廣播',focus:true,body:
     fld('集合日期',inp('date',b.date||bcDate(),'date')+'<div class="chips" style="margin-top:.4rem">'+picks.map(function(x){ return '<button type="button" class="chip pick" data-act="chipSet" data-target="date" data-val="'+esc(x[0])+'">'+esc(x[1])+'</button>'; }).join('')+'</div>')+
-    fld('集合時間（當地，24 小時制）',timeField('time',b.time)+'<div class="chips" style="margin-top:.4rem">'+[15,30,45,60].map(function(m){return '<button type="button" class="chip pick" data-act="chipTimeFromNow" data-min="'+m+'">現在＋'+m+'分</button>';}).join('')+'</div>')+
+    fld('集合時間（24 小時制）',timeField('time',b.time)+'<input type="hidden" name="tz" value="'+esc(b.tz||'')+'" data-at="'+esc(b.tz?(b.date||'')+' '+(b.time||''):'')+'">'+'<div class="muted" style="margin-top:.3rem">出發日 '+esc(twCutoff())+' 以前填台灣時間，其他時間都填越南時間。</div>'+'<div class="chips" style="margin-top:.4rem">'+[15,30,45,60].map(function(m){return '<button type="button" class="chip pick" data-act="chipTimeFromNow" data-min="'+m+'">現在＋'+m+'分</button>';}).join('')+'</div>')+
     fld('動作',inp('label',b.label||'原地集合')+chipsFill('label',['原地集合','大廳集合','上車','餐廳集合','纜車站集合']))+
     fld('集合地點（建議 12 字以內，手機才不換行）',inp('location',b.location)+(cur?'<div class="chips" style="margin-top:.4rem"><button type="button" class="chip pick" data-act="chipSet" data-target="location" data-val="'+esc(cur.title)+'">帶入目前站：'+esc(cur.title)+'</button></div>':''))+
     fld('天氣與叮嚀',ta('tip',b.tip)+chipsFill('tip',['山頂約 10 度，請備妥外套與保溫水壺','下午有雨，請帶雨具、走慢一點','請把護照放身上，等一下要辦入住','上車前請先上洗手間'])),
@@ -241,6 +241,27 @@ function sheetPrev(){
     : '<div class="muted">目前沒有需要還原的版本。只有在名單、行程、分組或記事本突然少掉一半以上時，才會自動留一份。</div>';
   openSheet({title:'還原上一版',body:body});
 }
+/* 時間模擬：挑一個時間點，重新載入後整個 App 以為「現在」是那個時間。
+   只寫在這個分頁的 sessionStorage，關掉 App 就自動結束；模擬期間任何修改都不會存檔。 */
+function sheetSim(){
+  var st=S().settings, P2=[];
+  function at(n,hm){ return dayYmd(n)+'T'+hm; }
+  var d0=ymd(parseDate(st.startDate)-86400000), dEnd=ymd(parseDate(st.startDate)+(st.days||5)*86400000);
+  P2.push(['出發前一晚',d0+'T21:00']);
+  P2.push(['出發日 05:00・集合前',at(1,'05:00')]);
+  P2.push(['出發日 05:45・集合遲到',at(1,'05:45')]);
+  P2.push(['第 1 天 14:00・前往沙壩',at(1,'14:00')]);
+  for(var n=2;n<(st.days||5);n++) P2.push(['第 '+n+' 天 09:00',at(n,'09:00')]);
+  P2.push(['第 '+(st.days||5)+' 天 07:00・最後一天',at(st.days||5,'07:00')]);
+  P2.push(['第 '+(st.days||5)+' 天 20:00・已回台灣',at(st.days||5,'20:00')]);
+  P2.push(['回國隔天',dEnd+'T10:00']);
+  var body='<div class="muted">選一個時間，App 會以為「現在」就是那時候，讓你先看看旅途中、回國後首頁長什麼樣子。<b>只影響這支手機</b>，其他人看不到；模擬期間的任何修改都<b>不會存檔</b>。關掉 App 或按「結束」就恢復。時間都是<b>台灣時間</b>。</div>'+
+    '<div class="stack" style="margin-top:.7rem">'+P2.map(function(x){ return '<button class="btn block" data-act="simSet" data-val="'+esc(x[1])+'">'+esc(x[0])+'<span class="sp" style="flex:1"></span><small class="muted">'+esc(mdw(x[1].slice(0,10)).split('（')[0]+' '+x[1].slice(11))+'</small></button>'; }).join('')+'</div>'+
+    '<h2 class="sec">'+ic('clock')+'自訂時間（台灣時間）</h2>'+
+    '<div class="row"><input class="in" type="datetime-local" name="simAt" value="'+esc(at(2,'10:00'))+'" style="flex:1;min-width:0"><button class="btn pri" data-act="simSet">開始</button></div>'+
+    (SIM_OFF?'<button class="btn block dng" style="margin-top:.8rem" data-act="simEnd">結束模擬，回到現在</button>':'');
+  openSheet({title:'時間模擬',body:body});
+}
 function sheetTripName(){
   var st=S().settings, v=st.tripName||'';
   openSheet({title:'團名',focus:true,body:
@@ -386,7 +407,7 @@ function sheetSettings(){
   openSheet({title:'團務設定',focus:true,body:
     fld('團名',inp('tripName',st.tripName))+
     '<div class="grid2">'+fld('出發日期（第 1 天）',inp('startDate',st.startDate,'date'))+fld('總天數',inp('days',st.days,'number','min="1" max="15" inputmode="numeric"'))+'</div>'+
-    fld('今天是第幾天','<select class="in" name="dayOverride"><option value="0">依日期自動判斷</option>'+Array.apply(null,{length:st.days||5}).map(function(_,i){return '<option value="'+(i+1)+'"'+(st.dayOverride===i+1?' selected':'')+'>手動指定：第 '+(i+1)+' 天</option>';}).join('')+'</select>')+
+    fld('今天是第幾天','<select class="in" name="dayOverride"><option value="0">依日期自動判斷</option>'+Array.apply(null,{length:st.days||5}).map(function(_,i){return '<option value="'+(i+1)+'"'+(st.dayOverride===i+1?' selected':'')+'>手動指定：第 '+(i+1)+' 天</option>';}).join('')+'</select><div class="muted" style="margin-top:.3rem">注意：手動指定會套用到<b>全團每一支手機</b>。只是想自己先看看，請用管理專區的「時間模擬」。</div>')+
     '<div class="grid2">'+fld('改管理 PIN（不改就留白）',inp('pin','','tel','maxlength="6" inputmode="numeric" placeholder="4 位數字" autocomplete="off"'))+fld('1 台幣 ≈ 幾越盾',inp('vndPerTwd',st.vndPerTwd,'number','inputmode="numeric"'))+'</div>'+
     '<div class="muted" style="margin-top:-.5rem">PIN 只會以雜湊保存，雲端看不到明文。</div>'+
     '<h2 class="sec">'+ic('plane')+'航班（起飛時間）</h2>'+

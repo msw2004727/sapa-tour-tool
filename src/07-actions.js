@@ -1,9 +1,15 @@
 /* ===== 事件處理 ===== */
 function scnPath(sc){ var g=S().groups||{}; return 'scenarios/'+(g.scenarios||[]).indexOf(sc); }
-function nowPlus(min){ var vn=tzParts(VN); var t=vn.h*60+vn.m+min; t=t%1440; return pad(Math.floor(t/60))+':'+pad(t%60); }
-/* 「現在＋N 分」跨過午夜時，日期要跟著進位，不然倒數會變成「已過」 */
-function nowPlusDate(min){ var vn=tzParts(VN); var t=vn.h*60+vn.m+min; return ymd(parseDate(vn.date)+Math.floor(t/1440)*86400000); }
-function stamp(){ return tzParts(VN).hm; }
+/* 「現在＋N 分」：先算出絕對時間，再決定要寫成台灣時間還是越南時間（出發日搭機前人在台灣）。
+   跨過午夜時日期跟著進位，不然倒數會變成「已過」。 */
+function wallAt(ms,off){ var d=new Date(ms+off*3600000); return {date:ymd(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate())),hm:pad(d.getUTCHours())+':'+pad(d.getUTCMinutes())}; }
+function nowPlusSlot(min){ var ms=Math.floor(nowMs()/60000)*60000+min*60000, tw=wallAt(ms,8), vn=wallAt(ms,7);
+  /* 挑「寫下去之後倒數算得回同一個時間」的那種寫法；出發日越南 08:01～09:00 兩種都對不上（大家在飛機上），
+     這時寫越南時間並另外記 tz:'VN'，倒數照 tz 算 */
+  if(slotMs(tw.date,tw.hm)===ms) return tw; if(slotMs(vn.date,vn.hm)===ms) return vn; vn.tz='VN'; return vn; }
+function nowPlus(min){ return nowPlusSlot(min).hm; }
+function nowPlusDate(min){ return nowPlusSlot(min).date; }
+function stamp(){ return nowPlus(0); }
 var ACT={
   tab:function(t){ P.tab=t.getAttribute('data-tab'); if(t.getAttribute('data-scn')) P.scn=t.getAttribute('data-scn'); if(P.tab==='tools') P.tool='menu'; closeSheet(); render(); window.scrollTo(0,0); },
   planDay:function(t){ P.planDay=Number(t.getAttribute('data-day')); render(); },
@@ -57,8 +63,15 @@ var ACT={
       })
       .catch(function(){ toast('現在連不到伺服器，先不更新；有訊號時再按一次'); }); },
   verLater:function(){ Store._verDismissed=true; var b=el('verBar'); if(b) b.hidden=true; },
-  restorePrev:function(t){ if(!P.leader) return; var k=t.getAttribute('data-key'); if(!k) return;
+  restorePrev:function(t){ if(!P.leader) return; if(SIM_OFF){ toast('時間模擬中不能還原，請先結束模擬'); return; } var k=t.getAttribute('data-key'); if(!k) return;
     if(Store.restorePrev(k)){ closeSheet(); toast('已還原'+DOC_NAMES[k]+'的上一版，並同步給全團'); } else toast('沒有可還原的版本'); },
+  simPick:function(){ sheetSim(); },
+  simSet:function(t){ var v=t.getAttribute('data-val'); if(!v){ var i=el('sheetRoot').querySelector('[name="simAt"]'); v=i&&i.value; }
+    v=(v||'').slice(0,16);
+    if(isNaN(simParse(v))){ toast('請先選日期和時間'); return; }
+    try{ sessionStorage.setItem('sapa-sim',v); }catch(e){ toast('這支手機不支援時間模擬'); return; }
+    location.replace(location.pathname+'?sim='+v); },
+  simEnd:function(){ try{ sessionStorage.removeItem('sapa-sim'); }catch(e){} location.replace(location.pathname); },
   prevList:function(){ if(!P.leader) return; sheetPrev(); },
   pickMe:function(){ sheetPickMe(); },
   setMe:function(t){ P.meId=t.getAttribute('data-id')||''; savePrefs(); closeSheet(); render(); toast(P.meId?'已標記：'+member(P.meId).name:'已取消標記'); },
@@ -74,7 +87,9 @@ var ACT={
   setAirline:function(t){ var m=member(t.getAttribute('data-id')); if(!m) return; closeSheet(); Store.savePath('members','items/'+members().indexOf(m)+'/airline', t.getAttribute('data-v')||''); toast(m.name+'：'+(airDef(m.airline)?airDef(m.airline).short:'未設定')); },
   delMember:function(){ var id=SHEET.id; S().members.items=members().filter(function(m){return m.id!==id;}); closeSheet(); Store.save('members'); toast('已移出名單'); },
   editBroadcast:function(){ sheetBroadcast(); },
-  saveBroadcast:function(){ var b=S().broadcast; b.date=sv('date'); b.time=sv('time'); b.idle=false; b.label=sv('label')||'集合'; b.location=sv('location'); b.tip=sv('tip'); b.updatedAt=stamp(); closeSheet(); Store.save('broadcast'); toast('廣播已更新，全團手機會同步');
+  saveBroadcast:function(){ var b=S().broadcast, z=el('sheetRoot').querySelector('[name="tz"]'); b.date=sv('date'); b.time=sv('time');
+    /* 只有「現在＋N 分」按鈕帶出的時間、而且之後沒被改過，才沿用它算好的時區 */
+    if(z&&z.value&&z.getAttribute('data-at')===b.date+' '+b.time) b.tz=z.value; else delete b.tz; b.idle=false; b.label=sv('label')||'集合'; b.location=sv('location'); b.tip=sv('tip'); b.updatedAt=stamp(); closeSheet(); Store.save('broadcast'); toast('廣播已更新，全團手機會同步');
     /* 存完直接把「貼到 LINE」端到管理者面前：沒開 App 的人只能靠群組通知 */
     render(); setTimeout(sheetShare,350); },
   shareBroadcast:function(){ sheetShare(); },
@@ -89,11 +104,12 @@ var ACT={
     '<div class="hero" style="margin-top:.6rem"><div class="lab">'+ic('megaphone')+'即時廣播</div><div class="time" style="font-size:1.9rem">自由活動</div><div class="loc"><span>目前沒有集合安排，請等下次廣播通知。</span></div></div>'+
     '<div class="muted" style="margin-top:.6rem">下一次設定集合時間時會自動恢復正常顯示。</div>',
     foot:'<button class="btn" data-act="sheetClose">取消</button><button class="btn warn" data-act="clearBroadcastGo">'+ic('trash')+'確定清空</button>'}); },
-  clearBroadcastGo:function(){ var b=S().broadcast; b.time=''; b.label=''; b.location=''; b.tip=''; b.idle=true; b.updatedAt=stamp();
+  clearBroadcastGo:function(){ var b=S().broadcast; b.time=''; b.label=''; b.location=''; b.tip=''; b.idle=true; b.date=tzParts(VN).date; b.updatedAt=stamp();   /* 帶日期：隔天自動失效 */
     closeSheet(); Store.save('broadcast'); toast('已清空，現在顯示「自由活動」'); },
-  bumpTime:function(t){ var b=S().broadcast, n=Number(t.getAttribute('data-min')); b.time=nowPlus(n); b.date=nowPlusDate(n); b.idle=false; b.updatedAt=stamp(); Store.save('broadcast'); toast('集合時間改為 '+b.time); },
+  bumpTime:function(t){ var b=S().broadcast, n=Number(t.getAttribute('data-min')), sl=nowPlusSlot(n); b.time=sl.hm; b.date=sl.date; if(sl.tz) b.tz=sl.tz; else delete b.tz; b.idle=false; b.updatedAt=stamp(); Store.save('broadcast'); toast('集合時間改為 '+b.time); },
   chipSet:function(t){ var e=el('sheetRoot').querySelector('[name="'+t.getAttribute('data-target')+'"]'); if(e){ e.value=t.getAttribute('data-val'); e.focus(); } },
-  chipTimeFromNow:function(t){ var n=Number(t.getAttribute('data-min')); setTimeField('time',nowPlus(n)); var d=el('sheetRoot').querySelector('[name="date"]'); if(d) d.value=nowPlusDate(n); },
+  chipTimeFromNow:function(t){ var n=Number(t.getAttribute('data-min')), sl=nowPlusSlot(n); setTimeField('time',sl.hm); var d=el('sheetRoot').querySelector('[name="date"]'); if(d) d.value=sl.date;
+    var z=el('sheetRoot').querySelector('[name="tz"]'); if(z){ z.value=sl.tz||''; z.setAttribute('data-at',sl.date+' '+sl.hm); } },
   pick:function(t){ var g=t.parentNode; g.querySelectorAll('button').forEach(function(b){b.classList.remove('on');}); t.classList.add('on'); var h=el('sheetRoot').querySelector('input[name="'+g.getAttribute('data-group')+'"]'); if(h) h.value=t.getAttribute('data-val'); },
   pickMulti:function(t){ t.classList.toggle('on'); var g=t.getAttribute('data-group'); var vals=[]; t.parentNode.querySelectorAll('.on').forEach(function(b){vals.push(b.getAttribute('data-val'));}); var h=el('sheetRoot').querySelector('input[name="'+g+'"]'); if(h) h.value=vals.join(','); },
   editMorning:function(){ sheetMorning(); },

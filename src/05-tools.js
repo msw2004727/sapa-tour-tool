@@ -56,6 +56,7 @@ function toolMenu(){
       '<button class="btn big" data-act="editTags">'+ic('flag')+'<span class="b2">防呆標籤<small>自訂增減、改名</small></span></button>'+
       '<button class="btn big" data-act="homeScnVis">'+ic('users')+'<span class="b2">首頁分組顯示<small>選擇哪些分組情境出現在首頁</small></span></button>'+
       '<button class="btn big" data-act="cardZones">'+ic('grid')+'<span class="b2">首頁卡片位置<small>卡片何時移到稍後／隨時查／收起</small></span></button>'+
+      '<button class="btn big" data-act="simPick">'+ic('clock')+'<span class="b2">時間模擬<small>預覽旅途中、回國後的畫面，只在這支手機</small></span></button>'+
       '<button class="btn big" data-act="prevList">'+ic('refresh')+'<span class="b2">還原上一版<small>資料突然變少時自動留下的備份</small></span></button>'+
     '</div><div class="row"><button class="btn dng" data-act="resetDemo">'+ic('refresh')+'重置為初始資料</button><button class="btn" data-act="leaderLock">'+ic('lock')+'鎖定管理模式</button></div>');
   }

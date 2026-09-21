@@ -5,8 +5,20 @@ function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){retu
 function clone(o){ return JSON.parse(JSON.stringify(o)); }
 function pad(n){ return (n<10?'0':'')+n; }
 function uid(){ return 'x'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+/* 「現在」一律從這裡拿。時間模擬（只在這支手機、不存檔）時會加上一段位移，
+   讓主辦人在出發前就能看到旅途中、回國後的畫面。資料的時間戳記（_ts）仍用真實時間。 */
+var SIM_OFF=0;
+/* 模擬時間的格式固定是台灣時間 2026-09-25T09:00；不存在的日期（2/30）一律不理 */
+function simParse(v){ var m=/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(v||''); if(!m) return NaN;
+  var y=+m[1],mo=+m[2],d=+m[3],h=+m[4],mi=+m[5], t=Date.UTC(y,mo-1,d,h,mi), c=new Date(t);
+  if(c.getUTCMonth()!==mo-1||c.getUTCDate()!==d||h>23||mi>59) return NaN; return t-8*3600000; }
+try{ var _sm=/[?&]sim=([^&#]+)/.exec(location.search), _sv=null;
+  if(_sm){ try{ _sv=decodeURIComponent(_sm[1]); }catch(e){} } else _sv=sessionStorage.getItem('sapa-sim');
+  var _st=simParse(_sv); if(!isNaN(_st)){ SIM_OFF=(_st-Date.now())||1; try{ sessionStorage.setItem('sapa-sim',_sv); }catch(e){} }
+  else { try{ sessionStorage.removeItem('sapa-sim'); }catch(e){} } }catch(e){}   /* 壞掉的網址不留舊的模擬 */
+function nowMs(){ return Date.now()+SIM_OFF; }
 function tzParts(tz){
-  var d=new Date();
+  var d=new Date(nowMs());
   try{
     var f=new Intl.DateTimeFormat('en-GB',{timeZone:tz,hour12:false,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
     var o={}; f.formatToParts(d).forEach(function(p){o[p.type]=p.value;});
@@ -32,15 +44,29 @@ function dayInfo(){
   if(diff>=days) return {idx:days,status:'after',days:days,diff:diff};
   return {idx:diff+1,status:'on',days:days,diff:diff};
 }
+/* ===== 時區：第 1 天搭機前人還在台灣，那段時間是「台灣時間」，其餘一律越南時間 =====
+   判斷方式：出發日當天、時間不晚於最晚一班去程起飛（例：長榮 09:00）→ 台灣時間。
+   不用另外在資料裡標記，改航班時間就會自動跟著變。越南、台灣都沒有日光節約時間。 */
+function twCutoff(){ var f=(S().settings||{}).flights||{}, c=''; Object.keys(f).forEach(function(k){ var o=f[k]&&f[k].out; if(o&&/^\d{1,2}:\d{2}$/.test(o)&&o>c) c=o; }); return c||'09:00'; }
+function isTWSlot(date,hm){ var st=S().settings||{}; return !!(date&&hm&&date===st.startDate&&hm<=twCutoff()); }
+/* 某個日期＋時刻（依上面的規則決定時區）換成絕對時間（毫秒） */
+function slotMs(date,hm,tw){ var t=parseDate(date); if(isNaN(t)||!hm||hm.indexOf(':')<0) return NaN; var p=hm.split(':').map(Number);
+  if(tw===undefined) tw=isTWSlot(date,hm);
+  return t+(p[0]*60+p[1])*60000-(tw?8:7)*3600000; }
+/* 行程第 N 天的某個時刻是不是台灣時間（第 1 天搭機前） */
+function twItem(day,hm){ return day===1&&!!hm&&hm<=twCutoff(); }
+function dayYmd(n){ var t=parseDate(S().settings.startDate); return isNaN(t)?'':ymd(t+(n-1)*86400000); }
+function nowMin(){ return Math.floor(nowMs()/60000); }
 /* 今天的重點站：管理者標了「當前站」就用它；否則用還沒到時間的第一站；都沒有就代表今天結束 */
 function nextStop(di){
   var day=di.idx, list=items().filter(function(x){return x&&x.day===day&&!x.isCanceled;});
   if(!list.length) return null;
   var cur=list.filter(function(x){return x.isCurrent;})[0];
-  if(cur) return {id:cur.id,time:cur.time,title:cur.title,kind:'cur'};
-  var now=tzParts(VN).hm;
-  var up=list.filter(function(x){return x.time&&x.time>=now;})[0];
-  if(up) return {id:up.id,time:up.time,title:up.title,kind:'next'};
+  if(cur) return {id:cur.id,time:cur.time,title:cur.title,kind:'cur',tw:twItem(day,cur.time)};
+  /* 手動指定第幾天時，把「今天」當成那一天，只比時刻；否則用那一天的實際日期 */
+  var dd=(di.status==='override')?tzParts(twItem(day,'00:00')?TW:VN).date:dayYmd(day), nm=nowMin();
+  var up=list.filter(function(x){ var ms=slotMs(dd,x.time,twItem(day,x.time)); return !isNaN(ms)&&ms/60000>=nm; })[0];
+  if(up) return {id:up.id,time:up.time,title:up.title,kind:'next',tw:twItem(day,up.time)};
   return {id:'',time:'',title:'',kind:'done'};
 }
 function fmtDur(min){
@@ -53,17 +79,31 @@ function fmtDur(min){
 function bcDate(){
   var b=S().broadcast||{}, st=S().settings;
   if(b.date&&!isNaN(parseDate(b.date))) return b.date;
+  /* 沒有日期的舊廣播：用「存檔的那一刻」推回它指的是哪一天，才不會每天早上復活。
+     出發前存的 → 出發日；旅途中存的 → 存檔當天（時間已經過了就是隔天）。 */
+  if(b._ts&&!isNaN(parseDate(st.startDate))&&b.time){
+    var sd=ymd(Math.floor((b._ts+7*3600000)/86400000)*86400000);   /* 存檔當下的越南日期 */
+    if(sd<st.startDate) return st.startDate;
+    return slotMs(sd,b.time)>=b._ts-60000?sd:ymd(parseDate(sd)+86400000);
+  }
   if(dayInfo().status==='before'&&!isNaN(parseDate(st.startDate))) return st.startDate;
   return tzParts(VN).date;
 }
 /* 距離集合還有幾分鐘（負數＝已經過了）；沒設集合時間就回 null。跨日靠 bcDate() 補上天數差。 */
 function bcDiffMin(){
   var b=S().broadcast; if(!b||!b.time||b.time.indexOf(':')<0) return null;
-  var vn=tzParts(VN), p=b.time.split(':').map(Number);
-  var d0=parseDate(vn.date), d1=parseDate(bcDate());
-  var days=(isNaN(d0)||isNaN(d1))?0:Math.round((d1-d0)/86400000);
-  return days*1440+(p[0]*60+p[1])-(vn.h*60+vn.m);
+  var ms=slotMs(bcDate(),b.time,b.tz?b.tz==='TW':undefined); if(isNaN(ms)) return null;
+  return Math.round(ms/60000)-nowMin();
 }
+/* 廣播是否還有效：集合時間過了 4 小時（跟倒數消失的時間一樣）就當成過期，
+   首頁大字卡改回「今天下一站」，不會讓出發日的機場集合一路掛到第 5 天。資料本身不刪。 */
+function bcActive(){
+  var b=S().broadcast||{};
+  if(b.time){ var d=bcDiffMin(); return d===null||d>-240; }
+  if(b.idle) return !(b.date&&b.date<tzParts(VN).date);
+  return false;
+}
+function bcIsTW(){ var b=S().broadcast||{}; if(!b.time) return false; return b.tz?b.tz==='TW':isTWSlot(bcDate(),b.time); }
 function countdown(){
   var diff=bcDiffMin(); if(diff===null) return null;
   var bd=bcDate(), pre=(bd===tzParts(VN).date)?'':(mdw(bd)+' · ');
@@ -75,7 +115,8 @@ function countdown(){
 /* 標頭用的短倒數：跨日 15天／2天8h、1 小時以上 12h22、不足 1 小時 45分、過了就 已過 5分 */
 function countdownShort(){
   var b=S().broadcast;
-  if(!b||b.idle) return {text:'自由活動',cls:'none'};
+  if(!b||!bcActive()) return {text:'待公布',cls:'none'};   /* 過期的廣播（含前一天的自由活動）不再掛在頂列 */
+  if(b.idle) return {text:'自由活動',cls:'none'};
   var diff=bcDiffMin();
   if(diff===null) return {text:'待公布',cls:'none'};
   function hm(n){ var d=Math.floor(n/1440), h=Math.floor((n%1440)/60), m=n%60;
@@ -202,6 +243,7 @@ var Store={
   /* 存到手機。空間不夠時分三級退讓：整包 → 先不存底圖 → 至少把待送佇列存下來。
      每一級失敗都要讓人知道，不能默默吞掉之後還說「已先存在這支手機」。 */
   cache:function(){
+    if(SIM_OFF) return true;   /* 時間模擬中：不動手機裡的資料 */
     var at=Date.now();
     try{ localStorage.setItem('sapa-data',JSON.stringify({docs:Store.s,at:at,q:Store.q})); Store.cacheOK=true; try{ localStorage.removeItem('sapa-q'); }catch(x){} return true; }catch(e){}
     try{
@@ -219,6 +261,7 @@ var Store={
   },
   /* 資料突然變少時自動留一份上一版（例：一次誤寫把 33 人名單清空），管理專區可以還原 */
   guardShrink:function(k,incoming){
+    if(SIM_OFF) return;
     var cnt=Store.docCount(k,Store.s[k]), nxt=Store.docCount(k,incoming);
     if(cnt>=5&&nxt<cnt*0.5){
       try{ var old=JSON.parse(localStorage.getItem('sapa-prev-'+k)||'null');
@@ -229,7 +272,7 @@ var Store={
   },
   docCount:function(k,d){ if(!d) return 0; if(d.items) return Array.isArray(d.items)?d.items.length:Object.keys(d.items).length; if(d.pages) return d.pages.length; if(d.scenarios) return d.scenarios.length; return 0; },
   prevSnapshots:function(){ var out=[]; DOC_KEYS.forEach(function(k){ try{ var v=JSON.parse(localStorage.getItem('sapa-prev-'+k)||'null'); if(v&&v.doc) out.push({key:k,at:v.at,n:v.n}); }catch(e){} }); return out; },
-  restorePrev:function(k){ try{ var v=JSON.parse(localStorage.getItem('sapa-prev-'+k)||'null'); if(!v||!v.doc) return false; Store.s[k]=v.doc; localStorage.removeItem('sapa-prev-'+k); Store.save(k); return true; }catch(e){ return false; } },
+  restorePrev:function(k){ if(SIM_OFF) return false; try{ var v=JSON.parse(localStorage.getItem('sapa-prev-'+k)||'null'); if(!v||!v.doc) return false; Store.s[k]=v.doc; localStorage.removeItem('sapa-prev-'+k); Store.save(k); return true; }catch(e){ return false; } },
   /* 雲端快照進來：先套用雲端，再把「這支手機還沒送出去的修改」重新疊上去，離線期間的修改不會被舊快照蓋掉 */
   applyRemote:function(docs){
     var got=false;
@@ -304,6 +347,7 @@ var Store={
   },
   /* 每一次修改都是一個 op：整份（path=''）或局部（path='present/x1'）。先存本機、排進佇列，連上線就依序送出 */
   enqueue:function(op){
+    if(SIM_OFF){ toast('時間模擬中：修改只是預覽，不會存檔、也不會傳給全團'); return; }
     var q=Store.q;
     if(op.path===''){ q=Store.q=q.filter(function(o){ return o.sending||o.key!==op.key; }); }   /* 整份存檔涵蓋之前所有改動 */
     else { for(var i=q.length-1;i>=0;i--){ var o=q[i]; if(!o.sending&&o.key===op.key&&o.path===op.path){ q.splice(i,1); break; } } }
@@ -311,6 +355,7 @@ var Store={
     Store.cache(); clearTimeout(Store._ft); Store._ft=setTimeout(Store.flush,300);
   },
   flush:function(){
+    if(SIM_OFF) return;   /* 時間模擬中：佇列先留著，結束模擬後才送 */
     if(!Store.push||Store.flushing||!Store.q.length) return;
     var op=Store.q[0]; op.sending=true; Store.flushing=true;
     Promise.resolve().then(function(){ return Store.pushOp(op); })
@@ -484,9 +529,11 @@ function setPin(id,v){
 function cardZone(id,di){
   /* 今日行程是首頁主要內容，鎖在「現在」不讓搬走；旅程結束後這張卡本來就不產生 */
   if(id==='today') return (di&&di.status==='after')?'hide':'now';
+  var z=zoneCfg();
+  /* 出發前準備「要不要出現」看 prepUntil，就算被釘在某一區也一樣：出發後（或旅程結束後）就收起來 */
+  if(id==='prep'&&(z.prepUntil==='off'||(z.prepUntil==='end'?di.status==='after':di.status!=='before'))) return 'hide';
   var pin=cardPin(id);
   if(pin!=='auto') return pin;
-  var z=zoneCfg();
   var before=(di.status==='before'), after=(di.status==='after'), idx=di.idx, days=di.days;
   /* 旅程結束後：回程航班最重要，擺到最上面；只留住宿備查，其餘收起 */
   if(after) return id==='flight'?'now':(id==='hotel'?'ref':'hide');
@@ -498,7 +545,7 @@ function cardZone(id,di){
              : (before||idx===1||idx===days);
     return soon?'later':'ref';
   }
-  if(id==='morning') return z.morningSoon==='always'?'later':(z.morningSoon==='never'?'ref':(before?'ref':'later'));
+  if(id==='morning') return z.morningSoon==='always'?'later':(z.morningSoon==='never'?'ref':(before?'ref':(idx>=days?'hide':'later')));   /* 最後一天沒有「明早」 */
   return 'ref';   /* hotel 及其他 */
 }
 var ZONE_ORDER_DEF=['today','prep','hotel','flight','morning'];
@@ -575,6 +622,7 @@ function wrapHL(id,html){
 function zlab(t){ return '<div class="zlab"><span>'+t+'</span><i></i></div>'; }
 function grp(key,label,cards){ cards=cards.filter(Boolean); if(!cards.length) return ''; return '<div class="zsec g-'+key+'">'+zlab(label)+cards.join('')+'</div>'; }
 function renderSync(){
+  renderSim();
   /* 連線狀態（點＋字）併進標頭第二列，跟越南／台灣時間同一行；狀態字固定用簡短版本 */
   var state='', txt='';
   if(Store.mode==='cloud'){ state=(navigator.onLine===false?'off':'on'); txt=navigator.onLine===false?'離線':'已連線'; }
@@ -604,6 +652,12 @@ function renderSync(){
     bar.innerHTML='<span class="me">'+esc(g)+'，'+esc(me.name)+'</span>';
   } else { bar.hidden=true; bar.innerHTML=''; }
 }
+/* 時間模擬提示列：一直掛在最上面，避免忘記自己在模擬 */
+function simLabel(){ var d=new Date(nowMs()+8*3600000); return (d.getUTCMonth()+1)+'/'+d.getUTCDate()+'（'+WD[d.getUTCDay()]+'） '+pad(d.getUTCHours())+':'+pad(d.getUTCMinutes()); }
+function renderSim(){ var sb=el('simBar'); if(!sb) return;
+  if(!SIM_OFF){ sb.hidden=true; return; }
+  sb.hidden=false;
+  sb.innerHTML=ic('clock')+'<span><b>時間模擬</b> 台灣 <span id="simNow">'+esc(simLabel())+'</span><br><small>只在這支手機，不會存檔</small></span><span class="sim-b"><button data-act="simPick">換時間</button><button data-act="simEnd">結束</button></span>'; }
 function renderTabs(){
   var cur=(P.tab==='notes')?'tools':P.tab;
   function one(t){ return '<button class="tab'+(cur===t[0]?' on':'')+'" data-act="tab" data-tab="'+t[0]+'" aria-label="'+t[1]+'">'+ic(t[2])+'<span>'+t[1]+'</span></button>'; }
@@ -619,9 +673,11 @@ function tick(){
   if(tick._hk===undefined) tick._hk=hk;
   else if(hk!==tick._hk){
     var busy=SHEET||(document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName));
-    if(!busy){ tick._hk=hk; render(); }   /* 正在打字或表單開著就先不動，下一次 tick 再補畫 */
+    if(!busy){ if(String(hk).split(':').slice(0,2).join(':')!==String(tick._hk).split(':').slice(0,2).join(':')) P.planDay=0;   /* 換天了：行程頁回到今天 */
+      tick._hk=hk; render(); }   /* 正在打字或表單開著就先不動，下一次 tick 再補畫 */
   }
   el('clockVN').textContent=vn.hm; el('clockTW').textContent=tw.hm;
+  if(SIM_OFF){ var sn=el('simNow'); if(sn) sn.textContent=simLabel(); }
   var c=el('countdown'); if(c){ var cd=countdown(); c.hidden=!cd; if(cd){ c.innerHTML=ic('clock')+esc(cd.text); c.classList.toggle('late',cd.late); } }
   var hc=el('hdCountdown');
   if(hc){ var s2=countdownShort();
@@ -678,9 +734,10 @@ VIEWS.home=function(){
   var before=(di.status==='before'), after=(di.status==='after'), day=di.idx;
   /* 出發前：管理者還沒廣播時，改顯示第 1 天第一站（例：05:30 桃園機場集合），不會是一大塊「待公布」 */
   var pre=null;
-  if(before&&!b.time&&!b.idle){ var d1=items().filter(function(x){return x.day===1&&!x.isCanceled;})[0]; if(d1) pre={time:d1.time,title:d1.title}; }
+  var bcOn=bcActive();
+  if(before&&!bcOn){ var d1=items().filter(function(x){return x.day===1&&!x.isCanceled;})[0]; if(d1) pre={time:d1.time,title:d1.title,tw:twItem(1,d1.time)}; }
   /* 旅途中還沒發廣播：最大的那塊不能是「待公布」，改成今天的下一站（或進行中那站） */
-  var nx=(!before&&!after&&!b.time&&!b.idle)?nextStop(di):null;
+  var nx=(!before&&!after&&!bcOn)?nextStop(di):null;
   if(after){
     h.push('<section class="hero done" aria-label="旅程結束">'+
       '<div class="lab">'+ic('heart')+'旅程圓滿結束</div>'+
@@ -693,8 +750,10 @@ VIEWS.home=function(){
     h.push('<section class="hero pre" aria-label="'+nlab+'">'+
       '<div class="lab">'+ic('calendar')+'今天行程<span class="upd">第 '+day+' 天 · '+esc(dayDate(day))+'</span></div>'+
       (nx.kind==='done'
-        ?'<div class="time" style="font-size:1.9rem">今天行程已結束</div><div class="loc"><span>明早時間請看下面「明早時程」或群組通知。</span></div>'
-        :'<div class="time">'+esc(nx.time||'—')+'<small>'+nlab+'</small></div>'+
+        ?(day>=di.days
+          ?'<div class="time" style="font-size:1.9rem">今天行程已結束</div><div class="loc"><span>最後一天辛苦了，回家路上平安。</span></div>'
+          :'<div class="time" style="font-size:1.9rem">今天行程已結束</div><div class="loc"><span>明早時間請看下面「明早時程」或群組通知。</span></div>')
+        :'<div class="time">'+esc(nx.time||'—')+'<small>'+nlab+(nx.tw?'・台灣時間':'')+'</small></div>'+
          '<div class="loc'+((nx.title||'').length>12?' long':'')+'">'+ic('pin')+'<span>'+esc(nx.title)+'</span></div>')+
       '<div class="tip">'+ic('info')+'<span>目前沒有集合廣播；有臨時集合會在這裡與 LINE 群組公布。</span></div>'+
       (P.leader?'<div class="ctl"><button class="btn" data-act="editBroadcast">'+ic('megaphone')+'發布集合廣播</button><button class="btn" data-act="tab" data-tab="plan">'+ic('calendar')+'看行程</button></div>':'')+
@@ -702,7 +761,7 @@ VIEWS.home=function(){
   } else if(pre){
     h.push('<section class="hero pre" aria-label="出發集合">'+
       '<div class="lab">'+ic('plane')+'出發集合'+'<span class="upd">'+esc(dayDate(1))+'</span></div>'+
-      '<div class="time">'+esc(pre.time)+'<small>集合</small></div>'+
+      '<div class="time">'+esc(pre.time)+'<small>集合'+(pre.tw?'・台灣時間':'')+'</small></div>'+
       '<div class="loc'+(pre.title.length>12?' long':'')+'">'+ic('pin')+'<span>'+esc(pre.title)+'</span></div>'+
       ((st.flights||{}).note?'<div class="tip">'+ic('info')+'<span>'+esc(st.flights.note)+'</span></div>':'')+
       (P.leader?'<div class="ctl"><button class="btn" data-act="editBroadcast">'+ic('megaphone')+'改成即時廣播</button><button class="btn" data-act="editItem" data-id="'+esc(items().filter(function(x){return x.day===1;})[0].id)+'">'+ic('edit')+'改集合資訊</button></div>':'')+
@@ -712,7 +771,7 @@ VIEWS.home=function(){
   var tm=(b.time||'');
   h.push('<section class="hero" aria-label="即時廣播">'+
     '<div class="lab">'+ic('megaphone')+'即時廣播'+(b.updatedAt?'<span class="upd">'+esc(b.updatedAt)+' 更新</span>':'')+'</div>'+
-    (tm?'<div class="time">'+esc(tm)+'<small>'+esc(b.label||'集合')+'</small></div>'
+    (tm?'<div class="time">'+esc(tm)+'<small>'+esc(b.label||'集合')+(bcIsTW()?'・台灣時間':'')+'</small></div>'
        :'<div class="time" style="font-size:1.9rem">'+(b.idle?'自由活動':'集合時間待公布')+'</div>')+
     '<div class="count" id="countdown" hidden></div>'+
     (tm||!b.idle
