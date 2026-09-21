@@ -136,6 +136,19 @@ git diff origin/main -- index.html --stat    # 應該沒有輸出
 
 > **Service Worker 會騙你。** 剛推上去的前幾十秒，瀏覽器可能仍被 SW 餵到舊版。驗證時先 unregister SW＋清 caches 再重載，或直接看 `APP_VERSION` 的值。
 
+### 在 Cowork 作業時（小麥目前主要的作業方式）
+
+Cowork 的容器**沒有 GitHub 憑證，不能 `git push`**，而且對話結束後容器會被回收。所以流程是：
+
+1. **開工先 clone**：`git clone https://github.com/msw2004727/sapa-tour-tool.git`。GitHub 是唯一正本，不要沿用上次留下的資料夾。
+2. 改 `src/` → `node build.js` → 跑測試。
+3. **部署靠瀏覽器上傳**：用 Claude in Chrome 開 `https://github.com/msw2004727/sapa-tour-tool/upload/main/<資料夾>`，一個資料夾上傳一趟（根目錄的檔案用 `/upload/main`）。
+   - 要上傳哪些檔案：`git status --porcelain` 列出的**全部**。
+   - **`src/` 的修改與 `index.html` 一定要一起上傳。** 只上傳 `index.html` 的話，網站會更新但 GitHub 上的原始碼還是舊的，下次有人從原始碼 build 就會把改動蓋回去——這正是把原始碼放進 repo 之後最容易出的事。
+   - `file_upload` 只收 `/mnt/user-data/uploads/` 底下的檔案（`outputs/` 會被拒絕），要先複製過去。
+   - commit 訊息要用原生 setter 塞進輸入框再觸發 `input` 事件；用鍵盤打字會把中文打壞。
+4. **驗證**：另外重新 clone 一份，逐檔 `cmp` 比對，再 `node build.js` 之後 `git status` 必須乾淨；最後開 `https://750hd.com/?v=<版本>` 看 `APP_VERSION`。
+
 ### 在雲端工作階段改這個專案
 
 `claude.ai/code` 的雲端工作階段會自己 clone 這個 repo，不需要本機檔案。注意兩件事：
