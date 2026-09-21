@@ -1,10 +1,18 @@
 {
   "rules": {
     "trip": {
-      ".read": true,
-      ".write": "auth != null",
+      ".read": "auth != null",
       "$doc": {
+        ".write": "auth != null && newData.exists()",
         ".validate": "newData.hasChildren() && newData.child('_ts').isNumber()"
+      },
+      "members": {
+        ".write": "auth != null && newData.exists()",
+        ".validate": "newData.hasChildren() && newData.child('_ts').isNumber() && newData.child('items').child('0').exists()"
+      },
+      "itinerary": {
+        ".write": "auth != null && newData.exists()",
+        ".validate": "newData.hasChildren() && newData.child('_ts').isNumber() && newData.child('items').child('0').exists()"
       }
     },
     "$other": {

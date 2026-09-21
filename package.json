@@ -1,11 +1,11 @@
 {
   "name": "sapa-tour-tool",
-  "version": "3.17.0",
+  "version": "3.18.0",
   "private": true,
   "description": "月半越南團旅 — 越南沙壩 33 人團體旅遊隨身工具（單檔 PWA）",
   "scripts": {
     "build": "node build.js",
-    "test": "node build.js && node audit/regress.js && node audit/zonetest.js && node audit/hltest.js && node audit/sheetfit.js && node audit/dbgtest.js && node audit/functest.js && node audit/synctest.js && node audit/membersave.js && node audit/insttest.js && node audit/wording.js",
+    "test": "node build.js && node audit/regress.js && node audit/zonetest.js && node audit/hltest.js && node audit/sheetfit.js && node audit/dbgtest.js && node audit/functest.js && node audit/synctest.js && node audit/membersave.js && node audit/insttest.js && node audit/wording.js && node audit/hardening.js && node audit/swtest.js",
     "test:quick": "node build.js && node audit/regress.js && node audit/sheetfit.js",
     "shots": "node build.js && node audit/shots.js",
     "serve": "node -e \"require('http').createServer((q,s)=>{const f=require('path').join(__dirname,q.url==='/'?'index.html':q.url.split('?')[0]);require('fs').readFile(f,(e,d)=>{if(e){s.writeHead(404);return s.end()}s.writeHead(200);s.end(d)})}).listen(8080,()=>console.log('http://localhost:8080'))\""

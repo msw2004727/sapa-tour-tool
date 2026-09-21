@@ -71,8 +71,8 @@ const HEAD = `<!doctype html>
 <link rel="apple-touch-icon" href="./icons/icon-192.png">
 `;
 
-const SW_REG = `/* PWA：離線快取（只在 https 且非預覽環境註冊） */
-if('serviceWorker' in navigator && location.protocol==='https:' && !(window.claude&&window.claude.use)){
+const SW_REG = `/* PWA：離線快取（https 或本機 localhost 才註冊；artifact 預覽環境不註冊） */
+if('serviceWorker' in navigator && (location.protocol==='https:'||/^(localhost|127\\.0\\.0\\.1)$/.test(location.hostname)) && !(window.claude&&window.claude.use)){
   window.addEventListener('load',function(){ navigator.serviceWorker.register('./sw.js').catch(function(){}); });
 }`;
 

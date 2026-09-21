@@ -12,7 +12,7 @@
 |---|---|
 | 正式網址 | https://750hd.com （Cloudflare 網域 → GitHub Pages） |
 | GitHub | `msw2004727/sapa-tour-tool`，分支 `main` |
-| 目前版本 | v3.17 |
+| 目前版本 | v3.18 |
 | 旅遊日期 | 2026-09-24 ～ 09-28（5 天 4 夜） |
 | 使用者 | 33 位團員（**多數是長輩**）；主辦人是小麥，用 PIN 進入管理模式 |
 | 性質 | **團體自由行，沒有領隊、沒有導遊** |
@@ -97,7 +97,7 @@ npx playwright install chromium
 # 改完 src/ 之後
 node build.js            # 或 npm run build
 npm run test:quick       # 快檢：regress + sheetfit（約 1 分鐘）
-npm test                 # 全部 10 支測試（約 5 分鐘）
+npm test                 # 全部 12 支測試（約 8 分鐘）
 
 # 在瀏覽器看
 npm run serve            # http://localhost:8080
@@ -137,6 +137,8 @@ git diff origin/main -- index.html --stat    # 應該沒有輸出
 然後開 `https://750hd.com/?v=<版本號>` 確認。
 
 > **Service Worker 會騙你。** 剛推上去的前幾十秒，瀏覽器可能仍被 SW 餵到舊版。驗證時先 unregister SW＋清 caches 再重載，或直接看 `APP_VERSION` 的值。
+>
+> v3.18 起 SW 的策略：`index.html` 網路優先但**只等 2.5 秒**，逾時先給快取；`config.js`／manifest／圖示**快取優先、背景更新**。所以改了 `config.js` 之後，使用者要開兩次才會吃到新的。只快取 `res.ok` 的回應。改策略或圖示時記得進版 `CACHE` 名稱。
 
 ### 在 Cowork 作業時（小麥目前主要的作業方式）
 
@@ -176,6 +178,8 @@ Cowork 的容器**沒有 GitHub 憑證，不能 `git push`**，而且對話結�
 | `audit/membersave.js` | 編輯團員存檔 → 重新整理的端對端回歸 |
 | `audit/insttest.js` | 「安裝 App」按鈕在 320px 特大字下不溢出 |
 | `audit/wording.js` | 所有畫面與原始碼不出現「領隊」；住宿卡的「LINE聯繫」按鈕 |
+| `audit/hardening.js` | v3.18 旅途強化 2～14 項：自動留上一版與還原、連線逾時與重連、下一站 hero、日期變更重畫、離線提示條、頂列字級、對比度、最小字級與命中區、空間不足處理與佇列合併、版本提示、緊急求助列、不載外部字型 |
+| `audit/swtest.js` | Service Worker：起本機 http 伺服器模擬延遲 6 秒／斷線／回 500，網頁必須 ~2.6 秒內用快取畫出來、錯誤頁不進快取 |
 
 `audit/_lib.js` 負責找 playwright 與算出 `standalone.html` 的位置，測試裡不要再寫死路徑。
 
@@ -233,6 +237,10 @@ Cowork 的容器**沒有 GitHub 憑證，不能 `git push`**，而且對話結�
 
 判斷「只有首尾兩天」這類條件時要加 `!before`，否則出發前會被誤判成第 1 天。
 
+### 8b. `render()` 會把 `data-fs` 重設成 `P.fs`
+
+測試裡只改 `document.documentElement.setAttribute('data-fs','xl')` 而沒改 `P.fs`，一呼叫 `render()` 就會被打回 `md`——曾經因此讓「320px 特大字」的檢查其實測到的是標準字級。要模擬字級一律 `P.fs='xl'` 再設屬性。
+
 ### 9. 存檔的寫法要選對
 
 | 方法 | 行為 | 用在哪 |
@@ -270,6 +278,19 @@ DOC_KEYS = ['settings','broadcast','itinerary','members','groups','rollcall','no
 | `photos` | 行程卡片底圖 `items[行程id]={src,op,kb}` | 滿載 352 KB |
 
 **總計目前約 18 KB，底圖全放滿也只到 370 KB。** `localStorage` 上限 5 MB，還有十倍餘裕。
+
+### v3.18 加上的保護（都在 `Store` 裡）
+
+| 機制 | 做什麼 |
+|---|---|
+| `guardShrink` | 雲端快照讓某份文件的筆數掉到一半以下（且原本 ≥5 筆）時，把上一版存進 `localStorage['sapa-prev-<key>']`，管理專區「還原上一版」可寫回雲端 |
+| `reconnect` | SDK 載入有 8 秒時限；失敗後在 `online`、回到前景、每 20 秒各試一次，5 秒內不重複 |
+| `cache` 三級退讓 | 整包 → 不含底圖 → 只存佇列（`sapa-q`）；失敗會 toast，`Store.cacheOK=false` 時「已存在手機」那句不會說 |
+| `enqueue` 合併 | 整份存檔吸收同文件之前的局部改動；同一格重複改只留最新 |
+| `verBar` | `settings/minVersion` 比目前新就顯示固定提示列，按了才走；`verCmp` 逐段用數字比 |
+| `homeKey` + `tick` | 日期或下一站變了才重畫首頁；表單開著或正在輸入時不動 |
+
+`firebase.rules.json` 也改成 `$doc` 層級才可寫、不可整份刪除、`members`／`itinerary` 至少要有 `items/0`。**這份規則要有人到 Firebase 主控台貼上才生效**，repo 裡的檔案只是版本紀錄。
 
 ### 同步機制的兩個重點
 

@@ -28,19 +28,17 @@
 <link rel="icon" type="image/png" href="./icons/icon-192.png">
 <link rel="apple-touch-icon" href="./icons/icon-192.png">
 <title>月半越南團旅</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
 <style>
 :root{
-  --bg:#EEF2F5; --card:#FFFFFF; --ink:#1B2437; --ink-2:#4A5568; --ink-3:#74808F; --line:#D9E0E8; --frame:#C9D2DC;
+  --bg:#EEF2F5; --card:#FFFFFF; --ink:#1B2437; --ink-2:#4A5568; --ink-3:#5F6B7A; --line:#D9E0E8; --frame:#C9D2DC;
   --indigo:#2F4479; --indigo-2:#E4EAF7;
   --terrace:#3E7A34; --terrace-2:#E1F0DA;
-  --alert:#E4571B; --alert-2:#FFF1E8;
+  --alert:#E4571B; --alert-2:#FFF1E8; --hero:#C4470D;
   --gold:#C99A1E; --gold-2:#FFF4CC;
   --danger:#C62828;
   --soft:#F2F5F9;
   --hl-bg:#FFFBEC; --hl-edge:#F0C64A; --hl-glow:rgba(201,154,30,.55); --hl-ink:#7A5B08; --hl-sw:#FFEDB8;
-  --band:#2F4479; --lcd-ink:#7DE0C0; --lcd-glow:rgba(125,224,192,.32); --lcd-dim:#7C8C9C; --lcd-amber:#FFB648; --lcd-amber-glow:rgba(255,182,72,.35); --lcd-red:#FF6B5B; --lcd-red-glow:rgba(255,107,91,.4);
+  --band:#2F4479; --lcd-ink:#7DE0C0; --lcd-glow:rgba(125,224,192,.32); --lcd-dim:#B8C4D0; --lcd-amber:#FFB648; --lcd-amber-glow:rgba(255,182,72,.35); --lcd-red:#FF6B5B; --lcd-red-glow:rgba(255,107,91,.4);
   --indigo-ink:#FFFFFF; --dome:0 -2px 10px rgba(47,68,121,.18),0 6px 18px rgba(47,68,121,.34);
   --shadow:0 1px 2px rgba(27,36,55,.06),0 6px 16px rgba(27,36,55,.07);
   --lift:0 1px 2px rgba(27,36,55,.08),0 8px 20px rgba(27,36,55,.10);
@@ -51,7 +49,7 @@
     --bg:#0F141C; --card:#182030; --ink:#EEF2F7; --ink-2:#B7C2D0; --ink-3:#8593A5; --line:#2B3648; --frame:#05080D;
     --indigo:#9DB2EE; --indigo-2:#233150;
     --terrace:#86C96F; --terrace-2:#1F3322;
-    --alert:#FF7A3D; --alert-2:#3A2415;
+    --alert:#FF7A3D; --alert-2:#3A2415; --hero:#B93F0C;
     --gold:#E2B94A; --gold-2:#3A2F12;
     --danger:#FF6B6B;
     --soft:#131A26;
@@ -66,7 +64,7 @@
   --bg:#0F141C; --card:#182030; --ink:#EEF2F7; --ink-2:#B7C2D0; --ink-3:#8593A5; --line:#2B3648; --frame:#05080D;
   --indigo:#9DB2EE; --indigo-2:#233150;
   --terrace:#86C96F; --terrace-2:#1F3322;
-  --alert:#FF7A3D; --alert-2:#3A2415;
+  --alert:#FF7A3D; --alert-2:#3A2415; --hero:#B93F0C;
   --gold:#E2B94A; --gold-2:#3A2F12;
   --danger:#FF6B6B;
   --soft:#131A26;
@@ -81,7 +79,7 @@ html[data-fs="lg"]{font-size:18px}
 html[data-fs="xl"]{font-size:20px}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-body{margin:0;touch-action:pan-x pan-y;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC",-apple-system,"PingFang TC","Heiti TC","Microsoft JhengHei","Noto Sans CJK TC",sans-serif;line-height:1.4;overscroll-behavior-y:contain}
+body{margin:0;touch-action:pan-x pan-y;background:var(--bg);color:var(--ink);font-family:-apple-system,"PingFang TC","Noto Sans TC","Heiti TC","Microsoft JhengHei","Noto Sans CJK TC",sans-serif;line-height:1.4;overscroll-behavior-y:contain}
 button{font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
 button:focus-visible,a:focus-visible,.in:focus-visible{outline:3px solid var(--indigo);outline-offset:2px}
 a{color:var(--indigo)}
@@ -97,32 +95,32 @@ svg.i{width:1.25rem;height:1.25rem;flex-shrink:0;fill:none;stroke:currentColor;s
 .top-r1{display:flex;align-items:center;gap:.25rem;padding:.35rem .5rem}
 .trip-name{flex:1;min-width:0;font-weight:900;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.01em}
 .pen{width:20px;height:20px;border-radius:6px;border:1px dashed var(--ink-3);color:var(--ink-3);background:transparent;display:inline-flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;padding:0;line-height:1;margin-right:.15rem}
-.day-chip{font-size:11.5px;font-weight:900;border-radius:999px;padding:.1rem .5rem;white-space:nowrap;word-break:keep-all;flex-shrink:0;line-height:1.5;background:var(--indigo-2);color:var(--indigo);margin-right:.15rem}
+.day-chip{font-size:.875rem;font-weight:900;border-radius:999px;padding:.1rem .5rem;white-space:nowrap;word-break:keep-all;flex-shrink:0;line-height:1.5;background:var(--indigo-2);color:var(--indigo);margin-right:.15rem}
 .day-chip.warm{background:var(--alert-2);color:var(--alert)}
 .day-chip.done{background:var(--terrace-2);color:var(--terrace)}
 .top-r2{background:var(--band);display:flex;align-items:center;justify-content:center;padding:.22rem .5rem;min-height:26px}
-.lcd{display:flex;align-items:baseline;gap:.3rem;background:rgba(0,0,0,.32);border-radius:8px;padding:.16rem .45rem .2rem;
+.lcd{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;column-gap:.3rem;row-gap:.2rem;background:rgba(0,0,0,.32);border-radius:8px;padding:.22rem .5rem .26rem;
   font-variant-numeric:tabular-nums;line-height:1;white-space:nowrap;max-width:100%;overflow:hidden}
+.lcd .lg1,.lcd .lg2{display:inline-flex;align-items:baseline;gap:.3rem;white-space:nowrap;flex:0 0 auto}
 .lcd .dot{width:.4rem;height:.4rem;border-radius:50%;background:var(--lcd-dim);flex-shrink:0;align-self:center}
 .lcd .dot.on{background:var(--terrace)}
 .lcd .dot.off{background:var(--alert)}
-.lcd .sy{font-size:11px;font-weight:800;color:var(--lcd-dim);flex-shrink:0}
-.lcd .lb{font-size:9.5px;font-weight:900;color:var(--lcd-dim);letter-spacing:.08em;flex-shrink:0}
-.lcd .n{font-size:21px;font-weight:900;letter-spacing:-.01em;color:var(--lcd-ink);text-shadow:0 0 8px var(--lcd-glow);flex-shrink:0}
-.lcd .tw{font-size:11px;font-weight:700;color:var(--lcd-dim);flex-shrink:0}
-.lcd .dv{width:1px;height:13px;background:rgba(255,255,255,.16);align-self:center;margin:0 .05rem;flex-shrink:0}
-.lcd .cd{font-size:11px;font-weight:900;color:var(--lcd-amber);text-shadow:0 0 8px var(--lcd-amber-glow);flex-shrink:0;letter-spacing:.01em}
-.lcd .cd .k{font-size:9.5px;font-weight:900;color:var(--lcd-dim);letter-spacing:.06em;margin-right:.22rem;text-shadow:none}
+.lcd .sy{font-size:.8rem;font-weight:800;color:var(--lcd-dim);flex-shrink:0}
+.lcd .lb{font-size:.68rem;font-weight:900;color:var(--lcd-dim);letter-spacing:.08em;flex-shrink:0}
+.lcd .n{font-size:1.3rem;font-weight:900;letter-spacing:-.01em;color:var(--lcd-ink);text-shadow:0 0 8px var(--lcd-glow);flex-shrink:0}
+.lcd .tw{font-size:.8rem;font-weight:700;color:var(--lcd-dim);flex-shrink:0}
+.lcd .dv{width:1px;height:.8rem;background:rgba(255,255,255,.16);align-self:center;margin:0 .05rem;flex-shrink:0}
+.lcd .cd{font-size:.8rem;font-weight:900;color:var(--lcd-amber);text-shadow:0 0 8px var(--lcd-amber-glow);flex-shrink:0;letter-spacing:.01em}
+.lcd .cd .k{font-size:.68rem;font-weight:900;color:var(--lcd-dim);letter-spacing:.06em;margin-right:.22rem;text-shadow:none}
 .lcd .cd.late{color:var(--lcd-red);text-shadow:0 0 8px var(--lcd-red-glow)}
 .lcd .cd.none{color:var(--lcd-dim);text-shadow:none}
-/* 窄螢幕＋放大字級時（例如 320px 配特大字），面板外圍的 rem 間距會變大，四段容易被切掉；
-   這裡整體縮一點，讓越南／台灣／集合倒數／連線狀態四段都還看得到，而不是把最後一段裁掉 */
+html[data-fs="xl"] .lcd .dv2{display:none}
+/* 面板分成「越南｜台灣」與「集合倒數｜連線」兩組；放不下一行時第二組自動換到下一行，
+   中間那條分隔線在換行時藏起來。這樣字級可以放大到看得清楚，不用為了塞成一行而縮字。 */
 @media (max-width:360px){
-  html[data-fs="lg"] .lcd,html[data-fs="xl"] .lcd{gap:.18rem;padding-left:.3rem;padding-right:.3rem}
-  html[data-fs="lg"] .lcd .n,html[data-fs="xl"] .lcd .n{font-size:18px}
-  html[data-fs="lg"] .lcd .dv,html[data-fs="xl"] .lcd .dv{margin:0}
+  html[data-fs="lg"] .lcd .dv2,html[data-fs="xl"] .lcd .dv2{display:none}
 }
-.sync .me{color:var(--ink);font-weight:900;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sync .me{color:var(--ink);font-weight:900;font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .icon-btn{position:relative;width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--ink-2);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:900;font-size:12px;padding:0;line-height:1}
 .icon-btn svg.i{width:17px;height:17px}
 .top-r1 .icon-btn::before,.pen::before{content:"";position:absolute;inset:-7px -5px}
@@ -130,14 +128,32 @@ svg.i{width:1.25rem;height:1.25rem;flex-shrink:0;fill:none;stroke:currentColor;s
 .icon-btn.on{background:var(--indigo);color:#fff;border-color:var(--indigo)}
 :root[data-theme="dark"] .icon-btn.on{color:#0F141C}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .icon-btn.on{color:#0F141C}}
-.sync{font-size:12px;color:var(--ink-3);font-weight:700;padding:.28rem .8rem;display:flex;align-items:center;gap:.4rem;background:var(--card);border-bottom:1px solid var(--line);white-space:nowrap;overflow:hidden}
-.leader-bar{background:var(--gold-2);color:var(--ink);font-size:13px;font-weight:800;padding:.35rem .85rem;display:flex;align-items:center;gap:.4rem;border-bottom:1px solid var(--line)}
+.sync{font-size:.85rem;color:var(--ink-3);font-weight:700;padding:.28rem .8rem;display:flex;align-items:center;gap:.4rem;background:var(--card);border-bottom:1px solid var(--line);white-space:nowrap;overflow:hidden}
+.leader-bar{background:var(--gold-2);color:var(--ink);font-size:.875rem;font-weight:800;padding:.35rem .85rem;display:flex;align-items:center;gap:.4rem;border-bottom:1px solid var(--line)}
 .leader-bar .sp{flex:1}
-.leader-bar button{border:0;background:transparent;color:var(--indigo);font-weight:900;font-size:13.5px;min-height:2rem;padding:0 .3rem}
+/* 離線提示條：離線或連不上時顯示「資料更新於幾點」，讓人知道看到的集合時間可能是舊的 */
+.offbar{background:var(--alert-2);color:var(--ink);font-size:.9rem;font-weight:800;padding:.4rem .85rem;display:flex;align-items:center;gap:.45rem;border-bottom:1px solid var(--line);line-height:1.3}
+.offbar svg.i{width:1.1rem;height:1.1rem;color:var(--alert);flex-shrink:0}
+/* 新版本提示條：不會自己消失，按了才走 */
+.verbar{background:var(--indigo);color:var(--indigo-ink);font-size:.95rem;font-weight:800;padding:.5rem .85rem;display:flex;align-items:center;gap:.5rem;line-height:1.3}
+.verbar .sp{flex:1}
+.verbar button{border:0;border-radius:8px;font-weight:900;font-size:.95rem;min-height:2.75rem;padding:0 .7rem;background:var(--indigo-ink);color:var(--indigo);flex-shrink:0}
+.verbar button.dim{background:transparent;color:var(--indigo-ink);text-decoration:underline}
+/* 首頁固定的緊急求助列（隨時查區最後一張）：標題一行、按鈕一行，按鈕平分寬度 */
+.sos-row{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;background:var(--card);border:1.5px solid var(--alert);border-radius:var(--r);padding:.65rem .8rem}
+.sos-row .t{flex-basis:100%;min-width:0;font-weight:900;font-size:1.05rem;color:var(--ink);display:flex;align-items:center;gap:.4rem}
+.sos-row .t svg.i{color:var(--alert);width:1.25rem;height:1.25rem}
+.sos-row .btn{min-height:2.75rem;padding:0 .6rem;flex:1 1 0;min-width:0;white-space:nowrap}
+.sos-row .btn.go{flex:1 1 0;padding:0 .5rem}
+/* 320px 配大字：兩顆文字按鈕各佔一行，箭頭鈕跟 LINE 同一行 */
+@media (max-width:360px){
+  html[data-fs="lg"] .sos-row .btn.warn,html[data-fs="xl"] .sos-row .btn.warn{flex-basis:100%}
+}
+.leader-bar button{border:0;background:transparent;color:var(--indigo);font-weight:900;font-size:.875rem;min-height:2.4rem;padding:0 .3rem}
 /* main + tabs */
 main{flex:1;padding:.75rem .75rem calc(80px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:.8rem}
 .tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:440px;background:var(--card);border-top:1px solid var(--line);display:flex;align-items:flex-end;padding-bottom:env(safe-area-inset-bottom);z-index:20}
-.tab{flex:1;min-height:58px;border:0;background:none;color:var(--ink-3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:13px;font-weight:800;white-space:nowrap;word-break:keep-all;padding:6px 0 5px}
+.tab{flex:1;min-height:58px;border:0;background:none;color:var(--ink-3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:.875rem;font-weight:800;white-space:nowrap;word-break:keep-all;padding:6px 0 5px}
 .tab svg.i{width:23px;height:23px}
 .tab.on{color:var(--indigo)}
 .tab-home{flex:1;min-width:0;position:relative;border:0;background:none;font:inherit;cursor:pointer;min-height:58px;
@@ -146,32 +162,33 @@ main{flex:1;padding:.75rem .75rem calc(80px + env(safe-area-inset-bottom));displ
   background:var(--indigo);color:var(--indigo-ink);display:flex;align-items:center;justify-content:center;
   box-shadow:var(--dome);border:3px solid var(--card)}
 .tab-home .dome svg.i{width:26px;height:26px}
-.tab-home .lb{font-size:13px;font-weight:800;color:var(--ink-3);white-space:nowrap;word-break:keep-all;line-height:1.2}
+.tab-home .lb{font-size:.875rem;font-weight:800;color:var(--ink-3);white-space:nowrap;word-break:keep-all;line-height:1.2}
 .tab-home.on .lb{color:var(--indigo);font-weight:900}
 .tab-home:focus-visible{outline:2px solid var(--indigo);outline-offset:-3px;border-radius:8px}
 /* cards + buttons */
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:.9rem}
 .card-h{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.65rem}
 .card-h h2{margin:0;font-size:1.05rem;font-weight:900;display:flex;align-items:center;gap:.4rem;white-space:nowrap}
-.card-h .sub{font-size:.8rem;color:var(--ink-3);font-weight:700;white-space:nowrap}
+.card-h .sub{font-size:.875rem;color:var(--ink-3);font-weight:700;white-space:nowrap}
 h2.sec{margin:.25rem 0 0;font-size:1rem;font-weight:900;color:var(--ink-2);display:flex;align-items:center;gap:.4rem}
 .muted{color:var(--ink-3);font-size:.88rem;font-weight:600}
+a.btn{text-decoration:none}
 .btn{min-height:3rem;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-weight:800;font-size:1rem;padding:0 .9rem;display:inline-flex;align-items:center;justify-content:center;gap:.4rem;white-space:nowrap;word-break:keep-all;line-height:1.2}
 .btn svg.i{width:1.2rem;height:1.2rem}
 .btn.pri{background:var(--indigo);color:#fff;border-color:var(--indigo)}
 .btn.ok{background:var(--terrace);color:#fff;border-color:var(--terrace)}
-.btn.warn{background:var(--alert);color:#fff;border-color:var(--alert)}
+.btn.warn{background:var(--hero);color:#fff;border-color:var(--hero)}
 .btn.soft{background:var(--indigo-2);color:var(--indigo);border-color:transparent}
 .btn.dng{color:var(--danger);border-color:var(--danger)}
-.btn.sm{min-height:2.6rem;font-size:.9rem;padding:0 .7rem;border-radius:10px}
+.btn.sm{min-height:2.75rem;font-size:.9rem;padding:0 .7rem;border-radius:10px}
 .btn.block{width:100%}
 .btn.wrap{white-space:normal;text-align:left;justify-content:flex-start;padding:.55rem .9rem;line-height:1.3}
 .btn.big{min-height:4.2rem;font-size:1.15rem;justify-content:flex-start;padding:0 1rem;text-align:left}
 .btn.big svg.i{width:1.6rem;height:1.6rem}
 .btn.big .b2{display:flex;flex-direction:column;align-items:flex-start;min-width:0}
-.btn.big .b2 small{font-size:.8rem;color:var(--ink-3);font-weight:700;white-space:normal;line-height:1.2}
-:root[data-theme="dark"] .btn.pri,:root[data-theme="dark"] .btn.ok,:root[data-theme="dark"] .btn.warn{color:#0F141C}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.pri,:root:not([data-theme="light"]) .btn.ok,:root:not([data-theme="light"]) .btn.warn{color:#0F141C}}
+.btn.big .b2 small{font-size:.875rem;color:var(--ink-3);font-weight:700;white-space:normal;line-height:1.2}
+:root[data-theme="dark"] .btn.pri,:root[data-theme="dark"] .btn.ok{color:#0F141C}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.pri,:root:not([data-theme="light"]) .btn.ok{color:#0F141C}}
 .row{display:flex;gap:.5rem;flex-wrap:wrap}
 .row>.btn{flex:1 1 auto;min-width:0}
 .btn.warn .b2 small,.btn.pri .b2 small,.btn.ok .b2 small{color:rgba(255,255,255,.88)}
@@ -179,7 +196,7 @@ h2.sec{margin:.25rem 0 0;font-size:1rem;font-weight:900;color:var(--ink-2);displ
 .stack{display:flex;flex-direction:column;gap:.6rem}
 .chips{display:flex;gap:.4rem;flex-wrap:wrap}
 .chip{display:inline-flex;align-items:center;gap:.3rem;border-radius:999px;padding:.35rem .7rem;font-size:.85rem;font-weight:800;background:var(--indigo-2);color:var(--indigo);white-space:nowrap;word-break:keep-all;border:1.5px solid transparent;min-height:2.2rem}
-.chip.pick{background:var(--card);color:var(--ink);border-color:var(--line);min-height:2.6rem}
+.chip.pick{background:var(--card);color:var(--ink);border-color:var(--line);min-height:2.75rem}
 .chip.pick.on{background:var(--indigo);color:#fff;border-color:var(--indigo)}
 :root[data-theme="dark"] .chip.pick.on{color:#0F141C}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .chip.pick.on{color:#0F141C}}
@@ -187,10 +204,10 @@ h2.sec{margin:.25rem 0 0;font-size:1rem;font-weight:900;color:var(--ink-2);displ
 .seg button{flex:1;min-height:2.8rem;border:0;border-radius:9px;background:transparent;color:var(--indigo);font-weight:900;font-size:.95rem;white-space:nowrap;word-break:keep-all;display:inline-flex;align-items:center;justify-content:center;gap:.3rem}
 .seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.14)}
 /* hero broadcast */
-.hero{background:var(--alert);color:#fff;border-radius:var(--r);padding:1rem;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.hero{background:var(--hero);color:#fff;border-radius:var(--r);padding:1rem;box-shadow:var(--shadow);position:relative;overflow:hidden}
 .hero::before{content:"";position:absolute;right:-3rem;top:-3rem;width:10rem;height:10rem;border-radius:50%;background:rgba(255,255,255,.08)}
-.hero .lab{display:flex;align-items:center;gap:.4rem;font-size:.85rem;font-weight:800;letter-spacing:.06em}
-.hero .lab .upd{margin-left:auto;font-weight:700;opacity:.9;letter-spacing:0;font-variant-numeric:tabular-nums}
+.hero .lab{display:flex;align-items:center;gap:.4rem;font-size:.9rem;font-weight:800;letter-spacing:.06em;white-space:nowrap}
+.hero .lab .upd{margin-left:auto;font-weight:700;opacity:.9;letter-spacing:0;font-variant-numeric:tabular-nums;flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
 .hero .time{font-size:2.9rem;font-weight:900;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em;margin:.45rem 0 .15rem;display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap}
 .hero .time small{font-size:1.3rem;font-weight:900}
 .hero .count{display:inline-flex;align-items:center;gap:.3rem;background:rgba(255,255,255,.2);border-radius:999px;padding:.3rem .75rem;font-weight:900;font-size:.98rem;margin:.35rem 0 .1rem;font-variant-numeric:tabular-nums}
@@ -232,13 +249,13 @@ h2.sec{margin:.25rem 0 0;font-size:1rem;font-weight:900;color:var(--ink-2);displ
 .dayrow{display:flex;gap:.4rem;overflow-x:auto;padding:.15rem .1rem .3rem;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .dayrow::-webkit-scrollbar{display:none}
 .dayrow button{flex-shrink:0;min-width:4.7rem;min-height:3.5rem;border-radius:12px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font-weight:900;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15;padding:.3rem .5rem}
-.dayrow button small{font-size:.72rem;color:var(--ink-3);font-weight:700}
+.dayrow button small{font-size:.85rem;color:var(--ink-3);font-weight:700}
 .dayrow button.today{border-color:var(--terrace)}
 .dayrow button.on{background:var(--indigo);color:#fff;border-color:var(--indigo)}
 .dayrow button.on small{color:rgba(255,255,255,.85)}
 .dayrow.fit{display:grid;grid-template-columns:repeat(var(--days,5),minmax(0,1fr));gap:.3rem;overflow:visible;padding:.3rem 0 .2rem}
 .dayrow.fit button{min-width:0;width:100%;padding:.35rem .1rem;font-size:clamp(.78rem,3.6vw,.95rem);letter-spacing:-.02em;position:relative;white-space:nowrap}
-.dayrow.fit button small{font-size:clamp(.62rem,2.9vw,.75rem)}
+.dayrow.fit button small{font-size:clamp(.8rem,3.4vw,.9rem)}
 .dayrow.fit button .td{position:absolute;top:-.3rem;right:-.2rem;width:.7rem;height:.7rem;border-radius:50%;background:var(--terrace);border:2px solid var(--card)}
 :root[data-theme="dark"] .dayrow button.on{color:#0F141C}
 :root[data-theme="dark"] .dayrow button.on small{color:rgba(15,20,28,.75)}
@@ -310,8 +327,8 @@ h2.sec{margin:.25rem 0 0;font-size:1rem;font-weight:900;color:var(--ink-2);displ
 .mc .tx{min-width:0;flex:1}
 .mc .nm{display:block;font-size:1.125rem;font-weight:900;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mc .rk{display:block;font-size:.85rem;color:#4A5568;font-weight:700;margin-top:.22rem;line-height:1.3}
-.mc .rt{text-align:right;font-size:.8rem;font-weight:900;color:#4A5568;flex-shrink:0;white-space:nowrap;line-height:1.25}
-.al{display:inline-flex;align-items:center;justify-content:center;width:1.8rem;height:1.8rem;border-radius:50%;font-size:.62rem;font-weight:900;color:#fff;flex-shrink:0;letter-spacing:.02em;line-height:1;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.mc .rt{text-align:right;font-size:.875rem;font-weight:900;color:#4A5568;flex-shrink:0;white-space:nowrap;line-height:1.25}
+.al{display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;border-radius:50%;font-size:.74rem;font-weight:900;color:#fff;flex-shrink:0;letter-spacing:.02em;line-height:1;box-shadow:0 1px 2px rgba(0,0,0,.2)}
 .al.eva{background:#0A7A4C}
 .al.ci{background:#C4184F}
 .al.none{background:#fff;color:#9AA3B0;border:1.5px dashed #C9D2DC;box-shadow:none}
@@ -451,10 +468,11 @@ dl.kv2 dd:last-child{border-bottom:0;padding-bottom:0;margin-bottom:0}
 .full .ph-big svg.i{color:#2F4479}
 .full .foot{margin-top:auto;padding-top:1rem;font-size:.85rem;color:#777;font-weight:700;line-height:1.45}
 /* flights */
-.fl{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.fl{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:.5rem}
+@media (max-width:360px){ html[data-fs="lg"] .fl,html[data-fs="xl"] .fl{grid-template-columns:minmax(0,1fr)} }
 .fl-col{background:var(--bg);border-radius:12px;padding:.6rem .7rem}
 .fl-h{display:flex;align-items:center;gap:.3rem;font-weight:900;font-size:clamp(.82rem,4.2vw,1rem);margin-bottom:.4rem;white-space:nowrap;overflow:hidden;min-width:0}
-.fl-h .al{width:1.5rem;height:1.5rem;font-size:.55rem}
+.fl-h .al{width:1.7rem;height:1.7rem;font-size:.66rem}
 .fl-col{min-width:0}
 .fl-r{display:flex;flex-direction:column;gap:.05rem;margin-top:.35rem}
 .fl-r .k{font-size:.75rem;color:var(--ink-3);font-weight:800;line-height:1.3}
@@ -520,14 +538,14 @@ select.in{appearance:none;-webkit-appearance:none;padding-right:1.9rem;
 .pin-disp{text-align:center;font-size:2rem;letter-spacing:.5rem;font-weight:900;min-height:3rem;font-variant-numeric:tabular-nums}
 .tip-banner{background:var(--card);border:1px dashed var(--indigo);border-radius:var(--r);padding:.75rem .85rem;font-size:.9rem;line-height:1.5;color:var(--ink-2);font-weight:600;display:flex;gap:.5rem;align-items:flex-start}
 .tip-banner svg.i{color:var(--indigo);flex-shrink:0;margin-top:.15rem}
-.tip-banner button{margin-left:auto;border:0;background:transparent;color:var(--ink-3);font-weight:900;min-width:2.5rem;min-height:2.5rem;flex-shrink:0}
+.tip-banner button{margin-left:auto;border:0;background:transparent;color:var(--ink-3);font-weight:900;min-width:2.75rem;min-height:2.75rem;flex-shrink:0}
 .tip-banner span{flex:1;min-width:0}
 .tip-banner .tb-go{margin-left:0;color:var(--indigo);text-decoration:underline;min-width:0;padding:0 .35rem;white-space:nowrap}
 /* 廣播貼到 LINE 的預覽框：讓管理者送出前先看一眼實際會長什麼樣 */
 .share-prev{margin-top:.7rem;white-space:pre-wrap;word-break:break-word;background:var(--soft);border:1px solid var(--line);border-radius:.7rem;padding:.75rem .85rem;font-size:.92rem;line-height:1.7;font-weight:600;color:var(--ink);-webkit-user-select:text;user-select:text}
 /* ===== 安裝成 App／加到主畫面 ===== */
 /* 按鈕字級固定用 px，不跟著「AA」放大，320px 小螢幕才不會把區塊標題擠爆 */
-.inst-btn{margin-left:auto;flex:none;display:inline-flex;align-items:center;gap:.2rem;font-size:12px;font-weight:900;line-height:1;color:var(--indigo-ink);background:var(--indigo);border:0;border-radius:999px;padding:.4rem .6rem;white-space:nowrap;word-break:keep-all}
+.inst-btn{margin-left:auto;flex:none;display:inline-flex;align-items:center;gap:.2rem;font-size:.8rem;min-height:2.6rem;font-weight:900;line-height:1;color:var(--indigo-ink);background:var(--indigo);border:0;border-radius:999px;padding:.4rem .6rem;white-space:nowrap;word-break:keep-all}
 .inst-btn svg.i{width:14px;height:14px;stroke-width:2.4}
 .ig-why{display:flex;gap:.45rem;align-items:flex-start;background:var(--indigo-2);color:var(--indigo);border-radius:.7rem;padding:.6rem .7rem;font-size:.88rem;font-weight:700;line-height:1.5;margin-bottom:.85rem}
 .ig-why svg.i{flex:none;margin-top:.15rem}
@@ -549,20 +567,21 @@ select.in{appearance:none;-webkit-appearance:none;padding-right:1.9rem;
 .ig-shot{display:block;width:100%;height:auto;margin-top:.45rem;border:1px solid var(--line);border-radius:.6rem;background:var(--soft)}
 .ig-alt{display:flex;flex-direction:column;align-items:flex-start;gap:.35rem;margin:-.35rem 0 0 2.15rem}
 .ig-alt small{color:var(--ink-3);font-size:.82rem;font-weight:600;line-height:1.45}
-.toast{position:fixed;left:50%;bottom:6rem;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:.65rem 1.1rem;border-radius:999px;font-weight:800;z-index:70;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis}
+.toast{position:fixed;left:50%;bottom:6rem;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:.65rem 1.1rem;border-radius:999px;font-weight:800;z-index:70;opacity:0;transition:opacity .2s;pointer-events:none;white-space:normal;text-align:center;line-height:1.35;width:max-content;max-width:92vw;border-radius:18px}
 .toast.show{opacity:1}
 .hint-lead{font-size:.82rem;color:var(--ink-3);font-weight:700;display:flex;align-items:center;gap:.3rem}
 .hint-lead svg.i{width:1rem;height:1rem}
 /* ===== v4：首頁分段（現在／稍後／隨時查）＋ 可收合卡片 ===== */
 .zsec{display:flex;flex-direction:column;gap:.7rem}
 .zlab{display:flex;align-items:center;gap:.5rem;margin-bottom:-.05rem}
-.zlab span{font-size:.78rem;font-weight:900;color:var(--ink-3);letter-spacing:.1em;white-space:nowrap;word-break:keep-all}
+.zlab span{font-size:.875rem;font-weight:900;color:var(--ink-3);letter-spacing:.1em;white-space:nowrap;word-break:keep-all}
 .zlab i{flex:1;height:1px;background:var(--line)}
 .ccard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
 .chead{width:100%;border:0;background:transparent;color:var(--ink);display:flex;align-items:center;gap:.5rem;padding:.7rem .8rem;text-align:left;min-height:3.2rem}
 .chead .ttl{font-size:1rem;font-weight:900;display:flex;align-items:center;gap:.4rem;flex-shrink:0;white-space:nowrap;word-break:keep-all;color:var(--ink-2)}
 .chead .ttl svg.i{width:1.15rem;height:1.15rem}
-.chead .sm{flex:1;min-width:0;text-align:right;font-size:.82rem;font-weight:800;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+.chead .sm{flex:1;min-width:0;text-align:right;font-size:.875rem;font-weight:800;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+@media (max-width:360px){ html[data-fs="xl"] .chead .sm{white-space:normal;line-height:1.2;text-overflow:clip} }
 .chead .cv{flex-shrink:0;color:var(--ink-3);font-size:.8rem;font-weight:900;width:1.1rem;text-align:center}
 .cbody{padding:0 .8rem .8rem}
 .tgl{width:52px;height:30px;border-radius:999px;border:0;background:var(--ink-3);position:relative;flex-shrink:0;padding:0}
@@ -637,25 +656,27 @@ select.in.sm{min-height:2.5rem;font-size:.88rem;padding:0 1.6rem 0 .55rem;width:
 }
 @media (prefers-reduced-motion: reduce){ .hlw::before{animation:none;opacity:1} }
 /* Google 地圖按鈕 */
-.map-btn{width:2.1rem;height:2.1rem;min-width:2.1rem;border-radius:10px;border:1px solid var(--line);background:var(--card);
+.map-btn{width:2.75rem;height:2.75rem;min-width:2.75rem;border-radius:10px;border:1px solid var(--line);background:var(--card);
   color:var(--indigo);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;text-decoration:none;vertical-align:middle}
-.map-btn svg.i{width:1.15rem;height:1.15rem}
+.map-btn svg.i{width:1.35rem;height:1.35rem}
 .map-btn:active{background:var(--indigo-2)}
-.map-btn.lg{width:2.5rem;height:2.5rem;min-width:2.5rem;margin-left:.4rem}
+.map-btn.lg{width:2.75rem;height:2.75rem;min-width:2.75rem;margin-left:.4rem}
 .map-btn.lg svg.i{width:1.35rem;height:1.35rem}
 
 .tagrow{flex:1;min-width:0;display:flex;align-items:center;gap:.45rem;font-size:1rem;white-space:nowrap;overflow:hidden}
 .tagrow svg.i{width:1.2rem;height:1.2rem;color:var(--indigo)}
 .sw button svg.i{width:1.4rem;height:1.4rem}
-.tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:.55rem}
+.tool-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:.55rem}
+.tcard{min-width:0}
+@media (max-width:360px){ html[data-fs="xl"] .tool-grid{grid-template-columns:minmax(0,1fr)} }
 .tcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:.7rem .75rem;min-height:5.2rem;display:flex;flex-direction:column;align-items:flex-start;gap:.15rem;color:var(--ink);text-align:left}
 .tcard svg.i{width:1.5rem;height:1.5rem;color:var(--indigo);margin-bottom:.15rem}
 .tcard b{font-size:1rem;font-weight:900;white-space:nowrap;word-break:keep-all}
-.tcard small{font-size:.78rem;color:var(--ink-3);font-weight:700;line-height:1.25}
-.ver{text-align:center;font-size:.75rem;color:var(--ink-3);font-weight:700;padding:.4rem 0 .2rem;letter-spacing:.04em}
-.btn.line{background:#06C755;color:#fff;border-color:#06C755}
+.tcard small{font-size:.875rem;color:var(--ink-3);font-weight:700;line-height:1.25}
+.ver{text-align:center;font-size:.875rem;color:var(--ink-3);font-weight:700;padding:.4rem 0 .2rem;letter-spacing:.04em}
+.btn.line{background:#0B7A3A;color:#fff;border-color:#0B7A3A}
 .btn.line svg.i{width:1.1rem;height:1.1rem}
-.tag.map{background:var(--indigo-2);color:var(--indigo);border-color:transparent;text-decoration:none;font-weight:900}
+.tag.map{background:var(--indigo-2);color:var(--indigo);border-color:transparent;text-decoration:none;font-weight:900;min-height:2.75rem;padding-left:.7rem;padding-right:.7rem}
 .tag.map svg.i{color:var(--indigo)}
 /* 彩色徽章 SVG */
 svg.bdg{width:1.7rem;height:1.7rem;display:block;flex-shrink:0}
@@ -695,13 +716,16 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
     </div>
     <div class="top-r2">
       <div class="lcd" aria-live="off">
-        <span class="lb">越南</span><span class="n" id="clockVN">--:--</span>
-        <span class="dv"></span><span class="tw">台灣 <span id="clockTW">--:--</span></span>
-        <span class="dv"></span><span class="cd" id="hdCountdown" hidden></span>
-        <span class="dv"></span><span class="dot" id="hdDot"></span><span class="sy" id="hdSyncTx">連線中</span>
+        <span class="lg1"><span class="lb">越南</span><span class="n" id="clockVN">--:--</span>
+        <span class="dv"></span><span class="tw">台灣 <span id="clockTW">--:--</span></span></span>
+        <span class="dv dv2"></span>
+        <span class="lg2"><span class="cd" id="hdCountdown" hidden></span>
+        <span class="dv"></span><span class="dot" id="hdDot"></span><span class="sy" id="hdSyncTx">連線中</span></span>
       </div>
     </div>
   </header>
+  <div class="verbar" id="verBar" hidden></div>
+  <div class="offbar" id="offBar" hidden></div>
   <div class="sync" id="syncBar" hidden></div>
   <div class="leader-bar" id="leaderBar" hidden><span id="leaderBarIcon"></span>管理模式：可直接點卡片修改<span class="sp"></span><button data-act="leaderLock">鎖定</button></div>
   <main id="view"></main>
@@ -713,7 +737,7 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
 <script src="./config.js"></script>
 <script>
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '3.17';
+var APP_VERSION = '3.18';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -897,6 +921,7 @@ var PHRASES = [
 /* photos 獨立成一份文件：底圖不能塞在 itinerary 裡，
    因為新增／編輯行程會用 Store.save('itinerary') 整份覆寫，那樣每改一個字都要重傳所有圖。 */
 var DOC_KEYS = ['settings','broadcast','itinerary','members','groups','rollcall','notebook','photos'];
+var DOC_NAMES = {settings:'團務設定',broadcast:'廣播',itinerary:'行程',members:'名單',groups:'分組',rollcall:'點名',notebook:'記事本',photos:'底圖'};
 /* ===== 預設示範資料（seed）=====
    換一團時只改這個檔：團名、日期、名單、行程、記事本。程式碼在 src/ 其他檔案，不用動。
    正式使用時由管理者在管理模式修改，或由雲端資料覆蓋；這裡刻意不含任何電話。 */
@@ -1201,6 +1226,17 @@ function dayInfo(){
   if(diff>=days) return {idx:days,status:'after',days:days,diff:diff};
   return {idx:diff+1,status:'on',days:days,diff:diff};
 }
+/* 今天的重點站：管理者標了「當前站」就用它；否則用還沒到時間的第一站；都沒有就代表今天結束 */
+function nextStop(di){
+  var day=di.idx, list=items().filter(function(x){return x&&x.day===day&&!x.isCanceled;});
+  if(!list.length) return null;
+  var cur=list.filter(function(x){return x.isCurrent;})[0];
+  if(cur) return {id:cur.id,time:cur.time,title:cur.title,kind:'cur'};
+  var now=tzParts(VN).hm;
+  var up=list.filter(function(x){return x.time&&x.time>=now;})[0];
+  if(up) return {id:up.id,time:up.time,title:up.title,kind:'next'};
+  return {id:'',time:'',title:'',kind:'done'};
+}
 function fmtDur(min){
   if(min>=1440){ var dd=Math.floor(min/1440), hh=Math.floor((min%1440)/60); return dd+' 天'+(hh?' '+hh+' 小時':''); }
   if(min>=60) return Math.floor(min/60)+' 小時 '+(min%60?(min%60)+' 分':'');
@@ -1313,7 +1349,10 @@ function savePrefs(){ try{ localStorage.setItem('sapa-prefs',JSON.stringify({fs:
 
 /* ===== 資料層：本機快取優先，雲端（claude db）可用時即時同步 =====
    之後若改接自家後端（例如 Python FastAPI）或 Firebase，只需替換 connect()/push() 兩個函式。 */
-function loadScript(src){ return new Promise(function(res,rej){ var t=document.createElement('script'); t.src=src; t.async=true; t.onload=res; t.onerror=rej; document.head.appendChild(t); }); }
+function loadScript(src){ return new Promise(function(res,rej){ var t=document.createElement('script'); t.src=src; t.async=true; t.onload=res; t.onerror=function(){ try{ t.remove(); }catch(e){} rej(new Error('load fail')); }; document.head.appendChild(t); }); }
+function withTimeout(p,ms){ return new Promise(function(res,rej){ var done=false, t=setTimeout(function(){ if(!done){ done=true; rej(new Error('timeout')); } },ms); p.then(function(v){ if(!done){ done=true; clearTimeout(t); res(v); } },function(e){ if(!done){ done=true; clearTimeout(t); rej(e); } }); }); }
+/* 版本號逐段用數字比：3.9 < 3.16 */
+function verCmp(a,b){ var x=String(a).replace(/^v/i,'').split('.'),y=String(b).replace(/^v/i,'').split('.'); for(var i=0;i<Math.max(x.length,y.length);i++){ var d=(parseInt(x[i]||'0',10)||0)-(parseInt(y[i]||'0',10)||0); if(d) return d>0?1:-1; } return 0; }
 /* 純 JS SHA-256（PIN 只存雜湊，不存明文；file:// 沒有 crypto.subtle 也能用） */
 function sha256(str){
   function R(n,x){return (x>>>n)|(x<<(32-n));}
@@ -1350,12 +1389,45 @@ var Store={
   s:clone(DEFAULTS), mode:'local', lastSync:null, push:null, pushOp:null, backend:'', q:[], flushing:false, remoteTs:{},
   init:function(){
     try{ var c=JSON.parse(localStorage.getItem('sapa-data')||'null'); if(c&&c.docs){ DOC_KEYS.forEach(function(k){ if(c.docs[k]) Store.s[k]=c.docs[k]; }); if(c.at) Store.lastSync=new Date(c.at); if(c.q&&c.q.length) Store.q=c.q; } }catch(e){}
+    /* 上次空間不足時可能只存了佇列 */
+    /* 這裡不刪 sapa-q：要等 cache() 成功把佇列寫回 sapa-data 才刪，否則離線連開兩次會把未送出的修改弄丟 */
+    try{ var q2=JSON.parse(localStorage.getItem('sapa-q')||'null'); if(q2&&q2.length){ Store.q=q2; Store.cache(); } else localStorage.removeItem('sapa-q'); }catch(e){ try{ localStorage.removeItem('sapa-q'); }catch(x){} }
   },
-  cache:function(){ try{ localStorage.setItem('sapa-data',JSON.stringify({docs:Store.s,at:Date.now(),q:Store.q})); }catch(e){} },
+  /* 存到手機。空間不夠時分三級退讓：整包 → 先不存底圖 → 至少把待送佇列存下來。
+     每一級失敗都要讓人知道，不能默默吞掉之後還說「已先存在這支手機」。 */
+  cache:function(){
+    var at=Date.now();
+    try{ localStorage.setItem('sapa-data',JSON.stringify({docs:Store.s,at:at,q:Store.q})); Store.cacheOK=true; try{ localStorage.removeItem('sapa-q'); }catch(x){} return true; }catch(e){}
+    try{
+      var slim={}; DOC_KEYS.forEach(function(k){ slim[k]=Store.s[k]; });
+      slim.photos={items:{},_ts:(Store.s.photos||{})._ts||0};
+      localStorage.setItem('sapa-data',JSON.stringify({docs:slim,at:at,q:Store.q,slim:true}));
+      Store.cacheOK=true; try{ localStorage.removeItem('sapa-q'); }catch(x){}
+      if(!Store._slimWarned){ Store._slimWarned=true; toast('手機儲存空間快滿了：行程底圖暫時不離線保存，其他資料正常'); }
+      return true;
+    }catch(e2){}
+    try{ localStorage.setItem('sapa-q',JSON.stringify(Store.q)); }catch(e3){}
+    Store.cacheOK=false;
+    if(!Store._fullWarned){ Store._fullWarned=true; toast('手機儲存空間不足，修改還沒存進手機；請保持連線讓它同步上雲端'); }
+    return false;
+  },
+  /* 資料突然變少時自動留一份上一版（例：一次誤寫把 33 人名單清空），管理專區可以還原 */
+  guardShrink:function(k,incoming){
+    var cnt=Store.docCount(k,Store.s[k]), nxt=Store.docCount(k,incoming);
+    if(cnt>=5&&nxt<cnt*0.5){
+      try{ var old=JSON.parse(localStorage.getItem('sapa-prev-'+k)||'null');
+        /* 一天內已經留了一份更完整的，就保留那份（33→10→2 時要留的是 33） */
+        if(!(old&&old.n>cnt&&Date.now()-old.at<86400000)) localStorage.setItem('sapa-prev-'+k,JSON.stringify({at:Date.now(),n:cnt,doc:Store.s[k]})); }catch(e){}
+      if(P.leader) toast(DOC_NAMES[k]+'突然從 '+cnt+' 筆變成 '+nxt+' 筆，已自動留下上一版（管理專區 → 還原上一版）');
+    }
+  },
+  docCount:function(k,d){ if(!d) return 0; if(d.items) return Array.isArray(d.items)?d.items.length:Object.keys(d.items).length; if(d.pages) return d.pages.length; if(d.scenarios) return d.scenarios.length; return 0; },
+  prevSnapshots:function(){ var out=[]; DOC_KEYS.forEach(function(k){ try{ var v=JSON.parse(localStorage.getItem('sapa-prev-'+k)||'null'); if(v&&v.doc) out.push({key:k,at:v.at,n:v.n}); }catch(e){} }); return out; },
+  restorePrev:function(k){ try{ var v=JSON.parse(localStorage.getItem('sapa-prev-'+k)||'null'); if(!v||!v.doc) return false; Store.s[k]=v.doc; localStorage.removeItem('sapa-prev-'+k); Store.save(k); return true; }catch(e){ return false; } },
   /* 雲端快照進來：先套用雲端，再把「這支手機還沒送出去的修改」重新疊上去，離線期間的修改不會被舊快照蓋掉 */
   applyRemote:function(docs){
     var got=false;
-    DOC_KEYS.forEach(function(k){ var r=docs[k]; if(r&&typeof r==='object'){ Store.s[k]=clone(r); Store.remoteTs[k]=r._ts||0; got=true; } });
+    DOC_KEYS.forEach(function(k){ var r=docs[k]; if(r&&typeof r==='object'){ Store.guardShrink(k,r); Store.s[k]=clone(r); Store.remoteTs[k]=r._ts||0; got=true; } });
     Store.q.forEach(function(op){ var d=Store.s[op.key]; if(!d||typeof d!=='object'){ d=Store.s[op.key]={}; }
       if(op.path){ setPath(d,op.path,op.val); if((d._ts||0)<op.ts) d._ts=op.ts; }
       else if(op.ts>=(d._ts||0)) Store.s[op.key]=clone(op.val); });
@@ -1364,8 +1436,12 @@ var Store={
     if(P.leader&&Store.s.settings&&Store.s.settings.dayBg){ delete Store.s.settings.dayBg; Store.savePath('settings','dayBg',null); }
     Store.mode='cloud'; Store.lastSync=new Date(); Store.cache(); render(); Store.checkVersion(); Store.flush(); return got;
   },
-  checkVersion:function(){ var st=Store.s.settings||{}; var min=st.minVersion; if(!min||Store._verToasted) return;
-    if(String(min)>String(APP_VERSION)){ Store._verToasted=true; var t=el('toast'); t.innerHTML='有新版本 '+esc(min)+'，<a href="#" data-act="reloadApp" style="color:inherit;text-decoration:underline">點此重新載入</a>'; t.classList.add('show'); t.style.pointerEvents='auto'; clearTimeout(t._tm); t._tm=setTimeout(function(){ t.classList.remove('show'); t.style.pointerEvents=''; },8000); } },
+  /* 有新版本：固定一條提示列，按了才會走（長輩不會在 8 秒內看到 toast）。版本用數字逐段比，3.9 不會大於 3.16。 */
+  checkVersion:function(){ var st=Store.s.settings||{}; var min=st.minVersion, bar=el('verBar'); if(!bar) return;
+    if(min&&verCmp(String(min),APP_VERSION)>0&&!Store._verDismissed){
+      bar.hidden=false;
+      bar.innerHTML=ic('refresh')+'<span>有新版本 '+esc(min)+'（目前 '+esc(APP_VERSION)+'）</span><span class="sp"></span><button data-act="reloadApp">更新</button><button class="dim" data-act="verLater">稍後</button>';
+    } else bar.hidden=true; },
   /* 依 config.js 決定後端：firebase（正式版）→ claude db（預覽版）→ 單機 */
   connect:function(){
     var cfg=window.SAPA_CONFIG||{};
@@ -1373,13 +1449,29 @@ var Store={
     if(window.claude&&typeof window.claude.use==='function') return Store.connectClaude();
     Store.mode='local'; renderSync();
   },
+  /* 沒訊號時打開 App，之後訊號回來要能自己接上：
+     - 載入 SDK 有時限（8 秒），不會永遠卡在「連線中」
+     - 失敗記下來，等 online / 回到前景 / 每 20 秒的計時器再試
+     - 重試時不重複載 SDK、不重複 initializeApp */
+  reconnect:function(){
+    if(Store.push||Store.mode==='connecting'||Store.backend!=='firebase') return;
+    if(navigator.onLine===false) return;
+    var now=Date.now(); if(Store._lastTry&&now-Store._lastTry<5000) return;
+    Store._lastTry=now; Store.connect();
+  },
   connectFirebase:function(cfg){
     Store.mode='connecting'; Store.backend='firebase'; renderSync();
     var v=cfg.firebaseVersion||'10.14.1', base='https://www.gstatic.com/firebasejs/'+v+'/', root=cfg.path||'trip';
-    var chain=loadScript(base+'firebase-app-compat.js').then(function(){ return loadScript(base+'firebase-database-compat.js'); });
-    if(cfg.auth==='anon') chain=chain.then(function(){ return loadScript(base+'firebase-auth-compat.js'); });
+    var have=function(){ return window.firebase&&firebase.database; };
+    Store._tries=(Store._tries||0)+1; var bust=Store._tries>1?'?r='+Store._tries:'';
+    var chain=have()?Promise.resolve():loadScript(base+'firebase-app-compat.js'+bust).then(function(){ return loadScript(base+'firebase-database-compat.js'+bust); });
+    if(cfg.auth==='anon') chain=chain.then(function(){ return (window.firebase&&firebase.auth)?null:loadScript(base+'firebase-auth-compat.js'+bust); });
+    chain=withTimeout(chain,8000).catch(function(e){
+      /* 逾時或失敗：把還掛著的 SDK <script> 拆掉，下次重試才會真的重新請求（瀏覽器會把相同網址的進行中請求合併） */
+      if(!have()) document.querySelectorAll('script[src*="firebasejs"]').forEach(function(t){ try{ t.remove(); }catch(x){} });
+      throw e; });
     chain.then(function(){
-      firebase.initializeApp(cfg.firebase);
+      if(!firebase.apps||!firebase.apps.length) firebase.initializeApp(cfg.firebase);
       var ready=Promise.resolve();
       if(cfg.auth==='anon'&&firebase.auth) ready=firebase.auth().signInAnonymously().catch(function(){ toast('匿名登入失敗，改用唯讀模式'); });
       return ready;
@@ -1389,7 +1481,7 @@ var Store={
       db.ref('.info/connected').on('value',function(sn){ if(Store.mode==='cloud'||Store.mode==='offline'){ Store.mode=sn.val()?'cloud':'offline'; renderSync(); if(sn.val()) Store.flush(); } });
       Store.pushOp=function(op){ if(op.path){ var u={}; u[op.key+'/'+op.path]=op.val; u[op.key+'/_ts']=op.ts; return db.ref(root).update(u); } return db.ref(root+'/'+op.key).set(op.val); };
       Store.push=true; Store.flush();
-    }).catch(function(){ Store.mode='local'; renderSync(); toast('連不上雲端，先用單機模式'); });
+    }).catch(function(){ Store.mode='local'; Store._lastTry=Date.now(); renderSync(); if(!Store._offToasted){ Store._offToasted=true; toast('連不上雲端，先顯示手機裡的資料；有訊號時會自動再連'); } });
   },
   connectClaude:function(){
     Store.mode='connecting'; Store.backend='claude'; renderSync();
@@ -1406,8 +1498,10 @@ var Store={
   },
   /* 每一次修改都是一個 op：整份（path=''）或局部（path='present/x1'）。先存本機、排進佇列，連上線就依序送出 */
   enqueue:function(op){
-    var q=Store.q, last=q[q.length-1];
-    if(last&&last.key===op.key&&last.path===op.path&&!last.sending){ q[q.length-1]=op; } else q.push(op);
+    var q=Store.q;
+    if(op.path===''){ q=Store.q=q.filter(function(o){ return o.sending||o.key!==op.key; }); }   /* 整份存檔涵蓋之前所有改動 */
+    else { for(var i=q.length-1;i>=0;i--){ var o=q[i]; if(!o.sending&&o.key===op.key&&o.path===op.path){ q.splice(i,1); break; } } }
+    q.push(op);
     Store.cache(); clearTimeout(Store._ft); Store._ft=setTimeout(Store.flush,300);
   },
   flush:function(){
@@ -1415,7 +1509,11 @@ var Store={
     var op=Store.q[0]; op.sending=true; Store.flushing=true;
     Promise.resolve().then(function(){ return Store.pushOp(op); })
       .then(function(){ Store.q.shift(); Store.flushing=false; Store.lastSync=new Date(); if(Store.mode!=='cloud') Store.mode='cloud'; Store.cache(); renderSync(); Store.flush(); })
-      .catch(function(e){ op.sending=false; Store.flushing=false; Store.mode='offline'; renderSync(); toast('雲端儲存失敗，已先存在這支手機，連上線會自動補送'); });
+      .catch(function(e){ op.sending=false; Store.flushing=false;
+        var code=String((e&&(e.code||e.message))||''); op.fails=(op.fails||0)+1;
+        /* 規則拒絕（PERMISSION_DENIED）或同一筆連續失敗太多次：這筆永遠送不出去，略過它讓後面的繼續 */
+        if(/PERMISSION_DENIED|permission_denied|validation/i.test(code)||op.fails>=6){ Store.q.shift(); Store.cache(); toast('有一筆「'+(DOC_NAMES[op.key]||op.key)+'」的修改被雲端拒絕，已略過；其他修改照常送出'); if(navigator.onLine!==false) setTimeout(Store.flush,3000); return; }
+        Store.mode='offline'; renderSync(); toast(Store.cacheOK===false?'雲端儲存失敗，而且手機空間不足沒存到；請盡快連線':'雲端儲存失敗，已先存在這支手機，連上線會自動補送'); });
   },
   save:function(key){
     var d=Store.s[key]; if(d&&typeof d==='object') d._ts=Date.now();
@@ -1433,7 +1531,7 @@ var Store={
   exportJSON:function(){ return JSON.stringify({app:'sapa-tour-tool',version:APP_VERSION,exportedAt:new Date().toISOString(),docs:Store.s},null,2); },
   importJSON:function(text){ var o=JSON.parse(text); var docs=o&&o.docs?o.docs:o; var n=0; DOC_KEYS.forEach(function(k){ if(docs[k]&&typeof docs[k]==='object'){ Store.s[k]=clone(docs[k]); n++; } }); if(!n) throw new Error('檔案格式不對'); Store.pushAll(); return n; }
 };
-setInterval(function(){ if(Store.q.length&&!Store.flushing) Store.flush(); },20000);
+setInterval(function(){ Store.reconnect(); if(Store.q.length&&!Store.flushing) Store.flush(); },20000);
 function S(){ return Store.s; }
 function members(){ return (S().members&&S().members.items)||[]; }
 function member(id){ return members().filter(function(m){return m.id===id;})[0]; }
@@ -1676,11 +1774,22 @@ function renderSync(){
   if(Store.mode==='cloud'){ state=(navigator.onLine===false?'off':'on'); txt=navigator.onLine===false?'離線':'已連線'; }
   else if(Store.mode==='connecting'){ txt='連線中'; }
   else if(Store.mode==='offline'){ state='off'; txt='離線'; }
-  else { txt='單機'; }
+  else { state='off'; txt='未連線'; }
   var dot=el('hdDot'), sy=el('hdSyncTx');
   dot.className='dot'+(state?' '+state:'');
   sy.textContent=txt;
-  sy.title='沙壩隨身團務 v'+APP_VERSION+(Store.q.length?'（'+Store.q.length+' 筆修改待送出）':'');
+  sy.title='月半越南團旅 v'+APP_VERSION+(Store.q.length?'（'+Store.q.length+' 筆修改待送出）':'');
+  /* 離線提示條：看得到的資料是幾點的，免得照著舊的集合時間走 */
+  var ob=el('offBar');
+  if(ob){
+    var offline=(state==='off'||Store.mode==='local');
+    if(offline&&Store.mode!=='connecting'){
+      var when=Store.lastSync?(Store.lastSync.getHours()<10?'0':'')+Store.lastSync.getHours()+':'+(Store.lastSync.getMinutes()<10?'0':'')+Store.lastSync.getMinutes():'';
+      var ageMin=Store.lastSync?Math.round((Date.now()-Store.lastSync.getTime())/60000):null;
+      ob.hidden=false;
+      ob.innerHTML=ic('alert')+'<span>目前離線'+(when?'，資料更新於 '+when+(ageMin>=60?'（'+Math.floor(ageMin/60)+' 小時前）':''):'，還沒同步過')+(Store.q.length?'；'+Store.q.length+' 筆修改等連線後送出':'')+'</span>';
+    } else ob.hidden=true;
+  }
   /* 選過名字的人：下面單獨一列問候；沒選名字時這列整個隱藏（連線狀態已經在上面那排看得到） */
   var me=getMe(), bar=el('syncBar');
   if(me){
@@ -1696,8 +1805,16 @@ function renderTabs(){
   var home='<button class="tab-home'+(P.tab==='home'?' on':'')+'" data-act="tab" data-tab="home" aria-label="首頁"><span class="dome">'+ic('home')+'</span><span class="lb">首頁</span></button>';
   el('tabbar').innerHTML=TABS.slice(0,mid).map(one).join('')+home+TABS.slice(mid).map(one).join('');
 }
+/* 首頁該長什麼樣的「鍵」：日期 + 下一站。鍵變了才重畫，不會每 15 秒閃一次 */
+function homeKey(){ var di=dayInfo(); var n=nextStop(di); return di.status+':'+di.idx+':'+(n?n.id+':'+n.kind:''); }
 function tick(){
   var vn=tzParts(VN), tw=tzParts(TW);
+  var hk=''; try{ hk=homeKey(); }catch(e){}
+  if(tick._hk===undefined) tick._hk=hk;
+  else if(hk!==tick._hk){
+    var busy=SHEET||(document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName));
+    if(!busy){ tick._hk=hk; render(); }   /* 正在打字或表單開著就先不動，下一次 tick 再補畫 */
+  }
   el('clockVN').textContent=vn.hm; el('clockTW').textContent=tw.hm;
   var c=el('countdown'); if(c){ var cd=countdown(); c.hidden=!cd; if(cd){ c.innerHTML=ic('clock')+esc(cd.text); c.classList.toggle('late',cd.late); } }
   var hc=el('hdCountdown');
@@ -1708,6 +1825,7 @@ function tick(){
   }
 }
 setInterval(tick,15000);
+document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible'){ try{ tick(); Store.reconnect(); if(Store.q.length) Store.flush(); }catch(e){} } });
 
 /* ===== 各分頁 ===== */
 var VIEWS={};
@@ -1755,12 +1873,25 @@ VIEWS.home=function(){
   /* 出發前：管理者還沒廣播時，改顯示第 1 天第一站（例：05:30 桃園機場集合），不會是一大塊「待公布」 */
   var pre=null;
   if(before&&!b.time&&!b.idle){ var d1=items().filter(function(x){return x.day===1&&!x.isCanceled;})[0]; if(d1) pre={time:d1.time,title:d1.title}; }
+  /* 旅途中還沒發廣播：最大的那塊不能是「待公布」，改成今天的下一站（或進行中那站） */
+  var nx=(!before&&!after&&!b.time&&!b.idle)?nextStop(di):null;
   if(after){
     h.push('<section class="hero done" aria-label="旅程結束">'+
       '<div class="lab">'+ic('heart')+'旅程圓滿結束</div>'+
       '<div class="time" style="font-size:1.9rem">感謝同行，一路平安</div>'+
       '<div class="loc"><span>'+esc(st.tripName||'')+' · '+esc(dayDate(1))+' – '+esc(dayDate(di.days))+'。照片與心得歡迎丟到群組分享；出發前準備清單已收起。</span></div>'+
       (P.leader?'<div class="ctl"><button class="btn" data-act="editBroadcast">'+ic('edit')+'仍要發廣播</button><button class="btn" data-act="settings">'+ic('gear')+'團務設定</button></div>':'')+
+    '</section>');
+  } else if(nx){
+    var nlab=nx.kind==='cur'?'進行中':(nx.kind==='next'?'下一站':'今天行程');
+    h.push('<section class="hero pre" aria-label="'+nlab+'">'+
+      '<div class="lab">'+ic('calendar')+'今天行程<span class="upd">第 '+day+' 天 · '+esc(dayDate(day))+'</span></div>'+
+      (nx.kind==='done'
+        ?'<div class="time" style="font-size:1.9rem">今天行程已結束</div><div class="loc"><span>明早時間請看下面「明早時程」或群組通知。</span></div>'
+        :'<div class="time">'+esc(nx.time||'—')+'<small>'+nlab+'</small></div>'+
+         '<div class="loc'+((nx.title||'').length>12?' long':'')+'">'+ic('pin')+'<span>'+esc(nx.title)+'</span></div>')+
+      '<div class="tip">'+ic('info')+'<span>目前沒有集合廣播；有臨時集合會在這裡與 LINE 群組公布。</span></div>'+
+      (P.leader?'<div class="ctl"><button class="btn" data-act="editBroadcast">'+ic('megaphone')+'發布集合廣播</button><button class="btn" data-act="tab" data-tab="plan">'+ic('calendar')+'看行程</button></div>':'')+
     '</section>');
   } else if(pre){
     h.push('<section class="hero pre" aria-label="出發集合">'+
@@ -1818,6 +1949,7 @@ VIEWS.home=function(){
     var z=cardZone(id,di); if(z==='hide'||!Z[z]) return;
     var html=BUILD[id](); if(html) Z[z].push(html);
   });
+  Z.ref.push(sosRow());
   h.push(grp('now','現在',Z.now));
   h.push(grp('later','稍後',Z.later));
   h.push(grp('ref','隨時查',Z.ref));
@@ -1825,6 +1957,14 @@ VIEWS.home=function(){
   return h.join('');
 };
 
+/* 緊急求助列：固定在首頁最下面，不用點進工具頁才找得到 */
+function sosRow(){
+  var cs=contacts(), tel=cs.filter(function(c){return c.phone;})[0], ln=cs.filter(function(c){return c.line;})[0];
+  return '<div class="sos-row" role="group" aria-label="緊急求助"><div class="t">'+ic('alert')+'緊急求助</div>'+
+    (tel?'<a class="btn warn" href="'+telHref(tel.phone)+'" aria-label="打電話給'+esc(tel.name)+'" title="'+esc(tel.name)+'">'+ic('phone')+'打電話</a>':'')+
+    (ln?'<a class="btn line" href="'+esc(ln.line)+'" target="_blank" rel="noopener" aria-label="LINE聯繫'+esc(ln.name)+'">'+ic('chat')+'LINE</a>':'')+
+    '<button class="btn go" data-act="tool" data-tool="sos" aria-label="打開緊急求助頁">'+ic('arrow')+(tel||ln?'求助頁':'緊急求助頁')+'</button></div>';
+}
 /* 今日行程（主卡） */
 function todayCard(di,day){
   var todays=items().filter(function(x){return x.day===day;});
@@ -1852,7 +1992,7 @@ function prepCard(){
     inner+='<div class="prep-done">'+ic('check')+'<span>全部備妥，可以安心出發了。</span></div>';
   }
   /* 首頁只顯示進度，實際打勾一律在完整清單頁面進行，避免長輩誤以為首頁這幾項就是全部 */
-  inner+='<button class="btn block '+(done?'soft':'pri')+'" style="margin-top:.6rem" data-act="nbGo" data-id="'+prep.id+'">'+
+  inner+='<button class="btn block wrap '+(done?'soft':'pri')+'" style="margin-top:.6rem;justify-content:center;text-align:center" data-act="nbGo" data-id="'+prep.id+'">'+
       (done?'重看完整清單':'前往清單逐項打勾（還有 '+(cs.total-cs.done)+' 項）')+' '+ic('arrow')+'</button>'+
     '<div class="prep-note">'+ic('info')+'<span>勾選只存在你自己的手機，清單內容由主辦人更新。</span></div>';
   return foldCard('prep','check',(prep.title||'出發前準備'),(done?'全部備妥':'已備 '+cs.done+' / '+cs.total),(done?'全部備妥':cs.done+' / '+cs.total+' 已備妥'),inner);
@@ -1874,10 +2014,11 @@ function hotelCard(){
   /* 團體自由行沒有專人可以撥，改成用 LINE 聯繫：取第一位有填「LINE 加好友網址」的聯絡人（緊急求助頁那顆「加 LINE」同一個連結） */
   var lineC=cs.filter(function(c){return c.line;})[0];
   var sum=(ho.name||'').replace(/\s*[–—-]\s*.*$/,'')||'待公布';
+  /* 收起時的摘要用短的「第 N 晚」，展開後副標再放飯店名；飯店名太長，縮在標題列會變成「沙壩 Pao'…」 */
   var inner='<div style="font-size:1.1rem;font-weight:900;margin-bottom:.5rem">'+esc(ho.name||'')+'</div>'+
     '<dl class="kv"><dt>Wi-Fi</dt><dd>'+esc(ho.wifi||'—')+'</dd>'+(ho.wifiPass?'<dt>密碼</dt><dd>'+esc(ho.wifiPass)+'</dd>':'')+'<dt>早餐</dt><dd>'+esc(ho.breakfast||'—')+'</dd>'+(ho.leaderRoom?'<dt>主辦人房號</dt><dd>'+esc(ho.leaderRoom)+'</dd>':'')+'</dl>'+
     '<div class="row" style="margin-top:.7rem">'+(ho.addrVi||ho.nameVi||ho.name?'<a class="btn" href="'+mapDirHref((ho.nameVi||ho.name)+' '+(ho.addrVi||''))+'" target="_blank" rel="noopener">'+ic('pin')+'走回飯店</a>':'')+'<button class="btn warn" data-act="fullTaxi">'+ic('taxi')+'計程車回飯店卡</button>'+(lineC?'<a class="btn line" href="'+esc(lineC.line)+'" target="_blank" rel="noopener" aria-label="用 LINE 聯繫'+esc(lineC.name)+'">'+ic('chat')+'LINE聯繫</a>':'')+'</div>';
-  return foldCard('hotel','bed','目前住宿',(ho.nights||''),sum,inner);
+  return foldCard('hotel','bed','目前住宿',sum,(ho.nights||sum),inner);
 }
 
 /* 航班資訊（可收合） */
@@ -2116,6 +2257,7 @@ function toolMenu(){
       '<button class="btn big" data-act="editTags">'+ic('flag')+'<span class="b2">防呆標籤<small>自訂增減、改名</small></span></button>'+
       '<button class="btn big" data-act="homeScnVis">'+ic('users')+'<span class="b2">首頁分組顯示<small>選擇哪些分組情境出現在首頁</small></span></button>'+
       '<button class="btn big" data-act="cardZones">'+ic('grid')+'<span class="b2">首頁卡片位置<small>卡片何時移到稍後／隨時查／收起</small></span></button>'+
+      '<button class="btn big" data-act="prevList">'+ic('refresh')+'<span class="b2">還原上一版<small>資料突然變少時自動留下的備份</small></span></button>'+
     '</div><div class="row"><button class="btn dng" data-act="resetDemo">'+ic('refresh')+'重置為初始資料</button><button class="btn" data-act="leaderLock">'+ic('lock')+'鎖定管理模式</button></div>');
   }
   h.push('<div class="ver">月半越南團旅 v'+APP_VERSION+' · '+(Store.backend==='firebase'?'雲端同步':(Store.backend==='claude'?'預覽同步':'單機'))+'</div>');
@@ -2798,6 +2940,16 @@ function sheetItem(id){
     foot:footBtns('saveItem',id?'<button class="btn dng" data-act="delItem">刪除</button>':'')});
   SHEET.id=id;
 }
+/* 還原上一版：只列出「資料曾經突然變少」時自動留下的那幾份 */
+function sheetPrev(){
+  var list=Store.prevSnapshots();
+  var body=list.length
+    ? '<div class="muted">下面是資料突然變少時自動留下的上一版。按「還原」會把那一版寫回雲端、同步給全團。</div><div class="stack" style="margin-top:.6rem">'+
+      list.map(function(p){ var d=new Date(p.at); var hm=(d.getMonth()+1)+'/'+d.getDate()+' '+(d.getHours()<10?'0':'')+d.getHours()+':'+(d.getMinutes()<10?'0':'')+d.getMinutes();
+        return '<div class="it-row"><div style="flex:1"><b>'+esc(DOC_NAMES[p.key])+'</b><div class="muted">'+p.n+' 筆 · 留存於 '+hm+'（目前 '+Store.docCount(p.key,Store.s[p.key])+' 筆）</div></div><button class="btn sm pri" data-act="restorePrev" data-key="'+p.key+'">還原</button></div>'; }).join('')+'</div>'
+    : '<div class="muted">目前沒有需要還原的版本。只有在名單、行程、分組或記事本突然少掉一半以上時，才會自動留一份。</div>';
+  openSheet({title:'還原上一版',body:body});
+}
 function sheetTripName(){
   var st=S().settings, v=st.tripName||'';
   openSheet({title:'團名',focus:true,body:
@@ -3147,7 +3299,21 @@ var ACT={
   phrase:function(t){ var p=PHRASES[Number(t.getAttribute('data-i'))]; if(p) openFull(phraseFull(p)); },
   noop:function(){},
   resetLocal:function(){ try{ localStorage.removeItem('sapa-data'); }catch(e){} location.reload(); },
-  reloadApp:function(){ location.reload(); },
+  /* 更新：先把 Service Worker 與快取清掉再重載，不然重載回來的還是舊版 */
+  reloadApp:function(){ var done=function(){ location.reload(); };
+    if(navigator.onLine===false){ toast('現在沒有網路，等有訊號再按「更新」'); return; }
+    toast('正在確認網路…');
+    /* 先確認真的抓得到新版，才清快取；不然在山上清掉快取又載不到，就什麼都沒了 */
+    withTimeout(fetch(location.pathname.replace(/[^/]*$/,'')+'index.html?cb='+Date.now(),{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error(r.status); }),8000)
+      .then(function(){
+        return Promise.all([navigator.serviceWorker?navigator.serviceWorker.getRegistrations().then(function(rs){ return Promise.all(rs.map(function(r){ return r.unregister(); })); }):null,
+                            window.caches?caches.keys().then(function(ks){ return Promise.all(ks.map(function(k){ return caches.delete(k); })); }):null]).then(done,done);
+      })
+      .catch(function(){ toast('現在連不到伺服器，先不更新；有訊號時再按一次'); }); },
+  verLater:function(){ Store._verDismissed=true; var b=el('verBar'); if(b) b.hidden=true; },
+  restorePrev:function(t){ if(!P.leader) return; var k=t.getAttribute('data-key'); if(!k) return;
+    if(Store.restorePrev(k)){ closeSheet(); toast('已還原'+DOC_NAMES[k]+'的上一版，並同步給全團'); } else toast('沒有可還原的版本'); },
+  prevList:function(){ if(!P.leader) return; sheetPrev(); },
   pickMe:function(){ sheetPickMe(); },
   setMe:function(t){ P.meId=t.getAttribute('data-id')||''; savePrefs(); closeSheet(); render(); toast(P.meId?'已標記：'+member(P.meId).name:'已取消標記'); },
   memberTap:function(t){ var id=t.getAttribute('data-id'); if(P.leader) sheetMember(id); else sheetMemberView(id); },
@@ -3388,7 +3554,7 @@ document.addEventListener('change',function(ev){ var t=ev.target;
     return; }
   if(t&&t.id==='importFile'&&t.files&&t.files[0]){ var fr=new FileReader(); fr.onload=function(){ try{ var n=Store.importJSON(fr.result); closeSheet(); toast('已匯入 '+n+' 份資料並同步'); }catch(e){ toast('匯入失敗：'+e.message); } }; fr.readAsText(t.files[0]); return; } if(t&&t.getAttribute&&t.getAttribute('data-tf')){ var n=t.getAttribute('data-tf'); var root=el('sheetRoot'); var hs=root.querySelector('select[data-tf="'+n+'"][data-part="h"]'), ms=root.querySelector('select[data-tf="'+n+'"][data-part="m"]'), h=root.querySelector('input[name="'+n+'"]'); if(hs&&ms&&h){ if(hs.value&&!ms.value) ms.value='00'; h.value=(hs.value&&ms.value)?hs.value+':'+ms.value:''; } } });
 document.addEventListener('keydown',function(ev){ if(ev.key==='Escape'){ if(SHEET) closeSheet(); else if(!FULL_LOCK) closeFull(); } });
-window.addEventListener('online',function(){ renderSync(); Store.flush(); }); window.addEventListener('offline',renderSync);
+window.addEventListener('online',function(){ renderSync(); Store.reconnect(); Store.flush(); }); window.addEventListener('offline',renderSync);
 
 /* 底圖裁切框：拖曳移動位置。用 pointer 事件，手機與桌機同一套。 */
 (function(){
@@ -3435,8 +3601,8 @@ Store.connect();
     if(e.touches&&e.touches.length>1) e.preventDefault();   /* 兩指縮放 */
   },{passive:false});
 })();
-/* PWA：離線快取（只在 https 且非預覽環境註冊） */
-if('serviceWorker' in navigator && location.protocol==='https:' && !(window.claude&&window.claude.use)){
+/* PWA：離線快取（https 或本機 localhost 才註冊；artifact 預覽環境不註冊） */
+if('serviceWorker' in navigator && (location.protocol==='https:'||/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) && !(window.claude&&window.claude.use)){
   window.addEventListener('load',function(){ navigator.serviceWorker.register('./sw.js').catch(function(){}); });
 }
 </script>
