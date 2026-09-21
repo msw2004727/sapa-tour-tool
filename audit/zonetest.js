@@ -26,7 +26,7 @@ const ck=(n,c,x)=>{ if(!c){fails++;console.log('  ✗',n,x===undefined?'':JSON.s
     '第2天':{today:'now',prep:'hide',flight:'ref',morning:'later',hotel:'ref'},
     '第3天':{today:'now',prep:'hide',flight:'ref',morning:'later',hotel:'ref'},
     '第4天':{today:'now',prep:'hide',flight:'ref',morning:'later',hotel:'ref'},
-    '第5天':{today:'now',prep:'hide',flight:'later',morning:'later',hotel:'ref'},
+    '第5天':{today:'now',prep:'hide',flight:'later',morning:'hide',hotel:'ref'},   /* v3.19：最後一天沒有「明早」 */
     '結束後':{today:'hide',prep:'hide',flight:'now',morning:'hide',hotel:'ref'},
   };
   Object.keys(exp).forEach(k=>ck('預設 '+k,JSON.stringify(table[k])===JSON.stringify(exp[k]),{got:table[k],want:exp[k]}));
@@ -91,8 +91,9 @@ const ck=(n,c,x)=>{ if(!c){fails++;console.log('  ✗',n,x===undefined?'':JSON.s
   });
   ck('舊的全域自動：manual 殘值被忽略',r4.legacyAuto.flight==='ref'&&r4.legacyAuto.prep==='hide',r4.legacyAuto);
   ck('舊的全域手動：設過的照設定',r4.legacyManual.flight==='now',r4.legacyManual);
-  ck('舊的全域手動：沒設過的用舊預設（住宿=隨時查、出發前準備=稍後）',
-     r4.legacyManual.hotel==='ref'&&r4.legacyManual.prep==='later',r4.legacyManual);
+  /* v3.19：出發前準備「顯示到出發」優先於位置設定，所以旅途中（這裡是第 2 天）一律收起 */
+  ck('舊的全域手動：沒設過的用舊預設（住宿=隨時查）；出發前準備旅途中收起',
+     r4.legacyManual.hotel==='ref'&&r4.legacyManual.prep==='hide',r4.legacyManual);
   ck('從舊手動改一張卡，其他卡不會跟著跳',r4.stable,r4.stable);
 
   console.log('[5] 跨區 ↑↓');

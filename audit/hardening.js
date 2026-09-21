@@ -323,13 +323,16 @@ const wait=(p,ms)=>p.waitForTimeout(ms);
   const u8=await (async()=>{ const q=await ctx.newPage(); await q.setViewportSize({width:320,height:568}); await q.goto(FILE); await wait(q,300);
     const r=await q.evaluate(()=>{ P.fs='xl'; P.tipDismissed=true; S().settings.dayOverride=2; S().broadcast.time=''; P.tab='home'; render(); const out={};
       const lab=document.querySelector('.hero .lab'); out.labH=Math.round(lab.getBoundingClientRect().height);
+      /* v3.19：日期放不下時整段換到第二行（不截斷）；要檢查的是「今天行程」這幾個字本身沒有被拆成兩行 */
+      const tn=[...lab.childNodes].find(n=>n.nodeType===3&&n.textContent.trim()); if(tn){ const rg=document.createRange(); rg.selectNodeContents(tn); out.labRects=rg.getClientRects().length; }
+      const up=lab.querySelector('.upd'); out.updClip=up?up.scrollWidth-up.clientWidth:0;
       P.tab='tools'; P.tool='menu'; render(); const g=document.querySelector('.tool-grid'); out.toolOv=g.scrollWidth-g.clientWidth; out.pageOv=document.documentElement.scrollWidth-innerWidth;
       P.tab='home'; S().settings.dayOverride=0; P.cards={prep:{o:1,ts:9e12},flight:{o:1,ts:9e12}}; render();
       const pb=document.querySelector('[data-act="nbGo"]'); out.prepClip=pb?pb.scrollWidth-pb.clientWidth:0; const fh=document.querySelector('.fl-h'); out.flClip=fh?fh.scrollWidth-fh.clientWidth:0;
       const t=document.getElementById('toast'); t.textContent='連不上雲端，先顯示手機裡的資料；有訊號時會自動再連'; t.classList.add('show'); out.toastW=Math.round(t.getBoundingClientRect().width); out.toastH=Math.round(t.getBoundingClientRect().height); t.classList.remove('show');
       return out; });
     await q.close(); return r; })();
-  ck('320/xl：今天行程標籤不折行',u8.labH<=32,u8.labH);
+  ck('320/xl：今天行程標籤本身不折行、日期不截斷',u8.labRects===1&&u8.updClip<=1,{labRects:u8.labRects,updClip:u8.updClip,labH:u8.labH});
   ck('320/xl：工具格線不溢出',u8.toolOv<=0&&u8.pageOv<=0,u8);
   ck('320/xl：出發前準備按鈕文字不被切',u8.prepClip<=3,u8.prepClip);
   ck('320/xl：航班欄標題不被切',u8.flClip<=3,u8.flClip);
