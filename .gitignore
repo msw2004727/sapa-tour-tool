@@ -1,4 +1,8 @@
+node_modules/
+shots/*.png
+standalone.html
+sapa-tool.html
+_舊檔備份/
 .DS_Store
 Thumbs.db
 *.log
-node_modules/
