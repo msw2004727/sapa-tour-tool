@@ -27,7 +27,7 @@ const r=await p.evaluate(async()=>{
   // 5) PIN 雜湊
   out.pinOld=pinOK('8888'); pinMigrate(); out.hasHash=!!S().settings.pinHash&&!S().settings.pin; out.pinNew=pinOK('8888'); out.pinWrong=pinOK('1234');
   // 6) 版本提示
-  S().settings.minVersion='9.9'; Store.checkVersion(); out.verToast=document.getElementById('toast').textContent.slice(0,12);
+  S().settings.minVersion='9.9'; Store._verDismissed=false; Store.checkVersion(); out.verBar=!document.getElementById('verBar').hidden&&/有新版本 9.9/.test(document.getElementById('verBar').textContent); delete S().settings.minVersion; Store.checkVersion();
   // 7) localStorage 佇列持久化
   const c=JSON.parse(localStorage.getItem('sapa-data')); out.qPersisted=Array.isArray(c.q);
   return out;

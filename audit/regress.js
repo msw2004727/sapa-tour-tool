@@ -3,7 +3,7 @@
    用法：node audit/regress.js [--shots] */
 const {chromium,FILE,at}=require('./_lib');
 const SHOTS=process.argv.includes('--shots');
-const SHORT='.tab span,.tab-home .lb,.chip,.btn:not(.wrap) .b2>span:first-child,.tcard b,.chead .ttl,.day-chip,.lcd,.wf-k,.ic-h,h2.sec,.dayrow button,.me-strip .k,.seg button,.fl-h,.kv dt,.prep-lab';
+const SHORT='.tab span,.tab-home .lb,.chip,.btn:not(.wrap) .b2>span:first-child,.tcard b,.chead .ttl,.day-chip,.lcd .lg1,.lcd .lg2,.wf-k,.ic-h,h2.sec,.dayrow button,.me-strip .k,.seg button,.fl-h,.kv dt,.prep-lab';
 const VIEWS=[
   ['home-guest',()=>{P.leader=false;P.meId='';P.tab='home';P.tipDismissed=true;render();}],
   ['home-me',()=>{P.meId=members()[0].id;P.tab='home';render();}],
