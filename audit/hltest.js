@@ -6,7 +6,7 @@ function ck(name,cond,extra){ if(!cond){fails++;console.log('  ✗',name,extra==
 (async()=>{
   const b=await chromium.launch();
 
-  // ---- 1. 邏輯：領隊開關、團員收合熄燈、重新開啟再亮 ----
+  // ---- 1. 邏輯：管理者開關、團員收合熄燈、重新開啟再亮 ----
   console.log('[1] 狀態機');
   let ctx=await b.newContext({viewport:{width:390,height:900}});
   let p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(String(e)));
@@ -16,7 +16,7 @@ function ck(name,cond,extra){ if(!cond){fails++;console.log('  ✗',name,extra==
     P.leader=true; P.cards={}; S().settings.cards={}; S().settings.dayOverride=2;
     out.defaultOff=!cardHL('prep');                    // 預設不亮
     cardSetHL('prep');
-    out.onAfterLeader=cardHL('prep');                  // 領隊開 → 亮
+    out.onAfterLeader=cardHL('prep');                  // 管理者開 → 亮
     out.otherUntouched=!cardHL('flight');              // 不影響別張
     const hts1=cardLead('prep').hts;
     out.expandUnchanged=cardLead('prep').o===1;        // 展開預設沒被動到
@@ -24,15 +24,15 @@ function ck(name,cond,extra){ if(!cond){fails++;console.log('  ✗',name,extra==
     P.leader=false; render();
     while(cardOpen('prep',1)) cardToggle('prep',1);
     out.offAfterCollapse=!cardHL('prep');
-    out.stillLeaderOn=!!cardLead('prep').hl;           // 領隊那邊仍是開的
+    out.stillLeaderOn=!!cardLead('prep').hl;           // 管理者那邊仍是開的
     // 團員自己再展開 → 這一輪已 dismiss，不再亮
     cardToggle('prep',1);
     out.stayOffAfterReopen=!cardHL('prep');
-    // 領隊關掉再開 → 換新 hts → 重新亮
+    // 管理者關掉再開 → 換新 hts → 重新亮
     P.leader=true; cardSetHL('prep'); cardSetHL('prep');
     out.relit=cardHL('prep');
     out.newHts=cardLead('prep').hts!==hts1;
-    // 領隊關掉 → 熄
+    // 管理者關掉 → 熄
     cardSetHL('prep');
     out.offAfterLeaderOff=!cardHL('prep');
     // 多張同時亮（不限制張數）
@@ -120,7 +120,7 @@ function ck(name,cond,extra){ if(!cond){fails++;console.log('  ✗',name,extra==
       S().settings.cards={prep:{o:1,ts:1,hl:1,hts:1},flight:{o:1,ts:1,hl:1,hts:1},hotel:{o:0,ts:1,hl:1,hts:1},morning:{o:1,ts:1,hl:1,hts:1}};
       render();
       if(document.querySelectorAll('.hl-tag').length!==4) return {ov:false,clash:0,cut:0,bad:99};
-    },dark);           // 深色那張順便用領隊視角看兩顆開關
+    },dark);           // 深色那張順便用管理者視角看兩顆開關
     await p3.waitForTimeout(1300);
     await p3.screenshot({path:at(`shots/hl-${dark?'leader-dark':'member-light'}.png`),fullPage:true});
     await c3.close();

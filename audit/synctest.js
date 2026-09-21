@@ -17,7 +17,7 @@ const r=await p.evaluate(async()=>{
   Store.savePath('rollcall','present/'+ids[0],true); Store.savePath('rollcall','present/'+ids[1],true);
   await new Promise(r=>setTimeout(r,500));
   out.q2=Store.q.length;
-  // 3) 雲端送來舊快照（廣播空、點名空、且另一位領隊把第 3 人點到）
+  // 3) 雲端送來舊快照（廣播空、點名空、且另一位管理者把第 3 人點到）
   const stale=clone(DEFAULTS); stale.broadcast._ts=1; stale.rollcall={present:{},_ts:1}; stale.rollcall.present[members()[2].id]=true;
   Store.applyRemote(stale);
   out.locAfterStale=S().broadcast.location; out.present=Object.keys(S().rollcall.present||{}).length; out.q3=Store.q.length;

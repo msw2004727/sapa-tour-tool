@@ -18,7 +18,7 @@ await shot('10-money',()=>{P.tool='money';render();},true);
 await shot('11-phrases',()=>{P.tool='phrases';render();},true);
 await shot('12-sos',()=>{P.tool='sos';render();},true);
 await shot('13-notes',()=>{P.tab='notes';render();},true);
-// 領隊視角
+// 管理者視角
 await shot('20-home-leader',()=>{P.leader=true;P.tab='home';savePrefs();render();},true);
 await shot('21-plan-leader',()=>{P.tab='plan';P.planMode='simple';render();},true);
 await shot('22-tools-leader',()=>{P.tab='tools';P.tool='menu';render();},true);

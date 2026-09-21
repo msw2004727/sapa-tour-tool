@@ -103,7 +103,7 @@ out.syncBarShownWithName=await p.evaluate(()=>{ var b=document.getElementById('s
 out.hdSyncStillVisibleWithName=await p.evaluate(()=>document.getElementById('hdSyncTx').textContent.length>0);
 await p.evaluate(()=>{P.meId='';render();});
 // v2.4：常用工具移除、我的資訊欄位不分階段統一並加入「我的分組」、換一個名字併入卡片列、
-// 領隊可在「首頁分組顯示」個別開關某個分組情境是否出現在首頁
+// 管理者可在「首頁分組顯示」個別開關某個分組情境是否出現在首頁
 await p.evaluate(()=>{P.leader=false;P.tab='home';P.meId='';render();});await p.waitForTimeout(100);
 out.quickToolsSecGone=await p.evaluate(()=>Array.from(document.querySelectorAll('#view h2.sec')).every(function(h){return h.textContent.indexOf('常用工具')<0;}));
 out.quickToolsBtnGone=await p.evaluate(()=>document.querySelectorAll('#view [data-act="tool"][data-tool="money"]').length===0);
