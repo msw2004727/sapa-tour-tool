@@ -10,13 +10,16 @@
     </div>
     <div class="top-r2">
       <div class="lcd" aria-live="off">
-        <span class="lb">越南</span><span class="n" id="clockVN">--:--</span>
-        <span class="dv"></span><span class="tw">台灣 <span id="clockTW">--:--</span></span>
-        <span class="dv"></span><span class="cd" id="hdCountdown" hidden></span>
-        <span class="dv"></span><span class="dot" id="hdDot"></span><span class="sy" id="hdSyncTx">連線中</span>
+        <span class="lg1"><span class="lb">越南</span><span class="n" id="clockVN">--:--</span>
+        <span class="dv"></span><span class="tw">台灣 <span id="clockTW">--:--</span></span></span>
+        <span class="dv dv2"></span>
+        <span class="lg2"><span class="cd" id="hdCountdown" hidden></span>
+        <span class="dv"></span><span class="dot" id="hdDot"></span><span class="sy" id="hdSyncTx">連線中</span></span>
       </div>
     </div>
   </header>
+  <div class="verbar" id="verBar" hidden></div>
+  <div class="offbar" id="offBar" hidden></div>
   <div class="sync" id="syncBar" hidden></div>
   <div class="leader-bar" id="leaderBar" hidden><span id="leaderBarIcon"></span>管理模式：可直接點卡片修改<span class="sp"></span><button data-act="leaderLock">鎖定</button></div>
   <main id="view"></main>

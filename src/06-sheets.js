@@ -231,6 +231,16 @@ function sheetItem(id){
     foot:footBtns('saveItem',id?'<button class="btn dng" data-act="delItem">刪除</button>':'')});
   SHEET.id=id;
 }
+/* 還原上一版：只列出「資料曾經突然變少」時自動留下的那幾份 */
+function sheetPrev(){
+  var list=Store.prevSnapshots();
+  var body=list.length
+    ? '<div class="muted">下面是資料突然變少時自動留下的上一版。按「還原」會把那一版寫回雲端、同步給全團。</div><div class="stack" style="margin-top:.6rem">'+
+      list.map(function(p){ var d=new Date(p.at); var hm=(d.getMonth()+1)+'/'+d.getDate()+' '+(d.getHours()<10?'0':'')+d.getHours()+':'+(d.getMinutes()<10?'0':'')+d.getMinutes();
+        return '<div class="it-row"><div style="flex:1"><b>'+esc(DOC_NAMES[p.key])+'</b><div class="muted">'+p.n+' 筆 · 留存於 '+hm+'（目前 '+Store.docCount(p.key,Store.s[p.key])+' 筆）</div></div><button class="btn sm pri" data-act="restorePrev" data-key="'+p.key+'">還原</button></div>'; }).join('')+'</div>'
+    : '<div class="muted">目前沒有需要還原的版本。只有在名單、行程、分組或記事本突然少掉一半以上時，才會自動留一份。</div>';
+  openSheet({title:'還原上一版',body:body});
+}
 function sheetTripName(){
   var st=S().settings, v=st.tripName||'';
   openSheet({title:'團名',focus:true,body:

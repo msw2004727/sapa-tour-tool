@@ -45,7 +45,21 @@ var ACT={
   phrase:function(t){ var p=PHRASES[Number(t.getAttribute('data-i'))]; if(p) openFull(phraseFull(p)); },
   noop:function(){},
   resetLocal:function(){ try{ localStorage.removeItem('sapa-data'); }catch(e){} location.reload(); },
-  reloadApp:function(){ location.reload(); },
+  /* 更新：先把 Service Worker 與快取清掉再重載，不然重載回來的還是舊版 */
+  reloadApp:function(){ var done=function(){ location.reload(); };
+    if(navigator.onLine===false){ toast('現在沒有網路，等有訊號再按「更新」'); return; }
+    toast('正在確認網路…');
+    /* 先確認真的抓得到新版，才清快取；不然在山上清掉快取又載不到，就什麼都沒了 */
+    withTimeout(fetch(location.pathname.replace(/[^/]*$/,'')+'index.html?cb='+Date.now(),{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error(r.status); }),8000)
+      .then(function(){
+        return Promise.all([navigator.serviceWorker?navigator.serviceWorker.getRegistrations().then(function(rs){ return Promise.all(rs.map(function(r){ return r.unregister(); })); }):null,
+                            window.caches?caches.keys().then(function(ks){ return Promise.all(ks.map(function(k){ return caches.delete(k); })); }):null]).then(done,done);
+      })
+      .catch(function(){ toast('現在連不到伺服器，先不更新；有訊號時再按一次'); }); },
+  verLater:function(){ Store._verDismissed=true; var b=el('verBar'); if(b) b.hidden=true; },
+  restorePrev:function(t){ if(!P.leader) return; var k=t.getAttribute('data-key'); if(!k) return;
+    if(Store.restorePrev(k)){ closeSheet(); toast('已還原'+DOC_NAMES[k]+'的上一版，並同步給全團'); } else toast('沒有可還原的版本'); },
+  prevList:function(){ if(!P.leader) return; sheetPrev(); },
   pickMe:function(){ sheetPickMe(); },
   setMe:function(t){ P.meId=t.getAttribute('data-id')||''; savePrefs(); closeSheet(); render(); toast(P.meId?'已標記：'+member(P.meId).name:'已取消標記'); },
   memberTap:function(t){ var id=t.getAttribute('data-id'); if(P.leader) sheetMember(id); else sheetMemberView(id); },
@@ -286,7 +300,7 @@ document.addEventListener('change',function(ev){ var t=ev.target;
     return; }
   if(t&&t.id==='importFile'&&t.files&&t.files[0]){ var fr=new FileReader(); fr.onload=function(){ try{ var n=Store.importJSON(fr.result); closeSheet(); toast('已匯入 '+n+' 份資料並同步'); }catch(e){ toast('匯入失敗：'+e.message); } }; fr.readAsText(t.files[0]); return; } if(t&&t.getAttribute&&t.getAttribute('data-tf')){ var n=t.getAttribute('data-tf'); var root=el('sheetRoot'); var hs=root.querySelector('select[data-tf="'+n+'"][data-part="h"]'), ms=root.querySelector('select[data-tf="'+n+'"][data-part="m"]'), h=root.querySelector('input[name="'+n+'"]'); if(hs&&ms&&h){ if(hs.value&&!ms.value) ms.value='00'; h.value=(hs.value&&ms.value)?hs.value+':'+ms.value:''; } } });
 document.addEventListener('keydown',function(ev){ if(ev.key==='Escape'){ if(SHEET) closeSheet(); else if(!FULL_LOCK) closeFull(); } });
-window.addEventListener('online',function(){ renderSync(); Store.flush(); }); window.addEventListener('offline',renderSync);
+window.addEventListener('online',function(){ renderSync(); Store.reconnect(); Store.flush(); }); window.addEventListener('offline',renderSync);
 
 /* 底圖裁切框：拖曳移動位置。用 pointer 事件，手機與桌機同一套。 */
 (function(){

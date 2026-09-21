@@ -32,6 +32,17 @@ function dayInfo(){
   if(diff>=days) return {idx:days,status:'after',days:days,diff:diff};
   return {idx:diff+1,status:'on',days:days,diff:diff};
 }
+/* 今天的重點站：管理者標了「當前站」就用它；否則用還沒到時間的第一站；都沒有就代表今天結束 */
+function nextStop(di){
+  var day=di.idx, list=items().filter(function(x){return x&&x.day===day&&!x.isCanceled;});
+  if(!list.length) return null;
+  var cur=list.filter(function(x){return x.isCurrent;})[0];
+  if(cur) return {id:cur.id,time:cur.time,title:cur.title,kind:'cur'};
+  var now=tzParts(VN).hm;
+  var up=list.filter(function(x){return x.time&&x.time>=now;})[0];
+  if(up) return {id:up.id,time:up.time,title:up.title,kind:'next'};
+  return {id:'',time:'',title:'',kind:'done'};
+}
 function fmtDur(min){
   if(min>=1440){ var dd=Math.floor(min/1440), hh=Math.floor((min%1440)/60); return dd+' 天'+(hh?' '+hh+' 小時':''); }
   if(min>=60) return Math.floor(min/60)+' 小時 '+(min%60?(min%60)+' 分':'');
@@ -144,7 +155,10 @@ function savePrefs(){ try{ localStorage.setItem('sapa-prefs',JSON.stringify({fs:
 
 /* ===== 資料層：本機快取優先，雲端（claude db）可用時即時同步 =====
    之後若改接自家後端（例如 Python FastAPI）或 Firebase，只需替換 connect()/push() 兩個函式。 */
-function loadScript(src){ return new Promise(function(res,rej){ var t=document.createElement('script'); t.src=src; t.async=true; t.onload=res; t.onerror=rej; document.head.appendChild(t); }); }
+function loadScript(src){ return new Promise(function(res,rej){ var t=document.createElement('script'); t.src=src; t.async=true; t.onload=res; t.onerror=function(){ try{ t.remove(); }catch(e){} rej(new Error('load fail')); }; document.head.appendChild(t); }); }
+function withTimeout(p,ms){ return new Promise(function(res,rej){ var done=false, t=setTimeout(function(){ if(!done){ done=true; rej(new Error('timeout')); } },ms); p.then(function(v){ if(!done){ done=true; clearTimeout(t); res(v); } },function(e){ if(!done){ done=true; clearTimeout(t); rej(e); } }); }); }
+/* 版本號逐段用數字比：3.9 < 3.16 */
+function verCmp(a,b){ var x=String(a).replace(/^v/i,'').split('.'),y=String(b).replace(/^v/i,'').split('.'); for(var i=0;i<Math.max(x.length,y.length);i++){ var d=(parseInt(x[i]||'0',10)||0)-(parseInt(y[i]||'0',10)||0); if(d) return d>0?1:-1; } return 0; }
 /* 純 JS SHA-256（PIN 只存雜湊，不存明文；file:// 沒有 crypto.subtle 也能用） */
 function sha256(str){
   function R(n,x){return (x>>>n)|(x<<(32-n));}
@@ -181,12 +195,45 @@ var Store={
   s:clone(DEFAULTS), mode:'local', lastSync:null, push:null, pushOp:null, backend:'', q:[], flushing:false, remoteTs:{},
   init:function(){
     try{ var c=JSON.parse(localStorage.getItem('sapa-data')||'null'); if(c&&c.docs){ DOC_KEYS.forEach(function(k){ if(c.docs[k]) Store.s[k]=c.docs[k]; }); if(c.at) Store.lastSync=new Date(c.at); if(c.q&&c.q.length) Store.q=c.q; } }catch(e){}
+    /* 上次空間不足時可能只存了佇列 */
+    /* 這裡不刪 sapa-q：要等 cache() 成功把佇列寫回 sapa-data 才刪，否則離線連開兩次會把未送出的修改弄丟 */
+    try{ var q2=JSON.parse(localStorage.getItem('sapa-q')||'null'); if(q2&&q2.length){ Store.q=q2; Store.cache(); } else localStorage.removeItem('sapa-q'); }catch(e){ try{ localStorage.removeItem('sapa-q'); }catch(x){} }
   },
-  cache:function(){ try{ localStorage.setItem('sapa-data',JSON.stringify({docs:Store.s,at:Date.now(),q:Store.q})); }catch(e){} },
+  /* 存到手機。空間不夠時分三級退讓：整包 → 先不存底圖 → 至少把待送佇列存下來。
+     每一級失敗都要讓人知道，不能默默吞掉之後還說「已先存在這支手機」。 */
+  cache:function(){
+    var at=Date.now();
+    try{ localStorage.setItem('sapa-data',JSON.stringify({docs:Store.s,at:at,q:Store.q})); Store.cacheOK=true; try{ localStorage.removeItem('sapa-q'); }catch(x){} return true; }catch(e){}
+    try{
+      var slim={}; DOC_KEYS.forEach(function(k){ slim[k]=Store.s[k]; });
+      slim.photos={items:{},_ts:(Store.s.photos||{})._ts||0};
+      localStorage.setItem('sapa-data',JSON.stringify({docs:slim,at:at,q:Store.q,slim:true}));
+      Store.cacheOK=true; try{ localStorage.removeItem('sapa-q'); }catch(x){}
+      if(!Store._slimWarned){ Store._slimWarned=true; toast('手機儲存空間快滿了：行程底圖暫時不離線保存，其他資料正常'); }
+      return true;
+    }catch(e2){}
+    try{ localStorage.setItem('sapa-q',JSON.stringify(Store.q)); }catch(e3){}
+    Store.cacheOK=false;
+    if(!Store._fullWarned){ Store._fullWarned=true; toast('手機儲存空間不足，修改還沒存進手機；請保持連線讓它同步上雲端'); }
+    return false;
+  },
+  /* 資料突然變少時自動留一份上一版（例：一次誤寫把 33 人名單清空），管理專區可以還原 */
+  guardShrink:function(k,incoming){
+    var cnt=Store.docCount(k,Store.s[k]), nxt=Store.docCount(k,incoming);
+    if(cnt>=5&&nxt<cnt*0.5){
+      try{ var old=JSON.parse(localStorage.getItem('sapa-prev-'+k)||'null');
+        /* 一天內已經留了一份更完整的，就保留那份（33→10→2 時要留的是 33） */
+        if(!(old&&old.n>cnt&&Date.now()-old.at<86400000)) localStorage.setItem('sapa-prev-'+k,JSON.stringify({at:Date.now(),n:cnt,doc:Store.s[k]})); }catch(e){}
+      if(P.leader) toast(DOC_NAMES[k]+'突然從 '+cnt+' 筆變成 '+nxt+' 筆，已自動留下上一版（管理專區 → 還原上一版）');
+    }
+  },
+  docCount:function(k,d){ if(!d) return 0; if(d.items) return Array.isArray(d.items)?d.items.length:Object.keys(d.items).length; if(d.pages) return d.pages.length; if(d.scenarios) return d.scenarios.length; return 0; },
+  prevSnapshots:function(){ var out=[]; DOC_KEYS.forEach(function(k){ try{ var v=JSON.parse(localStorage.getItem('sapa-prev-'+k)||'null'); if(v&&v.doc) out.push({key:k,at:v.at,n:v.n}); }catch(e){} }); return out; },
+  restorePrev:function(k){ try{ var v=JSON.parse(localStorage.getItem('sapa-prev-'+k)||'null'); if(!v||!v.doc) return false; Store.s[k]=v.doc; localStorage.removeItem('sapa-prev-'+k); Store.save(k); return true; }catch(e){ return false; } },
   /* 雲端快照進來：先套用雲端，再把「這支手機還沒送出去的修改」重新疊上去，離線期間的修改不會被舊快照蓋掉 */
   applyRemote:function(docs){
     var got=false;
-    DOC_KEYS.forEach(function(k){ var r=docs[k]; if(r&&typeof r==='object'){ Store.s[k]=clone(r); Store.remoteTs[k]=r._ts||0; got=true; } });
+    DOC_KEYS.forEach(function(k){ var r=docs[k]; if(r&&typeof r==='object'){ Store.guardShrink(k,r); Store.s[k]=clone(r); Store.remoteTs[k]=r._ts||0; got=true; } });
     Store.q.forEach(function(op){ var d=Store.s[op.key]; if(!d||typeof d!=='object'){ d=Store.s[op.key]={}; }
       if(op.path){ setPath(d,op.path,op.val); if((d._ts||0)<op.ts) d._ts=op.ts; }
       else if(op.ts>=(d._ts||0)) Store.s[op.key]=clone(op.val); });
@@ -195,8 +242,12 @@ var Store={
     if(P.leader&&Store.s.settings&&Store.s.settings.dayBg){ delete Store.s.settings.dayBg; Store.savePath('settings','dayBg',null); }
     Store.mode='cloud'; Store.lastSync=new Date(); Store.cache(); render(); Store.checkVersion(); Store.flush(); return got;
   },
-  checkVersion:function(){ var st=Store.s.settings||{}; var min=st.minVersion; if(!min||Store._verToasted) return;
-    if(String(min)>String(APP_VERSION)){ Store._verToasted=true; var t=el('toast'); t.innerHTML='有新版本 '+esc(min)+'，<a href="#" data-act="reloadApp" style="color:inherit;text-decoration:underline">點此重新載入</a>'; t.classList.add('show'); t.style.pointerEvents='auto'; clearTimeout(t._tm); t._tm=setTimeout(function(){ t.classList.remove('show'); t.style.pointerEvents=''; },8000); } },
+  /* 有新版本：固定一條提示列，按了才會走（長輩不會在 8 秒內看到 toast）。版本用數字逐段比，3.9 不會大於 3.16。 */
+  checkVersion:function(){ var st=Store.s.settings||{}; var min=st.minVersion, bar=el('verBar'); if(!bar) return;
+    if(min&&verCmp(String(min),APP_VERSION)>0&&!Store._verDismissed){
+      bar.hidden=false;
+      bar.innerHTML=ic('refresh')+'<span>有新版本 '+esc(min)+'（目前 '+esc(APP_VERSION)+'）</span><span class="sp"></span><button data-act="reloadApp">更新</button><button class="dim" data-act="verLater">稍後</button>';
+    } else bar.hidden=true; },
   /* 依 config.js 決定後端：firebase（正式版）→ claude db（預覽版）→ 單機 */
   connect:function(){
     var cfg=window.SAPA_CONFIG||{};
@@ -204,13 +255,29 @@ var Store={
     if(window.claude&&typeof window.claude.use==='function') return Store.connectClaude();
     Store.mode='local'; renderSync();
   },
+  /* 沒訊號時打開 App，之後訊號回來要能自己接上：
+     - 載入 SDK 有時限（8 秒），不會永遠卡在「連線中」
+     - 失敗記下來，等 online / 回到前景 / 每 20 秒的計時器再試
+     - 重試時不重複載 SDK、不重複 initializeApp */
+  reconnect:function(){
+    if(Store.push||Store.mode==='connecting'||Store.backend!=='firebase') return;
+    if(navigator.onLine===false) return;
+    var now=Date.now(); if(Store._lastTry&&now-Store._lastTry<5000) return;
+    Store._lastTry=now; Store.connect();
+  },
   connectFirebase:function(cfg){
     Store.mode='connecting'; Store.backend='firebase'; renderSync();
     var v=cfg.firebaseVersion||'10.14.1', base='https://www.gstatic.com/firebasejs/'+v+'/', root=cfg.path||'trip';
-    var chain=loadScript(base+'firebase-app-compat.js').then(function(){ return loadScript(base+'firebase-database-compat.js'); });
-    if(cfg.auth==='anon') chain=chain.then(function(){ return loadScript(base+'firebase-auth-compat.js'); });
+    var have=function(){ return window.firebase&&firebase.database; };
+    Store._tries=(Store._tries||0)+1; var bust=Store._tries>1?'?r='+Store._tries:'';
+    var chain=have()?Promise.resolve():loadScript(base+'firebase-app-compat.js'+bust).then(function(){ return loadScript(base+'firebase-database-compat.js'+bust); });
+    if(cfg.auth==='anon') chain=chain.then(function(){ return (window.firebase&&firebase.auth)?null:loadScript(base+'firebase-auth-compat.js'+bust); });
+    chain=withTimeout(chain,8000).catch(function(e){
+      /* 逾時或失敗：把還掛著的 SDK <script> 拆掉，下次重試才會真的重新請求（瀏覽器會把相同網址的進行中請求合併） */
+      if(!have()) document.querySelectorAll('script[src*="firebasejs"]').forEach(function(t){ try{ t.remove(); }catch(x){} });
+      throw e; });
     chain.then(function(){
-      firebase.initializeApp(cfg.firebase);
+      if(!firebase.apps||!firebase.apps.length) firebase.initializeApp(cfg.firebase);
       var ready=Promise.resolve();
       if(cfg.auth==='anon'&&firebase.auth) ready=firebase.auth().signInAnonymously().catch(function(){ toast('匿名登入失敗，改用唯讀模式'); });
       return ready;
@@ -220,7 +287,7 @@ var Store={
       db.ref('.info/connected').on('value',function(sn){ if(Store.mode==='cloud'||Store.mode==='offline'){ Store.mode=sn.val()?'cloud':'offline'; renderSync(); if(sn.val()) Store.flush(); } });
       Store.pushOp=function(op){ if(op.path){ var u={}; u[op.key+'/'+op.path]=op.val; u[op.key+'/_ts']=op.ts; return db.ref(root).update(u); } return db.ref(root+'/'+op.key).set(op.val); };
       Store.push=true; Store.flush();
-    }).catch(function(){ Store.mode='local'; renderSync(); toast('連不上雲端，先用單機模式'); });
+    }).catch(function(){ Store.mode='local'; Store._lastTry=Date.now(); renderSync(); if(!Store._offToasted){ Store._offToasted=true; toast('連不上雲端，先顯示手機裡的資料；有訊號時會自動再連'); } });
   },
   connectClaude:function(){
     Store.mode='connecting'; Store.backend='claude'; renderSync();
@@ -237,8 +304,10 @@ var Store={
   },
   /* 每一次修改都是一個 op：整份（path=''）或局部（path='present/x1'）。先存本機、排進佇列，連上線就依序送出 */
   enqueue:function(op){
-    var q=Store.q, last=q[q.length-1];
-    if(last&&last.key===op.key&&last.path===op.path&&!last.sending){ q[q.length-1]=op; } else q.push(op);
+    var q=Store.q;
+    if(op.path===''){ q=Store.q=q.filter(function(o){ return o.sending||o.key!==op.key; }); }   /* 整份存檔涵蓋之前所有改動 */
+    else { for(var i=q.length-1;i>=0;i--){ var o=q[i]; if(!o.sending&&o.key===op.key&&o.path===op.path){ q.splice(i,1); break; } } }
+    q.push(op);
     Store.cache(); clearTimeout(Store._ft); Store._ft=setTimeout(Store.flush,300);
   },
   flush:function(){
@@ -246,7 +315,11 @@ var Store={
     var op=Store.q[0]; op.sending=true; Store.flushing=true;
     Promise.resolve().then(function(){ return Store.pushOp(op); })
       .then(function(){ Store.q.shift(); Store.flushing=false; Store.lastSync=new Date(); if(Store.mode!=='cloud') Store.mode='cloud'; Store.cache(); renderSync(); Store.flush(); })
-      .catch(function(e){ op.sending=false; Store.flushing=false; Store.mode='offline'; renderSync(); toast('雲端儲存失敗，已先存在這支手機，連上線會自動補送'); });
+      .catch(function(e){ op.sending=false; Store.flushing=false;
+        var code=String((e&&(e.code||e.message))||''); op.fails=(op.fails||0)+1;
+        /* 規則拒絕（PERMISSION_DENIED）或同一筆連續失敗太多次：這筆永遠送不出去，略過它讓後面的繼續 */
+        if(/PERMISSION_DENIED|permission_denied|validation/i.test(code)||op.fails>=6){ Store.q.shift(); Store.cache(); toast('有一筆「'+(DOC_NAMES[op.key]||op.key)+'」的修改被雲端拒絕，已略過；其他修改照常送出'); if(navigator.onLine!==false) setTimeout(Store.flush,3000); return; }
+        Store.mode='offline'; renderSync(); toast(Store.cacheOK===false?'雲端儲存失敗，而且手機空間不足沒存到；請盡快連線':'雲端儲存失敗，已先存在這支手機，連上線會自動補送'); });
   },
   save:function(key){
     var d=Store.s[key]; if(d&&typeof d==='object') d._ts=Date.now();
@@ -264,7 +337,7 @@ var Store={
   exportJSON:function(){ return JSON.stringify({app:'sapa-tour-tool',version:APP_VERSION,exportedAt:new Date().toISOString(),docs:Store.s},null,2); },
   importJSON:function(text){ var o=JSON.parse(text); var docs=o&&o.docs?o.docs:o; var n=0; DOC_KEYS.forEach(function(k){ if(docs[k]&&typeof docs[k]==='object'){ Store.s[k]=clone(docs[k]); n++; } }); if(!n) throw new Error('檔案格式不對'); Store.pushAll(); return n; }
 };
-setInterval(function(){ if(Store.q.length&&!Store.flushing) Store.flush(); },20000);
+setInterval(function(){ Store.reconnect(); if(Store.q.length&&!Store.flushing) Store.flush(); },20000);
 function S(){ return Store.s; }
 function members(){ return (S().members&&S().members.items)||[]; }
 function member(id){ return members().filter(function(m){return m.id===id;})[0]; }
@@ -507,11 +580,22 @@ function renderSync(){
   if(Store.mode==='cloud'){ state=(navigator.onLine===false?'off':'on'); txt=navigator.onLine===false?'離線':'已連線'; }
   else if(Store.mode==='connecting'){ txt='連線中'; }
   else if(Store.mode==='offline'){ state='off'; txt='離線'; }
-  else { txt='單機'; }
+  else { state='off'; txt='未連線'; }
   var dot=el('hdDot'), sy=el('hdSyncTx');
   dot.className='dot'+(state?' '+state:'');
   sy.textContent=txt;
-  sy.title='沙壩隨身團務 v'+APP_VERSION+(Store.q.length?'（'+Store.q.length+' 筆修改待送出）':'');
+  sy.title='月半越南團旅 v'+APP_VERSION+(Store.q.length?'（'+Store.q.length+' 筆修改待送出）':'');
+  /* 離線提示條：看得到的資料是幾點的，免得照著舊的集合時間走 */
+  var ob=el('offBar');
+  if(ob){
+    var offline=(state==='off'||Store.mode==='local');
+    if(offline&&Store.mode!=='connecting'){
+      var when=Store.lastSync?(Store.lastSync.getHours()<10?'0':'')+Store.lastSync.getHours()+':'+(Store.lastSync.getMinutes()<10?'0':'')+Store.lastSync.getMinutes():'';
+      var ageMin=Store.lastSync?Math.round((Date.now()-Store.lastSync.getTime())/60000):null;
+      ob.hidden=false;
+      ob.innerHTML=ic('alert')+'<span>目前離線'+(when?'，資料更新於 '+when+(ageMin>=60?'（'+Math.floor(ageMin/60)+' 小時前）':''):'，還沒同步過')+(Store.q.length?'；'+Store.q.length+' 筆修改等連線後送出':'')+'</span>';
+    } else ob.hidden=true;
+  }
   /* 選過名字的人：下面單獨一列問候；沒選名字時這列整個隱藏（連線狀態已經在上面那排看得到） */
   var me=getMe(), bar=el('syncBar');
   if(me){
@@ -527,8 +611,16 @@ function renderTabs(){
   var home='<button class="tab-home'+(P.tab==='home'?' on':'')+'" data-act="tab" data-tab="home" aria-label="首頁"><span class="dome">'+ic('home')+'</span><span class="lb">首頁</span></button>';
   el('tabbar').innerHTML=TABS.slice(0,mid).map(one).join('')+home+TABS.slice(mid).map(one).join('');
 }
+/* 首頁該長什麼樣的「鍵」：日期 + 下一站。鍵變了才重畫，不會每 15 秒閃一次 */
+function homeKey(){ var di=dayInfo(); var n=nextStop(di); return di.status+':'+di.idx+':'+(n?n.id+':'+n.kind:''); }
 function tick(){
   var vn=tzParts(VN), tw=tzParts(TW);
+  var hk=''; try{ hk=homeKey(); }catch(e){}
+  if(tick._hk===undefined) tick._hk=hk;
+  else if(hk!==tick._hk){
+    var busy=SHEET||(document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName));
+    if(!busy){ tick._hk=hk; render(); }   /* 正在打字或表單開著就先不動，下一次 tick 再補畫 */
+  }
   el('clockVN').textContent=vn.hm; el('clockTW').textContent=tw.hm;
   var c=el('countdown'); if(c){ var cd=countdown(); c.hidden=!cd; if(cd){ c.innerHTML=ic('clock')+esc(cd.text); c.classList.toggle('late',cd.late); } }
   var hc=el('hdCountdown');
@@ -539,6 +631,7 @@ function tick(){
   }
 }
 setInterval(tick,15000);
+document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible'){ try{ tick(); Store.reconnect(); if(Store.q.length) Store.flush(); }catch(e){} } });
 
 /* ===== 各分頁 ===== */
 var VIEWS={};
@@ -586,12 +679,25 @@ VIEWS.home=function(){
   /* 出發前：管理者還沒廣播時，改顯示第 1 天第一站（例：05:30 桃園機場集合），不會是一大塊「待公布」 */
   var pre=null;
   if(before&&!b.time&&!b.idle){ var d1=items().filter(function(x){return x.day===1&&!x.isCanceled;})[0]; if(d1) pre={time:d1.time,title:d1.title}; }
+  /* 旅途中還沒發廣播：最大的那塊不能是「待公布」，改成今天的下一站（或進行中那站） */
+  var nx=(!before&&!after&&!b.time&&!b.idle)?nextStop(di):null;
   if(after){
     h.push('<section class="hero done" aria-label="旅程結束">'+
       '<div class="lab">'+ic('heart')+'旅程圓滿結束</div>'+
       '<div class="time" style="font-size:1.9rem">感謝同行，一路平安</div>'+
       '<div class="loc"><span>'+esc(st.tripName||'')+' · '+esc(dayDate(1))+' – '+esc(dayDate(di.days))+'。照片與心得歡迎丟到群組分享；出發前準備清單已收起。</span></div>'+
       (P.leader?'<div class="ctl"><button class="btn" data-act="editBroadcast">'+ic('edit')+'仍要發廣播</button><button class="btn" data-act="settings">'+ic('gear')+'團務設定</button></div>':'')+
+    '</section>');
+  } else if(nx){
+    var nlab=nx.kind==='cur'?'進行中':(nx.kind==='next'?'下一站':'今天行程');
+    h.push('<section class="hero pre" aria-label="'+nlab+'">'+
+      '<div class="lab">'+ic('calendar')+'今天行程<span class="upd">第 '+day+' 天 · '+esc(dayDate(day))+'</span></div>'+
+      (nx.kind==='done'
+        ?'<div class="time" style="font-size:1.9rem">今天行程已結束</div><div class="loc"><span>明早時間請看下面「明早時程」或群組通知。</span></div>'
+        :'<div class="time">'+esc(nx.time||'—')+'<small>'+nlab+'</small></div>'+
+         '<div class="loc'+((nx.title||'').length>12?' long':'')+'">'+ic('pin')+'<span>'+esc(nx.title)+'</span></div>')+
+      '<div class="tip">'+ic('info')+'<span>目前沒有集合廣播；有臨時集合會在這裡與 LINE 群組公布。</span></div>'+
+      (P.leader?'<div class="ctl"><button class="btn" data-act="editBroadcast">'+ic('megaphone')+'發布集合廣播</button><button class="btn" data-act="tab" data-tab="plan">'+ic('calendar')+'看行程</button></div>':'')+
     '</section>');
   } else if(pre){
     h.push('<section class="hero pre" aria-label="出發集合">'+
@@ -649,6 +755,7 @@ VIEWS.home=function(){
     var z=cardZone(id,di); if(z==='hide'||!Z[z]) return;
     var html=BUILD[id](); if(html) Z[z].push(html);
   });
+  Z.ref.push(sosRow());
   h.push(grp('now','現在',Z.now));
   h.push(grp('later','稍後',Z.later));
   h.push(grp('ref','隨時查',Z.ref));
@@ -656,6 +763,14 @@ VIEWS.home=function(){
   return h.join('');
 };
 
+/* 緊急求助列：固定在首頁最下面，不用點進工具頁才找得到 */
+function sosRow(){
+  var cs=contacts(), tel=cs.filter(function(c){return c.phone;})[0], ln=cs.filter(function(c){return c.line;})[0];
+  return '<div class="sos-row" role="group" aria-label="緊急求助"><div class="t">'+ic('alert')+'緊急求助</div>'+
+    (tel?'<a class="btn warn" href="'+telHref(tel.phone)+'" aria-label="打電話給'+esc(tel.name)+'" title="'+esc(tel.name)+'">'+ic('phone')+'打電話</a>':'')+
+    (ln?'<a class="btn line" href="'+esc(ln.line)+'" target="_blank" rel="noopener" aria-label="LINE聯繫'+esc(ln.name)+'">'+ic('chat')+'LINE</a>':'')+
+    '<button class="btn go" data-act="tool" data-tool="sos" aria-label="打開緊急求助頁">'+ic('arrow')+(tel||ln?'求助頁':'緊急求助頁')+'</button></div>';
+}
 /* 今日行程（主卡） */
 function todayCard(di,day){
   var todays=items().filter(function(x){return x.day===day;});
@@ -683,7 +798,7 @@ function prepCard(){
     inner+='<div class="prep-done">'+ic('check')+'<span>全部備妥，可以安心出發了。</span></div>';
   }
   /* 首頁只顯示進度，實際打勾一律在完整清單頁面進行，避免長輩誤以為首頁這幾項就是全部 */
-  inner+='<button class="btn block '+(done?'soft':'pri')+'" style="margin-top:.6rem" data-act="nbGo" data-id="'+prep.id+'">'+
+  inner+='<button class="btn block wrap '+(done?'soft':'pri')+'" style="margin-top:.6rem;justify-content:center;text-align:center" data-act="nbGo" data-id="'+prep.id+'">'+
       (done?'重看完整清單':'前往清單逐項打勾（還有 '+(cs.total-cs.done)+' 項）')+' '+ic('arrow')+'</button>'+
     '<div class="prep-note">'+ic('info')+'<span>勾選只存在你自己的手機，清單內容由主辦人更新。</span></div>';
   return foldCard('prep','check',(prep.title||'出發前準備'),(done?'全部備妥':'已備 '+cs.done+' / '+cs.total),(done?'全部備妥':cs.done+' / '+cs.total+' 已備妥'),inner);
@@ -705,10 +820,11 @@ function hotelCard(){
   /* 團體自由行沒有專人可以撥，改成用 LINE 聯繫：取第一位有填「LINE 加好友網址」的聯絡人（緊急求助頁那顆「加 LINE」同一個連結） */
   var lineC=cs.filter(function(c){return c.line;})[0];
   var sum=(ho.name||'').replace(/\s*[–—-]\s*.*$/,'')||'待公布';
+  /* 收起時的摘要用短的「第 N 晚」，展開後副標再放飯店名；飯店名太長，縮在標題列會變成「沙壩 Pao'…」 */
   var inner='<div style="font-size:1.1rem;font-weight:900;margin-bottom:.5rem">'+esc(ho.name||'')+'</div>'+
     '<dl class="kv"><dt>Wi-Fi</dt><dd>'+esc(ho.wifi||'—')+'</dd>'+(ho.wifiPass?'<dt>密碼</dt><dd>'+esc(ho.wifiPass)+'</dd>':'')+'<dt>早餐</dt><dd>'+esc(ho.breakfast||'—')+'</dd>'+(ho.leaderRoom?'<dt>主辦人房號</dt><dd>'+esc(ho.leaderRoom)+'</dd>':'')+'</dl>'+
     '<div class="row" style="margin-top:.7rem">'+(ho.addrVi||ho.nameVi||ho.name?'<a class="btn" href="'+mapDirHref((ho.nameVi||ho.name)+' '+(ho.addrVi||''))+'" target="_blank" rel="noopener">'+ic('pin')+'走回飯店</a>':'')+'<button class="btn warn" data-act="fullTaxi">'+ic('taxi')+'計程車回飯店卡</button>'+(lineC?'<a class="btn line" href="'+esc(lineC.line)+'" target="_blank" rel="noopener" aria-label="用 LINE 聯繫'+esc(lineC.name)+'">'+ic('chat')+'LINE聯繫</a>':'')+'</div>';
-  return foldCard('hotel','bed','目前住宿',(ho.nights||''),sum,inner);
+  return foldCard('hotel','bed','目前住宿',sum,(ho.nights||sum),inner);
 }
 
 /* 航班資訊（可收合） */
