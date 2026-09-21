@@ -37,7 +37,7 @@ function fmtDur(min){
   if(min>=60) return Math.floor(min/60)+' 小時 '+(min%60?(min%60)+' 分':'');
   return min+' 分鐘';
 }
-/* 集合日期：優先用領隊在廣播裡選的 b.date；舊廣播沒有日期時，出發前一律當成第 1 天（出發日），
+/* 集合日期：優先用管理者在廣播裡選的 b.date；舊廣播沒有日期時，出發前一律當成第 1 天（出發日），
    旅程中／結束後當成今天——這樣既有的廣播不用重存也能算對。 */
 function bcDate(){
   var b=S().broadcast||{}, st=S().settings;
@@ -77,7 +77,7 @@ function countdownShort(){
 }
 /* ===== 廣播轉成一段可以貼進 LINE 群組的文字 =====
    推播（Web Push）在 iOS 上要先加主畫面、還要按同意，估計只有三分之一的人收得到；
-   LINE 群組是 33 個人都在的地方，所以領隊改完廣播後最可靠的作法還是貼一則到群組。
+   LINE 群組是 33 個人都在的地方，所以管理者改完廣播後最可靠的作法還是貼一則到群組。
    這段只負責排版，實際傳送由 ACT.lineSend / ACT.copyShare 處理。 */
 function appUrl(){ try{ if(location.protocol.indexOf('http')===0) return location.origin+location.pathname; }catch(e){} return 'https://750hd.com/'; }
 function bcShareText(){
@@ -87,7 +87,7 @@ function bcShareText(){
   if(b.idle||!b.time){
     L.push('📢 '+(b.idle?'自由活動':'集合時間待公布'));
     L.push('');
-    L.push(b.idle?'目前沒有集合安排，有事請直接聯絡領隊。':'集合時間還沒確定，確定後會再通知大家。');
+    L.push(b.idle?'目前沒有集合安排，有事請直接聯絡主辦人。':'集合時間還沒確定，確定後會再通知大家。');
   }else{
     L.push('📢 '+(b.label||'集合')+'通知');
     L.push('');
@@ -168,7 +168,7 @@ function sha256(str){
   return H.map(function(x){ return ('00000000'+(x>>>0).toString(16)).slice(-8); }).join('');
 }
 function pinHash(pin){ return sha256('sapa-tour:'+String(pin||'')); }
-/* 驗 PIN：優先比對雜湊；舊資料只有明文 pin 時也接受，並在領隊解鎖後自動升級成雜湊 */
+/* 驗 PIN：優先比對雜湊；舊資料只有明文 pin 時也接受，並在管理者解鎖後自動升級成雜湊 */
 function pinOK(input){ var st=S().settings||{};
   if(st.pinHash) return pinHash(input)===st.pinHash;
   return String(input)===String(st.pin||'8888'); }
@@ -191,7 +191,7 @@ var Store={
       if(op.path){ setPath(d,op.path,op.val); if((d._ts||0)<op.ts) d._ts=op.ts; }
       else if(op.ts>=(d._ts||0)) Store.s[op.key]=clone(op.val); });
     /* 3.14 以前底圖是「每天一張」存在 settings.dayBg，改成每個行程一張之後那份資料沒人在用了。
-       由領隊的裝置清掉一次就好，免得 33 支手機每次開 App 都白白下載那幾十 KB。 */
+       由管理者的裝置清掉一次就好，免得 33 支手機每次開 App 都白白下載那幾十 KB。 */
     if(P.leader&&Store.s.settings&&Store.s.settings.dayBg){ delete Store.s.settings.dayBg; Store.savePath('settings','dayBg',null); }
     Store.mode='cloud'; Store.lastSync=new Date(); Store.cache(); render(); Store.checkVersion(); Store.flush(); return got;
   },
@@ -216,7 +216,7 @@ var Store={
       return ready;
     }).then(function(){
       var db=firebase.database();
-      db.ref(root).on('value',function(snap){ var got=Store.applyRemote(snap.val()||{}); if(!got&&P.leader) toast('雲端尚無資料，領隊第一次修改後會自動建立'); },function(err){ Store.mode='offline'; renderSync(); });
+      db.ref(root).on('value',function(snap){ var got=Store.applyRemote(snap.val()||{}); if(!got&&P.leader) toast('雲端尚無資料，第一次修改後會自動建立'); },function(err){ Store.mode='offline'; renderSync(); });
       db.ref('.info/connected').on('value',function(sn){ if(Store.mode==='cloud'||Store.mode==='offline'){ Store.mode=sn.val()?'cloud':'offline'; renderSync(); if(sn.val()) Store.flush(); } });
       Store.pushOp=function(op){ if(op.path){ var u={}; u[op.key+'/'+op.path]=op.val; u[op.key+'/_ts']=op.ts; return db.ref(root).update(u); } return db.ref(root+'/'+op.key).set(op.val); };
       Store.push=true; Store.flush();
@@ -228,7 +228,7 @@ var Store={
       if(!db){ Store.mode='local'; renderSync(); return; }
       db.collection('trip').onSnapshot(function(snap){
         var docs={}; snap.docs.forEach(function(d){ if(d.exists) docs[d.id]=d.data(); });
-        var got=Store.applyRemote(docs); if(!got&&P.leader) toast('雲端尚無資料，領隊第一次修改後會自動建立');
+        var got=Store.applyRemote(docs); if(!got&&P.leader) toast('雲端尚無資料，第一次修改後會自動建立');
       },function(err){ Store.mode='offline'; renderSync(); });
       /* claude db 沒有路徑更新，一律整份寫 */
       Store.pushOp=function(op){ return db.doc('trip/'+op.key).set(clone(Store.s[op.key])); };
@@ -272,10 +272,10 @@ function getMe(){ return P.meId?member(P.meId):null; }
 function items(){ return (S().itinerary&&S().itinerary.items)||[]; }
 function scenario(id){ var g=S().groups||{scenarios:[]}; var want=id||P.scn||g.activeId; var sc=(g.scenarios||[]).filter(function(x){return x.id===want;})[0]; return sc||(id?null:(g.scenarios||[])[0]); }
 function groupNameOf(scnId,mid){ var sc=scenario(scnId); if(!sc) return ''; var gi=sc.assign&&sc.assign[mid]; if(gi===undefined||gi===null||gi<0) return ''; return sc.names[gi]||('第 '+(gi+1)+' 組'); }
-/* 首頁「我的資訊」分組列：領隊可以把特定分組情境從首頁關掉（分組頁籤不受影響，只是不出現在首頁） */
+/* 首頁「我的資訊」分組列：管理者可以把特定分組情境從首頁關掉（分組頁籤不受影響，只是不出現在首頁） */
 function homeScnHidden(id){ return !!((S().settings.hiddenScn||{})[id]); }
 function homeScnToggle(id){ var st=S().settings; if(!st.hiddenScn) st.hiddenScn={}; if(st.hiddenScn[id]) delete st.hiddenScn[id]; else st.hiddenScn[id]=true; Store.save('settings'); sheetHomeScn(); }
-function contacts(){ var st=S().settings; if(st.contacts&&st.contacts.length) return st.contacts.filter(function(c){return c&&(c.phone||c.line);}); var out=[]; if(st.leaderPhone) out.push({name:st.leaderName||'領隊',label:'',phone:st.leaderPhone}); if(st.guidePhone) out.push({name:st.guideName||'導遊',label:'',phone:st.guidePhone}); return out; }
+function contacts(){ var st=S().settings; if(st.contacts&&st.contacts.length) return st.contacts.filter(function(c){return c&&(c.phone||c.line);}); var out=[]; if(st.leaderPhone) out.push({name:st.leaderName||'主辦人',label:'',phone:st.leaderPhone}); if(st.guidePhone) out.push({name:st.guideName||'導遊',label:'',phone:st.guidePhone}); return out; }
 function nbPages(){ var n=S().notebook; return (n&&n.pages)||[]; }
 function nbPage(id){ var ps=nbPages(); return ps.filter(function(p){return p.id===(id||P.nbPage);})[0]||ps[0]; }
 function checkStats(pg){ var items=(pg.items||[]).filter(function(i){return i.kind!=='head';}); var ck=(P.checks||{})[pg.id]||{}; var done=items.filter(function(i){return ck[i.id];}).length; return {done:done,total:items.length}; }
@@ -332,25 +332,25 @@ function isDark(){ if(P.theme) return P.theme==='dark'; var h=document.documentE
 }catch(e){} })();
 
 /* ===== 首頁可收合卡片 =====
-   領隊在 settings.cards 決定團員的預設狀態；團員自己點過的存在 P.cards。
-   領隊改預設時 ts 會更新，團員的選擇隨之失效，重新套用新預設。 */
+   管理者在 settings.cards 決定團員的預設狀態；團員自己點過的存在 P.cards。
+   管理者改預設時 ts 會更新，團員的選擇隨之失效，重新套用新預設。 */
 var CARD_DEF={prep:{o:1,ts:0},flight:{o:1,ts:0},morning:{o:1,ts:0},hotel:{o:0,ts:0}};
 function cardLead(id){
   var c=(S().settings.cards||{})[id]||{}, d=CARD_DEF[id]||{o:1,ts:0};
   var unset=(typeof c.o==='undefined');
-  /* hl（高亮提醒）跟 o（展開預設）各自獨立：領隊只開高亮時 o 仍然沿用預設值 */
+  /* hl（高亮提醒）跟 o（展開預設）各自獨立：管理者只開高亮時 o 仍然沿用預設值 */
   return {o:(unset?d.o:c.o)?1:0, ts:(unset?(d.ts||0):(c.ts||0)), hl:c.hl?1:0, hts:c.hts||0};
 }
 /* 這張卡現在要不要對「我」發光。
-   領隊開了才會亮；團員自己把卡片收起來就等於「我知道了」，對他這一輪熄燈。
-   領隊關掉再開一次會產生新的 hts，收起來過的人會重新亮一次。
-   沒有時間到自動熄滅這件事——只有領隊關、或團員自己收起來，燈才會滅。 */
+   管理者開了才會亮；團員自己把卡片收起來就等於「我知道了」，對他這一輪熄燈。
+   管理者關掉再開一次會產生新的 hts，收起來過的人會重新亮一次。
+   沒有時間到自動熄滅這件事——只有管理者關、或團員自己收起來，燈才會滅。 */
 function cardHL(id){
   var L=cardLead(id); if(!L.hl) return false;
   var M=(P.cards||{})[id];
   return !(M && M.hseen===L.hts);
 }
-/* auto：領隊沒設定過時（ts=0）依旅程階段自動決定展開或收起 */
+/* auto：管理者沒設定過時（ts=0）依旅程階段自動決定展開或收起 */
 function cardOpen(id){ var L=cardLead(id), M=(P.cards||{})[id];
   if(M&&M.ts===L.ts) return !!M.o;
   if(L.ts===0) return !!cardAutoOpen(id);
@@ -367,14 +367,14 @@ function cardSetLead(id){ var st=S().settings; if(!st.cards) st.cards={}; var L=
   var c=st.cards[id]||(st.cards[id]={});
   c.o=L.o?0:1; c.ts=Date.now();
   Store.save('settings'); toast(c.o?'團員預設：展開':'團員預設：收起'); }
-/* 高亮提醒開關（只有領隊看得到）。要亮幾張由領隊自己決定，不限制張數。 */
+/* 高亮提醒開關（只有管理者看得到）。要亮幾張由管理者自己決定，不限制張數。 */
 function cardSetHL(id){ var st=S().settings; if(!st.cards) st.cards={};
   var c=st.cards[id]||(st.cards[id]={});
   if(c.hl){ c.hl=0; } else { c.hl=1; c.hts=Date.now(); }
   Store.save('settings'); toast(c.hl?'已開啟高亮提醒，全團都會看到':'已關閉高亮提醒'); }
 /* ===== 首頁卡片要放在哪一區 =====
-   原本這段規則是寫死在 VIEWS.home 裡的 if/else，現在抽出來，領隊可以在
-   「領隊專區 → 首頁卡片位置」調整條件，或整個改成手動指定。
+   原本這段規則是寫死在 VIEWS.home 裡的 if/else，現在抽出來，管理者可以在
+   「管理專區 → 首頁卡片位置」調整條件，或整個改成手動指定。
    回傳 now / later / ref / hide 四種。 */
 var ZONE_DEF={mode:'auto',prepUntil:'start',flightSoon:'auto',morningSoon:'trip'};
 var ZONE_MANUAL_DEF={prep:'later',flight:'ref',morning:'later',hotel:'ref'};
@@ -429,7 +429,7 @@ function cardZone(id,di){
   return 'ref';   /* hotel 及其他 */
 }
 var ZONE_ORDER_DEF=['today','prep','hotel','flight','morning'];
-/* 同一分區裡的先後。領隊可調（自動／手動模式都生效）；位置仍由 cardZone() 決定。 */
+/* 同一分區裡的先後。管理者可調（自動／手動模式都生效）；位置仍由 cardZone() 決定。 */
 function zoneOrder(){
   var o=(S().settings.zones||{}).order, out=[];
   if(o&&o.length) out=o.filter(function(x){ return ZONE_ORDER_DEF.indexOf(x)>=0 && out.indexOf(x)<0; });
@@ -470,7 +470,7 @@ function nowCrowdCheck(){
   var di=dayInfo(), n=zoneOrder().filter(function(x){ return cardZone(x,di)==='now'; }).length;
   if(n>=3) toast('「現在」區已經有 '+n+' 張卡，重點會分散');
 }
-/* 領隊沒設定過展開預設時，依卡片性質自動決定。foldCard 與設定面板共用同一個答案。 */
+/* 管理者沒設定過展開預設時，依卡片性質自動決定。foldCard 與設定面板共用同一個答案。 */
 function cardAutoOpen(id,di){
   if(id==='hotel') return 0;
   if(id==='morning'){ var mo=S().settings.morning||{}; return (mo.wake||mo.depart)?1:0; }
@@ -481,8 +481,8 @@ function cardDefOpen(id,di){ var L=cardLead(id); return L.ts===0?!!cardAutoOpen(
 var ZONE_NAMES={today:'今日行程',prep:'出發前準備',flight:'航班資訊',morning:'明早時程',hotel:'目前住宿'};
 var ZONE_LABELS={now:'現在',later:'稍後',ref:'隨時查',hide:'不顯示'};
 function foldCard(id,icon,title,sub,sum,inner){
-  /* 展開預設與高亮提醒的開關已經搬到「領隊專區 → 首頁卡片位置」，
-     卡片上不再掛那條金色列，團員與領隊看到的卡片長得一樣乾淨。 */
+  /* 展開預設與高亮提醒的開關已經搬到「管理專區 → 首頁卡片位置」，
+     卡片上不再掛那條金色列，團員與管理者看到的卡片長得一樣乾淨。 */
   var open=cardOpen(id);
   var card='<section class="ccard'+(open?' open':'')+'">'+
     '<button class="chead" data-act="cardFold" data-id="'+id+'" aria-expanded="'+(open?'true':'false')+'">'+
@@ -542,7 +542,7 @@ setInterval(tick,15000);
 
 /* ===== 各分頁 ===== */
 var VIEWS={};
-/* 防呆標籤：優先用領隊自訂的 settings.tags，沒有就退回內建 TAGS */
+/* 防呆標籤：優先用管理者自訂的 settings.tags，沒有就退回內建 TAGS */
 function tagList(){ var t=S().settings.tags; if(t&&t.length) return t;
   return Object.keys(TAGS).map(function(k){ return {id:k,icon:TAGS[k].icon,label:TAGS[k].label}; }); }
 function tagDef(id){ var l=tagList(); for(var i=0;i<l.length;i++) if(l[i].id===id) return l[i]; return TAGS[id]?{id:id,icon:TAGS[id].icon,label:TAGS[id].label}:null; }
@@ -583,7 +583,7 @@ VIEWS.home=function(){
   var s=S(), b=s.broadcast||{}, st=s.settings, di=dayInfo(), h=[];
   if(showTip()) h.push('<div class="tip-banner">'+ic('info')+'<span>把這個網頁裝成 App，之後一鍵打開，名字也不用再選一次。</span><button class="tb-go" data-act="installApp">看教學</button><button data-act="tipClose" aria-label="關閉">'+ic('x')+'</button></div>');
   var before=(di.status==='before'), after=(di.status==='after'), day=di.idx;
-  /* 出發前：領隊還沒廣播時，改顯示第 1 天第一站（例：05:30 桃園機場集合），不會是一大塊「待公布」 */
+  /* 出發前：管理者還沒廣播時，改顯示第 1 天第一站（例：05:30 桃園機場集合），不會是一大塊「待公布」 */
   var pre=null;
   if(before&&!b.time&&!b.idle){ var d1=items().filter(function(x){return x.day===1&&!x.isCanceled;})[0]; if(d1) pre={time:d1.time,title:d1.title}; }
   if(after){
@@ -604,21 +604,21 @@ VIEWS.home=function(){
   } else {
   /* 置頂即時廣播（永遠展開，不可收合） */
   var tm=(b.time||'');
-  h.push('<section class="hero" aria-label="領隊即時廣播">'+
-    '<div class="lab">'+ic('megaphone')+'領隊即時廣播'+(b.updatedAt?'<span class="upd">'+esc(b.updatedAt)+' 更新</span>':'')+'</div>'+
+  h.push('<section class="hero" aria-label="即時廣播">'+
+    '<div class="lab">'+ic('megaphone')+'即時廣播'+(b.updatedAt?'<span class="upd">'+esc(b.updatedAt)+' 更新</span>':'')+'</div>'+
     (tm?'<div class="time">'+esc(tm)+'<small>'+esc(b.label||'集合')+'</small></div>'
        :'<div class="time" style="font-size:1.9rem">'+(b.idle?'自由活動':'集合時間待公布')+'</div>')+
     '<div class="count" id="countdown" hidden></div>'+
     (tm||!b.idle
       ?'<div class="loc'+((b.location||'').length>12?' long':'')+'">'+ic('pin')+'<span>'+esc(b.location||'集合地點待公布')+'</span></div>'
-      :'<div class="loc"><span>目前沒有集合安排，請等領隊下次廣播通知。</span></div>')+
+      :'<div class="loc"><span>目前沒有集合安排，請等下次廣播通知。</span></div>')+
     (b.tip?'<div class="tip">'+ic('thermo')+'<span>'+esc(b.tip)+'</span></div>':'')+
     (P.leader?'<div class="ctl"><button class="btn" data-act="editBroadcast">'+ic('edit')+'修改廣播</button><button class="btn" data-act="tool" data-tool="rollcall">'+ic('clipboard')+'點名</button><button class="btn" data-act="bumpTime" data-min="15">現在＋15分</button><button class="btn" data-act="bumpTime" data-min="30">現在＋30分</button></div>'+(tm||b.location||b.tip?'<div class="hero-foot"><button class="clr" data-act="clearBroadcast">'+ic('trash')+'清空廣播</button><button class="clr shr" data-act="shareBroadcast" aria-label="把這則廣播貼到 LINE 群組">'+ic('lineshare')+'LINE</button></div>':''):'')+
   '</section>');
   }
   /* 我的資訊：不分出發前後，固定顯示航空公司／報到航廈／房號，再加上「我被分配到的每一個分組」；
-     領隊可在「領隊專區→首頁分組顯示」把不想曝光的分組情境關掉。報到航廈跟著航空公司走，
-     領隊在「分組→航空公司→航空公司與航廈設定」改，不是寫死在程式裡。 */
+     管理者可在「管理專區→首頁分組顯示」把不想曝光的分組情境關掉。報到航廈跟著航空公司走，
+     管理者在「分組→航空公司→航空公司與航廈設定」改，不是寫死在程式裡。 */
   var me=getMe();
   if(me){
     var ad=airDef(me.airline);
@@ -639,7 +639,7 @@ VIEWS.home=function(){
   }
 
 
-  /* 分區交給 cardZone()，同一區裡的先後交給 zoneOrder()（領隊可調）。 */
+  /* 分區交給 cardZone()，同一區裡的先後交給 zoneOrder()（管理者可調）。 */
   var Z={now:[],later:[],ref:[]};
   var BUILD={
     today:function(){ return wrapHL('today',todayCard(di,day)); },
@@ -685,7 +685,7 @@ function prepCard(){
   /* 首頁只顯示進度，實際打勾一律在完整清單頁面進行，避免長輩誤以為首頁這幾項就是全部 */
   inner+='<button class="btn block '+(done?'soft':'pri')+'" style="margin-top:.6rem" data-act="nbGo" data-id="'+prep.id+'">'+
       (done?'重看完整清單':'前往清單逐項打勾（還有 '+(cs.total-cs.done)+' 項）')+' '+ic('arrow')+'</button>'+
-    '<div class="prep-note">'+ic('info')+'<span>勾選只存在你自己的手機，清單內容由領隊更新。</span></div>';
+    '<div class="prep-note">'+ic('info')+'<span>勾選只存在你自己的手機，清單內容由主辦人更新。</span></div>';
   return foldCard('prep','check',(prep.title||'出發前準備'),(done?'全部備妥':'已備 '+cs.done+' / '+cs.total),(done?'全部備妥':cs.done+' / '+cs.total+' 已備妥'),inner);
 }
 
@@ -696,16 +696,18 @@ function morningCard(){
   var inner='<div class="mo"><div><div class="k">晨喚</div><div class="v">'+esc(mo.wake||'--')+'</div></div><div><div class="k">早餐</div><div class="v">'+esc(mo.breakfast||'--')+'</div></div><div><div class="k">行李出房</div><div class="v">'+esc(mo.luggage||'--')+'</div></div><div><div class="k">出發</div><div class="v">'+esc(mo.depart||'--')+'</div></div></div>'+
     (mo.note?'<div class="mo-note">'+esc(mo.note)+'</div>':'')+
     (P.leader?'<div class="row" style="margin-top:.7rem"><button class="btn sm" data-act="editMorning">'+ic('edit')+'修改明早時程</button></div>':'');
-  return foldCard('morning','sun','明早時程','領隊每晚更新',sum,inner);
+  return foldCard('morning','sun','明早時程','每晚更新',sum,inner);
 }
 
 /* 目前住宿（可收合） */
 function hotelCard(){
   var ho=hotel(), cs=contacts();
+  /* 團體自由行沒有專人可以撥，改成用 LINE 聯繫：取第一位有填「LINE 加好友網址」的聯絡人（緊急求助頁那顆「加 LINE」同一個連結） */
+  var lineC=cs.filter(function(c){return c.line;})[0];
   var sum=(ho.name||'').replace(/\s*[–—-]\s*.*$/,'')||'待公布';
   var inner='<div style="font-size:1.1rem;font-weight:900;margin-bottom:.5rem">'+esc(ho.name||'')+'</div>'+
-    '<dl class="kv"><dt>Wi-Fi</dt><dd>'+esc(ho.wifi||'—')+'</dd>'+(ho.wifiPass?'<dt>密碼</dt><dd>'+esc(ho.wifiPass)+'</dd>':'')+'<dt>早餐</dt><dd>'+esc(ho.breakfast||'—')+'</dd>'+(ho.leaderRoom?'<dt>領隊房號</dt><dd>'+esc(ho.leaderRoom)+'</dd>':'')+'</dl>'+
-    '<div class="row" style="margin-top:.7rem">'+(ho.addrVi||ho.nameVi||ho.name?'<a class="btn" href="'+mapDirHref((ho.nameVi||ho.name)+' '+(ho.addrVi||''))+'" target="_blank" rel="noopener">'+ic('pin')+'走回飯店</a>':'')+'<button class="btn warn" data-act="fullTaxi">'+ic('taxi')+'計程車回飯店卡</button>'+(cs[0]&&cs[0].phone?'<a class="btn" href="'+telHref(cs[0].phone)+'">'+ic('phone')+'撥給'+esc(cs[0].name)+'</a>':'')+'</div>';
+    '<dl class="kv"><dt>Wi-Fi</dt><dd>'+esc(ho.wifi||'—')+'</dd>'+(ho.wifiPass?'<dt>密碼</dt><dd>'+esc(ho.wifiPass)+'</dd>':'')+'<dt>早餐</dt><dd>'+esc(ho.breakfast||'—')+'</dd>'+(ho.leaderRoom?'<dt>主辦人房號</dt><dd>'+esc(ho.leaderRoom)+'</dd>':'')+'</dl>'+
+    '<div class="row" style="margin-top:.7rem">'+(ho.addrVi||ho.nameVi||ho.name?'<a class="btn" href="'+mapDirHref((ho.nameVi||ho.name)+' '+(ho.addrVi||''))+'" target="_blank" rel="noopener">'+ic('pin')+'走回飯店</a>':'')+'<button class="btn warn" data-act="fullTaxi">'+ic('taxi')+'計程車回飯店卡</button>'+(lineC?'<a class="btn line" href="'+esc(lineC.line)+'" target="_blank" rel="noopener" aria-label="用 LINE 聯繫'+esc(lineC.name)+'">'+ic('chat')+'LINE聯繫</a>':'')+'</div>';
   return foldCard('hotel','bed','目前住宿',(ho.nights||''),sum,inner);
 }
 
@@ -801,10 +803,10 @@ VIEWS.plan=function(){
   return h.join('');
 };
 
-/* 飯店 Wi-Fi（領隊可編輯） */
+/* 飯店 Wi-Fi（管理者可編輯） */
 function wifiCard(ho){
   var n=(ho.wifi||'').trim(), pw=(ho.wifiPass||'').trim();
-  var nt=(ho.wifiNote===undefined||ho.wifiNote===null?'連不上請到櫃台問，或跟領隊說。':ho.wifiNote).trim();
+  var nt=(ho.wifiNote===undefined||ho.wifiNote===null?'連不上請到櫃台問，或跟主辦人說。':ho.wifiNote).trim();
   return '<section class="wifi-card">'+
     '<div class="wf-h">'+ic('wifi')+'<b>飯店 Wi-Fi</b>'+(P.leader?'<span class="sp"></span><button class="btn sm" data-act="editHotel" data-id="'+esc(ho.id||'')+'">'+ic('edit')+'編輯</button>':'')+'</div>'+
     '<div class="wf-row"><span class="wf-k">名稱</span><span class="wf-v">'+(n?esc(n):'待公布')+'</span>'+(n?'<button class="btn sm" data-act="copyTxt" data-v="'+esc(n)+'">複製</button>':'')+'</div>'+
@@ -818,7 +820,7 @@ VIEWS.rooms=function(){
   var h=[], st=S().settings, ho=hotel();
   h.push('<div class="seg"><button class="'+(P.roomsSeg==='rooms'?'on':'')+'" data-act="roomsSeg" data-seg="rooms">'+ic('key')+'房號總表</button><button class="'+(P.roomsSeg==='list'?'on':'')+'" data-act="roomsSeg" data-seg="list">'+ic('users')+'全員名單</button></div>');
   if(P.roomsSeg==='rooms'){
-    h.push('<div class="card" style="padding:.7rem .9rem"><div style="font-weight:900;font-size:1.05rem">'+esc(ho.name||'')+'</div><div class="muted">'+esc(ho.nights||'')+(ho.leaderRoom?' · 領隊 '+esc(ho.leaderRoom)+' 房':'')+(members().some(function(m){return m.room;})?'':' · 房號待領隊分配')+'</div>'+
+    h.push('<div class="card" style="padding:.7rem .9rem"><div style="font-weight:900;font-size:1.05rem">'+esc(ho.name||'')+'</div><div class="muted">'+esc(ho.nights||'')+(ho.leaderRoom?' · 主辦人 '+esc(ho.leaderRoom)+' 房':'')+(members().some(function(m){return m.room;})?'':' · 房號待分配')+'</div>'+
       (P.leader?'<div class="row" style="margin-top:.6rem"><button class="btn sm" data-act="editRooms">'+ic('edit')+'批次改房號</button><button class="btn sm" data-act="pickHotel">'+ic('bed')+'切換入住飯店</button></div>':'')+'</div>');
     h.push(wifiCard(ho));
     var byRoom={}, none=[];

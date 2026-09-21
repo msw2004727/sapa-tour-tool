@@ -48,7 +48,7 @@ function toolMenu(){
     '<button class="tcard" data-act="tool" data-tool="basics">'+ic('toilet')+'<b>廁所與飲水</b><small>自備衛生紙</small></button>'+
   '</div>');
   if(P.leader){
-    h.push('<h2 class="sec">'+badgeSVG('lead')+'領隊專區</h2><div class="stack">'+
+    h.push('<h2 class="sec">'+badgeSVG('lead')+'管理專區</h2><div class="stack">'+
       '<button class="btn big" data-act="tool" data-tool="rollcall">'+ic('clipboard')+'<span class="b2">集合點名<small>誰還沒到</small></span></button>'+
       '<button class="btn big" data-act="editBroadcast">'+ic('megaphone')+'<span class="b2">修改廣播<small>時間、地點、叮嚀</small></span></button>'+
       '<button class="btn big" data-act="settings">'+ic('gear')+'<span class="b2">團務設定<small>日期、PIN、電話</small></span></button>'+
@@ -56,7 +56,7 @@ function toolMenu(){
       '<button class="btn big" data-act="editTags">'+ic('flag')+'<span class="b2">防呆標籤<small>自訂增減、改名</small></span></button>'+
       '<button class="btn big" data-act="homeScnVis">'+ic('users')+'<span class="b2">首頁分組顯示<small>選擇哪些分組情境出現在首頁</small></span></button>'+
       '<button class="btn big" data-act="cardZones">'+ic('grid')+'<span class="b2">首頁卡片位置<small>卡片何時移到稍後／隨時查／收起</small></span></button>'+
-    '</div><div class="row"><button class="btn dng" data-act="resetDemo">'+ic('refresh')+'重置為初始資料</button><button class="btn" data-act="leaderLock">'+ic('lock')+'鎖定領隊模式</button></div>');
+    '</div><div class="row"><button class="btn dng" data-act="resetDemo">'+ic('refresh')+'重置為初始資料</button><button class="btn" data-act="leaderLock">'+ic('lock')+'鎖定管理模式</button></div>');
   }
   h.push('<div class="ver">月半越南團旅 v'+APP_VERSION+' · '+(Store.backend==='firebase'?'雲端同步':(Store.backend==='claude'?'預覽同步':'單機'))+'</div>');
   return h.join('');
@@ -95,7 +95,7 @@ function toolESIM(){
     '<li><b>eSIM 多半只有數據、沒有電話號碼</b>，不能打電話或收簡訊。要打電話請用 LINE、Messenger 語音通話。</li>'+
     '<li>落地後如果沒網路：關飛航模式再開一次 → 確認新 eSIM 已開啟 → 打開「數據漫遊」 → 還是不行就重開機。</li>'+
     '<li>沙壩山區、番西邦纜車上訊號會變差，這是正常的，不是卡有問題。</li>'+
-    '<li>不想自己弄的人可以直接用飯店 Wi-Fi，或跟領隊說，出發前一起處理。</li>'+
+    '<li>不想自己弄的人可以直接用飯店 Wi-Fi，或跟主辦人說，出發前一起處理。</li>'+
   '</ul></div>';
 }
 /* 小費文化 */
@@ -110,7 +110,7 @@ function toolTips(){
     '<dt>餐廳</dt><dd>帳單如果已收 5～10% service charge 就不用再給；沒收的話留零錢即可</dd>'+
     '<dt>按摩</dt><dd>50,000～100,000 越盾，做得舒服再給</dd>'+
     '<dt>計程車 / Grab</dt><dd>不用給，湊整數不用找零就很夠</dd>'+
-    '<dt>導遊 / 司機</dt><dd>團體行程通常由領隊統一處理，個人不必另外給</dd>'+
+    '<dt>包車司機 / 導覽</dt><dd>大家一起出比較好處理，可以跟主辦人討論</dd>'+
   '</dl></div>'+
   '<h2 class="sec">'+ic('alert')+'給小費的眉角</h2>'+
   '<div class="info-card"><ul class="dots">'+
@@ -168,7 +168,7 @@ function toolEntry(){
     '<li>把<b>護照</b>交給櫃檯人員，可能會請你看鏡頭拍照、按指紋。不用講話，聽不懂就微笑等他指示。</li>'+
     '<li>蓋完章往前走，看螢幕找我們的班機號碼，到<b>行李轉盤</b>提行李。</li>'+
     '<li>出口前是<b>海關</b>，沒有要申報的東西就走綠色通道直接出去。</li>'+
-    '<li>出關後在大廳等，<b>跟緊領隊、不要自己先走</b>。</li>'+
+    '<li>出關後在大廳等，<b>跟緊大家、不要自己先走</b>。</li>'+
   '</ol></div>'+
 
   '<h2 class="sec">'+ic('alert')+'護照怎麼顧</h2>'+
@@ -176,7 +176,7 @@ function toolEntry(){
     '<li><b>護照絕對不要放托運行李。</b>隨身背包貼身放，過關後就收好。</li>'+
     '<li>出發前<b>拍一張護照資料頁</b>存在手機相簿，再印一份紙本放行李箱。萬一遺失，補辦會快很多。</li>'+
     '<li>飯店入住時櫃檯可能會收走護照登記，<b>記得當天要回來</b>，離開飯店前確認拿回。</li>'+
-    '<li>護照掉了先找領隊，並聯絡駐越南台北經濟文化辦事處（電話在「緊急求助」頁）。</li>'+
+    '<li>護照掉了先找主辦人，並聯絡駐越南台北經濟文化辦事處（電話在「緊急求助」頁）。</li>'+
   '</ul></div>';
 }
 /* 沙壩天氣與穿搭（氣溫資料：climatestotravel.com 沙壩九月月均值，2026-09 查證） */
@@ -219,7 +219,7 @@ function toolExchange(){
   '<h2 class="sec">'+ic('cash')+'在哪裡換錢</h2>'+
   '<div class="info-card"><ul class="dots">'+
     '<li><b>台灣的銀行也能換越南盾，但匯率通常比較差。</b>多數人是在台灣先換好美金，到越南再換成越盾，或直接在當地提款。</li>'+
-    '<li><b>機場換一點就好。</b>機場匯率差，換夠當天車資與零用即可，其餘到市區或請領隊協助。</li>'+
+    '<li><b>機場換一點就好。</b>機場匯率差，換夠當天車資與零用即可，其餘到市區再換。</li>'+
     '<li><b>ATM 提款</b>方便但每筆有手續費，還可能被台灣的銀行再收一次；要用的人出發前先確認金融卡有開通海外提款與密碼。</li>'+
     '<li>換錢時<b>當場點清楚再走</b>，並要求多給一些小面額。</li>'+
   '</ul></div>'+
@@ -236,7 +236,7 @@ function toolExchange(){
     '<dt>飯店、大餐廳</dt><dd>可以刷卡，記得選<b>用越盾結帳</b>（選台幣結帳匯率較差）</dd>'+
     '<dt>市場、小攤、路邊攤</dt><dd>只收現金，準備小鈔</dd>'+
     '<dt>計程車 / Grab</dt><dd>現金最保險；Grab 也可綁卡</dd>'+
-    '<dt>參考匯率</dt><dd>1 台幣 ≈ '+r+' 越盾（領隊可在團務設定更新）</dd>'+
+    '<dt>參考匯率</dt><dd>1 台幣 ≈ '+r+' 越盾（可在團務設定更新）</dd>'+
   '</dl></div>';
 }
 /* 手機出發前設定 */
@@ -263,7 +263,7 @@ function toolPhoneSetup(){
 
   '<h2 class="sec">'+ic('phone')+'存好這些資料</h2>'+
   '<div class="info-card"><ul class="dots">'+
-    '<li>把<b>領隊電話</b>存進通訊錄（緊急求助頁有）。</li>'+
+    '<li>把<b>主辦人電話</b>存進通訊錄（緊急求助頁有）。</li>'+
     '<li><b>飯店名稱與地址截圖</b>存在相簿，走散時可以直接給司機看——本工具站的「計程車回飯店卡」已經是越文版，更好用。</li>'+
     '<li>護照資料頁拍照存起來。</li>'+
     '<li><b>把手機的緊急聯絡人設定好</b>，並記得帶<b>行動電源</b>；山區冷、訊號差，電量掉得比平常快。</li>'+
@@ -278,7 +278,7 @@ function toolMoney(){
   var total=P.money.reduce(function(a,b){return a+b;},0), r=Number(S().settings.vndPerTwd)||820;
   return backBar('越幣點鈔速算')+
     '<div class="warn-box">'+ic('alert')+'<span><b>20,000 與 500,000 都是藍色系</b>、10,000 與 200,000 都偏紅褐色——付錢前請數清楚後面幾個零！</span></div>'+
-    '<div class="total"><div class="muted">已點 '+P.money.length+' 張 · 合計</div><div class="v">'+fmtVND(total)+' 盾</div><div class="t">≈ NT$ '+fmtVND(twd(total))+'</div><div class="r">1 台幣 ≈ '+r+' 盾（'+(P.leader?'<a href="#" data-act="settings">領隊可修改</a>':'領隊設定')+'）</div></div>'+
+    '<div class="total"><div class="muted">已點 '+P.money.length+' 張 · 合計</div><div class="v">'+fmtVND(total)+' 盾</div><div class="t">≈ NT$ '+fmtVND(twd(total))+'</div><div class="r">1 台幣 ≈ '+r+' 盾（'+(P.leader?'<a href="#" data-act="settings">可修改</a>':'團務設定')+'）</div></div>'+
     '<div class="notes">'+NOTES.map(function(n){ return '<button class="note" data-act="noteTap" data-v="'+n.v+'"><span class="sw" style="background:'+n.color+'"></span><span class="nt">'+fmtVND(n.v)+'<small>'+esc(n.note)+'</small></span><span class="nv">≈ NT$ '+twd(n.v)+'</span></button>'; }).join('')+'</div>'+
     '<div class="row"><button class="btn" data-act="moneyUndo">退一張</button><button class="btn" data-act="moneyClear">全部清除</button></div>'+
     '<section class="card"><div class="card-h"><h2>'+ic('refresh')+'反過來算：我想付台幣</h2></div><div class="f"><label>台幣金額</label><input class="in" id="twdIn" type="number" inputmode="numeric" placeholder="例如 300"></div><div class="total" style="margin-top:.6rem"><div class="v" id="twdOut">—</div><div class="muted">盾（大約）</div></div></section>'+
@@ -368,20 +368,20 @@ function toolGrab(){
 function toolHealth(){
   return backBar('身體不適怎麼辦')+
   '<div class="info-card"><div class="ic-h">'+ic('info')+'先講最重要的</div>'+
-    '<p>在國外不舒服，<b>第一件事是告訴領隊</b>，不要自己忍。早講可以調整行程、早點就醫；忍到晚上或上了山才說，處理起來麻煩很多。</p></div>'+
+    '<p>在國外不舒服，<b>第一件事是告訴主辦人</b>，不要自己忍。早講可以調整行程、早點就醫；忍到晚上或上了山才說，處理起來麻煩很多。</p></div>'+
 
   '<h2 class="sec">'+ic('mountain')+'上番西邦會不會高山症</h2>'+
   '<div class="info-card"><ul class="dots">'+
     '<li>沙壩鎮上海拔約 1,500 公尺，<b>一般不會有高山反應</b>。</li>'+
     '<li>番西邦山頂 <b>3,143 公尺</b>，纜車幾分鐘就上去，有些人會覺得<b>頭悶、喘、走幾步就累</b>，這在高海拔是常見反應。</li>'+
     '<li>上去以後<b>走慢一點、少講話、不要跑跳</b>，山頂那幾百階不必勉強走完，坐著看風景一樣值得。</li>'+
-    '<li>覺得頭痛、噁心、喘不過來，<b>就往下走、搭纜車下山</b>，下降高度是最有效的方法，並且告訴領隊。</li>'+
-    '<li>本來就有心臟、肺部或高血壓問題的人，上山前<b>先跟領隊說一聲</b>，行程中互相照應。</li>'+
+    '<li>覺得頭痛、噁心、喘不過來，<b>就往下走、搭纜車下山</b>，下降高度是最有效的方法，並且告訴主辦人。</li>'+
+    '<li>本來就有心臟、肺部或高血壓問題的人，上山前<b>先跟主辦人說一聲</b>，行程中互相照應。</li>'+
   '</ul></div>'+
 
   '<h2 class="sec">'+ic('bus')+'暈車</h2>'+
   '<div class="info-card"><ul class="dots">'+
-    '<li>河內到沙壩的山路<b>彎道很多</b>，容易暈車的人請提早跟領隊說，<b>坐前排</b>會好很多。</li>'+
+    '<li>河內到沙壩的山路<b>彎道很多</b>，容易暈車的人請提早跟主辦人說，<b>坐前排</b>會好很多。</li>'+
     '<li>上車前<b>不要吃太飽</b>，也不要空腹。</li>'+
     '<li>會暈車的人<b>自己從台灣帶慣用的暈車藥</b>，出發前一段時間先吃（依你平常的習慣或藥師指示）。</li>'+
     '<li>車上<b>看遠方、不要滑手機</b>，開一點窗透氣。</li>'+
@@ -392,7 +392,7 @@ function toolHealth(){
     '<li><b>只喝瓶裝水</b>，開瓶前確認封膜完好；水龍頭的水不要生飲，刷牙用瓶裝水比較保險。</li>'+
     '<li>生冷的食物（生菜、生魚、切好的水果）與<b>來路不明的冰塊</b>斟酌，腸胃弱的人避開。</li>'+
     '<li>吃東西前<b>洗手或用乾洗手</b>。</li>'+
-    '<li>拉肚子時<b>先補水</b>（瓶裝水、電解質飲料），少量多次；狀況沒改善或有發燒，跟領隊說並就醫。</li>'+
+    '<li>拉肚子時<b>先補水</b>（瓶裝水、電解質飲料），少量多次；狀況沒改善或有發燒，跟主辦人說並就醫。</li>'+
   '</ul></div>'+
 
   '<h2 class="sec">'+ic('thermo')+'藥品自己帶</h2>'+
@@ -403,7 +403,7 @@ function toolHealth(){
     '<li>越南藥局招牌寫 <b>Nhà thuốc</b>，市區很常見。找藥局或看醫生的越南話，在「越語溝通圖卡 → 身體不適」那一類裡。</li>'+
   '</ul></div>'+
 
-  '<div class="warn-box">'+ic('alert')+'<span><b>緊急狀況打 115（救護車）</b>，並立刻聯絡領隊。電話都在「緊急求助」頁，一鍵可撥。</span></div>'+
+  '<div class="warn-box">'+ic('alert')+'<span><b>緊急狀況打 115（救護車）</b>，並立刻聯絡主辦人。電話都在「緊急求助」頁，一鍵可撥。</span></div>'+
   '<button class="btn block soft" data-act="tool" data-tool="sos">'+ic('alert')+'前往緊急求助頁</button>';
 }
 /* 購物殺價與少數民族禮儀 */
@@ -438,7 +438,7 @@ function toolMarket(){
   '</ul></div>'+
 
   '<h2 class="sec">'+ic('heart')+'一個小提醒</h2>'+
-  '<div class="info-card"><p>路上會遇到賣東西或討錢的孩子。<b>不建議直接給錢或糖果</b>——這會讓家長更傾向讓孩子上街而不是上學。真的想幫忙，<b>跟大人買一件他們做的東西</b>，或交給領隊統一處理，比較實際。</p></div>';
+  '<div class="info-card"><p>路上會遇到賣東西或討錢的孩子。<b>不建議直接給錢或糖果</b>——這會讓家長更傾向讓孩子上街而不是上學。真的想幫忙，<b>跟大人買一件他們做的東西</b>，比較實際。</p></div>';
 }
 /* 廁所與飲水 */
 function toolBasics(){
@@ -489,7 +489,7 @@ function toolSOS(){
     '</div>'+
     '<button class="btn block soft" data-act="nbGo" data-id="lost">'+ic('book')+'萬一走散，這樣做</button>';
 }
-/* 集合點名（領隊） */
+/* 集合點名（管理者） */
 function toolRollcall(){
   var rc=S().rollcall||{present:{}}, ms=members(), b=S().broadcast||{};
   var present=ms.filter(function(m){return rc.present&&rc.present[m.id];});

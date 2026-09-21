@@ -35,7 +35,7 @@ var ACT={
   leaderLock:function(){ P.leader=false; savePrefs(); closeSheet(); if(P.tool==='rollcall') P.tool='menu'; render(); toast('已鎖定，回到團員模式'); },
   pinKey:function(t){ var k=t.getAttribute('data-k'); if(k==='C') SHEET.pin=''; else if(k==='⌫') SHEET.pin=SHEET.pin.slice(0,-1); else if(SHEET.pin.length<4) SHEET.pin+=k;
     var d=el('pinDisp'); var s=SHEET.pin; d.textContent=[0,1,2,3].map(function(i){return s[i]?'●':'＿';}).join(' ');
-    if(s.length===4){ if(pinOK(s)){ P.leader=true; savePrefs(); closeSheet(); render(); toast('已進入領隊管理模式'); pinMigrate(); } else { toast('PIN 不正確'); SHEET.pin=''; setTimeout(function(){ if(el('pinDisp')) el('pinDisp').textContent='＿ ＿ ＿ ＿'; },400); } } },
+    if(s.length===4){ if(pinOK(s)){ P.leader=true; savePrefs(); closeSheet(); render(); toast('已進入管理模式'); pinMigrate(); } else { toast('PIN 不正確'); SHEET.pin=''; setTimeout(function(){ if(el('pinDisp')) el('pinDisp').textContent='＿ ＿ ＿ ＿'; },400); } } },
   sheetBg:function(t,ev){ if(ev.target===t) closeSheet(); },
   sheetClose:function(){ closeSheet(); },
   fullClose:function(){ if(FULL_LOCK) return; closeFull(); },
@@ -61,7 +61,7 @@ var ACT={
   delMember:function(){ var id=SHEET.id; S().members.items=members().filter(function(m){return m.id!==id;}); closeSheet(); Store.save('members'); toast('已移出名單'); },
   editBroadcast:function(){ sheetBroadcast(); },
   saveBroadcast:function(){ var b=S().broadcast; b.date=sv('date'); b.time=sv('time'); b.idle=false; b.label=sv('label')||'集合'; b.location=sv('location'); b.tip=sv('tip'); b.updatedAt=stamp(); closeSheet(); Store.save('broadcast'); toast('廣播已更新，全團手機會同步');
-    /* 存完直接把「貼到 LINE」端到領隊面前：沒開 App 的人只能靠群組通知 */
+    /* 存完直接把「貼到 LINE」端到管理者面前：沒開 App 的人只能靠群組通知 */
     render(); setTimeout(sheetShare,350); },
   shareBroadcast:function(){ sheetShare(); },
   lineSend:function(){ var u='https://line.me/R/msg/text/?'+encodeURIComponent(bcShareText());
@@ -72,7 +72,7 @@ var ACT={
     catch(e){ toast('請長按上面那段文字手動複製'); } },
   clearBroadcast:function(){ openSheet({title:'清空目前廣播？',body:
     '<div class="muted">清空後，首頁廣播卡會改成顯示：</div>'+
-    '<div class="hero" style="margin-top:.6rem"><div class="lab">'+ic('megaphone')+'領隊即時廣播</div><div class="time" style="font-size:1.9rem">自由活動</div><div class="loc"><span>目前沒有集合安排，請等領隊下次廣播通知。</span></div></div>'+
+    '<div class="hero" style="margin-top:.6rem"><div class="lab">'+ic('megaphone')+'即時廣播</div><div class="time" style="font-size:1.9rem">自由活動</div><div class="loc"><span>目前沒有集合安排，請等下次廣播通知。</span></div></div>'+
     '<div class="muted" style="margin-top:.6rem">下一次設定集合時間時會自動恢復正常顯示。</div>',
     foot:'<button class="btn" data-act="sheetClose">取消</button><button class="btn warn" data-act="clearBroadcastGo">'+ic('trash')+'確定清空</button>'}); },
   clearBroadcastGo:function(){ var b=S().broadcast; b.time=''; b.label=''; b.location=''; b.tip=''; b.idle=true; b.updatedAt=stamp();

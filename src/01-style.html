@@ -254,7 +254,7 @@ h2.sec{margin:.25rem 0 0;font-size:1rem;font-weight:900;color:var(--ink-2);displ
 .dbg-row output{flex:none;width:2.6rem;text-align:right;font-size:.82rem;font-weight:900;color:var(--ink-3);
   font-variant-numeric:tabular-nums}
 .dbg-tip{font-size:.78rem;margin-top:.25rem}
-/* 效果預覽：一張縮小的行程卡，讓領隊套用前就看到文字會不會被吃掉 */
+/* 效果預覽：一張縮小的行程卡，讓管理者套用前就看到文字會不會被吃掉 */
 .dbg-prev{position:relative;display:grid;grid-template-columns:48px 1fr;gap:.5rem;margin-top:.6rem;
   background:var(--card);border:1.5px solid var(--line);border-radius:.7rem;padding:.6rem;overflow:hidden}
 .dbg-prev::before{content:"";position:absolute;inset:0;background-image:var(--dbg);background-size:cover;
@@ -494,7 +494,7 @@ select.in{appearance:none;-webkit-appearance:none;padding-right:1.9rem;
 .tip-banner button{margin-left:auto;border:0;background:transparent;color:var(--ink-3);font-weight:900;min-width:2.5rem;min-height:2.5rem;flex-shrink:0}
 .tip-banner span{flex:1;min-width:0}
 .tip-banner .tb-go{margin-left:0;color:var(--indigo);text-decoration:underline;min-width:0;padding:0 .35rem;white-space:nowrap}
-/* 廣播貼到 LINE 的預覽框：讓領隊送出前先看一眼實際會長什麼樣 */
+/* 廣播貼到 LINE 的預覽框：讓管理者送出前先看一眼實際會長什麼樣 */
 .share-prev{margin-top:.7rem;white-space:pre-wrap;word-break:break-word;background:var(--soft);border:1px solid var(--line);border-radius:.7rem;padding:.75rem .85rem;font-size:.92rem;line-height:1.7;font-weight:600;color:var(--ink);-webkit-user-select:text;user-select:text}
 /* ===== 安裝成 App／加到主畫面 ===== */
 /* 按鈕字級固定用 px，不跟著「AA」放大，320px 小螢幕才不會把區塊標題擠爆 */
@@ -552,7 +552,7 @@ select.in{appearance:none;-webkit-appearance:none;padding-right:1.9rem;
 .g-ref>.card,.g-ref>.ccard{background:transparent;border-color:var(--line)}
 .g-ref .chead .ttl{color:var(--ink-3)}
 .g-ref .fl-col{background:var(--card)}
-/* ===== 高亮提醒：領隊指定「這張卡大家要看」 =====
+/* ===== 高亮提醒：管理者指定「這張卡大家要看」 =====
    呼吸光暈只動 opacity，不動 box-shadow 尺寸，手機負擔最小。
    .hlw 是額外包的一層，因為 .ccard 有 overflow:hidden，光暈畫在卡片裡會被裁掉。
    底色規則要寫在 .g-later/.g-ref 之後，特異性同分時才壓得過分區樣式。 */

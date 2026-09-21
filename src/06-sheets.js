@@ -31,18 +31,18 @@ function closeFull(){ el('fullRoot').innerHTML=''; histPop('full'); FULL_LOCK=fa
 
 /* ===== 各種表單 ===== */
 function sheetPin(){
-  openSheet({title:'領隊模式',body:'<div class="muted" style="text-align:center">請輸入 4 位數 PIN 碼</div><div class="pin-disp" id="pinDisp">＿ ＿ ＿ ＿</div><div class="pin">'+
+  openSheet({title:'管理模式',body:'<div class="muted" style="text-align:center">請輸入 4 位數 PIN 碼</div><div class="pin-disp" id="pinDisp">＿ ＿ ＿ ＿</div><div class="pin">'+
     ['1','2','3','4','5','6','7','8','9','C','0','⌫'].map(function(k){ return '<button data-act="pinKey" data-k="'+k+'">'+k+'</button>'; }).join('')+'</div>',focus:false});
   SHEET.pin='';
 }
 function sheetLeaderMenu(){
-  openSheet({title:'領隊管理',body:'<div class="stack">'+
+  openSheet({title:'管理模式',body:'<div class="stack">'+
     '<button class="btn big" data-act="tool" data-tool="rollcall">'+ic('clipboard')+'<span class="b2">集合點名</span></button>'+
     '<button class="btn big" data-act="editBroadcast">'+ic('megaphone')+'<span class="b2">修改即時廣播</span></button>'+
     '<button class="btn big" data-act="editMorning">'+ic('sun')+'<span class="b2">明早時程</span></button>'+
     '<button class="btn big" data-act="settings">'+ic('gear')+'<span class="b2">團務設定</span></button>'+
     '<button class="btn big" data-act="pickHotel">'+ic('bed')+'<span class="b2">飯店資料 / 切換入住</span></button>'+
-    '<button class="btn big" data-act="leaderLock">'+ic('lock')+'<span class="b2">鎖定領隊模式</span></button></div>'});
+    '<button class="btn big" data-act="leaderLock">'+ic('lock')+'<span class="b2">鎖定管理模式</span></button></div>'});
 }
 function sheetBroadcast(){
   var b=S().broadcast||{}, cur=items().filter(function(x){return x.isCurrent;})[0];
@@ -67,7 +67,7 @@ function sheetMorning(){
 }
 /* ===== 行程底圖（放在行程編輯表單裡，每個行程項目一張）=====
    底圖存在獨立的 photos 文件、套用後直接寫回，不跟著表單的「儲存」按鈕走——
-   避免領隊改完圖又按取消，結果圖也一起不見；也避免每改一個字就要重傳圖片。 */
+   避免管理者改完圖又按取消，結果圖也一起不見；也避免每改一個字就要重傳圖片。 */
 var DBG=null;   /* 正在裁切中的狀態：{id,img,s0,z,tx,ty,px,py} */
 function dbgField(id){
   if(!id) return '<div class="f"><label>行程底圖</label><div class="muted dbg-tip">先按下面的「儲存」把這個行程建立起來，再回來編輯就能加底圖。</div></div>';
@@ -243,7 +243,7 @@ function sheetTripName(){
     '<div class="muted" style="margin-top:.6rem">太長會在標頭以「…」截斷，不會換行。窄螢幕（iPhone SE）大約放得下 10 個中文字。</div>',
     foot:footBtns('saveTripName')});
 }
-/* --- 防呆標籤管理（領隊） --- */
+/* --- 防呆標籤管理（管理者） --- */
 function sheetTags(){
   var list=tagList();
   openSheet({title:'防呆標籤',body:
@@ -292,7 +292,7 @@ function sheetMemberView(id){
 function sheetPickMe(){
   openSheet({title:'我是誰？',focus:true,tall:true,body:'<div class="muted">只是把你的卡片標起來方便找，不需要密碼，隨時可以改。</div><div class="search">'+ic('search')+'<input id="meSearch" type="search" placeholder="輸入姓名…" autocomplete="off"></div><div id="meList" class="mlist">'+meListHTML('')+'</div>'});
 }
-function meListHTML(q){ return members().filter(function(m){return !q||m.name.indexOf(q)>=0;}).map(function(m){return memberCard(m,{sm:true,act:'setMe',right:'room'});}).join('')||'<div class="muted">找不到，請問領隊</div>'; }
+function meListHTML(q){ return members().filter(function(m){return !q||m.name.indexOf(q)>=0;}).map(function(m){return memberCard(m,{sm:true,act:'setMe',right:'room'});}).join('')||'<div class="muted">找不到，請問主辦人</div>'; }
 function sheetRooms(){
   var byRoom={}; members().forEach(function(m){ var k=m.room||''; (byRoom[k]=byRoom[k]||[]).push(m); });
   var keys=Object.keys(byRoom).sort(function(a,b){return a.localeCompare(b,undefined,{numeric:true});});
@@ -309,9 +309,9 @@ function sheetHotelEdit(id){
   var st=S().settings, h=(st.hotels||[]).filter(function(x){return x.id===id;})[0]||{name:'',nameVi:'',addrVi:'',phone:'',wifi:'',wifiPass:'',wifiNote:'',breakfast:'',leaderRoom:'',nights:''};
   openSheet({title:id?'編輯飯店':'新增飯店',focus:true,body:
     fld('飯店名稱（中文＋英文）',inp('name',h.name))+fld('越文全名（給司機看）',inp('nameVi',h.nameVi))+fld('越文地址',inp('addrVi',h.addrVi))+
-    '<div class="grid2">'+fld('飯店電話',inp('phone',h.phone,'tel'))+fld('領隊房號',inp('leaderRoom',h.leaderRoom))+'</div>'+
+    '<div class="grid2">'+fld('飯店電話',inp('phone',h.phone,'tel'))+fld('主辦人房號',inp('leaderRoom',h.leaderRoom))+'</div>'+
     '<div class="grid2">'+fld('Wi-Fi 名稱',inp('wifi',h.wifi,'text','placeholder="例：PaosSapa-Guest"'))+fld('Wi-Fi 密碼',inp('wifiPass',h.wifiPass,'text','placeholder="例：sapa2026"'))+'</div>'+
-    fld('Wi-Fi 補充說明（留白就不顯示）',inp('wifiNote',(h.wifiNote===undefined||h.wifiNote===null?'連不上請到櫃台問，或跟領隊說。':h.wifiNote),'text','placeholder="例：連不上請到櫃台問"'))+
+    fld('Wi-Fi 補充說明（留白就不顯示）',inp('wifiNote',(h.wifiNote===undefined||h.wifiNote===null?'連不上請到櫃台問，或跟主辦人說。':h.wifiNote),'text','placeholder="例：連不上請到櫃台問"'))+
     fld('入住晚數',inp('nights',h.nights,'text','placeholder="例：第 2、3 晚"'))+
     fld('早餐時間／地點',inp('breakfast',h.breakfast)),
     foot:footBtns('saveHotel',id?'<button class="btn dng" data-act="delHotel">刪除</button>':'')});
@@ -345,7 +345,7 @@ function sheetMoveMember2(id){
   openSheet({title:esc(m.name),body:body});
   SHEET.id=id;
 }
-/* --- 臨時標籤管理（領隊，例：用餐分桌的素食／已點餐…選項） --- */
+/* --- 臨時標籤管理（管理者，例：用餐分桌的素食／已點餐…選項） --- */
 function sheetTagOpts(){
   var sc=scenario(); if(!sc) return;
   var opts=scnTagOpts(sc);
@@ -377,7 +377,7 @@ function sheetSettings(){
     fld('團名',inp('tripName',st.tripName))+
     '<div class="grid2">'+fld('出發日期（第 1 天）',inp('startDate',st.startDate,'date'))+fld('總天數',inp('days',st.days,'number','min="1" max="15" inputmode="numeric"'))+'</div>'+
     fld('今天是第幾天','<select class="in" name="dayOverride"><option value="0">依日期自動判斷</option>'+Array.apply(null,{length:st.days||5}).map(function(_,i){return '<option value="'+(i+1)+'"'+(st.dayOverride===i+1?' selected':'')+'>手動指定：第 '+(i+1)+' 天</option>';}).join('')+'</select>')+
-    '<div class="grid2">'+fld('改領隊 PIN（不改就留白）',inp('pin','','tel','maxlength="6" inputmode="numeric" placeholder="4 位數字" autocomplete="off"'))+fld('1 台幣 ≈ 幾越盾',inp('vndPerTwd',st.vndPerTwd,'number','inputmode="numeric"'))+'</div>'+
+    '<div class="grid2">'+fld('改管理 PIN（不改就留白）',inp('pin','','tel','maxlength="6" inputmode="numeric" placeholder="4 位數字" autocomplete="off"'))+fld('1 台幣 ≈ 幾越盾',inp('vndPerTwd',st.vndPerTwd,'number','inputmode="numeric"'))+'</div>'+
     '<div class="muted" style="margin-top:-.5rem">PIN 只會以雜湊保存，雲端看不到明文。</div>'+
     '<h2 class="sec">'+ic('plane')+'航班（起飛時間）</h2>'+
     '<div class="grid2">'+fld('長榮 去程 桃園起飛',timeField('eva_out',f.eva.out))+fld('長榮 回程 河內起飛',timeField('eva_back',f.eva.back))+fld('華航 去程 桃園起飛',timeField('ci_out',f.ci.out))+fld('華航 回程 河內起飛',timeField('ci_back',f.ci.back))+'</div>'+fld('團體報到說明（顯示在航班卡下方）',ta('flight_note',f.note))+
@@ -399,7 +399,7 @@ function sheetHomeScn(){
 }
 /* 通知團員：把廣播排版好，一鍵丟進 LINE 群組。
    「開啟 LINE 傳送」用 LINE 的分享網址（line.me/R/msg/text/），點下去會直接跳到 LINE 選聊天室，
-   文字已經填好，領隊只要選群組按送出；萬一那支手機沒裝 LINE，還有「複製文字」可以退。 */
+   文字已經填好，管理者只要選群組按送出；萬一那支手機沒裝 LINE，還有「複製文字」可以退。 */
 function sheetShare(){
   var txt=bcShareText();
   openSheet({title:'通知團員',body:
@@ -458,8 +458,8 @@ function sheetInstall(){
   }
   openSheet({title:e.ios?'加到主畫面（照著做）':'安裝成 App（照著做）',tall:(e.ios||e.inapp),body:why+'<div class="ig">'+h.join('')+'</div>'});
 }
-/* 首頁卡片位置：把 cardZone() 的規則開放給領隊調整。
-   下面「現在的結果」是即時算出來的，領隊改完不用回首頁就能確認。 */
+/* 首頁卡片位置：把 cardZone() 的規則開放給管理者調整。
+   下面「現在的結果」是即時算出來的，管理者改完不用回首頁就能確認。 */
 function sheetCardZones(){
   var z=zoneCfg(), di=dayInfo(), ord=zoneOrder(), h=[];
   function sl(k,cur,opts,cls){ return '<select class="in'+(cls?' '+cls:'')+'" data-act="zoneSet" data-k="'+esc(k)+'">'+

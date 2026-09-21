@@ -1,5 +1,5 @@
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '3.16';
+var APP_VERSION = '3.17';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -179,7 +179,7 @@ var PHRASES = [
   {cat:'sos',e:'🗺️',zh:'請幫我看地圖，我迷路了',vi:'Tôi bị lạc đường. Xin xem giúp bản đồ này.',say:'兜依 逼 辣 冷。新 顯 族 半 抖 耐'}
 ];
 
-/* ===== 預設示範資料（正式使用時由領隊在管理模式修改，或由雲端資料覆蓋） ===== */
+/* ===== 預設示範資料（正式使用時由管理者在管理模式修改，或由雲端資料覆蓋） ===== */
 /* photos 獨立成一份文件：底圖不能塞在 itinerary 裡，
    因為新增／編輯行程會用 Store.save('itinerary') 整份覆寫，那樣每改一個字都要重傳所有圖。 */
 var DOC_KEYS = ['settings','broadcast','itinerary','members','groups','rollcall','notebook','photos'];
