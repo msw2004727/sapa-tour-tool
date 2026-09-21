@@ -12,9 +12,10 @@
 |---|---|
 | 正式網址 | https://750hd.com （Cloudflare 網域 → GitHub Pages） |
 | GitHub | `msw2004727/sapa-tour-tool`，分支 `main` |
-| 目前版本 | v3.16 |
+| 目前版本 | v3.17 |
 | 旅遊日期 | 2026-09-24 ～ 09-28（5 天 4 夜） |
-| 使用者 | 33 位團員（**多數是長輩**）＋ 1 位領隊（小麥，PIN 進入管理模式） |
+| 使用者 | 33 位團員（**多數是長輩**）；主辦人是小麥，用 PIN 進入管理模式 |
+| 性質 | **團體自由行，沒有領隊、沒有導遊** |
 | 技術 | 純 Vanilla JS，無框架、無打包工具、無 npm 執行期相依 |
 | 後端 | Firebase Realtime Database（專案 `sapa-tour`，新加坡 asia-southeast1） |
 
@@ -26,6 +27,7 @@
 2. **點得到 > 緊湊**：觸控目標至少 44px
 3. **不要嚇到他們**：不用 emoji 當功能圖示（各家手機字型差很多，長輩看到的圖案不一致），一律用 inline SVG
 4. **設計基準是 iPhone SE 一代的 320px 寬**，不是 375px
+5. **畫面上不能出現「領隊」**：這團是自由行。管理功能叫「管理模式／管理專區」，廣播叫「即時廣播」，說明文字要找人時寫「主辦人」。`audit/wording.js` 會擋。
 
 寫任何 UI 之前先想：一位 70 歲、在越南山區、可能沒戴老花眼鏡的人看得懂嗎？
 
@@ -95,7 +97,7 @@ npx playwright install chromium
 # 改完 src/ 之後
 node build.js            # 或 npm run build
 npm run test:quick       # 快檢：regress + sheetfit（約 1 分鐘）
-npm test                 # 全部 9 支測試（約 5 分鐘）
+npm test                 # 全部 10 支測試（約 5 分鐘）
 
 # 在瀏覽器看
 npm run serve            # http://localhost:8080
@@ -107,7 +109,7 @@ npm run serve            # http://localhost:8080
 
 ### 改版時記得進版
 
-`src/03-data.js` 第 2 行的 `APP_VERSION` 要跟著改。工具頁最下方會顯示；領隊也可以在資料庫 `settings/minVersion` 填版本號，讓舊版手機跳「有新版本」提示。
+`src/03-data.js` 第 2 行的 `APP_VERSION` 要跟著改。工具頁最下方會顯示；也可以在資料庫 `settings/minVersion` 填版本號，讓舊版手機跳「有新版本」提示。
 
 ---
 
@@ -173,6 +175,7 @@ Cowork 的容器**沒有 GitHub 憑證，不能 `git push`**，而且對話結�
 | `audit/synctest.js` | 離線佇列、重播、PIN 遷移、版本提示 |
 | `audit/membersave.js` | 編輯團員存檔 → 重新整理的端對端回歸 |
 | `audit/insttest.js` | 「安裝 App」按鈕在 320px 特大字下不溢出 |
+| `audit/wording.js` | 所有畫面與原始碼不出現「領隊」；住宿卡的「LINE聯繫」按鈕 |
 
 `audit/_lib.js` 負責找 playwright 與算出 `standalone.html` 的位置，測試裡不要再寫死路徑。
 
@@ -258,7 +261,7 @@ DOC_KEYS = ['settings','broadcast','itinerary','members','groups','rollcall','no
 | 文件 | 內容 | 大小（實測） |
 |---|---|---|
 | `settings` | 團名、日期、PIN 雜湊、飯店、航空公司、卡片分區與高亮、防呆標籤… | 2.5 KB |
-| `broadcast` | 領隊即時廣播（時間、地點、叮嚀、`idle` 自由活動旗標） | 0.1 KB |
+| `broadcast` | 即時廣播（時間、地點、叮嚀、`idle` 自由活動旗標） | 0.1 KB |
 | `itinerary` | 30 站行程 | 7.4 KB |
 | `members` | 33 人（姓名、房號、航空公司、徽章、備註） | 4 KB |
 | `groups` | 分組情境與指派 | 1.1 KB |
@@ -271,17 +274,17 @@ DOC_KEYS = ['settings','broadcast','itinerary','members','groups','rollcall','no
 ### 同步機制的兩個重點
 
 1. **根節點監聽**：`db.ref(root).on('value')`。初次同步會下載整包，之後 Firebase 走**差異推送**，改一個欄位只傳那個欄位（這點以前判斷錯過，不要再用「整包重下」當理由做設計取捨）。
-2. **離線操作佇列**：寫入先進 `Store.q`，離線時累積、連線後 FIFO 送出。`applyRemote()` 收到雲端快照時，會**先把佇列裡還沒送出的本機修改重新疊上去**，不是直接覆蓋。纜車上沒訊號時領隊改的廣播，下山後不會被舊快照蓋掉。
+2. **離線操作佇列**：寫入先進 `Store.q`，離線時累積、連線後 FIFO 送出。`applyRemote()` 收到雲端快照時，會**先把佇列裡還沒送出的本機修改重新疊上去**，不是直接覆蓋。纜車上沒訊號時主辦人改的廣播，下山後不會被舊快照蓋掉。
 
 ### 存在手機自己的（不同步）
 
-`localStorage['sapa-prefs']`：字級 `fs`、主題 `theme`、我是誰 `meId`、領隊模式 `leader`、行程頁的閱讀模式 `planMode`、勾選清單 `checks`、卡片展開狀態 `cards`。
+`localStorage['sapa-prefs']`：字級 `fs`、主題 `theme`、我是誰 `meId`、管理模式 `leader`、行程頁的閱讀模式 `planMode`、勾選清單 `checks`、卡片展開狀態 `cards`。
 
 > **注意這裡的耦合風險。** `planMode` 曾經被拿去當首頁顯示說明文字的條件，結果同一個人在手機與電腦上看到不一樣的首頁 — 因為那是每台裝置各自記的。分頁自己的 UI 狀態不要拿去控制別的分頁。
 
 ---
 
-## 九、領隊上線待辦（出發前）
+## 九、主辦人上線待辦（出發前）
 
 1. **改掉 PIN**（目前仍是 `8888`）：右上角 🔒 → 8888 → 工具 → 團務設定
 2. **填緊急聯絡人電話**：原始碼刻意不含電話，要在管理模式輸入才會存進雲端
@@ -297,7 +300,7 @@ DOC_KEYS = ['settings','broadcast','itinerary','members','groups','rollcall','no
 - `config.js` 裡的 Firebase 金鑰是**前端公開金鑰**，本來就會出現在網頁原始碼裡，不是秘密。真正的防線是資料庫規則。
 - 目前規則等同「**知道網址的人可讀寫**」（`firebase.rules.json`）。對一個 5 天的私人團可以接受，網址只在 LINE 群組流通。
 - 想收緊的話：`config.js` 的 `auth` 改成 `'anon'`，套用 `firebase.rules.auth.json`（`.write` 改成 `auth != null`），只有開過網頁的裝置能寫。**這個切換還沒做，由小麥決定。**
-- 領隊 PIN 存的是 SHA-256 雜湊（`settings.pinHash`），不是明文。PIN 只是防誤觸，不是資安機制。
+- 管理 PIN 存的是 SHA-256 雜湊（`settings.pinHash`），不是明文。PIN 只是防誤觸，不是資安機制。
 
 ---
 
@@ -308,7 +311,7 @@ DOC_KEYS = ['settings','broadcast','itinerary','members','groups','rollcall','no
 | `notes/01-設計說明與待確認資料.md` | v1.0～v3.13 每一版的設計決策、為什麼這樣做、踩過的坑。**要改既有功能前先在這裡搜一下** |
 | `notes/02-優化計劃書.md` | v2.0 那次通盤審查的 27 項清單 |
 | `notes/03-改版日誌_v3.14起.md` | v3.14 之後的改版 |
-| `notes/04-部署與Firebase設定.md` | 從零建 Firebase 專案的 10 分鐘步驟、部署細節、領隊上線清單（原本的 repo README） |
+| `notes/04-部署與Firebase設定.md` | 從零建 Firebase 專案的 10 分鐘步驟、部署細節、上線清單（原本的 repo README） |
 
 ---
 
