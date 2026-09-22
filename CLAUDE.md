@@ -311,7 +311,9 @@ DOC_KEYS = ['settings','broadcast','itinerary','members','groups','rollcall','no
 | `bcActive`（v3.19） | 廣播的集合時間過了 4 小時就視為過期，首頁大字卡改回「今天下一站」；資料本身不刪 |
 | `bcDate`（v3.19） | 沒有日期的舊廣播，用 `_ts`（存檔時間）推回是哪一天，不會每天復活 |
 
-`firebase.rules.json` 也改成 `$doc` 層級才可寫、不可整份刪除、`members`／`itinerary` 至少要有 `items/0`。**這份規則要有人到 Firebase 主控台貼上才生效**，repo 裡的檔案只是版本紀錄。
+`firebase.rules.json` 也改成 `$doc` 層級才可寫、不可整份刪除、`members`／`itinerary` 至少要有 `items/0`。**2026-09-22 已貼到 Firebase 主控台並發布生效**。以後改規則一樣要到主控台貼上才會生效，repo 裡的檔案只是版本紀錄——兩邊要保持一致。
+
+> 規則模擬工具的「set」會把資料**合併**進現有資料再判斷，所以「整份存檔少了 items」這類情況在模擬器會誤判成通過；要驗證請用「update」或實際寫入。
 
 ### 同步機制的兩個重點
 
@@ -340,7 +342,8 @@ DOC_KEYS = ['settings','broadcast','itinerary','members','groups','rollcall','no
 ## 十、安全性現況
 
 - `config.js` 裡的 Firebase 金鑰是**前端公開金鑰**，本來就會出現在網頁原始碼裡，不是秘密。真正的防線是資料庫規則。
-- 目前規則等同「**知道網址的人可讀寫**」（`firebase.rules.json`）。對一個 5 天的私人團可以接受，網址只在 LINE 群組流通。
+- 目前規則（`firebase.rules.json`，2026-09-22 生效）：**知道網址的人可讀、可改個別內容**，但不能一次覆寫整個團、不能整份刪除任何一份資料、名單與行程不能存成空的、每份資料都要帶 `_ts`、`trip` 以外一律不可讀寫。對一個 5 天的私人團可以接受，網址只在 LINE 群組流通。
+- 生效前的舊規則（`trip` 底下完全可讀寫）：`{"rules":{"trip":{".read":true,".write":true,"$doc":{".validate":"newData.hasChildren() && newData.child('_ts').isNumber()"}},"$other":{".read":false,".write":false}}}`——萬一新規則出問題，貼回這段就能還原。
 - 想收緊的話：`config.js` 的 `auth` 改成 `'anon'`，套用 `firebase.rules.auth.json`（`.write` 改成 `auth != null`），只有開過網頁的裝置能寫。**這個切換還沒做，由小麥決定。**
 - 管理 PIN 存的是 SHA-256 雜湊（`settings.pinHash`），不是明文。PIN 只是防誤觸，不是資安機制。
 
