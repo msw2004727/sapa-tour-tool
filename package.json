@@ -1,6 +1,6 @@
 {
   "name": "sapa-tour-tool",
-  "version": "3.19.0",
+  "version": "3.20.0",
   "private": true,
   "description": "月半越南團旅 — 越南沙壩 33 人團體旅遊隨身工具（單檔 PWA）",
   "scripts": {
