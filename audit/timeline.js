@@ -140,13 +140,91 @@ const BC={time:'05:30',label:'集合',location:'桃園機場第二航廈',tip:''
     ck('出發前存的無日期廣播被當成 9/24',r.bd==='2026-09-24',r);
     ck('第 3 天清晨不會再冒出機場集合',!r.on&&/今天行程/.test(r.hero),r);
     ck('出發前準備就算被釘在「現在」，出發後也收起來',r.prep==='hide',r);
-    ck('其他被釘住的卡片照舊（航班仍在現在）',r.flight==='now',r); await ctx.close(); }
+    ck('航班卡第 3 天沒有要搭的飛機：就算被釘住也收起（v3.20）',r.flight==='hide',r); await ctx.close(); }
   { const {ctx,p}=await mk('2026-09-25T21:00');
     const r=await p.evaluate(()=>{ S().broadcast={_ts:Date.now(),idle:false,label:'大廳集合',location:'飯店大廳',time:'07:00',tip:'',updatedAt:'20:00'}; return {bd:bcDate(),diff:bcDiffMin()}; });
     ck('旅途中晚上存的「07:00」（無日期）指的是隔天早上',r.bd==='2026-09-26'&&r.diff===660,r); await ctx.close(); }
   { const {ctx,p}=await mk('2026-09-21T14:00');
     const r=await p.evaluate(()=>{ S().settings.zones={manual:{prep:'now'},mode:'card',prepUntil:'start'}; return cardZone('prep',dayInfo()); });
     ck('出發前，被釘住的出發前準備照樣在「現在」',r==='now',r); await ctx.close(); }
+  console.log('[斷言 7] 航班卡：去程時只看去程、回程時只看回程（v3.20）');
+  const PIN={manual:{flight:'now',hotel:'auto',morning:'auto',prep:'now'},mode:'card',order:['prep','flight','today','hotel','morning'],prepUntil:'start'};
+  const flightAt=async(t)=>{ const {ctx,p,errs}=await mk(t);
+    const r=await p.evaluate(pin=>{ S().settings.zones=pin; S().settings.flights={eva:{out:'09:00',back:'12:05'},ci:{out:'08:20',back:'11:30'},note:'全體 05:30 在桃園機場集合'};
+      S().broadcast={time:'',label:'',location:'',tip:'',idle:false}; P.meId=members()[0].id; members()[0].airline='ci'; P.cards={flight:{o:1,ts:9e12}}; P.tab='home'; render();
+      const c=[...document.querySelectorAll('.ccard')].find(x=>x.querySelector('[data-id="flight"]'));
+      const strip=[...document.querySelectorAll('.me-strip .k')].map(e=>e.textContent);
+      const card=c?c.innerText.replace(/\s+/g,' '):'';
+      if(cardOpen('flight')) cardToggle('flight'); render();   /* 收起來時的摘要 */
+      const c2=[...document.querySelectorAll('.ccard')].find(x=>x.querySelector('[data-id="flight"]'));
+      return {zone:cardZone('flight',dayInfo()),phase:(typeof flightPhase==='function'?flightPhase():null),card,sum:c2?c2.querySelector('.chead').innerText.replace(/\s+/g,' '):'',strip}; },PIN);
+    await ctx.close(); return Object.assign(r,{errs}); };
+  const F0=await flightAt('2026-09-21T14:00'), F1=await flightAt('2026-09-24T12:30'), F2=await flightAt('2026-09-25T10:00'), F3=await flightAt('2026-09-26T10:00'),
+        F4=await flightAt('2026-09-27T10:00'), F5=await flightAt('2026-09-28T07:00'), F6=await flightAt('2026-09-29T10:00');
+  for(const [n,F] of [['出發前',F0],['第 1 天',F1]]){
+    ck(n+'：標題是「去程航班」、有 08:20 與 09:00',/去程航班/.test(F.card)&&/08:20/.test(F.card)&&/09:00/.test(F.card),F.card);
+    ck(n+'：看不到回程時間與「回程」字樣',!/回程|11:30|12:05/.test(F.card),F.card);
+    ck(n+'：我的資訊有「報到航廈」',F.strip.includes('報到航廈'),F.strip); }
+  ck('出發前：收起時的摘要寫出哪家航空（華航 08:20・長榮 09:00）',/華航 08:20・長榮 09:00/.test(F0.sum),F0.sum);
+  ck('第 1 天：去程報到說明照常顯示（出發前沒廣播時它在首頁大字卡）',/全體 05:30 在桃園機場集合/.test(F1.card),F1.card);
+  for(const [n,F] of [['第 2 天',F2],['第 3 天',F3]])
+    ck(n+'：沒有要搭的飛機，航班卡收起（即使被釘在現在）',F.zone==='hide'&&!F.card,F);
+  for(const [n,F] of [['第 4 天',F4],['第 5 天',F5],['回國後',F6]]){
+    ck(n+'：標題是「回程航班」、有 11:30 與 12:05',/回程航班/.test(F.card)&&/11:30/.test(F.card)&&/12:05/.test(F.card),F.card);
+    ck(n+'：看不到去程時間、桃園航廈與機場集合說明',!/去程|08:20|09:00|桃園|05:30/.test(F.card),F.card);
+    ck(n+'：我的資訊不再顯示桃園「報到航廈」',!F.strip.includes('報到航廈'),F.strip); }
+  ck('第 4 天：被釘在「現在」照樣在現在',F4.zone==='now',F4.zone);
+  ck('回程摘要先飛的在前（華航 11:30・長榮 12:05）',/華航 11:30・長榮 12:05/.test(F5.sum)&&!/08:20|09:00/.test(F5.sum),F5.sum);
+  ck('航班卡各時間點無 JS 錯誤',[F0,F1,F2,F3,F4,F5,F6].every(F=>!F.errs.length));
+  { const {ctx,p}=await mk('2026-09-28T07:00');
+    const r=await p.evaluate(()=>{ S().settings.flights={eva:{out:'09:00',back:''},ci:{out:'08:20',back:''}}; P.cards={flight:{o:1,ts:9e12}}; P.tab='home'; render();
+      const c=[...document.querySelectorAll('.ccard')].find(x=>x.querySelector('[data-id="flight"]')); return c?c.innerText.replace(/\s+/g,' '):''; });
+    ck('回程時間還沒填：寫「待公布」而不是「--:--」',/待公布/.test(r)&&!/--:--/.test(r),r); await ctx.close(); }
+
+  console.log('[斷言 8] 廣播表單的日期預設與「時間已過」防呆（v3.20）');
+  const AIR={date:'2026-09-24',time:'05:30',label:'機場集合',location:'桃園機場',tip:'',idle:false,updatedAt:'18:03',_ts:1};
+  { const {ctx,p}=await mk('2026-09-23T21:00');
+    const r=await p.evaluate(b=>{ S().broadcast=Object.assign({},b); P.leader=true; ACT.editBroadcast(); return el('sheetRoot').querySelector('[name="date"]').value; },AIR);
+    ck('上一則還有效（出發前一晚）：日期沿用 9/24',r==='2026-09-24',r); await ctx.close(); }
+  { const {ctx,p}=await mk('2026-09-25T06:30');   /* 第 2 天早上，機場集合早就過了 */
+    const r=await p.evaluate(b=>{ S().broadcast=Object.assign({},b); P.leader=true; ACT.editBroadcast();
+      const def=el('sheetRoot').querySelector('[name="date"]').value;
+      setTimeField('time','08:00'); el('sheetRoot').querySelector('[name="location"]').value='飯店大廳';
+      ACT.saveBroadcast(); const saved={date:S().broadcast.date,time:S().broadcast.time,active:bcActive(),diff:bcDiffMin(),hero:(document.querySelector('.hero .lab')||{}).textContent};
+      return {def,saved}; },AIR);
+    ck('上一則已過期：日期預設帶今天 9/25（不是 9/24）',r.def==='2026-09-25',r.def);
+    ck('只改時間就存：廣播有效、全團看得到（越南 05:30 → 08:00 還有 150 分）',r.saved.date==='2026-09-25'&&r.saved.time==='08:00'&&r.saved.active&&r.saved.diff===150&&/即時廣播/.test(r.saved.hero),r.saved);
+    await ctx.close(); }
+  { const {ctx,p}=await mk('2026-09-25T07:30');
+    const r=await p.evaluate(b=>{ S().broadcast=Object.assign({},b); P.leader=true; ACT.editBroadcast();
+      el('sheetRoot').querySelector('[name="date"]').value='2026-09-24'; setTimeField('time','08:00'); el('sheetRoot').querySelector('[name="location"]').value='飯店大廳';
+      ACT.saveBroadcast(); return {b:Object.assign({},S().broadcast),open:!!SHEET,toast:document.getElementById('toast').textContent,q:Store.q.length}; },AIR);
+    ck('日期還留在前一天：不存、表單不關',r.open&&r.b.location==='桃園機場'&&r.b.date==='2026-09-24'&&r.b.time==='05:30',r);
+    ck('有提示「已經過了」並教怎麼改',/已經過了/.test(r.toast)&&/明天/.test(r.toast),r.toast);
+    ck('被擋下時沒有送出任何修改',r.q===0,r.q); await ctx.close(); }
+  { const {ctx,p}=await mk('2026-09-25T20:00');
+    const r=await p.evaluate(b=>{ S().broadcast=Object.assign({},b); P.leader=true; ACT.editBroadcast();
+      el('sheetRoot').querySelector('[data-act="chipSet"][data-target="date"]:nth-child(2)').click();   /* 「明天」 */
+      setTimeField('time','08:00'); ACT.saveBroadcast(); return {date:S().broadcast.date,active:bcActive(),diff:bcDiffMin(),open:!!SHEET}; },AIR);
+    ck('晚上按「明天」再存：9/26 08:00、倒數 13 小時',r.date==='2026-09-26'&&r.active&&r.diff===780&&!r.open,r); await ctx.close(); }
+  { const {ctx,p}=await mk('2026-09-25T10:10');
+    const r=await p.evaluate(()=>{ S().broadcast={time:'',label:'',location:'',tip:'',idle:false}; P.leader=true; ACT.editBroadcast();
+      setTimeField('time','09:00'); ACT.saveBroadcast(); return {time:S().broadcast.time,open:!!SHEET}; });
+    ck('剛過 10 分鐘的集合（還在 30 分鐘寬限內）照樣能存',r.time==='09:00'&&!r.open,r); await ctx.close(); }
+
+  { const {ctx,p}=await mk('2026-09-25T09:00');   /* 越南 08:00；上一則 07:00 集合已過 60 分鐘，但還算有效 */
+    const r=await p.evaluate(()=>{ S().broadcast={date:'2026-09-25',time:'07:00',label:'大廳集合',location:'飯店大廳',tip:'',idle:false,updatedAt:'06:00',_ts:1}; P.leader=true;
+      const act=bcActive(); ACT.editBroadcast(); el('sheetRoot').querySelector('[name="location"]').value='飯店門口'; ACT.saveBroadcast();
+      return {act,loc:S().broadcast.location,open:!!SHEET,q:Store.q.length}; });
+    ck('上一則過了 60 分鐘但還有效：只改地點也能存（不會被「時間已過」擋）',r.act&&r.loc==='飯店門口'&&!r.open&&r.q===1,r); await ctx.close(); }
+  for(const [w,fs] of [[320,'lg'],[320,'xl'],[375,'xl'],[390,'xl']]){ const {ctx,p}=await mk('2026-09-23T20:00',null,w);
+    const r=await p.evaluate(fs=>{ P.fs=fs; document.documentElement.setAttribute('data-fs',fs); S().settings.zones={manual:{flight:'now'},mode:'card',prepUntil:'start'};
+      render(); if(cardOpen('flight')) cardToggle('flight'); render();
+      const c=[...document.querySelectorAll('.ccard')].find(x=>x.querySelector('[data-id="flight"]')); const sm=c.querySelector('.chead .sm');
+      const segs=[...sm.querySelectorAll('.nw')].map(e=>({t:e.textContent,cut:e.scrollWidth-e.clientWidth,r:Math.round(e.getBoundingClientRect().right)}));
+      return {txt:sm.textContent,cut:sm.scrollWidth-sm.clientWidth,segs,vw:innerWidth}; },fs);
+    ck(w+'/'+fs+'：航班摘要兩家都看得到、沒有被「…」切掉',/華航 08:20/.test(r.txt)&&/長榮 09:00/.test(r.txt)&&r.cut<=3&&r.segs.every(g=>g.cut<=1&&g.r<=r.vw),r); await ctx.close(); }   /* 行尾的「・」可能凸出 2px，但 .sm 是 overflow:visible，不會被切 */
+
   console.log('[斷言 6] 時間模擬：只在這支手機、不存檔');
   { const {ctx,p,errs}=await mk('2026-09-21T14:00');
     await p.evaluate(()=>{ localStorage.setItem('sapa-data',JSON.stringify({docs:Store.s,at:1,q:[]})); });

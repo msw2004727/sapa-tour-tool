@@ -23,9 +23,9 @@ const ck=(n,c,x)=>{ if(!c){fails++;console.log('  ✗',n,x===undefined?'':JSON.s
   const exp={
     '出發前':{today:'now',prep:'later',flight:'later',morning:'ref',hotel:'ref'},
     '第1天':{today:'now',prep:'hide',flight:'later',morning:'later',hotel:'ref'},
-    '第2天':{today:'now',prep:'hide',flight:'ref',morning:'later',hotel:'ref'},
-    '第3天':{today:'now',prep:'hide',flight:'ref',morning:'later',hotel:'ref'},
-    '第4天':{today:'now',prep:'hide',flight:'ref',morning:'later',hotel:'ref'},
+    '第2天':{today:'now',prep:'hide',flight:'hide',morning:'later',hotel:'ref'},   /* v3.20：沒有要搭飛機的日子航班卡收起 */
+    '第3天':{today:'now',prep:'hide',flight:'hide',morning:'later',hotel:'ref'},
+    '第4天':{today:'now',prep:'hide',flight:'later',morning:'later',hotel:'ref'},  /* v3.20：搭夜臥火車回河內那天起顯示回程 */
     '第5天':{today:'now',prep:'hide',flight:'later',morning:'hide',hotel:'ref'},   /* v3.19：最後一天沒有「明早」 */
     '結束後':{today:'hide',prep:'hide',flight:'now',morning:'hide',hotel:'ref'},
   };
@@ -39,8 +39,8 @@ const ck=(n,c,x)=>{ if(!c){fails++;console.log('  ✗',n,x===undefined?'':JSON.s
     st.startDate='2026-09-24';
     st.zones={prepUntil:'end'};      out.prepEnd_d3=at(3).prep;
     st.zones={prepUntil:'off'};      out.prepOff_before=at(0).prep;
-    st.zones={flightSoon:'ends'};    out.ends_before=at(0).flight; out.ends_d1=at(1).flight; out.ends_d3=at(3).flight;
-    st.zones={flightSoon:'always'};  out.always_d3=at(3).flight;
+    st.zones={flightSoon:'ends'};    out.ends_before=at(0).flight; out.ends_d1=at(1).flight; out.ends_d3=at(3).flight; out.ends_d4=at(4).flight;
+    st.zones={flightSoon:'always'};  out.always_d3=at(3).flight; out.always_d4=at(4).flight;
     st.zones={flightSoon:'never'};   out.never_d1=at(1).flight;
     st.zones={morningSoon:'always'}; out.mAlways_before=at(0).morning;
     st.zones={morningSoon:'never'};  out.mNever_d2=at(2).morning;
@@ -50,8 +50,10 @@ const ck=(n,c,x)=>{ if(!c){fails++;console.log('  ✗',n,x===undefined?'':JSON.s
   ck('prepUntil=off → 出發前也不顯示',r2.prepOff_before==='hide',r2.prepOff_before);
   ck('flightSoon=ends → 出發前退到隨時查',r2.ends_before==='ref',r2.ends_before);
   ck('flightSoon=ends → 第1天在稍後',r2.ends_d1==='later',r2.ends_d1);
-  ck('flightSoon=ends → 第3天在隨時查',r2.ends_d3==='ref',r2.ends_d3);
-  ck('flightSoon=always → 第3天在稍後',r2.always_d3==='later',r2.always_d3);
+  ck('flightSoon=ends → 第3天收起（沒有要搭飛機）',r2.ends_d3==='hide',r2.ends_d3);
+  ck('flightSoon=ends → 第4天回程在稍後',r2.ends_d4==='later',r2.ends_d4);
+  ck('flightSoon=always → 第3天仍收起',r2.always_d3==='hide',r2.always_d3);
+  ck('flightSoon=always → 第4天在稍後',r2.always_d4==='later',r2.always_d4);
   ck('flightSoon=never → 第1天在隨時查',r2.never_d1==='ref',r2.never_d1);
   ck('morningSoon=always → 出發前就在稍後',r2.mAlways_before==='later',r2.mAlways_before);
   ck('morningSoon=never → 第2天在隨時查',r2.mNever_d2==='ref',r2.mNever_d2);
@@ -68,7 +70,7 @@ const ck=(n,c,x)=>{ if(!c){fails++;console.log('  ✗',n,x===undefined?'':JSON.s
     out.mode=(st.zones||{}).mode;
     st.startDate='2026-09-24'; st.zones={}; return out;
   });
-  ck('釘死的航班每天都在現在',['出發前','第2天','第5天'].every(k=>r3[k].flight==='now'),r3);
+  ck('釘死的航班在有飛機的日子都在現在；第 2 天照樣收起',['出發前','第5天'].every(k=>r3[k].flight==='now')&&r3['第2天'].flight==='hide',r3);
   ck('沒釘的出發前準備照常自動（出發前 later、第2天 hide）',r3['出發前'].prep==='later'&&r3['第2天'].prep==='hide',r3);
   ck('沒釘的明早時程照常自動（出發前 ref、第2天 later）',r3['出發前'].morning==='ref'&&r3['第2天'].morning==='later',r3);
   ck('釘死在旅程結束後仍然有效',r3['結束後'].flight==='now',r3['結束後']);
@@ -76,7 +78,8 @@ const ck=(n,c,x)=>{ if(!c){fails++;console.log('  ✗',n,x===undefined?'':JSON.s
 
   console.log('[4] 舊資料相容');
   const r4=await p.evaluate(()=>{
-    const st=S().settings; st.startDate='2026-09-24'; st.dayOverride=2; const out={};
+    /* v3.20：第 2、3 天航班卡本來就收起，改用第 4 天（有回程航班）才看得出釘選有沒有生效 */
+    const st=S().settings; st.startDate='2026-09-24'; st.dayOverride=4; const out={};
     /* 舊的全域自動：manual 裡的殘值不算數 */
     st.zones={mode:'auto',manual:{flight:'now',prep:'now'}};
     out.legacyAuto={flight:cardZone('flight',dayInfo()),prep:cardZone('prep',dayInfo())};
@@ -89,9 +92,9 @@ const ck=(n,c,x)=>{ if(!c){fails++;console.log('  ✗',n,x===undefined?'':JSON.s
     out.stable=(cardZone('hotel',dayInfo())===before.hotel)&&(cardZone('morning',dayInfo())===before.morning);
     st.zones={}; st.dayOverride=0; return out;
   });
-  ck('舊的全域自動：manual 殘值被忽略',r4.legacyAuto.flight==='ref'&&r4.legacyAuto.prep==='hide',r4.legacyAuto);
+  ck('舊的全域自動：manual 殘值被忽略（第 4 天航班走自動＝稍後，不是 now）',r4.legacyAuto.flight==='later'&&r4.legacyAuto.prep==='hide',r4.legacyAuto);
   ck('舊的全域手動：設過的照設定',r4.legacyManual.flight==='now',r4.legacyManual);
-  /* v3.19：出發前準備「顯示到出發」優先於位置設定，所以旅途中（這裡是第 2 天）一律收起 */
+  /* v3.19：出發前準備「顯示到出發」優先於位置設定，所以旅途中（這裡是第 4 天）一律收起 */
   ck('舊的全域手動：沒設過的用舊預設（住宿=隨時查）；出發前準備旅途中收起',
      r4.legacyManual.hotel==='ref'&&r4.legacyManual.prep==='hide',r4.legacyManual);
   ck('從舊手動改一張卡，其他卡不會跟著跳',r4.stable,r4.stable);
@@ -136,7 +139,7 @@ const ck=(n,c,x)=>{ if(!c){fails++;console.log('  ✗',n,x===undefined?'':JSON.s
 
   console.log('[6] 首頁真的照設定畫');
   const r6=await p.evaluate(()=>{
-    const st=S().settings; st.zones={}; st.dayOverride=2; st.startDate='2026-09-24';
+    const st=S().settings; st.zones={}; st.dayOverride=4; st.startDate='2026-09-24';   /* 第 4 天：有回程航班卡 */
     setPin('flight','now'); setPin('hotel','now'); setPin('morning','hide');
     P.leader=false; P.tab='home'; P.cards={}; render();
     const z=k=>{ const e=document.querySelector('.zsec.g-'+k); return e?[...e.querySelectorAll('h2,.chead .ttl')].map(x=>x.textContent.trim()):null; };
