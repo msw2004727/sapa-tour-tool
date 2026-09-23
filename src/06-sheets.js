@@ -504,6 +504,7 @@ function sheetCardZones(){
     morning:['morningSoon','明早時程｜什麼時候排到「稍後」',[['trip','旅程中'],['always','整趟都在稍後'],['never','一律放隨時查']]]
   };
   var autos=['prep','flight','morning'].filter(function(id){ return cardPin(id)==='auto'; });
+  h.push('<div class="muted"><b>高亮提醒</b>：打開後全團首頁那張卡會發光；團員自己把卡片收起來時不亮（表示看過了），再打開又會亮。要讓已經收起的人也重新看到，把開關關掉再打開。</div>');
   h.push('<div class="muted">每張卡片可以自己決定要「自動跟著行程走」還是<b>釘死在某一區</b>。釘死的卡片旅程結束後也維持在你指定的位置。<br>例外：出發前準備出發後一定收起；航班卡出發前與第 1 天只顯示去程'+((S().settings.days||5)>=5?'、第 2～'+((S().settings.days||5)-2)+' 天收起':((S().settings.days||5)===4?'、第 2 天收起':''))+'、之後只顯示回程。<br>看板上的 ↑↓ 可以直接穿過分區標題，跨過去就等於釘住。</div>');
   if(autos.length){
     autos.forEach(function(id){ var c=COND[id];

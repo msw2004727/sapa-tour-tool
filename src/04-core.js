@@ -460,13 +460,17 @@ function cardLead(id){
   return {o:(unset?d.o:c.o)?1:0, ts:(unset?(d.ts||0):(c.ts||0)), hl:c.hl?1:0, hts:c.hts||0};
 }
 /* 這張卡現在要不要對「我」發光。
-   管理者開了才會亮；團員自己把卡片收起來就等於「我知道了」，對他這一輪熄燈。
-   管理者關掉再開一次會產生新的 hts，收起來過的人會重新亮一次。
-   沒有時間到自動熄滅這件事——只有管理者關、或團員自己收起來，燈才會滅。 */
+   管理者開了才會亮；團員自己把卡片收起來＝「我知道了」，收著的時候不亮。
+   v3.21（小麥指定）：收起後再打開就恢復發光——長輩常誤觸收起，打開來還要看得到提醒。
+   預設就是收起的卡片（團員沒動過）照樣發光，提醒他點開。
+   管理者關掉再開一次會產生新的 hts，所有人（包括收起過的）重新亮。
+   航班卡去程與回程算兩件事：看過去程不等於看過回程，回程階段用另一把鑰匙。 */
+function hlKey(id,L){ L=L||cardLead(id); return (id==='flight'&&flightPhase()==='back')?(L.hts+'|back'):L.hts; }
 function cardHL(id){
   var L=cardLead(id); if(!L.hl) return false;
   var M=(P.cards||{})[id];
-  return !(M && M.hseen===L.hts);
+  if(M && M.hseen===hlKey(id,L) && cardFoldable(id) && !cardOpen(id)) return false;
+  return true;
 }
 /* auto：管理者沒設定過時（ts=0）依旅程階段自動決定展開或收起 */
 function cardOpen(id){ var L=cardLead(id), M=(P.cards||{})[id];
@@ -477,8 +481,8 @@ function cardToggle(id){
   var L=cardLead(id); if(!P.cards) P.cards={};
   var willOpen=!cardOpen(id);
   var rec=P.cards[id]||{}; rec.o=willOpen?1:0; rec.ts=L.ts;
-  /* 高亮中的卡片被團員收起來 → 記下這一輪的 hts，對他熄燈 */
-  if(!willOpen && L.hl) rec.hseen=L.hts;
+  /* 高亮中的卡片被團員收起來 → 記下這一輪的鑰匙，收著的時候對他熄燈（再打開就會再亮） */
+  if(!willOpen && L.hl) rec.hseen=hlKey(id,L);
   P.cards[id]=rec; savePrefs(); render();
 }
 function cardSetLead(id){ var st=S().settings; if(!st.cards) st.cards={}; var L=cardLead(id);
