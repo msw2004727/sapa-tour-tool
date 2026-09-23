@@ -25,9 +25,13 @@ function ck(name,cond,extra){ if(!cond){fails++;console.log('  ✗',name,extra==
     while(cardOpen('prep',1)) cardToggle('prep',1);
     out.offAfterCollapse=!cardHL('prep');
     out.stillLeaderOn=!!cardLead('prep').hl;           // 管理者那邊仍是開的
-    // 團員自己再展開 → 這一輪已 dismiss，不再亮
+    // v3.21：團員自己再展開 → 恢復發光（長輩誤觸收起，打開還要看得到提醒）
     cardToggle('prep',1);
-    out.stayOffAfterReopen=!cardHL('prep');
+    out.relitAfterReopen=cardHL('prep');
+    // 再收起來 → 又熄
+    cardToggle('prep',1);
+    out.offAgainAfterCollapse=!cardHL('prep');
+    cardToggle('prep',1);
     // 管理者關掉再開 → 換新 hts → 重新亮
     P.leader=true; cardSetHL('prep'); cardSetHL('prep');
     out.relit=cardHL('prep');
@@ -125,6 +129,60 @@ function ck(name,cond,extra){ if(!cond){fails++;console.log('  ✗',name,extra==
     await p3.screenshot({path:at(`shots/hl-${dark?'leader-dark':'member-light'}.png`),fullPage:true});
     await c3.close();
   }
+  // ---- 5. v3.21：實際點畫面操作（管理者開關 → 團員點標題收起／打開） ----
+  console.log('[5] 實際點擊：收起不亮、打開再亮、預設收起的卡照樣亮、今日行程不可收合');
+  { const c5=await b.newContext({viewport:{width:375,height:800},timezoneId:'Asia/Taipei'}); const p5=await c5.newPage(); const e5=[]; p5.on('pageerror',e=>e5.push(String(e)));
+    await p5.clock.install({time:new Date('2026-09-23T20:00:00+08:00')}); await p5.route(/gstatic/,r=>r.abort()); await p5.goto(F); await p5.waitForTimeout(300);
+    const glow=()=>p5.evaluate(()=>[...document.querySelectorAll('.hlw')].map(w=>{ const h=w.querySelector('[data-id]'); return h?h.getAttribute('data-id'):'today'; }).sort().join(','));
+    /* 管理者從「首頁卡片位置」表單逐張打開高亮 */
+    await p5.evaluate(()=>{ S().settings.cards={}; S().settings.zones={}; P.cards={}; P.leader=true; P.tab='home'; render(); sheetCardZones(); });
+    const ids=await p5.evaluate(()=>[...document.querySelectorAll('#sheetRoot [data-act="zCardHl"]')].map(b=>b.getAttribute('data-id')));
+    for(const id of ids) await p5.click('#sheetRoot [data-act="zCardHl"][data-id="'+id+'"]');
+    const onAll=await p5.evaluate(()=>['today','prep','flight','hotel','morning'].filter(id=>cardLead(id).hl));
+    await p5.evaluate(()=>{ closeSheet(); P.leader=false; render(); });
+    ck('表單裡每張卡都有高亮開關、按了都會打開',ids.length===5&&onAll.length===5,{ids,onAll});
+    ck('打開後五張都發光（住宿卡預設收起也照亮）',await glow()==='flight,hotel,morning,prep,today',await glow());
+    await p5.click('[data-act="cardFold"][data-id="flight"]');   /* 團員收起航班卡 */
+    ck('團員收起航班卡：只有它不亮',await glow()==='hotel,morning,prep,today',await glow());
+    await p5.click('[data-act="cardFold"][data-id="flight"]');   /* 再打開 */
+    ck('再打開：航班卡恢復發光',await glow()==='flight,hotel,morning,prep,today',await glow());
+    await p5.click('[data-act="cardFold"][data-id="hotel"]'); await p5.click('[data-act="cardFold"][data-id="hotel"]');   /* 住宿卡打開再收起 */
+    ck('預設收起的住宿卡：打開後收起才熄',!/hotel/.test(await glow()),await glow());
+    const persisted=await p5.evaluate(()=>JSON.parse(localStorage.getItem('sapa-prefs')).cards.hotel.hseen!==undefined);
+    await p5.reload(); await p5.waitForTimeout(300);
+    await p5.evaluate(()=>{ S().settings.cards={today:{hl:1,hts:1},prep:{hl:1,hts:1},flight:{hl:1,hts:1},hotel:{hl:1,hts:1},morning:{hl:1,hts:1}}; render(); });
+    ck('收起的狀態存在這支手機，重新整理後仍記得',persisted);
+    /* 小麥指定：每一張可收合的卡，收起再展開後都要繼續發光 */
+    const each=await p5.evaluate(()=>{ S().settings.cards={today:{hl:1,hts:1},prep:{hl:1,hts:1},flight:{hl:1,hts:1},hotel:{hl:1,hts:1},morning:{hl:1,hts:1}}; P.cards={}; render(); return true; });
+    for(const id of ['prep','flight','hotel','morning']){
+      const r=[]; for(let k=0;k<4;k++){ await p5.click('[data-act="cardFold"][data-id="'+id+'"]');
+        r.push(await p5.evaluate(i=>({open:cardOpen(i),hl:cardHL(i),wrap:!!document.querySelector('[data-act="cardFold"][data-id="'+i+'"]').closest('.hlw')}),id)); }
+      /* 連續點 4 次標題：每次展開的狀態都必須在發光 */
+      ck(id+'：每次重新展開都繼續發光（點 4 次）',r.filter(x=>x.open).length===2&&r.filter(x=>x.open).every(x=>x.hl&&x.wrap),r);
+    }
+    ck('今日行程沒有收合鈕，永遠照開關發光',await p5.evaluate(()=>!document.querySelector('[data-act="cardFold"][data-id="today"]')&&cardHL('today')));
+    /* 管理者關掉再打開 → 收起過的人也重新亮 */
+    await p5.evaluate(()=>{ P.cards={hotel:{o:0,ts:cardLead('hotel').ts,hseen:1}}; render(); });
+    const before=await glow();
+    await p5.evaluate(()=>{ P.leader=true; cardSetHL('hotel'); cardSetHL('hotel'); P.leader=false; render(); });
+    ck('管理者關掉再打開：收起過的人重新發光',!/hotel/.test(before)&&/hotel/.test(await glow()),{before,after:await glow()});
+    ck('無 JS 錯誤',!e5.length,e5.slice(0,2)); await c5.close(); }
+
+  // ---- 6. v3.21：航班卡去程看過 ≠ 回程看過 ----
+  console.log('[6] 航班卡：去程收起過，第 4 天回程卡重新發光');
+  { const c6=await b.newContext({viewport:{width:375,height:800},timezoneId:'Asia/Taipei'}); const p6=await c6.newPage(); const e6=[]; p6.on('pageerror',e=>e6.push(String(e)));
+    await p6.clock.install({time:new Date('2026-09-24T12:00:00+08:00')}); await p6.route(/gstatic/,r=>r.abort()); await p6.goto(F); await p6.waitForTimeout(300);
+    const r6a=await p6.evaluate(()=>{ S().settings.cards={flight:{hl:1,hts:1}}; S().settings.zones={manual:{flight:'now'},mode:'card',prepUntil:'start'}; P.cards={}; P.leader=false; P.tab='home'; render();
+      const a=cardHL('flight'); cardToggle('flight'); const b2=cardHL('flight'); return {a,b:b2,seen:P.cards.flight.hseen}; });
+    ck('第 1 天去程卡：亮 → 收起後不亮',r6a.a&&!r6a.b,r6a);
+    await p6.clock.fastForward(72*3600*1000); await p6.evaluate(()=>{ render(); });   /* 第 4 天 12:00 */
+    const r6b=await p6.evaluate(()=>{ const c=[...document.querySelectorAll('.ccard')].find(x=>x.querySelector('[data-id="flight"]'));
+      return {phase:flightPhase(),hl:cardHL('flight'),inWrap:!!(c&&c.closest('.hlw')),title:c?c.querySelector('.chead .ttl').textContent:''}; });
+    ck('第 4 天回程卡：就算去程收起過也重新發光',r6b.phase==='back'&&r6b.hl&&r6b.inWrap&&/回程/.test(r6b.title),r6b);
+    const r6c=await p6.evaluate(()=>{ if(cardOpen('flight')) cardToggle('flight'); else { cardToggle('flight'); cardToggle('flight'); } return {hl:cardHL('flight'),seen:P.cards.flight.hseen}; });
+    ck('回程卡收起：不亮（記的是回程那把鑰匙）',!r6c.hl&&/\|back$/.test(String(r6c.seen)),r6c);
+    ck('無 JS 錯誤',!e6.length,e6.slice(0,2)); await c6.close(); }
+
   await ctx.close(); await b.close();
   console.log(fails?`\n${fails} 個問題`:'\n全部通過');
   process.exit(fails?1:0);
