@@ -87,9 +87,19 @@ var ACT={
   setAirline:function(t){ var m=member(t.getAttribute('data-id')); if(!m) return; closeSheet(); Store.savePath('members','items/'+members().indexOf(m)+'/airline', t.getAttribute('data-v')||''); toast(m.name+'：'+(airDef(m.airline)?airDef(m.airline).short:'未設定')); },
   delMember:function(){ var id=SHEET.id; S().members.items=members().filter(function(m){return m.id!==id;}); closeSheet(); Store.save('members'); toast('已移出名單'); },
   editBroadcast:function(){ sheetBroadcast(); },
-  saveBroadcast:function(){ var b=S().broadcast, z=el('sheetRoot').querySelector('[name="tz"]'); b.date=sv('date'); b.time=sv('time');
+  saveBroadcast:function(){ var b=S().broadcast, z=el('sheetRoot').querySelector('[name="tz"]'), nd=sv('date'), nt=sv('time');
     /* 只有「現在＋N 分」按鈕帶出的時間、而且之後沒被改過，才沿用它算好的時區 */
-    if(z&&z.value&&z.getAttribute('data-at')===b.date+' '+b.time) b.tz=z.value; else delete b.tz; b.idle=false; b.label=sv('label')||'集合'; b.location=sv('location'); b.tip=sv('tip'); b.updatedAt=stamp(); closeSheet(); Store.save('broadcast'); toast('廣播已更新，全團手機會同步');
+    var ntz=(z&&z.value&&z.getAttribute('data-at')===nd+' '+nt)?z.value:'';
+    /* 擋掉「集合時間已經過了」：最常見是日期欄還留著前一天，只改了時間。
+       存下去的話全團首頁會把它當過期廣播藏起來，主辦人卻以為發出去了。 */
+    /* 日期時間都沒改、而且目前這則還有效（例如只改地點或叮嚀）就不擋：集合時間過後 4 小時內它都還算數 */
+    var same=(nd===(b.date||bcDate())&&nt===b.time&&bcActive());
+    if(nt&&nd&&!same){ var ms=slotMs(nd,nt,ntz?ntz==='TW':undefined);
+      if(!isNaN(ms)&&Math.round(ms/60000)-nowMin()<-30){
+        toast('這個集合時間（'+mdw(nd)+' '+nt+'）已經過了，沒有存。要發明天的集合，請先按日期下面的「明天」');
+        var dEl=el('sheetRoot').querySelector('[name="date"]'); if(dEl){ try{ dEl.focus(); }catch(e){} }
+        return; } }
+    b.date=nd; b.time=nt; if(ntz) b.tz=ntz; else delete b.tz; b.idle=false; b.label=sv('label')||'集合'; b.location=sv('location'); b.tip=sv('tip'); b.updatedAt=stamp(); closeSheet(); Store.save('broadcast'); toast('廣播已更新，全團手機會同步');
     /* 存完直接把「貼到 LINE」端到管理者面前：沒開 App 的人只能靠群組通知 */
     render(); setTimeout(sheetShare,350); },
   shareBroadcast:function(){ sheetShare(); },

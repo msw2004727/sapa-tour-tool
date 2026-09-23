@@ -51,7 +51,9 @@ function sheetBroadcast(){
   var picks=[[today,'今天'],[tmr,'明天']];
   if(st.startDate&&!isNaN(parseDate(st.startDate))&&st.startDate!==today&&st.startDate!==tmr) picks.push([st.startDate,'出發日 '+dayDate(1).split('（')[0]]);
   openSheet({title:'修改即時廣播',focus:true,body:
-    fld('集合日期',inp('date',b.date||bcDate(),'date')+'<div class="chips" style="margin-top:.4rem">'+picks.map(function(x){ return '<button type="button" class="chip pick" data-act="chipSet" data-target="date" data-val="'+esc(x[0])+'">'+esc(x[1])+'</button>'; }).join('')+'</div>')+
+    /* 日期預設：上一則還有效就沿用它的日期；已經過期（例如出發日的機場集合）就帶今天，
+       免得主辦人只改時間、日期還停在前一天，整則廣播被當成過期藏起來 */
+    fld('集合日期',inp('date',(bcActive()&&b.time)?(b.date||bcDate()):today,'date')+'<div class="chips" style="margin-top:.4rem">'+picks.map(function(x){ return '<button type="button" class="chip pick" data-act="chipSet" data-target="date" data-val="'+esc(x[0])+'">'+esc(x[1])+'</button>'; }).join('')+'</div>')+
     fld('集合時間（24 小時制）',timeField('time',b.time)+'<input type="hidden" name="tz" value="'+esc(b.tz||'')+'" data-at="'+esc(b.tz?(b.date||'')+' '+(b.time||''):'')+'">'+'<div class="muted" style="margin-top:.3rem">出發日 '+esc(twCutoff())+' 以前填台灣時間，其他時間都填越南時間。</div>'+'<div class="chips" style="margin-top:.4rem">'+[15,30,45,60].map(function(m){return '<button type="button" class="chip pick" data-act="chipTimeFromNow" data-min="'+m+'">現在＋'+m+'分</button>';}).join('')+'</div>')+
     fld('動作',inp('label',b.label||'原地集合')+chipsFill('label',['原地集合','大廳集合','上車','餐廳集合','纜車站集合']))+
     fld('集合地點（建議 12 字以內，手機才不換行）',inp('location',b.location)+(cur?'<div class="chips" style="margin-top:.4rem"><button type="button" class="chip pick" data-act="chipSet" data-target="location" data-val="'+esc(cur.title)+'">帶入目前站：'+esc(cur.title)+'</button></div>':''))+
@@ -411,7 +413,7 @@ function sheetSettings(){
     '<div class="grid2">'+fld('改管理 PIN（不改就留白）',inp('pin','','tel','maxlength="6" inputmode="numeric" placeholder="4 位數字" autocomplete="off"'))+fld('1 台幣 ≈ 幾越盾',inp('vndPerTwd',st.vndPerTwd,'number','inputmode="numeric"'))+'</div>'+
     '<div class="muted" style="margin-top:-.5rem">PIN 只會以雜湊保存，雲端看不到明文。</div>'+
     '<h2 class="sec">'+ic('plane')+'航班（起飛時間）</h2>'+
-    '<div class="grid2">'+fld('長榮 去程 桃園起飛',timeField('eva_out',f.eva.out))+fld('長榮 回程 河內起飛',timeField('eva_back',f.eva.back))+fld('華航 去程 桃園起飛',timeField('ci_out',f.ci.out))+fld('華航 回程 河內起飛',timeField('ci_back',f.ci.back))+'</div>'+fld('團體報到說明（顯示在航班卡下方）',ta('flight_note',f.note))+
+    '<div class="grid2">'+fld('長榮 去程 桃園起飛',timeField('eva_out',f.eva.out))+fld('長榮 回程 河內起飛',timeField('eva_back',f.eva.back))+fld('華航 去程 桃園起飛',timeField('ci_out',f.ci.out))+fld('華航 回程 河內起飛',timeField('ci_back',f.ci.back))+'</div>'+'<div class="muted" style="margin-top:-.5rem">團員首頁不會同時看到去回程：出發前與第 1 天只顯示去程，第 '+Math.max(2,(st.days||5)-1)+' 天起只顯示回程，中間幾天航班卡收起。</div>'+fld('去程團體報到說明（只在去程階段顯示在航班卡下方）',ta('flight_note',f.note))+
     '<h2 class="sec">'+ic('phone')+'緊急聯絡人（留白＝不顯示）</h2>'+
     cs.map(function(c,i){ return '<div class="f" style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem">'+inp('c_name_'+i,c.name,'text','placeholder="姓名"')+inp('c_label_'+i,c.label,'text','placeholder="例：越南電話"')+'<div style="grid-column:1/-1">'+inp('c_phone_'+i,c.phone,'tel','placeholder="+84 或 +886 開頭"')+'</div><div style="grid-column:1/-1">'+inp('c_line_'+i,c.line,'url','placeholder="LINE 加好友網址（選填）"')+'</div></div>'; }).join('')+
     fld('駐越南台北經濟文化辦事處 急難救助電話',inp('embassyPhone',st.embassyPhone,'tel','placeholder="出發前請至外交部領事事務局網站確認"'))+
@@ -498,11 +500,11 @@ function sheetCardZones(){
   /* 條件只對還在「自動」的卡片有意義，其他的不佔版面 */
   var COND={
     prep:['prepUntil','出發前準備｜什麼時候收起來',[['start','出發當天收起'],['end','整趟都留著'],['off','不顯示']]],
-    flight:['flightSoon','航班資訊｜什麼時候排到「稍後」',[['auto','出發前＋首尾兩天'],['ends','只有首尾兩天'],['always','整趟都在稍後'],['never','一律放隨時查']]],
+    flight:['flightSoon','航班資訊｜什麼時候排到「稍後」',[['auto','出發前＋去回程那幾天'],['ends','只有去回程那幾天'],['always','有顯示的日子都在稍後'],['never','一律放隨時查']]],
     morning:['morningSoon','明早時程｜什麼時候排到「稍後」',[['trip','旅程中'],['always','整趟都在稍後'],['never','一律放隨時查']]]
   };
   var autos=['prep','flight','morning'].filter(function(id){ return cardPin(id)==='auto'; });
-  h.push('<div class="muted">每張卡片可以自己決定要「自動跟著行程走」還是<b>釘死在某一區</b>。釘死的卡片旅程結束後也維持在你指定的位置。<br>看板上的 ↑↓ 可以直接穿過分區標題，跨過去就等於釘住。</div>');
+  h.push('<div class="muted">每張卡片可以自己決定要「自動跟著行程走」還是<b>釘死在某一區</b>。釘死的卡片旅程結束後也維持在你指定的位置。<br>例外：出發前準備出發後一定收起；航班卡出發前與第 1 天只顯示去程'+((S().settings.days||5)>=5?'、第 2～'+((S().settings.days||5)-2)+' 天收起':((S().settings.days||5)===4?'、第 2 天收起':''))+'、之後只顯示回程。<br>看板上的 ↑↓ 可以直接穿過分區標題，跨過去就等於釘住。</div>');
   if(autos.length){
     autos.forEach(function(id){ var c=COND[id];
       h.push('<div class="f"><label>'+esc(c[1])+'</label>'+sl(c[0],z[c[0]],c[2])+'</div>'); });

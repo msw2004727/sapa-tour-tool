@@ -393,7 +393,7 @@ function groupNameOf(scnId,mid){ var sc=scenario(scnId); if(!sc) return ''; var 
 /* 首頁「我的資訊」分組列：管理者可以把特定分組情境從首頁關掉（分組頁籤不受影響，只是不出現在首頁） */
 function homeScnHidden(id){ return !!((S().settings.hiddenScn||{})[id]); }
 function homeScnToggle(id){ var st=S().settings; if(!st.hiddenScn) st.hiddenScn={}; if(st.hiddenScn[id]) delete st.hiddenScn[id]; else st.hiddenScn[id]=true; Store.save('settings'); sheetHomeScn(); }
-function contacts(){ var st=S().settings; if(st.contacts&&st.contacts.length) return st.contacts.filter(function(c){return c&&(c.phone||c.line);}); var out=[]; if(st.leaderPhone) out.push({name:st.leaderName||'主辦人',label:'',phone:st.leaderPhone}); if(st.guidePhone) out.push({name:st.guideName||'導遊',label:'',phone:st.guidePhone}); return out; }
+function contacts(){ var st=S().settings; if(st.contacts&&st.contacts.length) return st.contacts.filter(function(c){return c&&(c.phone||c.line);}); var out=[]; if(st.leaderPhone) out.push({name:st.leaderName||'主辦人',label:'',phone:st.leaderPhone}); if(st.guidePhone) out.push({name:st.guideName||'聯絡人',label:'',phone:st.guidePhone}); return out; }
 function nbPages(){ var n=S().notebook; return (n&&n.pages)||[]; }
 function nbPage(id){ var ps=nbPages(); return ps.filter(function(p){return p.id===(id||P.nbPage);})[0]||ps[0]; }
 function checkStats(pg){ var items=(pg.items||[]).filter(function(i){return i.kind!=='head';}); var ck=(P.checks||{})[pg.id]||{}; var done=items.filter(function(i){return ck[i.id];}).length; return {done:done,total:items.length}; }
@@ -526,12 +526,23 @@ function setPin(id,v){
   if(!z.manual) z.manual={};
   z.manual[id]=v;
 }
+/* 航班卡的階段：出發前與第 1 天只看去程；倒數第 2 天（搭夜臥火車回河內那天）起到回國後只看回程；
+   中間在沙壩的日子沒有要搭的飛機，整張收起。小麥指定：不要同時列出去回程，免得長輩看錯。 */
+function flightPhase(di){
+  di=di||dayInfo(); var days=di.days||5, back=Math.max(2,days-1);
+  if(di.status==='before') return 'out';
+  if(di.status==='after') return 'back';
+  if(di.idx<=1) return 'out';
+  return di.idx>=back?'back':'none';
+}
 function cardZone(id,di){
   /* 今日行程是首頁主要內容，鎖在「現在」不讓搬走；旅程結束後這張卡本來就不產生 */
   if(id==='today') return (di&&di.status==='after')?'hide':'now';
   var z=zoneCfg();
   /* 出發前準備「要不要出現」看 prepUntil，就算被釘在某一區也一樣：出發後（或旅程結束後）就收起來 */
   if(id==='prep'&&(z.prepUntil==='off'||(z.prepUntil==='end'?di.status==='after':di.status!=='before'))) return 'hide';
+  /* 航班卡同理：沒有要搭飛機的日子（第 2、3 天）就算被釘住也收起 */
+  if(id==='flight'&&flightPhase(di)==='none') return 'hide';
   var pin=cardPin(id);
   if(pin!=='auto') return pin;
   var before=(di.status==='before'), after=(di.status==='after'), idx=di.idx, days=di.days;
@@ -541,8 +552,8 @@ function cardZone(id,di){
   if(id==='flight'){
     var soon = z.flightSoon==='always' ? true
              : z.flightSoon==='never'  ? false
-             : z.flightSoon==='ends'   ? (!before&&(idx===1||idx===days))   /* before 的 idx 也是 1，要排除掉 */
-             : (before||idx===1||idx===days);
+             : z.flightSoon==='ends'   ? (!before&&(idx===1||flightPhase(di)==='back'))   /* before 的 idx 也是 1，要排除掉 */
+             : (before||idx===1||flightPhase(di)==='back');
     return soon?'later':'ref';
   }
   if(id==='morning') return z.morningSoon==='always'?'later':(z.morningSoon==='never'?'ref':(before?'ref':(idx>=days?'hide':'later')));   /* 最後一天沒有「明早」 */
@@ -600,14 +611,15 @@ function cardAutoOpen(id,di){
 function cardDefOpen(id,di){ var L=cardLead(id); return L.ts===0?!!cardAutoOpen(id,di):!!L.o; }
 var ZONE_NAMES={today:'今日行程',prep:'出發前準備',flight:'航班資訊',morning:'明早時程',hotel:'目前住宿'};
 var ZONE_LABELS={now:'現在',later:'稍後',ref:'隨時查',hide:'不顯示'};
-function foldCard(id,icon,title,sub,sum,inner){
+function foldCard(id,icon,title,sub,sum,inner,opt){
+  opt=opt||{};
   /* 展開預設與高亮提醒的開關已經搬到「管理專區 → 首頁卡片位置」，
      卡片上不再掛那條金色列，團員與管理者看到的卡片長得一樣乾淨。 */
   var open=cardOpen(id);
   var card='<section class="ccard'+(open?' open':'')+'">'+
     '<button class="chead" data-act="cardFold" data-id="'+id+'" aria-expanded="'+(open?'true':'false')+'">'+
       '<span class="ttl">'+ic(icon)+esc(title)+'</span>'+
-      '<span class="sm">'+esc(open?sub:sum)+'</span>'+
+      '<span class="sm'+(!open&&opt.sumHtml?' multi':'')+'">'+(open?esc(sub):(opt.sumHtml?sum:esc(sum)))+'</span>'+
       '<span class="cv">'+(open?'▲':'▼')+'</span>'+
     '</button>'+
     (open?'<div class="cbody">'+inner+'</div>':'')+
@@ -789,7 +801,8 @@ VIEWS.home=function(){
     var ad=airDef(me.airline);
     var strip=[];
     strip.push('<button data-act="tab" data-tab="groups" data-scn="airline"><span class="k">航空公司</span><span class="v s">'+(ad?airlineBadge(me.airline)+' '+esc(ad.short):'待設定')+'</span></button>');
-    strip.push('<button data-act="tab" data-tab="groups" data-scn="airline"><span class="k">報到航廈</span><span class="v s">'+esc(ad&&ad.note?ad.note.replace(/^桃園/,''):'—')+'</span></button>');
+    /* 報到航廈是桃園的航廈，只在去程階段有意義；回程在河內內排機場，顯示桃園航廈反而會誤導 */
+    if(flightPhase(di)==='out') strip.push('<button data-act="tab" data-tab="groups" data-scn="airline"><span class="k">報到航廈</span><span class="v s">'+esc(ad&&ad.note?ad.note.replace(/^桃園/,''):'—')+'</span></button>');
     strip.push('<button data-act="tab" data-tab="rooms"><span class="k">我的房號</span><span class="v">'+esc(me.room||'待分配')+'</span></button>');
     (S().groups.scenarios||[]).forEach(function(sc){
       if(homeScnHidden(sc.id)) return;
@@ -888,19 +901,27 @@ function hotelCard(){
 
 /* 航班資訊（可收合） */
 function flightCard(){
-  var st=S().settings, f=st.flights||{}, days=st.days||5;
-  function col(key,name,term){ var x=f[key]||{}; return '<div class="fl-col"><div class="fl-h">'+airlineBadge(key)+esc(name)+'</div>'+
-    '<div class="fl-r"><b>'+esc(x.out||'--:--')+'</b><span class="k">去程 · 桃園 '+esc(term)+' 起飛</span></div>'+
-    '<div class="fl-r"><b>'+esc(x.back||'--:--')+'</b><span class="k">回程 · 河內起飛</span></div></div>'; }
+  var st=S().settings, f=st.flights||{}, days=st.days||5, di=dayInfo(), ph=flightPhase(di);
+  if(ph==='none') return '';
+  var back=(ph==='back');
   function alN(k){ var d=airDef(k)||{}; return d.name||''; }
+  function alS(k){ var d=airDef(k)||{}; return d.short||''; }
   function alT(k){ var d=airDef(k)||{}, n=d.note||'', mm=n.match(/第([一二三四五六七八九])/);
     if(mm) return 'T'+('一二三四五六七八九'.indexOf(mm[1])+1);
     mm=n.match(/T\s*([1-9])/i); if(mm) return 'T'+mm[1];
     return (AIRLINES[k]||{}).term||''; }
-  var inner='<div class="fl">'+col('eva',alN('eva'),alT('eva'))+col('ci',alN('ci'),alT('ci'))+'</div>'+
-    (f.note&&!(dayInfo().status==='before'&&!(S().broadcast||{}).time)?'<div class="warn-box" style="margin-top:.6rem">'+ic('clock')+'<span>'+esc(f.note)+'</span></div>':'');
-  var ci=(f.ci||{}).out||'--:--', eva=(f.eva||{}).out||'--:--';
-  return foldCard('flight','plane','航班資訊',dayDate(1).split('（')[0]+'–'+dayDate(days).split('（')[0],eva+' / '+ci+' 起飛',inner);
+  function tm(k){ var x=f[k]||{}; return back?x.back:x.out; }
+  /* 去程：長榮 09:00・華航 08:20；回程：華航 11:30・長榮 12:05 —— 依起飛時間排，先飛的在前 */
+  var keys=['eva','ci'].sort(function(a,b){ var ta=tm(a)||'99:99', tb=tm(b)||'99:99'; return ta<tb?-1:(ta>tb?1:0); });
+  function col(k){ var t=tm(k);
+    return '<div class="fl-col"><div class="fl-h">'+airlineBadge(k)+esc(alN(k))+'</div>'+
+      '<div class="fl-r"><b>'+(t?esc(t):'<span class="muted" style="font-size:1rem">待公布</span>')+'</b><span class="k">'+
+      (back?'回程 · 河內內排機場起飛':'去程 · 桃園 '+esc(alT(k))+' 起飛')+'</span></div></div>'; }
+  var inner='<div class="fl">'+keys.map(col).join('')+'</div>'+
+    (!back&&f.note&&!(di.status==='before'&&!(S().broadcast||{}).time)?'<div class="warn-box" style="margin-top:.6rem">'+ic('clock')+'<span>'+esc(f.note)+'</span></div>':'');
+  /* 收起時的摘要：每家航空一段、段內不斷行，窄螢幕時整段換行而不是被「…」切掉 */
+  var sum=keys.map(function(k){ return '<span class="nw">'+esc(alS(k)+' '+(tm(k)||'待公布'))+'</span>'; }).join('<span class="sep">・</span>');
+  return foldCard('flight','plane',back?'回程航班':'去程航班',(back?dayDate(days):dayDate(1)).split('（')[0],sum,inner,{sumHtml:true});
 }
 
 /* ===== 行程卡片底圖（每個行程項目一張）=====

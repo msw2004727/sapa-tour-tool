@@ -1,5 +1,5 @@
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '3.19';
+var APP_VERSION = '3.20';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -132,8 +132,9 @@ var PHRASES = [
   {cat:'eat',e:'🌶️',zh:'不要辣',vi:'Không cay.',say:'空 該'},
   {cat:'eat',e:'🧂',zh:'請不要加味精',vi:'Xin đừng cho bột ngọt.',say:'新 登 糗 撥 諾'},
   {cat:'eat',e:'🥗',zh:'我吃素（全素）',vi:'Tôi ăn chay. Không thịt, không cá, không nước mắm.',say:'兜依 安 齋'},
-  {cat:'eat',e:'🦐',zh:'我對海鮮過敏',vi:'Tôi bị dị ứng hải sản.',say:'兜依 逼 基 恩 嗨 賞'},
-  {cat:'eat',e:'🥜',zh:'我對花生過敏',vi:'Tôi bị dị ứng đậu phộng.',say:'兜依 逼 基 恩 豆 風'},
+  {cat:'eat',e:'🦐',zh:'我對海鮮過敏（蝦、蟹、魷魚、螺），請不要放進菜裡',vi:'Tôi bị dị ứng hải sản (tôm, cua, mực, ốc). Xin đừng cho vào món ăn.',say:'兜依 逼 基 恩 嗨 賞'},
+  {cat:'eat',e:'🥜',zh:'我對花生過敏，請不要放進菜裡',vi:'Tôi bị dị ứng lạc (đậu phộng). Xin đừng cho vào món ăn.',say:'兜依 逼 基 恩 辣'},
+  {cat:'eat',e:'🐄',zh:'我不吃牛肉',vi:'Tôi không ăn thịt bò.',say:'兜依 空 安 提 播'},
   {cat:'eat',e:'👥',zh:'兩人份',vi:'Cho hai người ăn.',say:'糗 嗨 額 安'},
   {cat:'eat',e:'👍',zh:'有什麼推薦的？',vi:'Có món gì ngon?',say:'果 蒙 記 濃'},
   {cat:'eat',e:'🥢',zh:'請再給我一雙筷子',vi:'Cho tôi thêm một đôi đũa.',say:'糗 兜依 添 莫 堆 度'},
@@ -173,7 +174,7 @@ var PHRASES = [
   {cat:'sick',e:'🩺',zh:'我需要看醫生',vi:'Tôi cần đi khám bác sĩ.',say:'兜依 艮 低 康 拔 西'},
   {cat:'sick',e:'🆘',zh:'請幫我叫救護車 115',vi:'Tôi không khỏe. Xin gọi cấp cứu 115 giúp tôi.',say:'（出示此卡）'},
   /* --- 走散與緊急 --- */
-  {cat:'sos',e:'🧑‍🤝‍🧑',zh:'走散了，請幫我打電話',vi:'Tôi bị lạc đoàn du lịch. Xin gọi giúp hướng dẫn viên của tôi.',say:'（出示此卡並指向下方電話）',lost:true},
+  {cat:'sos',e:'🧑‍🤝‍🧑',zh:'走散了，請幫我打電話',vi:'Tôi bị lạc đoàn. Xin gọi giúp tôi số điện thoại bên dưới.',say:'（出示此卡並指向下方電話）',lost:true},
   {cat:'sos',e:'🇹🇼',zh:'我是台灣來的旅客',vi:'Tôi là khách du lịch Đài Loan.',say:'兜依 拉 卡 租 力 呆 巒'},
   {cat:'sos',e:'👮',zh:'請幫我報警 113',vi:'Xin gọi công an 113 giúp tôi.',say:'新 軌 工 安 113 族 兜依'},
   {cat:'sos',e:'🗺️',zh:'請幫我看地圖，我迷路了',vi:'Tôi bị lạc đường. Xin xem giúp bản đồ này.',say:'兜依 逼 辣 冷。新 顯 族 半 抖 耐'}
