@@ -696,6 +696,14 @@ select.in.sm{min-height:2.5rem;font-size:.88rem;padding:0 1.6rem 0 .55rem;width:
 .tcard svg.i{width:1.5rem;height:1.5rem;color:var(--indigo);margin-bottom:.15rem}
 .tcard b{font-size:1rem;font-weight:900;white-space:nowrap;word-break:keep-all}
 .tcard small{font-size:.875rem;color:var(--ink-3);font-weight:700;line-height:1.25}
+/* ===== 推播通知（v3.24 預留，關閉中）：開關與欄位都畫出來，但一律灰色、不能按 ===== */
+.pu-row{display:flex;align-items:center;gap:.6rem;padding:.55rem 0;border-bottom:1px dashed var(--line)}
+.pu-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:.1rem}
+.pu-t>b{font-size:1rem;font-weight:900}
+.pu-t>small{font-size:.85rem;color:var(--ink-3);font-weight:700;line-height:1.35}
+.pu-off{flex-shrink:0;font-size:.8rem;font-weight:900;color:var(--ink-2);background:var(--line);border-radius:999px;padding:.15rem .55rem;white-space:nowrap}
+.tgl:disabled{opacity:.45;cursor:not-allowed}
+.in:disabled{opacity:.6;cursor:not-allowed}
 /* ===== 工具頁內容（v3.23）：主辦人自己寫的，長度不一定，寧可換行也不要撐破版面 ===== */
 .tcard b{max-width:100%;overflow:hidden;text-overflow:ellipsis}
 .tl-lead{margin-top:-.35rem}
@@ -784,7 +792,7 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
 <script src="./config.js"></script>
 <script>
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '3.23';
+var APP_VERSION = '3.24';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -846,6 +854,7 @@ var ICONS = {
   dotsh:'<circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/>',
   boxplus:'<rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="M12 9v6M9 12h6"/>',
   /* 備份與還原：逆時針箭頭繞著時鐘 */
+  bell:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
   history:'<path d="M3.5 12a8.5 8.5 0 1 0 2.5-6"/><path d="M3 4.5V9h4.5"/><path d="M12 7.5V12l3 2"/>',
   /* 「把訊息傳到聊天室」：對話框 + 往外送出的箭頭。自己畫的，不是任何 App 的商標 */
   lineshare:'<path d="M3 5h11v9H8l-5 4V5z"/><path d="M15.5 3.5H21V9"/><path d="M21 3.5l-7 7"/>'
@@ -880,6 +889,18 @@ var BDS = [['bd-grey','一般'],['bd-gold','金框'],['bd-red','紅虛線'],['bd
 var AIRLINES = {eva:{label:'長榮',name:'長榮航空',note:'桃園第二航廈',term:'T2',cls:'eva'},ci:{label:'華航',name:'中華航空',note:'桃園第一航廈',term:'T1',cls:'ci'}};
 var MEAL_TAGS = ['素食','不吃牛','不吃辣','要溫水','已點餐','已上菜','還沒到','要打包'];
 
+/* ===== 推播通知（v3.24 預留，目前關閉中）=====
+   小麥決定：成本考量，先不做推播（發送端要 Firebase Blaze 綁信用卡，或另外架 Cloudflare Worker）。
+   管理專區只預留畫面：總開關與各情境開關一律灰色、不能按，欄位也是停用的。真的要做時，這份清單就是
+   「什麼情況要推播」的規格：id 之後會是 settings.push.types 的欄位名稱（設計與路線見 notes/03 第十三節）。 */
+var PUSH_TYPES = [
+  {id:'bc',  name:'廣播更新',     sub:'主辦人改了集合時間、地點或叮嚀時，馬上通知'},
+  {id:'cd',  name:'集合倒數',     sub:'集合前的幾分鐘，再提醒一次'},
+  {id:'next',name:'下一站提醒',   sub:'下一站快到時提醒'},
+  {id:'day', name:'每日早安摘要', sub:'每天早上列出今天的行程'},
+  {id:'morn',name:'明早時程',     sub:'主辦人更新明早起床、早餐、出發時間時通知'},
+  {id:'pre', name:'出發前提醒',   sub:'出發前一晚，提醒帶護照與行動電源'}
+];
 /* ===== 雲端同步的文件 ===== */
 /* photos 獨立成一份文件：底圖不能塞在 itinerary 裡，
    因為新增／編輯行程會用 Store.save('itinerary') 整份覆寫，那樣每改一個字都要重傳所有圖。 */
@@ -3098,6 +3119,7 @@ function toolMenu(){
       '<button class="btn big" data-act="homeScnVis">'+ic('users')+'<span class="b2">首頁分組顯示<small>哪些分組情境出現在首頁</small></span></button>'+
       '<button class="btn big" data-act="cardZones">'+ic('grid')+'<span class="b2">首頁卡片位置<small>卡片何時移到稍後／隨時查／收起</small></span></button>'+
       '<button class="btn big" data-act="simPick">'+ic('clock')+'<span class="b2">時間模擬<small>預覽旅途中、回國後的畫面，只在這支手機</small></span></button>'+
+      '<button class="btn big" data-act="pushInfo">'+ic('bell')+'<span class="b2">推播通知<small>目前關閉中（成本考量），先預留開關</small></span></button>'+
       '<button class="btn big" data-act="prevList">'+ic('refresh')+'<span class="b2">還原上一版<small>資料突然變少、清空工具頁之前自動留下的</small></span></button>'+
       '<button class="btn big" data-act="bkList">'+ic('history')+'<span class="b2">備份與還原<small>一鍵清空、還原之前自動留下的備份</small></span></button>'+
     '</div><div class="row"><button class="btn dng" data-act="clearAsk">'+ic('trash')+'一鍵清空內容</button><button class="btn" data-act="leaderLock">'+ic('lock')+'鎖定管理模式</button></div>');
@@ -3708,6 +3730,23 @@ function sheetHomeScn(){
         '<button class="tgl'+(homeScnHidden(sc.id)?'':' on')+'" data-act="toggleHomeScn" data-id="'+esc(sc.id)+'" aria-label="切換是否顯示在首頁"></button></div>';
     }).join(''):'<div class="muted">目前還沒有分組情境。</div>')+'</div>'});
 }
+/* ===== 推播通知（v3.24 預留，關閉中）=====
+   只畫畫面：所有開關與欄位都是 disabled，沒有 data-act、不讀不寫任何資料、也不會跳出「允許通知」的詢問。 */
+function puSwitch(label){ return '<button type="button" class="tgl" role="switch" aria-checked="false" aria-disabled="true" disabled aria-label="'+esc(label)+'（目前關閉中）"></button>'; }
+function sheetPush(){
+  var sel=function(opts,cur){ return '<select class="in" disabled aria-disabled="true">'+opts.map(function(o){ return '<option'+(o[0]===cur?' selected':'')+'>'+esc(o[1])+'</option>'; }).join('')+'</select>'; };
+  openSheet({title:'推播通知',tall:true,body:
+    '<div class="bk-note">'+ic('bell')+'<span>此功能<b>因成本考量，目前關閉中</b>。下面的開關與欄位是先預留的，開放之後才能使用；現在不會傳送任何通知。</span></div>'+
+    '<div class="pu-list"><div class="pu-row"><div class="pu-t"><b>推播通知（總開關）</b><small>開啟後，手機不用打開 App 也會收到通知</small></div><span class="pu-off">關閉中</span>'+puSwitch('推播通知總開關')+'</div></div>'+
+    '<h2 class="sec">'+ic('flag')+'什麼情況要推播</h2>'+
+    '<div class="pu-list">'+PUSH_TYPES.map(function(t){ return '<div class="pu-row"><div class="pu-t"><b>'+esc(t.name)+'</b><small>'+esc(t.sub)+'</small></div>'+puSwitch(t.name)+'</div>'; }).join('')+'</div>'+
+    '<h2 class="sec">'+ic('clock')+'提醒時間</h2>'+
+    '<div class="grid2">'+fld('集合倒數：提前',sel([['5','5 分鐘'],['10','10 分鐘'],['15','15 分鐘'],['30','30 分鐘']],'15'))+fld('下一站：提前',sel([['10','10 分鐘'],['20','20 分鐘'],['30','30 分鐘'],['60','1 小時']],'20'))+'</div>'+
+    fld('每日早安摘要的時間','<input class="in" type="text" value="07:30" disabled aria-disabled="true">')+
+    fld('發送服務網址','<input class="in" type="text" placeholder="尚未設定" disabled aria-disabled="true">')+
+    '<div class="muted">目前關閉中，這些欄位暫時不能修改。</div>',
+    foot:'<button class="btn pri" data-act="sheetClose">知道了</button>'});
+}
 /* 通知團員：把廣播排版好，一鍵丟進 LINE 群組。
    「開啟 LINE 傳送」用 LINE 的分享網址（line.me/R/msg/text/），點下去會直接跳到 LINE 選聊天室，
    文字已經填好，管理者只要選群組按送出；萬一那支手機沒裝 LINE，還有「複製文字」可以退。 */
@@ -4301,6 +4340,7 @@ var ACT={
   saveAirNote:function(){ S().settings.airNote=sv('airNote'); closeSheet(); Store.save('settings'); toast('提醒已更新'); },
   pickHotel:function(){ sheetHotel(); },
   homeScnVis:function(){ sheetHomeScn(); },
+  pushInfo:function(){ if(P.leader) sheetPush(); },
   toggleHomeScn:function(t){ if(!P.leader) return; homeScnToggle(t.getAttribute('data-id')); },
   setHotel:function(t){ S().settings.currentHotelId=t.getAttribute('data-id'); closeSheet(); Store.save('settings'); toast('已切換入住飯店'); },
   editHotel:function(t){ sheetHotelEdit(t.getAttribute('data-id')||''); },

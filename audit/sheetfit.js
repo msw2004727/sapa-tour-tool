@@ -24,6 +24,7 @@ const SHEETS=[
   ['sos',()=>sheetSOS()],
   ['tl-clear',()=>sheetTlClear('quick')],
   ['tpl',()=>sheetTpl()],
+  ['push',()=>sheetPush()],
 ];
 let fails=0;
 (async()=>{

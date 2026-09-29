@@ -12,7 +12,7 @@
 |---|---|
 | 正式網址 | https://750hd.com （Cloudflare 網域 → GitHub Pages） |
 | GitHub | `msw2004727/sapa-tour-tool`，分支 `main` |
-| 目前版本 | v3.23 |
+| 目前版本 | v3.24 |
 | 旅遊日期 | 第一團 2026-09-24 ～ 09-28 越南沙壩（5 天 4 夜，已結束）；之後每一團的日期、目的地都在管理模式設定 |
 | 使用者 | 團員（第一團 33 位，**多數是長輩**）；主辦人是小麥，用 PIN 進入管理模式 |
 | 性質 | **團體自由行，沒有領隊、沒有導遊** |
@@ -67,7 +67,7 @@ sapa-tour-tool/            ← 這整個資料夾就是 GitHub repo
 ├── src/                   ★ 原始碼，改東西都在這裡
 │   ├── 01-style.html      全站 CSS（含三套主題的 token）
 │   ├── 02-body.html       HTML 骨架（標頭、LCD 面板、#view、底部分頁）
-│   ├── 03-data.js         APP_VERSION、inline SVG 圖示、常數、DOC_KEYS
+│   ├── 03-data.js         APP_VERSION、inline SVG 圖示、常數、DOC_KEYS、PUSH_TYPES（推播情境清單，預留）
 │   ├── 03a-tpl.js         工具頁範本（通用版、越南範本）、常用外幣、時區清單——純資料（v3.23）
 │   ├── 03b-seed.js        內建預設資料：空殼（v3.23 起不含任何一團的名單與行程）
 │   ├── 04-core.js         Store（同步層）、VIEWS（各分頁）、首頁卡片、工具函式
@@ -98,7 +98,7 @@ npx playwright install chromium
 # 改完 src/ 之後
 node build.js            # 或 npm run build
 npm run test:quick       # 快檢：regress + sheetfit（約 1 分鐘）
-npm test                 # 全部 15 支測試（約 14 分鐘）
+npm test                 # 全部 16 支測試（約 15 分鐘）
 npm run test:rules       # 只有改 Firebase 規則時才跑：官方模擬器實際寫入（要 Java，見 audit/fbrules.js 開頭）
 
 # 在瀏覽器看
@@ -185,6 +185,7 @@ Cowork 的容器**沒有 GitHub 憑證，不能 `git push`**，而且對話結�
 | `audit/resettest.js` | v3.22 **一鍵清空・自動備份與還原**：PIN、警語、沒連線／還有修改沒送出／雲端規則擋下時一個字都不動；整批寫入（v3.23 起 9 份文件＋備份在同一筆）；清空後重新整理不會被程式內建資料補回來；清空後新增第一位團員／第一站真的存得進去；空白狀態 44 個畫面淺色、深色、兩種字級；還原與還原前自動備份；雲端最多 3 份；單機模式。開頭先確認測試瀏覽器連不到正式資料庫 |
 | `audit/fbrules.js` | **不在 `npm test` 裡**（要 Java 與 Firebase 模擬器）。實際寫入模擬器驗證 `firebase.rules.json`：舊規則下一鍵清空整批被擋、新規則下清空與還原通過、沒帶標記的空名單與清空後的半筆補寫仍被擋、備份區格式。改規則前後都要跑 |
 | `audit/toolstest.js` | v3.23 **工具頁通用化**：實際點畫面走過知識小卡的新增／編輯／預覽／排序／刪除、簡易標記的每種寫法與跳脫、清空一區與還原上一版、清空後（Firebase 拿掉空陣列）新增第一張、外幣常用貨幣與兩種匯率寫法與防呆、外語圖卡與走散卡、計程車卡、當地電話（含 v3.22 駐外館處電話搬家）、工具頁範本；目的地時區（日本、巴黎夏令時間切換日、美西與紐西蘭的出發日、壞掉的時區值）；一鍵清空包含工具頁、還原 v3.22 舊備份時換回越南範本；全新空殼的畫面沒有越南的字；320px 特大字不撐破 |
+| `audit/pushui.js` | v3.24 **推播通知（預留，關閉中）**：只有主辦人看得到入口、團員直接呼叫也打不開；7 個開關（總開關＋6 種情境）全部停用、關閉、灰色、沒綁動作；欄位全部停用；怎麼按都不改資料、不進佇列、不跳出「允許通知」、不建立推播訂閱；程式與 Service Worker 裡沒有任何推播實作；說明寫明「成本考量」；320px 特大字／標準字、淺色／深色不撐破、字夠大、對比夠 |
 | `audit/timeline.js` | **時光機**：用 Playwright 假時鐘把「現在」撥到出發前、出發日清晨、旅途中每天、回國後共 16 個時間點，印出首頁摘要（加 `--shots` 存截圖），再斷言台灣時間、過期廣播、最後一天、App 開著過夜、「現在＋N 分」、時間模擬；v3.20 加上航班卡去程／回程分段、廣播表單日期預設與「時間已過」防呆 |
 
 `audit/_lib.js` 負責找 playwright、算出 `standalone.html` 的位置、**在網頁載入前放進測試用的一團假資料**（`audit/fixture-trip.js` → `window.__SEED__`，2026 沙壩團的行程與設定，團員名字是代號；工具頁用越南範本、時區設越南），並且**讓測試開的瀏覽器連不到外面**（HTTP 與 WebSocket 都擋，只放行 `file://` 與 127.0.0.1）。`standalone.html` 會載入正式的 `config.js`，沒有這層的話，在有網路的電腦上跑「會存檔」的測試就會寫進正式資料庫——v3.22 以前的 `membersave.js`、`synctest.js` 就有這個風險。測試裡不要寫死路徑，也不要繞過 `_lib` 自己開瀏覽器。想測「全新、什麼都沒有」的樣子用 `browser.newContext({noSeed:true})`。
@@ -314,6 +315,12 @@ Cowork 的容器**沒有 GitHub 憑證，不能 `git push`**，而且對話結�
 
 以後新增會顯示使用者內容的地方照這樣做。`toolstest.js` 的 [2]、[5] 有測（塞 `<img onerror>`、`<script>`、壞掉的顏色值）。
 
+### 15. Playwright 測通知要用完整版 Chromium
+
+預設的 headless shell 不管怎麼 `grantPermissions`，`Notification.permission` 永遠是 `denied`（v3.24 探測出來的）。要測通知或推播，用 `chromium.launch({channel:'chromium'})`（完整版，新 headless 模式），權限才會是 `granted`。
+
+在那個模式下，Service Worker 收推播可以真的測：起一個本機 http 伺服器（Service Worker 不能用 `file://`）、註冊 SW，再用 CDP 的 `ServiceWorker.deliverPushMessage` 送一則推播，接著 `registration.getNotifications()` 就看得到。`pushManager.subscribe()` 在這個環境會失敗（連不到推播服務），要用 stub 取代。
+
 ### 14. 程式裡沒有測試資料；測試資料在 `audit/fixture-trip.js`
 
 v3.23 起 `DEFAULTS` 是空殼。測試拿得到「33 人、30 站的沙壩團」，是因為 `_lib.js` 在網頁載入前放了 `window.__SEED__`，`03b-seed.js` 逐份拿來蓋過空殼。所以：
@@ -377,6 +384,14 @@ DOC_KEYS = ['settings','broadcast','itinerary','members','groups','rollcall','no
 - 還原 v3.22 以前的備份（沒有 `tools`）時，工具頁換回越南範本——那時工具頁寫死的就是越南內容。
 - **Firebase 規則不用改**：`trip/tools` 走 `$doc` 那條（要有子欄位、`_ts` 是數字、不能整份刪除），清空的 `{_ts,_cleared}` 也收。
 - 家鄉固定是台灣：台幣、台灣時間、桃園的航廈。團務設定新增 `tz`（目的地時區）、`flights.backPort`（回程起飛機場）；舊的 `vndPerTwd` 不再使用。
+
+### v3.24 推播通知：只預留畫面，功能關閉中
+
+小麥決定**成本考量，先不做推播**。管理專區多了「推播通知」（`sheetPush()`）：總開關、6 種情境開關（`PUSH_TYPES`：廣播更新、集合倒數、下一站提醒、每日早安摘要、明早時程、出發前提醒）、提前分鐘數、每日摘要時間、發送服務網址——**全部停用、灰色、沒綁任何動作**，並寫明「因成本考量，目前關閉中」。團員看不到入口。
+
+它**不讀寫任何資料**：`settings` 裡沒有 `push`、`pushUrl` 欄位，不要求通知權限，不建立推播訂閱，Service Worker 沒有 `push` 事件（`audit/pushui.js` 逐項擋著）。
+
+**要真的做的時候**，先讀 `notes/03-改版日誌_v3.14起.md` 第十三節：客戶端用原生 Web Push（VAPID）＋ Service Worker；發送端要另外部署（Firebase Cloud Functions 或 Cloudflare Worker，各有取捨）；情境規則、資料模型草案、測試技巧都寫在那裡。做完之後把 `pushui.js` 裡「沒有推播實作」那一段換成真正的測試。
 
 ### v3.18 加上的保護（都在 `Store` 裡）
 

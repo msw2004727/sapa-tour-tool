@@ -80,6 +80,8 @@ const SHEETS=[
   ['tl-clear-quick',()=>sheetTlClear('quick')],
   ['tl-clear-pre',()=>sheetTlClear('pre')],
   ['tpl',()=>sheetTpl()],
+  /* v3.24 推播通知（預留，關閉中） */
+  ['push',()=>sheetPush()],
 ];
 (async()=>{
   const b=await chromium.launch(); let fails=0;

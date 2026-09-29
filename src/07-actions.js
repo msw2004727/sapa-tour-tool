@@ -272,6 +272,7 @@ var ACT={
   saveAirNote:function(){ S().settings.airNote=sv('airNote'); closeSheet(); Store.save('settings'); toast('提醒已更新'); },
   pickHotel:function(){ sheetHotel(); },
   homeScnVis:function(){ sheetHomeScn(); },
+  pushInfo:function(){ if(P.leader) sheetPush(); },
   toggleHomeScn:function(t){ if(!P.leader) return; homeScnToggle(t.getAttribute('data-id')); },
   setHotel:function(t){ S().settings.currentHotelId=t.getAttribute('data-id'); closeSheet(); Store.save('settings'); toast('已切換入住飯店'); },
   editHotel:function(t){ sheetHotelEdit(t.getAttribute('data-id')||''); },

@@ -441,6 +441,23 @@ function sheetHomeScn(){
         '<button class="tgl'+(homeScnHidden(sc.id)?'':' on')+'" data-act="toggleHomeScn" data-id="'+esc(sc.id)+'" aria-label="切換是否顯示在首頁"></button></div>';
     }).join(''):'<div class="muted">目前還沒有分組情境。</div>')+'</div>'});
 }
+/* ===== 推播通知（v3.24 預留，關閉中）=====
+   只畫畫面：所有開關與欄位都是 disabled，沒有 data-act、不讀不寫任何資料、也不會跳出「允許通知」的詢問。 */
+function puSwitch(label){ return '<button type="button" class="tgl" role="switch" aria-checked="false" aria-disabled="true" disabled aria-label="'+esc(label)+'（目前關閉中）"></button>'; }
+function sheetPush(){
+  var sel=function(opts,cur){ return '<select class="in" disabled aria-disabled="true">'+opts.map(function(o){ return '<option'+(o[0]===cur?' selected':'')+'>'+esc(o[1])+'</option>'; }).join('')+'</select>'; };
+  openSheet({title:'推播通知',tall:true,body:
+    '<div class="bk-note">'+ic('bell')+'<span>此功能<b>因成本考量，目前關閉中</b>。下面的開關與欄位是先預留的，開放之後才能使用；現在不會傳送任何通知。</span></div>'+
+    '<div class="pu-list"><div class="pu-row"><div class="pu-t"><b>推播通知（總開關）</b><small>開啟後，手機不用打開 App 也會收到通知</small></div><span class="pu-off">關閉中</span>'+puSwitch('推播通知總開關')+'</div></div>'+
+    '<h2 class="sec">'+ic('flag')+'什麼情況要推播</h2>'+
+    '<div class="pu-list">'+PUSH_TYPES.map(function(t){ return '<div class="pu-row"><div class="pu-t"><b>'+esc(t.name)+'</b><small>'+esc(t.sub)+'</small></div>'+puSwitch(t.name)+'</div>'; }).join('')+'</div>'+
+    '<h2 class="sec">'+ic('clock')+'提醒時間</h2>'+
+    '<div class="grid2">'+fld('集合倒數：提前',sel([['5','5 分鐘'],['10','10 分鐘'],['15','15 分鐘'],['30','30 分鐘']],'15'))+fld('下一站：提前',sel([['10','10 分鐘'],['20','20 分鐘'],['30','30 分鐘'],['60','1 小時']],'20'))+'</div>'+
+    fld('每日早安摘要的時間','<input class="in" type="text" value="07:30" disabled aria-disabled="true">')+
+    fld('發送服務網址','<input class="in" type="text" placeholder="尚未設定" disabled aria-disabled="true">')+
+    '<div class="muted">目前關閉中，這些欄位暫時不能修改。</div>',
+    foot:'<button class="btn pri" data-act="sheetClose">知道了</button>'});
+}
 /* 通知團員：把廣播排版好，一鍵丟進 LINE 群組。
    「開啟 LINE 傳送」用 LINE 的分享網址（line.me/R/msg/text/），點下去會直接跳到 LINE 選聊天室，
    文字已經填好，管理者只要選群組按送出；萬一那支手機沒裝 LINE，還有「複製文字」可以退。 */

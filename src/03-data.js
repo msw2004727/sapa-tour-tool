@@ -1,5 +1,5 @@
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '3.23';
+var APP_VERSION = '3.24';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -61,6 +61,7 @@ var ICONS = {
   dotsh:'<circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/>',
   boxplus:'<rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="M12 9v6M9 12h6"/>',
   /* 備份與還原：逆時針箭頭繞著時鐘 */
+  bell:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
   history:'<path d="M3.5 12a8.5 8.5 0 1 0 2.5-6"/><path d="M3 4.5V9h4.5"/><path d="M12 7.5V12l3 2"/>',
   /* 「把訊息傳到聊天室」：對話框 + 往外送出的箭頭。自己畫的，不是任何 App 的商標 */
   lineshare:'<path d="M3 5h11v9H8l-5 4V5z"/><path d="M15.5 3.5H21V9"/><path d="M21 3.5l-7 7"/>'
@@ -95,6 +96,18 @@ var BDS = [['bd-grey','一般'],['bd-gold','金框'],['bd-red','紅虛線'],['bd
 var AIRLINES = {eva:{label:'長榮',name:'長榮航空',note:'桃園第二航廈',term:'T2',cls:'eva'},ci:{label:'華航',name:'中華航空',note:'桃園第一航廈',term:'T1',cls:'ci'}};
 var MEAL_TAGS = ['素食','不吃牛','不吃辣','要溫水','已點餐','已上菜','還沒到','要打包'];
 
+/* ===== 推播通知（v3.24 預留，目前關閉中）=====
+   小麥決定：成本考量，先不做推播（發送端要 Firebase Blaze 綁信用卡，或另外架 Cloudflare Worker）。
+   管理專區只預留畫面：總開關與各情境開關一律灰色、不能按，欄位也是停用的。真的要做時，這份清單就是
+   「什麼情況要推播」的規格：id 之後會是 settings.push.types 的欄位名稱（設計與路線見 notes/03 第十三節）。 */
+var PUSH_TYPES = [
+  {id:'bc',  name:'廣播更新',     sub:'主辦人改了集合時間、地點或叮嚀時，馬上通知'},
+  {id:'cd',  name:'集合倒數',     sub:'集合前的幾分鐘，再提醒一次'},
+  {id:'next',name:'下一站提醒',   sub:'下一站快到時提醒'},
+  {id:'day', name:'每日早安摘要', sub:'每天早上列出今天的行程'},
+  {id:'morn',name:'明早時程',     sub:'主辦人更新明早起床、早餐、出發時間時通知'},
+  {id:'pre', name:'出發前提醒',   sub:'出發前一晚，提醒帶護照與行動電源'}
+];
 /* ===== 雲端同步的文件 ===== */
 /* photos 獨立成一份文件：底圖不能塞在 itinerary 裡，
    因為新增／編輯行程會用 Store.save('itinerary') 整份覆寫，那樣每改一個字都要重傳所有圖。 */
