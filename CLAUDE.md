@@ -33,7 +33,7 @@
 
 ### 外觀：汽水風（v3.27 起）
 
-小麥從四種預覽（A 汽水、B 撞色、C 晴空、D 手帳）裡選了 A：奶油底、汽水橘主色、檸檬黃、薄荷、深葡萄色的字；元件圓潤（膠囊按鈕、22px 卡片圓角），按鈕與卡片底下有一條「厚邊」（`0 3px 0 var(--edge)`），底部選單是浮起來的膠囊。**所有顏色都在 `src/01-style.html` 最上面的 token，淺色、系統深色、手動深色三處要一起改**（第二、三處內容一樣）。每個 token 的意思與文字對比表在 `notes/03-改版日誌_v3.14起.md` 第十六節，改外觀之前先看。要點：
+小麥從四種預覽（A 汽水、B 撞色、C 晴空、D 手帳）裡選了 A：奶油底、汽水橘主色、檸檬黃、薄荷、深葡萄色的字；元件圓潤（膠囊按鈕、22px 卡片圓角），按鈕與卡片底下有一條「厚邊」（`0 3px 0 var(--edge)`），底部選單是浮起來的膠囊。**所有顏色都在 `src/01-style.html` 最上面的 token，淺色、系統深色、手動深色三處要一起改**（第二、三處內容一樣）。每個 token 的意思與文字對比表在 `notes/03-改版日誌_v3.14起.md` 第十六節，改外觀之前先看；沒選上的 B、C、D 三種的色票也記在同一節最後，日後想換風格從那裡開始。要點：
 
 - **`--indigo` 不再是藍色**，是「強調用的文字色」（深橘褐）。按鈕、選中狀態的填色用 `--pri`，上面的字用 `--pri-ink`（**深色字**；汽水橘配白字對比只有 2.7:1）。
 - 三種首頁大卡共用 `.hero` 的 `--h-…` 變數（廣播＝淺色主題深葡萄底、深色主題檸檬黃底；`.pre`＝蜜桃橘；`.done`＝薄荷）。**底色一定要是單色**，不能用漸層：`hardening.js` 用 `getComputedStyle(…).backgroundColor` 量對比，漸層量到的是透明。
@@ -101,7 +101,7 @@ sapa-tour-tool/            ← 這整個資料夾就是 GitHub repo
 ## 四、日常工作流程
 
 ```bash
-# 首次設定（只要做一次）
+# 首次設定（只要做一次；雲端工作階段的瀏覽器是預裝的，不用跑第二行，見第五節）
 npm install
 npx playwright install chromium
 
@@ -152,6 +152,20 @@ git diff origin/main -- index.html --stat    # 應該沒有輸出
 >
 > v3.18 起 SW 的策略：`index.html` 網路優先但**只等 2.5 秒**，逾時先給快取；`config.js`／manifest／圖示**快取優先、背景更新**。所以改了 `config.js` 之後，使用者要開兩次才會吃到新的。只快取 `res.ok` 的回應。改策略或圖示時記得進版 `CACHE` 名稱。
 
+### 三個平台一覽
+
+GitHub 的 `main` 是唯一正本：不管在哪個平台改，開工前都從那裡取得最新的、收工時都要回到那裡。
+
+| | 本機電腦 | Cowork | claude.ai/code 雲端工作階段 |
+|---|---|---|---|
+| 取得最新程式 | `git pull origin main` | 開工先 `git clone`（容器用完即丟） | 工作階段自己 clone |
+| 能 `git push` 嗎 | 能 | **不能**（沒有 GitHub 憑證） | 能；預設推 `claude/…` 分支，推 `main` 要小麥說「上線」 |
+| 怎麼部署 | `git push origin main` | Claude in Chrome 開 GitHub 上傳頁 | `git push origin HEAD:main`（小麥同意之後） |
+| 跑測試 | `npm install`、`npx playwright install chromium` | `audit/_lib.js` 會找容器內建的 Playwright | `npm install` 就好（瀏覽器預裝），**不要**跑 `npx playwright install` |
+| 驗證上線 | 開 `750hd.com/?v=<版本>` | 同左（用 Chrome） | 容器連不到 `750hd.com`：看 GitHub Actions ＋ 用 raw 比對 `index.html` |
+
+> 「Cowork」那一欄是先前的紀錄，2026-09-29 沒有重新驗證；「雲端工作階段」那一欄是這天實測過的，做法見下面兩節。
+
 ### 在 Cowork 作業時（小麥目前主要的作業方式）
 
 Cowork 的容器**沒有 GitHub 憑證，不能 `git push`**，而且對話結束後容器會被回收。所以流程是：
@@ -167,10 +181,17 @@ Cowork 的容器**沒有 GitHub 憑證，不能 `git push`**，而且對話結�
 
 ### 在雲端工作階段改這個專案
 
-`claude.ai/code` 的雲端工作階段會自己 clone 這個 repo，不需要本機檔案。注意兩件事：
+`claude.ai/code` 的雲端工作階段會自己 clone 這個 repo，不需要本機檔案。以下是 2026-09-29 在雲端工作階段實測過的做法（來龍去脈在 `notes/03-改版日誌_v3.14起.md` 第十七節）：
 
 1. 改完**一定要 `node build.js`**，否則推上去的 `index.html` 還是舊的 —— 這是這個專案最容易犯的錯，因為原始碼與產出物在同一個 repo 裡。
-2. 測試要跑 Playwright，雲端環境需要先 `npm install && npx playwright install chromium`。若裝不起來，至少要人工確認 `node build.js` 有過，並把「沒跑測試」講出來。
+2. **跑測試：`npm install` 就好，不要跑 `npx playwright install`。** 雲端環境的 Chromium 是預裝的（`PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers`，目前是 chromium-1194，對應 Playwright 1.56），不能再下載。專案沒有鎖檔，`npm install` 會裝到最新的 Playwright（2026-09 是 1.63.0），它要的瀏覽器編號不在預裝目錄，一開瀏覽器就報 `Executable doesn't exist`。`audit/_lib.js` 現在遇到這個錯誤會自動改用預裝的 Chromium（終端機會印一行 `[_lib] … 改用預裝的 …`，表示走了後備），所以照常 `npm install && npm test` 即可。
+   - 如果連 `npm install` 都不行、或測試還是跑不起來：至少確認 `node build.js` 有過，並把「沒跑測試」講出來。
+3. **分支與上線**：雲端工作階段會被指定一個 `claude/…` 分支，平常推那個分支。**推 `main` 要小麥明確同意**（他說「上線」）：`git push origin HEAD:main`；`main` 是 HEAD 的祖先時就是快轉，不會有衝突。
+4. **驗證上線**：容器連不到 `750hd.com`（也連不到 `github.io`），但連得到 `api.github.com` 與 `raw.githubusercontent.com`（匿名，有速率限制）：
+   - Pages 部署：`https://api.github.com/repos/msw2004727/sapa-tour-tool/actions/runs?branch=main&per_page=5`，找 `head_sha` 是剛推的 commit、`status` 為 `completed`、`conclusion` 為 `success` 的那一筆（推完約 30 秒）。
+   - 內容：抓 `https://raw.githubusercontent.com/msw2004727/sapa-tour-tool/main/index.html`，跟本機的 `index.html` 用 `cmp` 比對。
+   - **不要宣稱「線上頁面看過了」**：請小麥自己開 `https://750hd.com/?v=<版本>`（手機因為 Service Worker 可能要開兩次）。
+5. 沒有 `gh` 指令；要操作 PR、Actions 用 GitHub MCP 工具（`mcp__github__…`）。
 
 ---
 
@@ -200,7 +221,7 @@ Cowork 的容器**沒有 GitHub 憑證，不能 `git push`**，而且對話結�
 | `audit/scntest.js` | v3.25 **分組的大分類**：四個分類（交通、餐飲、逛街、旅伴）、新增情境在分類裡面、每一類的預設名稱與欄位與臨時標籤；每一類各建一個情境並看畫面、首頁、交通卡、台灣時間分界；逐列編輯（新增、刪除、上移、下移）後每個人的分組跟著重新對應、取消不存、組數上下限、換分類不丟欄位；**舊航空公司資料轉成「航班」情境**（只有畫面轉換、不寫雲端、所有手機一樣、第一次修改才存進去並記下搬家記號、刪掉不會再冒出來、重新整理也一樣）；名單／點名／資料卡的小圓徽章；全新與清空後（雲端拿掉空陣列）新增第一個情境；缺洞的雲端資料；塞 HTML 只顯示成文字；逛過所有畫面不偷改資料；320／375／390 × 三種字級 × 淺深色不溢出。38 個突變驗證（把修正拿掉，測試都會變紅） |
 | `audit/timeline.js` | **時光機**：用 Playwright 假時鐘把「現在」撥到出發前、出發日清晨、旅途中每天、回國後共 16 個時間點，印出首頁摘要（加 `--shots` 存截圖），再斷言台灣時間、過期廣播、最後一天、App 開著過夜、「現在＋N 分」、時間模擬；v3.20 加上交通卡（原航班卡）去程／回程分段（v3.25 資料改成分組的交通情境，舊格式仍由 `scnLegacy` 讀）、廣播表單日期預設與「時間已過」防呆 |
 
-`audit/_lib.js` 負責找 playwright、算出 `standalone.html` 的位置、**在網頁載入前放進測試用的一團假資料**（`audit/fixture-trip.js` → `window.__SEED__`，2026 沙壩團的行程與設定，團員名字是代號；工具頁用越南範本、時區設越南），並且**讓測試開的瀏覽器連不到外面**（HTTP 與 WebSocket 都擋，只放行 `file://` 與 127.0.0.1）。`standalone.html` 會載入正式的 `config.js`，沒有這層的話，在有網路的電腦上跑「會存檔」的測試就會寫進正式資料庫——v3.22 以前的 `membersave.js`、`synctest.js` 就有這個風險。測試裡不要寫死路徑，也不要繞過 `_lib` 自己開瀏覽器。想測「全新、什麼都沒有」的樣子用 `browser.newContext({noSeed:true})`。
+`audit/_lib.js` 負責找 playwright（找不到它那一版的瀏覽器時，雲端工作階段會改用預裝的 Chromium，見第五節）、算出 `standalone.html` 的位置、**在網頁載入前放進測試用的一團假資料**（`audit/fixture-trip.js` → `window.__SEED__`，2026 沙壩團的行程與設定，團員名字是代號；工具頁用越南範本、時區設越南），並且**讓測試開的瀏覽器連不到外面**（HTTP 與 WebSocket 都擋，只放行 `file://` 與 127.0.0.1）。`standalone.html` 會載入正式的 `config.js`，沒有這層的話，在有網路的電腦上跑「會存檔」的測試就會寫進正式資料庫——v3.22 以前的 `membersave.js`、`synctest.js` 就有這個風險。測試裡不要寫死路徑，也不要繞過 `_lib` 自己開瀏覽器。想測「全新、什麼都沒有」的樣子用 `browser.newContext({noSeed:true})`。
 
 ### 寫測試的原則（這個專案吃過虧）
 
