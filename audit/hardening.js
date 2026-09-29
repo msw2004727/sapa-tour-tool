@@ -168,6 +168,14 @@ const wait=(p,ms)=>p.waitForTimeout(ms);
   ck('首頁地圖圖示 ≥ 44px',m10.mapBtn>=44,m10.mapBtn);
   ck('行程頁地圖標籤 ≥ 44px',m10.tagMap>=44,m10.tagMap);
   ck('安裝 App 按鈕 ≥ 36px',m10.instH>=36,m10.instH);
+  /* v3.27：圖示鈕看得到的是 40px（320px 窄螢幕 36px），::before 往外撐到 44px。::before 的位置量不到 getBoundingClientRect，改用它的 left/top/right/bottom 算 */
+  for(const [w,label] of [[null,'標準寬度'],[320,'320px']]){
+    const q=w?await ctx.newPage():null; if(q){ await q.setViewportSize({width:w,height:600}); await q.goto(FILE); await wait(q,300); }
+    const hit=await (q||p).evaluate(()=>{ const out=[]; document.querySelectorAll('.top-r1 .icon-btn').forEach(b=>{ const r=b.getBoundingClientRect(), cs=getComputedStyle(b,'::before'), n=v=>Math.abs(parseFloat(v)||0);
+      out.push({w:Math.round(r.width+n(cs.left)+n(cs.right)),h:Math.round(r.height+n(cs.top)+n(cs.bottom)),shown:Math.round(r.width)}); }); return out; });
+    if(q) await q.close();
+    ck(label+'：標頭三顆圖示鈕的感應範圍 ≥ 44px',hit.length===3&&hit.every(x=>x.w>=44&&x.h>=44),hit);
+  }
 
   console.log('[9] 對比度');
   const c9=await p.evaluate(()=>{
@@ -203,7 +211,7 @@ const wait=(p,ms)=>p.waitForTimeout(ms);
     b.time=''; b.idle=false; P.tab='home'; P.tipDismissed=true; const out={};
     /* 主題要設在 P.theme：render() 會照 P.theme 重設 data-theme（只改屬性的話一 render 就被洗回淺色） */
     for(const th of ['light','dark']){ P.theme=th; const o=out[th]={};
-      st.dayOverride=2; render(); o.today=one(); o.theme=getComputedStyle(document.querySelector('.hero')).backgroundColor;
+      st.dayOverride=2; render(); o.today=one(); o.theme=getComputedStyle(document.body).backgroundColor;   /* v3.27：蜜桃橘的大卡兩種主題同色（設計如此），所以改量頁面底色，證明深色真的套上了 */
       st.dayOverride=0; st.startDate='2099-01-01'; render(); o.pre=one();
       st.startDate='2020-01-01'; render(); o.done=one();
       st.startDate=''; S().members={items:[]}; S().itinerary={items:[]}; render(); o.blank=one();
@@ -212,9 +220,33 @@ const wait=(p,ms)=>p.waitForTimeout(ms);
     return out;
   });
   ck('首頁大卡四種都有量到（測試本身有效）',['light','dark'].every(t=>/pre/.test(c9b[t].today.cls)&&/pre/.test(c9b[t].pre.cls)&&/done/.test(c9b[t].done.cls)&&/pre/.test(c9b[t].blank.cls)),c9b);
-  ck('深色真的有套上（卡片底色跟淺色不同，測試本身有效）',c9b.dark.theme!==c9b.light.theme,{light:c9b.light.theme,dark:c9b.dark.theme});
+  ck('深色真的有套上（頁面底色跟淺色不同，測試本身有效）',c9b.dark.theme!==c9b.light.theme,{light:c9b.light.theme,dark:c9b.dark.theme});
   for(const t of ['light','dark']) for(const k of ['today','pre','done','blank'])
     ck((t==='light'?'淺色':'深色')+'：首頁大卡「'+({today:'今天行程',pre:'出發集合',done:'旅程結束',blank:'尚未建立旅程'})[k]+'」字色對比 ≥ 4.5',c9b[t][k].time>=4.5&&c9b[t][k].lab>=4.5,c9b[t][k]);
+  /* v3.27 汽水風：橘色填色配的是深色字（白字只有 2.7:1）。這幾組是那次選色的核心，逐一量，淺色深色都要 ≥ 4.5 */
+  const c9c=await p.evaluate(()=>{
+    const srgb=c=>{c/=255;return c<=.03928?c/12.92:Math.pow((c+.055)/1.055,2.4);};
+    const lum=v=>{const m=String(v).match(/(\d+),\s*(\d+),\s*(\d+)/); return .2126*srgb(+m[1])+.7152*srgb(+m[2])+.0722*srgb(+m[3]);};
+    const rat=(a,b)=>{const x=Math.max(a,b),y=Math.min(a,b);return +((x+.05)/(y+.05)).toFixed(2);};
+    const st=S().settings; st.dayOverride=2; P.tab='home'; P.tipDismissed=true;
+    const host=document.createElement('div'); host.id='tstHost'; host.style.cssText='position:fixed;left:0;top:0;opacity:0;pointer-events:none';
+    host.innerHTML='<button class="btn pri" id="tstPri">主要按鈕</button><button class="chip pick on" id="tstOn">選中</button><span class="tm" id="tstTm">11:30</span><span class="tm cur" id="tstTmc">11:30</span>';
+    document.body.appendChild(host);
+    const cs=(e)=>getComputedStyle(e), pair=(e,bgEl)=>rat(lum(cs(bgEl||e).backgroundColor),lum(cs(e).color));
+    const out={};
+    for(const th of ['light','dark']){ P.theme=th; render();
+      const tab=document.querySelector('.tab:not(.on)'), bar=document.querySelector('.tabbar');
+      out[th]={pri:pair(document.getElementById('tstPri')),on:pair(document.getElementById('tstOn')),tm:pair(document.getElementById('tstTm')),tmCur:pair(document.getElementById('tstTmc')),
+        tab:rat(lum(cs(bar).backgroundColor),lum(cs(tab).color)),day:pair(document.getElementById('hdDay')),theme:cs(document.body).backgroundColor}; }
+    host.remove(); P.theme=''; render(); return out;
+  });
+  ck('汽水風的兩種主題有量到（測試本身有效）',c9c.light.theme!==c9c.dark.theme,{light:c9c.light.theme,dark:c9c.dark.theme});
+  for(const t of ['light','dark']){ const n=t==='light'?'淺色':'深色';
+    ck(n+'：橘色主要按鈕字色對比 ≥ 4.5',c9c[t].pri>=4.5,c9c[t].pri);
+    ck(n+'：選中標籤字色對比 ≥ 4.5',c9c[t].on>=4.5,c9c[t].on);
+    ck(n+'：時間小膠囊字色對比 ≥ 4.5（一般＋進行中）',c9c[t].tm>=4.5&&c9c[t].tmCur>=4.5,{tm:c9c[t].tm,cur:c9c[t].tmCur});
+    ck(n+'：底部選單未選中的字對比 ≥ 4.5',c9c[t].tab>=4.5,c9c[t].tab);
+    ck(n+'：天數標籤字色對比 ≥ 4.5',c9c[t].day>=4.5,c9c[t].day); }
 
   console.log('[11] 空間不足與佇列合併');
   const q11=await p.evaluate(()=>{

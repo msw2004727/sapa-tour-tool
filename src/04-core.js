@@ -1119,7 +1119,7 @@ function todayCard(di,day){
     '<div class="card-h"><h2>'+ic('calendar')+(di.status==='before'?'第 1 天預告':'今日行程')+'</h2><span class="sub">第 '+day+' 天 · '+esc(dayDate(day))+'</span></div>'+
     '<div class="stack">'+todays.map(function(x){
       return '<div style="display:flex;gap:.6rem;align-items:baseline;'+(x.isCanceled?'opacity:.55;text-decoration:line-through;':'')+'">'+
-        '<b style="font-variant-numeric:tabular-nums;min-width:3.2rem;color:'+(x.isCurrent?'var(--terrace)':'var(--indigo)')+'">'+esc(x.time)+'</b>'+
+        '<b class="tm'+(x.isCurrent?' cur':'')+'">'+esc(x.time)+'</b>'+
         '<span style="font-weight:'+(x.isCurrent?'900':'600')+';flex:1;min-width:0">'+esc(x.title)+(x.isCurrent?' <span class="chip" style="min-height:1.5rem;padding:.05rem .5rem;font-size:.75rem;background:var(--terrace-2);color:var(--terrace)">進行中</span>':'')+(x.isCanceled?' <span class="muted">取消</span>':'')+'</span>'+mapBtn(x.place)+'</div>';
     }).join('')+(todays.length?'':'<div class="muted">這天還沒有行程</div>')+'</div>'+
     '<button class="btn block soft" style="margin-top:.7rem" data-act="tab" data-tab="plan">看完整行程與注意事項 '+ic('arrow')+'</button></section>';

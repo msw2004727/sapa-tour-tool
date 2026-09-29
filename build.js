@@ -46,7 +46,7 @@ const HEAD = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#2F4479">
+<meta name="theme-color" content="#FFF6E9" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#1C1631" media="(prefers-color-scheme: dark)">
 <meta name="robots" content="noindex,nofollow">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">

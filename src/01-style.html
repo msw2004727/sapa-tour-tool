@@ -1,52 +1,77 @@
 <title>月半團旅</title>
 <style>
 :root{
-  --bg:#EEF2F5; --card:#FFFFFF; --ink:#1B2437; --ink-2:#4A5568; --ink-3:#5F6B7A; --line:#D9E0E8; --frame:#C9D2DC;
-  --indigo:#2F4479; --indigo-2:#E4EAF7;
-  --terrace:#3E7A34; --terrace-2:#E1F0DA;
-  --alert:#E4571B; --alert-2:#FFF1E8; --hero:#C4470D;
-  --gold:#C99A1E; --gold-2:#FFF4CC;
-  --danger:#C62828;
-  --soft:#F2F5F9;
+  /* v3.27 汽水風（小麥選的 A 版）：奶油底、蜜桃橘、檸檬黃、薄荷、深葡萄色的字。
+     幾個名字的意思跟以前不一樣了，改東西前先看：
+     --indigo／--indigo-2  以前是藍色；現在是「強調用的文字色」（深橘褐）與它的淡底色，不當按鈕填色用。
+     --pri／--pri-ink／--pri-edge  主要按鈕、選中狀態的填色（橘）、上面的字（深色）、按鈕底下那條厚邊。
+     --hero…  即時廣播大卡（淺色＝深葡萄底＋檸檬黃時間；深色＝檸檬黃底）；--pre…＝今天行程／出發集合（蜜桃橘）；--done…＝旅程結束（薄荷）。
+     --edge  卡片底下那條「厚邊」（0 3px 0）；--field／--field-line  輸入欄的底色與框線。
+     文字對比都是算過的（每一組 ≥ 4.5:1，見 notes/03 第十六節）。 */
+  --bg:#FFF6E9; --card:#FFFFFF; --ink:#2A2145; --ink-2:#514A6E; --ink-3:#6A6486; --line:#F1DFC6; --edge:#F1DFC6; --frame:#EFDCC0;
+  --pri:#FF7043; --pri-ink:#2A1408; --pri-edge:#D9532A;
+  --indigo:#A93610; --indigo-2:#FFE9DF;
+  --terrace:#0B7A4E; --terrace-2:#DDF6EA; --terrace-ink:#FFFFFF;
+  --alert:#C4400F; --alert-2:#FFEDE3; --warn:#C93A17; --warn-ink:#FFFFFF;
+  --hero:#2A2145; --hero-ink:#FFF3E3; --hero-time:#FFD95A; --hero-edge:#15102B; --hero-deco:#FF7043;
+  --pre:#FF9466; --pre-ink:#2A1408; --pre-edge:#E8743F; --pre-deco:#FFD95A;
+  --done:#B9F0DD; --done-ink:#0F3B2E; --done-edge:#8FD9BD;
+  --gold:#C99A1E; --gold-2:#FFF1B8;
+  --danger:#C42B1B;
+  --soft:#FFF0DC; --field:#FFFCF6; --field-line:#E0C69F;
+  --chip-bg:#FFD95A; --chip-ink:#2A2145; --chip-edge:#E7B92E;
   --hl-bg:#FFFBEC; --hl-edge:#F0C64A; --hl-glow:rgba(201,154,30,.55); --hl-ink:#7A5B08; --hl-sw:#FFEDB8;
-  --band:#2F4479; --lcd-ink:#7DE0C0; --lcd-glow:rgba(125,224,192,.32); --lcd-dim:#B8C4D0; --lcd-amber:#FFB648; --lcd-amber-glow:rgba(255,182,72,.35); --lcd-red:#FF6B5B; --lcd-red-glow:rgba(255,107,91,.4);
-  --indigo-ink:#FFFFFF; --dome:0 -2px 10px rgba(47,68,121,.18),0 6px 18px rgba(47,68,121,.34);
-  --pre-ink:#FFFFFF;   /* 藍色／綠色首頁大卡的字色：淺色主題底色深，用白字 */
-  --shadow:0 1px 2px rgba(27,36,55,.06),0 6px 16px rgba(27,36,55,.07);
-  --lift:0 1px 2px rgba(27,36,55,.08),0 8px 20px rgba(27,36,55,.10);
-  --r:14px;
+  --lead-bg:#2A2145; --focus-glow:rgba(255,112,67,.32);
+  --band:#B9F0DD; --lcd-ink:#0F3B2E; --lcd-glow:transparent; --lcd-dim:#1F5E4B; --lcd-amber:#A93610; --lcd-amber-glow:transparent; --lcd-red:#B8261A; --lcd-red-glow:transparent;
+  --indigo-ink:#FFFFFF; --dome:0 8px 16px rgba(255,112,67,.45);
+  --bar:0 10px 24px rgba(42,33,69,.20),0 3px 0 #F1DFC6;
+  --shadow:0 4px 0 #F1DFC6;
+  --lift:0 4px 0 #F1DFC6,0 10px 22px rgba(42,33,69,.10);
+  --r:22px;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#0F141C; --card:#182030; --ink:#EEF2F7; --ink-2:#B7C2D0; --ink-3:#8593A5; --line:#2B3648; --frame:#05080D;
-    --indigo:#9DB2EE; --indigo-2:#233150;
-    --terrace:#86C96F; --terrace-2:#1F3322;
-    --alert:#FF7A3D; --alert-2:#3A2415; --hero:#B93F0C;
-    --gold:#E2B94A; --gold-2:#3A2F12;
-    --danger:#FF6B6B;
-    --soft:#131A26;
+    --bg:#1C1631; --card:#2A2247; --ink:#FFF3E3; --ink-2:#D8CFEA; --ink-3:#AEA4CB; --line:#40356A; --edge:#120E22; --frame:#0F0B1E;
+    --pri:#FF8A5C; --pri-ink:#2A1408; --pri-edge:#C8582D;
+    --indigo:#FFB59A; --indigo-2:#3D2F5E;
+    --terrace:#7EE3B4; --terrace-2:#1F3B3A; --terrace-ink:#0B2A1E;
+    --alert:#FF8A5C; --alert-2:#4A2A24; --warn:#C93A17; --warn-ink:#FFFFFF;
+    --hero:#FFD95A; --hero-ink:#2A2145; --hero-time:#2A2145; --hero-edge:#B08A1A; --hero-deco:#FF8A5C;
+    --pre:#FF9466; --pre-ink:#2A1408; --pre-edge:#C8582D; --pre-deco:#FFD95A;
+    --done:#86E3C8; --done-ink:#0B2A1E; --done-edge:#4FB596;
+    --gold:#FFD95A; --gold-2:#4A3D1E;
+    --danger:#FF8A80;
+    --soft:#231C3D; --field:#1C1631; --field-line:#40356A;
+    --chip-bg:#FFD95A; --chip-ink:#2A2145; --chip-edge:#B08A1A;
     --hl-bg:#2A2413; --hl-edge:#C9A23C; --hl-glow:rgba(201,154,30,.45); --hl-ink:#F0D488; --hl-sw:#3F3317;
-    --band:#1E2C48; --lcd-ink:#6FD9B8; --lcd-glow:rgba(111,217,184,.3); --lcd-dim:#8496A6; --lcd-amber:#FFC062; --lcd-amber-glow:rgba(255,192,98,.32); --lcd-red:#FF7F70; --lcd-red-glow:rgba(255,127,112,.35);
-    --indigo-ink:#101828; --dome:0 -2px 10px rgba(0,0,0,.5),0 6px 18px rgba(0,0,0,.55);
-    --pre-ink:#101828;   /* 深色主題的藍／綠變成淺色，字要改深色（v3.21 以前是白字，對比只有 2:1） */
-    --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
-    --lift:0 1px 2px rgba(0,0,0,.5),0 10px 24px rgba(0,0,0,.45);
+    --lead-bg:#3D2F5E; --focus-glow:rgba(255,138,92,.38);
+    --band:#2A2247; --lcd-ink:#86E3C8; --lcd-glow:transparent; --lcd-dim:#B8B0D6; --lcd-amber:#FFC062; --lcd-amber-glow:transparent; --lcd-red:#FF8A80; --lcd-red-glow:transparent;
+    --indigo-ink:#2A1408; --dome:0 8px 16px rgba(255,138,92,.4);
+    --bar:0 10px 24px rgba(0,0,0,.55),0 3px 0 #120E22;
+    --shadow:0 4px 0 #120E22;
+    --lift:0 4px 0 #120E22,0 12px 24px rgba(0,0,0,.4);
   }
 }
 :root[data-theme="dark"]{
-  --bg:#0F141C; --card:#182030; --ink:#EEF2F7; --ink-2:#B7C2D0; --ink-3:#8593A5; --line:#2B3648; --frame:#05080D;
-  --indigo:#9DB2EE; --indigo-2:#233150;
-  --terrace:#86C96F; --terrace-2:#1F3322;
-  --alert:#FF7A3D; --alert-2:#3A2415; --hero:#B93F0C;
-  --gold:#E2B94A; --gold-2:#3A2F12;
-  --danger:#FF6B6B;
-  --soft:#131A26;
+  --bg:#1C1631; --card:#2A2247; --ink:#FFF3E3; --ink-2:#D8CFEA; --ink-3:#AEA4CB; --line:#40356A; --edge:#120E22; --frame:#0F0B1E;
+  --pri:#FF8A5C; --pri-ink:#2A1408; --pri-edge:#C8582D;
+  --indigo:#FFB59A; --indigo-2:#3D2F5E;
+  --terrace:#7EE3B4; --terrace-2:#1F3B3A; --terrace-ink:#0B2A1E;
+  --alert:#FF8A5C; --alert-2:#4A2A24; --warn:#C93A17; --warn-ink:#FFFFFF;
+  --hero:#FFD95A; --hero-ink:#2A2145; --hero-time:#2A2145; --hero-edge:#B08A1A; --hero-deco:#FF8A5C;
+  --pre:#FF9466; --pre-ink:#2A1408; --pre-edge:#C8582D; --pre-deco:#FFD95A;
+  --done:#86E3C8; --done-ink:#0B2A1E; --done-edge:#4FB596;
+  --gold:#FFD95A; --gold-2:#4A3D1E;
+  --danger:#FF8A80;
+  --soft:#231C3D; --field:#1C1631; --field-line:#40356A;
+  --chip-bg:#FFD95A; --chip-ink:#2A2145; --chip-edge:#B08A1A;
   --hl-bg:#2A2413; --hl-edge:#C9A23C; --hl-glow:rgba(201,154,30,.45); --hl-ink:#F0D488; --hl-sw:#3F3317;
-  --band:#1E2C48; --lcd-ink:#6FD9B8; --lcd-glow:rgba(111,217,184,.3); --lcd-dim:#8496A6; --lcd-amber:#FFC062; --lcd-amber-glow:rgba(255,192,98,.32); --lcd-red:#FF7F70; --lcd-red-glow:rgba(255,127,112,.35);
-  --indigo-ink:#101828; --dome:0 -2px 10px rgba(0,0,0,.5),0 6px 18px rgba(0,0,0,.55);
-  --pre-ink:#101828;
-  --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
-  --lift:0 1px 2px rgba(0,0,0,.5),0 10px 24px rgba(0,0,0,.45);
+  --lead-bg:#3D2F5E; --focus-glow:rgba(255,138,92,.38);
+  --band:#2A2247; --lcd-ink:#86E3C8; --lcd-glow:transparent; --lcd-dim:#B8B0D6; --lcd-amber:#FFC062; --lcd-amber-glow:transparent; --lcd-red:#FF8A80; --lcd-red-glow:transparent;
+  --indigo-ink:#2A1408; --dome:0 8px 16px rgba(255,138,92,.4);
+  --bar:0 10px 24px rgba(0,0,0,.55),0 3px 0 #120E22;
+  --shadow:0 4px 0 #120E22;
+  --lift:0 4px 0 #120E22,0 12px 24px rgba(0,0,0,.4);
 }
 html{font-size:16px;-webkit-text-size-adjust:100%;touch-action:pan-x pan-y;-webkit-text-size-adjust:100%}
 html[data-fs="lg"]{font-size:18px}
@@ -65,15 +90,17 @@ svg.i{width:1.25rem;height:1.25rem;flex-shrink:0;fill:none;stroke:currentColor;s
   .app{box-shadow:0 0 0 1px var(--line),0 24px 60px rgba(0,0,0,.28)}
 }
 /* header */
-.top{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--line);flex-shrink:0;padding-top:env(safe-area-inset-top)}
-.top-r1{display:flex;align-items:center;gap:.25rem;padding:.35rem .5rem}
-.trip-name{flex:1;min-width:0;font-weight:900;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.01em}
+.top{position:sticky;top:0;z-index:20;background:var(--bg);box-shadow:0 1px 0 var(--line);flex-shrink:0;padding-top:env(safe-area-inset-top)}
+.top-r1{display:flex;align-items:center;gap:.3rem;padding:.45rem .6rem .25rem 1rem}
+/* 團名放不下時換成兩行（320px 旁邊有天數與三顆鈕，一行只剩 4～5 個字），不要用「…」吃掉 */
+.trip-name{flex:1;min-width:0;font-weight:900;font-size:18px;line-height:1.15;letter-spacing:.01em;overflow:hidden;overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
 .pen{width:20px;height:20px;border-radius:6px;border:1px dashed var(--ink-3);color:var(--ink-3);background:transparent;display:inline-flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;padding:0;line-height:1;margin-right:.15rem}
-.day-chip{font-size:.875rem;font-weight:900;border-radius:999px;padding:.1rem .5rem;white-space:nowrap;word-break:keep-all;flex-shrink:0;line-height:1.5;background:var(--indigo-2);color:var(--indigo);margin-right:.15rem}
-.day-chip.warm{background:var(--alert-2);color:var(--alert)}
-.day-chip.done{background:var(--terrace-2);color:var(--terrace)}
-.top-r2{background:var(--band);display:flex;align-items:center;justify-content:center;padding:.22rem .5rem;min-height:26px}
-.lcd{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;column-gap:.3rem;row-gap:.2rem;background:rgba(0,0,0,.32);border-radius:8px;padding:.22rem .5rem .26rem;
+.day-chip{font-size:.875rem;font-weight:900;border-radius:999px;padding:.12rem .65rem;white-space:nowrap;word-break:keep-all;flex-shrink:0;line-height:1.5;background:var(--chip-bg);color:var(--chip-ink);margin-right:.15rem;transform:rotate(-2deg);box-shadow:0 3px 0 var(--chip-edge)}
+.day-chip.warm{background:var(--alert-2);color:var(--alert);box-shadow:0 3px 0 var(--line)}
+.day-chip.done{background:var(--terrace-2);color:var(--terrace);box-shadow:0 3px 0 var(--line)}
+/* 時間帶：一顆薄荷色（深色主題是葡萄色）的膠囊。圓角用 1.4rem 不用 999px：字級放大、兩行時不會被圓角切到字 */
+.top-r2{background:var(--band);border-radius:1.4rem;margin:.1rem .6rem .6rem;display:flex;align-items:center;justify-content:center;padding:.3rem .8rem;min-height:2.3rem}
+.lcd{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;column-gap:.35rem;row-gap:.2rem;background:none;border-radius:0;padding:0;
   font-variant-numeric:tabular-nums;line-height:1;white-space:nowrap;max-width:100%;overflow:hidden}
 .lcd .lg1,.lcd .lg2{display:inline-flex;align-items:baseline;gap:.3rem;white-space:nowrap;flex:0 0 auto}
 .lcd .dot{width:.4rem;height:.4rem;border-radius:50%;background:var(--lcd-dim);flex-shrink:0;align-self:center}
@@ -83,7 +110,7 @@ svg.i{width:1.25rem;height:1.25rem;flex-shrink:0;fill:none;stroke:currentColor;s
 .lcd .lb{font-size:.68rem;font-weight:900;color:var(--lcd-dim);letter-spacing:.08em;flex-shrink:0}
 .lcd .n{font-size:1.3rem;font-weight:900;letter-spacing:-.01em;color:var(--lcd-ink);text-shadow:0 0 8px var(--lcd-glow);flex-shrink:0}
 .lcd .tw{font-size:.8rem;font-weight:700;color:var(--lcd-dim);flex-shrink:0}
-.lcd .dv{width:1px;height:.8rem;background:rgba(255,255,255,.16);align-self:center;margin:0 .05rem;flex-shrink:0}
+.lcd .dv{width:1px;height:.8rem;background:var(--lcd-dim);opacity:.4;align-self:center;margin:0 .05rem;flex-shrink:0}
 .lcd .cd{font-size:.8rem;font-weight:900;color:var(--lcd-amber);text-shadow:0 0 8px var(--lcd-amber-glow);flex-shrink:0;letter-spacing:.01em}
 .lcd .cd .k{font-size:.68rem;font-weight:900;color:var(--lcd-dim);letter-spacing:.06em;margin-right:.22rem;text-shadow:none}
 .lcd .cd.late{color:var(--lcd-red);text-shadow:0 0 8px var(--lcd-red-glow)}
@@ -95,13 +122,19 @@ html[data-fs="xl"] .lcd .dv2{display:none}
   html[data-fs="lg"] .lcd .dv2,html[data-fs="xl"] .lcd .dv2{display:none}
 }
 .sync .me{color:var(--ink);font-weight:900;font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.icon-btn{position:relative;width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--ink-2);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:900;font-size:12px;padding:0;line-height:1}
-.icon-btn svg.i{width:17px;height:17px}
-.top-r1 .icon-btn::before,.pen::before{content:"";position:absolute;inset:-7px -5px}
+.icon-btn{position:relative;width:40px;height:40px;border-radius:14px;border:0;background:var(--card);color:var(--ink);box-shadow:0 3px 0 var(--edge);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:900;font-size:14px;padding:0;line-height:1}
+.icon-btn svg.i{width:20px;height:20px}
+.top-r1 .icon-btn::before{content:"";position:absolute;inset:-2px}   /* 看得到的是 40px，感應範圍撐到 44px */
+.pen::before{content:"";position:absolute;inset:-7px -5px}
+/* 320px 這一級的窄螢幕：旁邊有天數與三顆鈕，團名只剩 1～2 個字。鈕看得到的縮成 36px（感應範圍仍撐到 44px）、間距收小，讓團名能排成兩行讀完 */
+@media (max-width:360px){
+  .top-r1{gap:5px;padding:.45rem .5rem .25rem .75rem}
+  .top-r1 .icon-btn{width:36px;height:36px}
+  .top-r1 .icon-btn::before{inset:-4px}
+  .day-chip{padding:.12rem .5rem}
+}
 .pen{position:relative}
-.icon-btn.on{background:var(--indigo);color:#fff;border-color:var(--indigo)}
-:root[data-theme="dark"] .icon-btn.on{color:#0F141C}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .icon-btn.on{color:#0F141C}}
+.icon-btn.on{background:var(--lead-bg);color:#FFD95A;box-shadow:0 3px 0 var(--edge)}
 .sync{font-size:.85rem;color:var(--ink-3);font-weight:700;padding:.28rem .8rem;display:flex;align-items:center;gap:.4rem;background:var(--card);border-bottom:1px solid var(--line);white-space:nowrap;overflow:hidden}
 .leader-bar{background:var(--gold-2);color:var(--ink);font-size:.875rem;font-weight:800;padding:.35rem .85rem;display:flex;align-items:center;gap:.4rem;border-bottom:1px solid var(--line)}
 .leader-bar .sp{flex:1}
@@ -131,87 +164,90 @@ html[data-fs="xl"] .lcd .dv2{display:none}
 }
 .leader-bar button{border:0;background:transparent;color:var(--indigo);font-weight:900;font-size:.875rem;min-height:2.4rem;padding:0 .3rem}
 /* main + tabs */
-main{flex:1;padding:.75rem .75rem calc(80px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:.8rem}
-.tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:440px;background:var(--card);border-top:1px solid var(--line);display:flex;align-items:flex-end;padding-bottom:env(safe-area-inset-bottom);z-index:20}
+main{flex:1;padding:.75rem .75rem calc(104px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:.8rem}
+/* 底部選單：浮起來的膠囊（離螢幕邊緣 12px），中間的「首頁」是凸出來的橘色圓鈕 */
+.tabbar{position:fixed;bottom:calc(12px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:calc(100% - 24px);max-width:416px;background:var(--card);border-radius:28px;box-shadow:var(--bar);display:flex;align-items:flex-end;padding:0 6px 6px;z-index:20}
 .tab{flex:1;min-height:58px;border:0;background:none;color:var(--ink-3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:.875rem;font-weight:800;white-space:nowrap;word-break:keep-all;padding:6px 0 5px}
 .tab svg.i{width:23px;height:23px}
 .tab.on{color:var(--indigo)}
 .tab-home{flex:1;min-width:0;position:relative;border:0;background:none;font:inherit;cursor:pointer;min-height:58px;
   display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:6px 0 5px}
-.tab-home .dome{position:absolute;top:-22px;left:50%;transform:translateX(-50%);width:54px;height:54px;border-radius:50%;
-  background:var(--indigo);color:var(--indigo-ink);display:flex;align-items:center;justify-content:center;
-  box-shadow:var(--dome);border:3px solid var(--card)}
-.tab-home .dome svg.i{width:26px;height:26px}
+.tab-home .dome{position:absolute;top:-30px;left:50%;transform:translateX(-50%);width:60px;height:60px;border-radius:50%;
+  background:var(--pri);color:var(--pri-ink);display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--dome);border:4px solid var(--card)}
+.tab-home .dome svg.i{width:28px;height:28px}
 .tab-home .lb{font-size:.875rem;font-weight:800;color:var(--ink-3);white-space:nowrap;word-break:keep-all;line-height:1.2}
 .tab-home.on .lb{color:var(--indigo);font-weight:900}
 .tab-home:focus-visible{outline:2px solid var(--indigo);outline-offset:-3px;border-radius:8px}
 /* cards + buttons */
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:.9rem}
+/* 卡片底下那條厚邊（汽水風的立體感）。「稍後」「隨時查」兩區不加（見 .g-later／.g-ref），保留原本的明度階梯 */
+.card,.ccard,.room,.grp,.tcard,.info-card,.wifi-card,.stop,.ph,.em-row,.bk-row,.ck-row,.note-item,.search,.sos-row,.total,.me-strip button,.catbar button,.dayrow button{box-shadow:0 3px 0 var(--edge)}
 .card-h{display:flex;align-items:center;justify-content:space-between;gap:.2rem .5rem;margin-bottom:.65rem;flex-wrap:wrap}
 .card-h h2{margin:0;font-size:1.05rem;font-weight:900;display:flex;align-items:center;gap:.4rem;white-space:nowrap}
 .card-h .sub{font-size:.875rem;color:var(--ink-3);font-weight:700;white-space:nowrap}
 h2.sec{margin:.25rem 0 0;font-size:1rem;font-weight:900;color:var(--ink-2);display:flex;align-items:center;gap:.4rem}
 .muted{color:var(--ink-3);font-size:.88rem;font-weight:600}
 a.btn{text-decoration:none}
-.btn{min-height:3rem;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-weight:800;font-size:1rem;padding:0 .9rem;display:inline-flex;align-items:center;justify-content:center;gap:.4rem;white-space:nowrap;word-break:keep-all;line-height:1.2}
+.btn{min-height:3rem;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-weight:800;font-size:1rem;padding:0 1.1rem;display:inline-flex;align-items:center;justify-content:center;gap:.4rem;white-space:nowrap;word-break:keep-all;line-height:1.2;box-shadow:0 3px 0 var(--edge)}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--edge)}
 .btn svg.i{width:1.2rem;height:1.2rem}
-.btn.pri{background:var(--indigo);color:#fff;border-color:var(--indigo)}
-.btn.ok{background:var(--terrace);color:#fff;border-color:var(--terrace)}
-.btn.warn{background:var(--hero);color:#fff;border-color:var(--hero)}
-.btn.soft{background:var(--indigo-2);color:var(--indigo);border-color:transparent}
+.btn.pri{background:var(--pri);color:var(--pri-ink);border-color:var(--pri);box-shadow:0 3px 0 var(--pri-edge)}
+.btn.pri:active{box-shadow:0 1px 0 var(--pri-edge)}
+.btn.ok{background:var(--terrace);color:var(--terrace-ink);border-color:var(--terrace)}
+.btn.warn{background:var(--warn);color:var(--warn-ink);border-color:var(--warn)}
+.btn.soft{background:var(--indigo-2);color:var(--indigo);border-color:transparent;box-shadow:none}
 .btn.dng{color:var(--danger);border-color:var(--danger)}
-.btn.sm{min-height:2.75rem;font-size:.9rem;padding:0 .7rem;border-radius:10px}
+.btn.sm{min-height:2.75rem;font-size:.9rem;padding:0 .8rem}
 .btn.block{width:100%}
-.btn.wrap{white-space:normal;text-align:left;justify-content:flex-start;padding:.55rem .9rem;line-height:1.3}
-.btn.big{min-height:4.2rem;font-size:1.15rem;justify-content:flex-start;padding:0 1rem;text-align:left}
+.btn.wrap{white-space:normal;text-align:left;justify-content:flex-start;padding:.55rem 1rem;line-height:1.3;border-radius:22px}
+.btn.big{min-height:4.2rem;font-size:1.15rem;justify-content:flex-start;padding:0 1.1rem;text-align:left;border-radius:24px}
 .btn.big svg.i{width:1.6rem;height:1.6rem}
 .btn.big .b2{display:flex;flex-direction:column;align-items:flex-start;min-width:0}
 .btn.big .b2 small{font-size:.875rem;color:var(--ink-3);font-weight:700;white-space:normal;line-height:1.2}
-:root[data-theme="dark"] .btn.pri,:root[data-theme="dark"] .btn.ok{color:#0F141C}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.pri,:root:not([data-theme="light"]) .btn.ok{color:#0F141C}}
 .row{display:flex;gap:.5rem;flex-wrap:wrap}
 .row>.btn{flex:1 1 auto;min-width:0}
-.btn.warn .b2 small,.btn.pri .b2 small,.btn.ok .b2 small{color:rgba(255,255,255,.88)}
+.btn.warn .b2 small,.btn.pri .b2 small,.btn.ok .b2 small{color:inherit;opacity:.88}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
 .stack{display:flex;flex-direction:column;gap:.6rem}
 .chips{display:flex;gap:.4rem;flex-wrap:wrap}
 .chip{display:inline-flex;align-items:center;gap:.3rem;border-radius:999px;padding:.35rem .7rem;font-size:.85rem;font-weight:800;background:var(--indigo-2);color:var(--indigo);white-space:nowrap;word-break:keep-all;border:1.5px solid transparent;min-height:2.2rem}
-.chip.pick{background:var(--card);color:var(--ink);border-color:var(--line);min-height:2.75rem}
-.chip.pick.on{background:var(--indigo);color:#fff;border-color:var(--indigo)}
-:root[data-theme="dark"] .chip.pick.on{color:#0F141C}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .chip.pick.on{color:#0F141C}}
-.seg{display:flex;background:var(--indigo-2);border-radius:12px;padding:.25rem;gap:.25rem}
-.seg button{flex:1;min-height:2.8rem;border:0;border-radius:9px;background:transparent;color:var(--indigo);font-weight:900;font-size:.95rem;white-space:nowrap;word-break:keep-all;display:inline-flex;align-items:center;justify-content:center;gap:.3rem}
-.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.14)}
+.chip.pick{background:var(--card);color:var(--ink);border:2px solid var(--line);min-height:2.75rem}
+.chip.pick.on{background:var(--pri);color:var(--pri-ink);border-color:var(--pri);box-shadow:0 3px 0 var(--pri-edge)}
+.seg{display:flex;background:var(--indigo-2);border-radius:999px;padding:.25rem;gap:.25rem}
+.seg button{flex:1;min-height:2.8rem;border:0;border-radius:999px;background:transparent;color:var(--indigo);font-weight:900;font-size:.95rem;white-space:nowrap;word-break:keep-all;display:inline-flex;align-items:center;justify-content:center;gap:.3rem}
+.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 2px 0 var(--edge)}
 /* hero broadcast */
-.hero{background:var(--hero);color:#fff;border-radius:var(--r);padding:1rem;box-shadow:var(--shadow);position:relative;overflow:hidden}
-.hero::before{content:"";position:absolute;right:-3rem;top:-3rem;width:10rem;height:10rem;border-radius:50%;background:rgba(255,255,255,.08)}
+/* 三種首頁大卡共用這一組變數（--h-…）：預設是即時廣播（淺色＝深葡萄底、深色＝檸檬黃底），.pre＝今天行程／出發集合（蜜桃橘），.done＝旅程結束（薄荷）。
+   底色一律是單色（不用漸層），測試才量得到對比。 */
+.hero{--h-bg:var(--hero);--h-ink:var(--hero-ink);--h-time:var(--hero-time);--h-edge:var(--hero-edge);--h-deco:var(--hero-deco);--h-pill-bg:var(--hero-time);--h-pill-ink:var(--hero);
+  background:var(--h-bg);color:var(--h-ink);border-radius:28px;padding:1.05rem 1.1rem 1.15rem;box-shadow:0 6px 0 var(--h-edge);position:relative;overflow:hidden}
+.hero.pre{--h-bg:var(--pre);--h-ink:var(--pre-ink);--h-time:var(--pre-ink);--h-edge:var(--pre-edge);--h-deco:var(--pre-deco);--h-pill-bg:#2A2145;--h-pill-ink:#FFD95A}
+.hero.done{--h-bg:var(--done);--h-ink:var(--done-ink);--h-time:var(--done-ink);--h-edge:var(--done-edge);--h-deco:var(--pre-deco);--h-pill-bg:#2A2145;--h-pill-ink:#FFD95A}
+.hero::before{content:"";position:absolute;right:-2.6rem;top:-2.6rem;width:8.2rem;height:8.2rem;border-radius:50%;background:var(--h-deco)}
+.hero>*{position:relative}   /* 圓形裝飾在最底下，文字都要疊在它上面 */
 .hero .lab{display:flex;align-items:center;gap:.15rem .4rem;font-size:.9rem;font-weight:800;letter-spacing:.06em;white-space:nowrap;flex-wrap:wrap}
-.hero .lab .upd{margin-left:auto;font-weight:700;opacity:.9;letter-spacing:0;font-variant-numeric:tabular-nums;flex:0 1 auto;min-width:0}   /* 放不下就整段換到下一行，不截斷日期 */
-.hero .time{font-size:2.9rem;font-weight:900;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em;margin:.45rem 0 .15rem;display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap}
-.hero .time small{font-size:1.3rem;font-weight:900}
+.hero .lab .upd{margin-left:auto;font-weight:800;letter-spacing:0;font-variant-numeric:tabular-nums;flex:0 1 auto;min-width:0;background:#fff;color:#2A2145;border-radius:999px;padding:.1rem .65rem}   /* 放不下就整段換到下一行，不截斷日期 */
+.hero .time{font-size:2.9rem;font-weight:900;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em;margin:.45rem 0 .15rem;display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap;color:var(--h-time)}
+.hero .time small{font-size:1.15rem;font-weight:900;background:var(--h-pill-bg);color:var(--h-pill-ink);border-radius:999px;padding:.12rem .8rem;letter-spacing:0}
 .hero .count{display:inline-flex;align-items:center;gap:.3rem;background:rgba(255,255,255,.2);border-radius:999px;padding:.3rem .75rem;font-weight:900;font-size:.98rem;margin:.35rem 0 .1rem;font-variant-numeric:tabular-nums}
-.hero .count.late{background:#fff;color:var(--alert)}
+.hero .count.late{background:#fff;color:#C4400F}
 .hero .loc{font-size:1.2rem;}
 .hero .loc.long{font-size:1.02rem;}
 .hero .loc{font-weight:900;display:flex;gap:.4rem;align-items:flex-start;margin-top:.55rem;line-height:1.3}
-.hero .tip{margin-top:.75rem;background:#fff;color:#1B2437;border-radius:10px;padding:.65rem .75rem;font-size:1rem;font-weight:700;line-height:1.45;display:flex;gap:.45rem;align-items:flex-start}
-.hero .tip svg.i{color:var(--alert);margin-top:.1rem}
+.hero .tip{margin-top:.75rem;background:#fff;color:#2A2145;border-radius:18px;padding:.65rem .8rem;font-size:1rem;font-weight:700;line-height:1.45;display:flex;gap:.45rem;align-items:flex-start}
+.hero .tip svg.i{color:#C4400F;margin-top:.1rem}   /* 叮嚀框兩種主題都是白底，圖示固定用深橘（跟著 --alert 的話深色主題會變成淺橘配白底） */
 .hero .ctl{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-top:.75rem}
-.hero .ctl .btn{background:rgba(255,255,255,.95);color:#1B2437;border-color:transparent;min-height:2.9rem;font-size:.95rem;padding:0 .5rem}
-.hero .clr{display:inline-flex;align-items:center;gap:.25rem;margin-top:.5rem;border:0;background:transparent;color:rgba(255,255,255,.85);font-weight:800;font-size:.82rem;padding:.3rem .2rem;min-height:2.2rem}
+.hero .ctl .btn{background:rgba(255,255,255,.96);color:#2A2145;border-color:transparent;min-height:2.9rem;font-size:.95rem;padding:0 .5rem}
+.hero .clr{display:inline-flex;align-items:center;gap:.25rem;margin-top:.5rem;border:0;background:transparent;color:var(--h-ink);font-weight:800;font-size:.82rem;padding:.3rem .2rem;min-height:2.2rem;text-decoration:underline;text-underline-offset:3px}
 .hero .clr svg.i{width:1rem;height:1rem}
 /* 清空廣播（左）與貼到 LINE（右）左右鏡像；只剩一顆時貼到 LINE 仍靠右 */
 .hero .hero-foot{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
 .hero .hero-foot .clr.shr{margin-left:auto;white-space:nowrap;word-break:keep-all}
-.hero.pre{background:var(--indigo);color:var(--pre-ink)}
-.hero.done{background:var(--terrace);color:var(--pre-ink)}
-/* 叮嚀框的底色兩種主題都是白的，圖示固定用深藍（跟著 --indigo 的話深色主題會變成淺藍配白底） */
-.hero.pre .tip svg.i,.hero.done .tip svg.i{color:#2F4479}
 /* me strip */
 .me-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;grid-auto-flow:row dense}
 .me-strip button.w2{grid-column:span 2}
-.me-strip button{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.55rem .3rem;min-height:4.2rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.1rem;color:var(--ink)}
+.me-strip button{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:.55rem .3rem;min-height:4.2rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.1rem;color:var(--ink)}
 .me-strip .k{font-size:.75rem;color:var(--ink-3);font-weight:800}
 .me-strip .v{font-size:1.25rem;font-weight:900;white-space:nowrap;line-height:1.15}
 .me-strip .v.s{font-size:1rem}
@@ -232,18 +268,15 @@ a.btn{text-decoration:none}
 /* itinerary */
 .dayrow{display:flex;gap:.4rem;overflow-x:auto;padding:.15rem .1rem .3rem;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .dayrow::-webkit-scrollbar{display:none}
-.dayrow button{flex-shrink:0;min-width:4.7rem;min-height:3.5rem;border-radius:12px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font-weight:900;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15;padding:.3rem .5rem}
+.dayrow button{flex-shrink:0;min-width:4.7rem;min-height:3.5rem;border-radius:16px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-weight:900;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15;padding:.3rem .5rem}
 .dayrow button small{font-size:.85rem;color:var(--ink-3);font-weight:700}
 .dayrow button.today{border-color:var(--terrace)}
-.dayrow button.on{background:var(--indigo);color:#fff;border-color:var(--indigo)}
-.dayrow button.on small{color:rgba(255,255,255,.85)}
+.dayrow button.on{background:var(--pri);color:var(--pri-ink);border-color:var(--pri);box-shadow:0 3px 0 var(--pri-edge)}
+.dayrow button.on small{color:var(--pri-ink);opacity:.8}
 .dayrow.fit{display:grid;grid-template-columns:repeat(var(--days,5),minmax(0,1fr));gap:.3rem;overflow:visible;padding:.3rem 0 .2rem}
 .dayrow.fit button{min-width:0;width:100%;padding:.35rem .1rem;font-size:clamp(.78rem,3.6vw,.95rem);letter-spacing:-.02em;position:relative;white-space:nowrap}
 .dayrow.fit button small{font-size:clamp(.8rem,3.4vw,.9rem)}
 .dayrow.fit button .td{position:absolute;top:-.3rem;right:-.2rem;width:.7rem;height:.7rem;border-radius:50%;background:var(--terrace);border:2px solid var(--card)}
-:root[data-theme="dark"] .dayrow button.on{color:#0F141C}
-:root[data-theme="dark"] .dayrow button.on small{color:rgba(15,20,28,.75)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .dayrow button.on{color:#0F141C}:root:not([data-theme="light"]) .dayrow button.on small{color:rgba(15,20,28,.75)}}
 .day-title{display:flex;align-items:baseline;gap:.5rem;margin:.2rem 0 -.2rem}
 .day-title b{font-size:1.15rem;font-weight:900}
 .stop{display:grid;grid-template-columns:62px 1fr;gap:.6rem;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:.85rem;position:relative;margin-top:.35rem}
@@ -256,7 +289,7 @@ a.btn{text-decoration:none}
 .t-title{font-size:clamp(20px,1.25rem,22px);font-weight:900;line-height:1.25;margin:0 0 .3rem}
 .t-desc{font-size:1rem;color:var(--ink-2);margin:0 0 .5rem;line-height:1.45;font-weight:500}
 .t-detail{font-size:.98rem;line-height:1.6;color:var(--ink);border-top:1px dashed var(--line);padding-top:.55rem;margin-top:.45rem;white-space:pre-line}
-.badge{position:absolute;top:-.65rem;right:.8rem;background:var(--terrace);color:#fff;font-size:.75rem;font-weight:900;border-radius:999px;padding:.22rem .65rem;letter-spacing:.04em}
+.badge{position:absolute;top:-.65rem;right:.8rem;background:var(--terrace);color:var(--terrace-ink);font-size:.75rem;font-weight:900;border-radius:999px;padding:.22rem .65rem;letter-spacing:.04em}
 .badge.off{background:var(--ink-3)}
 /* ===== 行程卡片底圖（每個行程項目一張，整面極淡）=====
    畫在 ::before：卡片不能設 overflow:hidden，不然「進行中」徽章（top:-.65rem）會被裁掉。
@@ -268,6 +301,9 @@ a.btn{text-decoration:none}
 .stop.has-bg>*{position:relative;z-index:1}
 /* 「進行中」那張本來就有綠底，圖再疊上去會混濁，濃度砍一半 */
 .stop.has-bg.cur::before{opacity:calc(var(--dop,.09) * .55)}
+/* 首頁「今日行程」主卡每一列前面的時間（薄荷／橘色的小膠囊；進行中那一站換成綠色） */
+.tm{flex:none;min-width:3.6rem;text-align:center;font-variant-numeric:tabular-nums;font-weight:900;background:var(--indigo-2);color:var(--indigo);border-radius:12px;padding:.12rem .5rem}
+.tm.cur{background:var(--terrace-2);color:var(--terrace)}
 /* 首頁的「今日行程」主卡不套底圖，所以這裡沒有 .card 的規則。 */
 @media (prefers-reduced-motion: no-preference){.stop.has-bg::before{transition:opacity .18s}}
 
@@ -303,15 +339,15 @@ a.btn{text-decoration:none}
 .lead-ctl .btn{padding:0 .2rem;min-height:2.7rem;font-size:.82rem;flex-direction:column;gap:.1rem}
 .lead-ctl .btn svg.i{width:1.1rem;height:1.1rem}
 /* member cards */
-.mc{display:flex;align-items:center;gap:.6rem;border-radius:12px;padding:.6rem .7rem;min-height:3.6rem;background:#fff;color:#1B2437;border:2px solid #D9E0E8;position:relative;text-align:left;width:100%}
+.mc{display:flex;align-items:center;gap:.6rem;border-radius:16px;padding:.6rem .7rem;min-height:3.6rem;background:#fff;color:#2A2145;border:2px solid #F1DFC6;position:relative;text-align:left;width:100%}
 .mc.bg-yellow{background:#FFF1A8}.mc.bg-pink{background:#FFD9E3}.mc.bg-green{background:#DDF3C9}.mc.bg-blue{background:#D8E9FF}
-.mc.bd-gold{border:3px solid #C99A1E}.mc.bd-red{border:3px dashed #D32F2F}.mc.bd-black{border:3px solid #1B2437}
+.mc.bd-gold{border:3px solid #C99A1E}.mc.bd-red{border:3px dashed #D32F2F}.mc.bd-black{border:3px solid #2A2145}
 .mc .em{width:2rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1}
 .mc .em.none{width:.2rem}
 .mc .tx{min-width:0;flex:1}
 .mc .nm{display:block;font-size:1.125rem;font-weight:900;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mc .rk{display:block;font-size:.85rem;color:#4A5568;font-weight:700;margin-top:.22rem;line-height:1.3}
-.mc .rt{text-align:right;font-size:.875rem;font-weight:900;color:#4A5568;flex-shrink:0;white-space:nowrap;line-height:1.25}
+.mc .rk{display:block;font-size:.85rem;color:#514A6E;font-weight:700;margin-top:.22rem;line-height:1.3}
+.mc .rt{text-align:right;font-size:.875rem;font-weight:900;color:#514A6E;flex-shrink:0;white-space:nowrap;line-height:1.25}
 .al{display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;border-radius:50%;font-size:.74rem;font-weight:900;color:#fff;flex-shrink:0;letter-spacing:.02em;line-height:1;box-shadow:0 1px 2px rgba(0,0,0,.2)}
 .al.s3{font-size:.6rem;letter-spacing:0}
 .al.lg.s3{font-size:.72rem}
@@ -320,22 +356,22 @@ a.btn{text-decoration:none}
 .mc .al{margin-left:auto}
 .mc .al+.rt{margin-left:.35rem}
 .mc .mtags{display:flex;flex-wrap:wrap;gap:.2rem;margin-top:.22rem}
-.mc .mtag{font-size:.68rem;font-weight:900;line-height:1.2;padding:.08rem .32rem;border-radius:5px;background:rgba(47,68,121,.1);color:#2F4479;white-space:nowrap;word-break:keep-all}
-.mc .mtag.more{background:transparent;border:1px dashed #2F4479}
-.mc.bg-yellow .mtag,.mc.bg-pink .mtag,.mc.bg-green .mtag,.mc.bg-blue .mtag{background:rgba(27,36,55,.12)}
+.mc .mtag{font-size:.68rem;font-weight:900;line-height:1.2;padding:.08rem .32rem;border-radius:5px;background:rgba(42,33,69,.09);color:#2A2145;white-space:nowrap;word-break:keep-all}
+.mc .mtag.more{background:transparent;border:1px dashed #2A2145}
+.mc.bg-yellow .mtag,.mc.bg-pink .mtag,.mc.bg-green .mtag,.mc.bg-blue .mtag{background:rgba(42,33,69,.12)}
 :root[data-theme="dark"] .mc{background:var(--card);color:var(--ink);border-color:var(--line)}
 :root[data-theme="dark"] .mc .rk,:root[data-theme="dark"] .mc .rt{color:var(--ink-2)}
 :root[data-theme="dark"] .mc.bg-yellow{background:rgba(255,241,168,.16)}:root[data-theme="dark"] .mc.bg-pink{background:rgba(255,217,227,.16)}:root[data-theme="dark"] .mc.bg-green{background:rgba(221,243,201,.16)}:root[data-theme="dark"] .mc.bg-blue{background:rgba(216,233,255,.16)}
 :root[data-theme="dark"] .mc.bd-black{border-color:var(--ink)}
-:root[data-theme="dark"] .mc .mtag{background:rgba(157,178,238,.18);color:var(--indigo)}
+:root[data-theme="dark"] .mc .mtag{background:rgba(255,181,154,.16);color:var(--indigo)}
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]) .mc{background:var(--card);color:var(--ink);border-color:var(--line)}
   :root:not([data-theme="light"]) .mc .rk,:root:not([data-theme="light"]) .mc .rt{color:var(--ink-2)}
   :root:not([data-theme="light"]) .mc.bg-yellow{background:rgba(255,241,168,.16)}:root:not([data-theme="light"]) .mc.bg-pink{background:rgba(255,217,227,.16)}:root:not([data-theme="light"]) .mc.bg-green{background:rgba(221,243,201,.16)}:root:not([data-theme="light"]) .mc.bg-blue{background:rgba(216,233,255,.16)}
   :root:not([data-theme="light"]) .mc.bd-black{border-color:var(--ink)}
-  :root:not([data-theme="light"]) .mc .mtag{background:rgba(157,178,238,.18);color:var(--indigo)}
+  :root:not([data-theme="light"]) .mc .mtag{background:rgba(255,181,154,.16);color:var(--indigo)}
 }
-.mc.me::after{content:"我";position:absolute;top:-.55rem;left:-.35rem;background:#2F4479;color:#fff;font-size:.72rem;font-weight:900;border-radius:999px;padding:.12rem .5rem;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.mc.me::after{content:"我";position:absolute;top:-.55rem;left:-.35rem;background:#2A2145;color:#fff;font-size:.72rem;font-weight:900;border-radius:999px;padding:.12rem .5rem;box-shadow:0 1px 3px rgba(0,0,0,.25)}
 .mc.sm{min-height:3rem;padding:.4rem .55rem;gap:.4rem;border-width:2px}
 .mc.sm.bd-gold,.mc.sm.bd-red,.mc.sm.bd-black{border-width:2.5px}
 .mc.sm .nm{font-size:1rem}
@@ -350,7 +386,7 @@ a.btn{text-decoration:none}
 .room h3 svg.i{color:var(--gold)}
 .room.me-room{border:2px solid var(--indigo)}
 .room .empty{font-size:.85rem;color:var(--ink-3);font-weight:700;padding:.4rem 0}
-.search{display:flex;align-items:center;gap:.5rem;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:0 .7rem;min-height:3rem}
+.search{display:flex;align-items:center;gap:.5rem;background:var(--card);border:2px solid var(--line);border-radius:18px;padding:0 .85rem;min-height:3.2rem}
 .search input{flex:1;border:0;background:transparent;font-size:1.05rem;font-family:inherit;color:var(--ink);min-width:0;outline:none}
 .search svg.i{color:var(--ink-3)}
 /* groups */
@@ -364,10 +400,8 @@ a.btn{text-decoration:none}
 .grp-meta.top{margin:0;padding:0 .2rem}
 /* 分組頁最上面的四個大分類：四等分，圖示在上、字在下，320px 也放得下 */
 .catbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.4rem}
-.catbar button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.15rem;min-height:3.6rem;padding:.4rem .15rem;border-radius:12px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font-weight:900;font-size:.95rem;line-height:1.15}
-.catbar button.on{background:var(--indigo);border-color:var(--indigo);color:#fff}
-:root[data-theme="dark"] .catbar button.on{color:#0F141C}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .catbar button.on{color:#0F141C}}
+.catbar button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.15rem;min-height:3.6rem;padding:.4rem .15rem;border-radius:18px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-weight:900;font-size:.95rem;line-height:1.15}
+.catbar button.on{background:var(--pri);border-color:var(--pri);color:var(--pri-ink);box-shadow:0 3px 0 var(--pri-edge)}
 .empty-cat{display:flex;flex-direction:column;gap:.35rem;line-height:1.5}
 /* 分組情境的編輯表單：每一組一張小卡 */
 .scn-rows{display:flex;flex-direction:column;gap:.6rem;margin-bottom:.6rem}
@@ -476,15 +510,15 @@ ul.clr-list{gap:.3rem;margin-top:.35rem;line-height:1.45}
 .full .fh .btn{border-color:#ccc;color:#111;background:#fff}
 .full .lockbar{display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:#666;font-weight:700;margin:-.2rem 0 .4rem}
 .full .lockbar .btn{flex-shrink:0;border-color:#ccc;color:#111;background:#fff}
-.full .lockbar .btn.pri{background:#2F4479;color:#fff;border-color:#2F4479}
-.full .lockbar .btn.hold{background:#1B2437}
+.full .lockbar .btn.pri{background:#2A2145;color:#fff;border-color:#2A2145}
+.full .lockbar .btn.hold{background:#2A2145}
 .full .fk{font-size:.85rem;font-weight:800;color:#666;letter-spacing:.08em;margin-top:.9rem}
 .full .vi{font-size:2rem;font-weight:900;line-height:1.25;margin:.25rem 0}
 .full .vi.xl{font-size:2.4rem}
 .full .zh{font-size:1.15rem;color:#333;font-weight:800;line-height:1.4}
 .full .say{font-size:.95rem;color:#666;font-weight:700}
 .full .ph-big{display:flex;align-items:center;gap:.6rem;font-size:1.6rem;font-weight:900;margin:.3rem 0;color:#111;text-decoration:none}
-.full .ph-big svg.i{color:#2F4479}
+.full .ph-big svg.i{color:#2A2145}
 .full .foot{margin-top:auto;padding-top:1rem;font-size:.85rem;color:#777;font-weight:700;line-height:1.45}
 /* flights */
 .fl{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:.5rem}
@@ -522,19 +556,19 @@ ul.clr-list{gap:.3rem;margin-top:.35rem;line-height:1.45}
 .tf b{font-size:1.3rem}
 /* sheet */
 .sheet-bg{position:fixed;inset:0;background:rgba(8,12,22,.55);z-index:50;display:flex;align-items:flex-end;justify-content:center}
-.sheet{background:var(--card);color:var(--ink);width:100%;max-width:440px;max-height:92vh;max-height:92dvh;border-radius:18px 18px 0 0;display:flex;flex-direction:column;overflow:hidden;animation:up .22s ease-out}
+.sheet{background:var(--card);color:var(--ink);width:100%;max-width:440px;max-height:92vh;max-height:92dvh;border-radius:28px 28px 0 0;display:flex;flex-direction:column;overflow:hidden;animation:up .22s ease-out}
 .sheet.tall{height:92vh;height:92dvh}
 @keyframes up{from{transform:translateY(40px);opacity:.6}to{transform:none;opacity:1}}
 @media (prefers-reduced-motion: reduce){.sheet{animation:none}}
-.sheet-h{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1rem .5rem;font-weight:900;font-size:1.15rem;gap:.5rem}
-.sheet-h .icon-btn{width:2.5rem;height:2.5rem}
+.sheet-h{display:flex;align-items:center;justify-content:space-between;padding:1rem 1rem .5rem 1.25rem;font-weight:900;font-size:1.3rem;gap:.5rem}
+.sheet-h .icon-btn{width:2.75rem;height:2.75rem;border-radius:16px;background:var(--bg);box-shadow:none}
 .sheet-b{padding:.25rem 1rem 1rem;overflow-y:auto;display:flex;flex-direction:column;gap:.85rem;-webkit-overflow-scrolling:touch}
 /* 表單內容是直向 flex 的子項，預設 flex-shrink:1。只要子項自己設了 min-height，
    自動最小尺寸就會被蓋掉，表單一高過螢幕子項就被壓扁、內容疊在一起。
    這裡一律不准縮，高度不夠就讓 .sheet-b 自己捲。 */
 .sheet-b>*{flex:none}
-.sheet-f{padding:.6rem 1rem calc(.75rem + env(safe-area-inset-bottom));border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:.5rem}
-.sheet-f .btn{flex:1}
+.sheet-f{padding:.7rem 1rem calc(.85rem + env(safe-area-inset-bottom));border-top:2px solid var(--line);display:flex;flex-wrap:wrap;gap:.6rem}
+.sheet-f .btn{flex:1;min-height:3.25rem;font-size:1.05rem}
 /* 兩段式確認（sure()）按過一次之後，那顆按鈕的字會變長（例：「連圖卡一起刪？再按一次」）。
    以前三顆按鈕擠在同一列，長的那顆把「取消」「儲存」擠出表單（v3.23 就有，v3.26 修）。
    現在放不下就換行：等著確認的那顆（sure() 會替它加 data-sure）獨佔最下面一整列——
@@ -547,7 +581,7 @@ ul.clr-list{gap:.3rem;margin-top:.35rem;line-height:1.45}
    不然裡面的 SVG 就不會置中。 */
 .f>label{display:block;font-size:.85rem;font-weight:900;color:var(--ink-2);margin-bottom:.3rem}
 .f>label.btn{display:inline-flex;margin-bottom:0}
-.in{width:100%;min-height:3rem;border:1.5px solid var(--line);border-radius:10px;padding:.5rem .7rem;font-size:1.05rem;font-family:inherit;background:var(--card);color:var(--ink);font-weight:600}
+.in{width:100%;min-height:3.2rem;border:2px solid var(--field-line);border-radius:18px;padding:.5rem .85rem;font-size:1.05rem;font-family:inherit;background:var(--field);color:var(--ink);font-weight:700}
 textarea.in{min-height:5.5rem;line-height:1.45;resize:vertical}
 /* 下拉選單原本 appearance:none 之後完全沒有箭頭，看起來像唯讀欄位。
    用兩個漸層疊出一個小三角；.tf（時間欄）自己的 padding 特異性較高，不會被撐開。 */
@@ -555,7 +589,7 @@ select.in{appearance:none;-webkit-appearance:none;padding-right:1.9rem;
   background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);
   background-position:calc(100% - 16px) calc(50% - 1px),calc(100% - 11px) calc(50% - 1px);
   background-size:5px 5px,5px 5px;background-repeat:no-repeat}
-.in:focus{outline:2.5px solid var(--indigo);outline-offset:1px}
+.in:focus{outline:2px solid transparent;border-color:var(--indigo);box-shadow:0 0 0 4px var(--focus-glow)}
 .sw{display:flex;gap:.4rem;flex-wrap:wrap}
 .sw button{min-width:3rem;min-height:3rem;border-radius:10px;border:2px solid var(--line);font-size:1.3rem;background:var(--card);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;padding:0 .4rem;font-weight:800}
 .sw button.on{border-color:var(--indigo);box-shadow:0 0 0 3px var(--indigo-2)}
@@ -572,13 +606,13 @@ select.in{appearance:none;-webkit-appearance:none;padding-right:1.9rem;
 .share-prev{margin-top:.7rem;white-space:pre-wrap;word-break:break-word;background:var(--soft);border:1px solid var(--line);border-radius:.7rem;padding:.75rem .85rem;font-size:.92rem;line-height:1.7;font-weight:600;color:var(--ink);-webkit-user-select:text;user-select:text}
 /* ===== 安裝成 App／加到主畫面 ===== */
 /* 按鈕字級固定用 px，不跟著「AA」放大，320px 小螢幕才不會把區塊標題擠爆 */
-.inst-btn{margin-left:auto;flex:none;display:inline-flex;align-items:center;gap:.2rem;font-size:.8rem;min-height:2.6rem;font-weight:900;line-height:1;color:var(--indigo-ink);background:var(--indigo);border:0;border-radius:999px;padding:.4rem .6rem;white-space:nowrap;word-break:keep-all}
+.inst-btn{margin-left:auto;flex:none;display:inline-flex;align-items:center;gap:.2rem;font-size:.8rem;min-height:2.6rem;font-weight:900;line-height:1;color:var(--pri-ink);background:var(--pri);border:0;border-radius:999px;padding:.4rem .6rem;white-space:nowrap;word-break:keep-all;box-shadow:0 3px 0 var(--pri-edge)}
 .inst-btn svg.i{width:14px;height:14px;stroke-width:2.4}
 .ig-why{display:flex;gap:.45rem;align-items:flex-start;background:var(--indigo-2);color:var(--indigo);border-radius:.7rem;padding:.6rem .7rem;font-size:.88rem;font-weight:700;line-height:1.5;margin-bottom:.85rem}
 .ig-why svg.i{flex:none;margin-top:.15rem}
 .ig{display:flex;flex-direction:column;gap:.85rem}
 .ig-s{display:flex;gap:.55rem;align-items:flex-start}
-.ig-n{flex:none;width:1.6rem;height:1.6rem;border-radius:50%;background:var(--indigo);color:var(--indigo-ink);font-weight:900;font-size:.9rem;display:flex;align-items:center;justify-content:center;margin-top:.1rem}
+.ig-n{flex:none;width:1.6rem;height:1.6rem;border-radius:50%;background:var(--pri);color:var(--pri-ink);font-weight:900;font-size:.9rem;display:flex;align-items:center;justify-content:center;margin-top:.1rem}
 .ig-s .tx{flex:1;min-width:0}
 .ig-s b{display:block;font-size:1rem;font-weight:900;line-height:1.4}
 .ig-s small{display:block;color:var(--ink-2);font-size:.85rem;font-weight:600;line-height:1.5;margin-top:.15rem}
@@ -594,15 +628,16 @@ select.in{appearance:none;-webkit-appearance:none;padding-right:1.9rem;
 .ig-shot{display:block;width:100%;height:auto;margin-top:.45rem;border:1px solid var(--line);border-radius:.6rem;background:var(--soft)}
 .ig-alt{display:flex;flex-direction:column;align-items:flex-start;gap:.35rem;margin:-.35rem 0 0 2.15rem}
 .ig-alt small{color:var(--ink-3);font-size:.82rem;font-weight:600;line-height:1.45}
-.toast{position:fixed;left:50%;bottom:6rem;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:.65rem 1.1rem;border-radius:999px;font-weight:800;z-index:70;opacity:0;transition:opacity .2s;pointer-events:none;white-space:normal;text-align:center;line-height:1.35;width:max-content;max-width:92vw;border-radius:18px}
+.toast{position:fixed;left:50%;bottom:7.5rem;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:.65rem 1.1rem;border-radius:999px;font-weight:800;z-index:70;opacity:0;transition:opacity .2s;pointer-events:none;white-space:normal;text-align:center;line-height:1.35;width:max-content;max-width:92vw;border-radius:18px}
 .toast.show{opacity:1}
 .hint-lead{font-size:.82rem;color:var(--ink-3);font-weight:700;display:flex;align-items:center;gap:.3rem}
 .hint-lead svg.i{width:1rem;height:1rem}
 /* ===== v4：首頁分段（現在／稍後／隨時查）＋ 可收合卡片 ===== */
 .zsec{display:flex;flex-direction:column;gap:.7rem}
 .zlab{display:flex;align-items:center;gap:.5rem;margin-bottom:-.05rem}
-.zlab span{font-size:.875rem;font-weight:900;color:var(--ink-3);letter-spacing:.1em;white-space:nowrap;word-break:keep-all}
-.zlab i{flex:1;height:1px;background:var(--line)}
+.zlab::before{content:"";flex:none;width:.65rem;height:.65rem;border-radius:50%;background:var(--pri)}
+.zlab span{font-size:.95rem;font-weight:900;color:var(--ink-2);letter-spacing:.06em;white-space:nowrap;word-break:keep-all}
+.zlab i{flex:1;height:3px;border-radius:2px;background:var(--line)}
 .ccard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
 .chead{width:100%;border:0;background:transparent;color:var(--ink);display:flex;align-items:center;gap:.5rem;padding:.7rem .8rem;text-align:left;min-height:3.2rem}
 .chead .ttl{font-size:1rem;font-weight:900;display:flex;align-items:center;gap:.4rem;flex-shrink:0;white-space:nowrap;word-break:keep-all;color:var(--ink-2)}
@@ -623,10 +658,8 @@ select.in{appearance:none;-webkit-appearance:none;padding-right:1.9rem;
    高亮時外面多包一層 .hlw，選擇器要一併涵蓋，不然浮起感會掉。 */
 .g-now>.card,.g-now>.ccard,.g-now>.hlw>.card,.g-now>.hlw>.ccard{box-shadow:var(--lift);position:relative;overflow:hidden}
 .g-now>.card,.g-now>.ccard{border-color:transparent}
-/* 頂部彩條只給沒高亮的主卡；高亮時由金框代表，兩個一起會打架 */
-.g-now>.card::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,var(--alert),var(--indigo))}
-.g-later>.card,.g-later>.ccard{background:var(--soft);border-color:transparent}
-.g-ref>.card,.g-ref>.ccard{background:transparent;border-color:var(--line)}
+.g-later>.card,.g-later>.ccard{background:var(--soft);border-color:transparent;box-shadow:none}
+.g-ref>.card,.g-ref>.ccard{background:transparent;border-color:var(--line);box-shadow:none}
 .g-ref .chead .ttl{color:var(--ink-3)}
 .g-ref .fl-col{background:var(--card)}
 /* ===== 高亮提醒：管理者指定「這張卡大家要看」 =====
@@ -685,7 +718,7 @@ select.in.sm{min-height:2.5rem;font-size:.88rem;padding:0 1.6rem 0 .55rem;width:
 }
 @media (prefers-reduced-motion: reduce){ .hlw::before{animation:none;opacity:1} }
 /* Google 地圖按鈕 */
-.map-btn{width:2.75rem;height:2.75rem;min-width:2.75rem;border-radius:10px;border:1px solid var(--line);background:var(--card);
+.map-btn{width:2.75rem;height:2.75rem;min-width:2.75rem;border-radius:16px;border:2px solid var(--line);background:var(--card);
   color:var(--indigo);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;text-decoration:none;vertical-align:middle}
 .map-btn svg.i{width:1.35rem;height:1.35rem}
 .map-btn:active{background:var(--indigo-2)}
