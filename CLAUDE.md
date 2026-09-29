@@ -12,7 +12,7 @@
 |---|---|
 | 正式網址 | https://750hd.com （Cloudflare 網域 → GitHub Pages） |
 | GitHub | `msw2004727/sapa-tour-tool`，分支 `main` |
-| 目前版本 | v3.21 |
+| 目前版本 | v3.22 |
 | 旅遊日期 | 2026-09-24 ～ 09-28（5 天 4 夜） |
 | 使用者 | 33 位團員（**多數是長輩**）；主辦人是小麥，用 PIN 進入管理模式 |
 | 性質 | **團體自由行，沒有領隊、沒有導遊** |
@@ -97,7 +97,8 @@ npx playwright install chromium
 # 改完 src/ 之後
 node build.js            # 或 npm run build
 npm run test:quick       # 快檢：regress + sheetfit（約 1 分鐘）
-npm test                 # 全部 13 支測試（約 10 分鐘）
+npm test                 # 全部 14 支測試（約 12 分鐘）
+npm run test:rules       # 只有改 Firebase 規則時才跑：官方模擬器實際寫入（要 Java，見 audit/fbrules.js 開頭）
 
 # 在瀏覽器看
 npm run serve            # http://localhost:8080
@@ -180,9 +181,11 @@ Cowork 的容器**沒有 GitHub 憑證，不能 `git push`**，而且對話結�
 | `audit/wording.js` | 所有畫面與原始碼不出現「領隊」「導遊」（含越文 hướng dẫn viên）；住宿卡的「LINE聯繫」按鈕 |
 | `audit/hardening.js` | v3.18 旅途強化 2～14 項：自動留上一版與還原、連線逾時與重連、下一站 hero、日期變更重畫、離線提示條、頂列字級、對比度、最小字級與命中區、空間不足處理與佇列合併、版本提示、緊急求助列、不載外部字型 |
 | `audit/swtest.js` | Service Worker：起本機 http 伺服器模擬延遲 6 秒／斷線／回 500，網頁必須 ~2.6 秒內用快取畫出來、錯誤頁不進快取 |
+| `audit/resettest.js` | v3.22 **一鍵清空・自動備份與還原**：PIN、警語、沒連線／還有修改沒送出／雲端規則擋下時一個字都不動；整批寫入（8 份文件＋備份在同一筆）；清空後重新整理不會被程式內建資料補回來；清空後新增第一位團員／第一站真的存得進去；空白狀態 44 個畫面淺色、深色、兩種字級；還原與還原前自動備份；雲端最多 3 份；單機模式。開頭先確認測試瀏覽器連不到正式資料庫 |
+| `audit/fbrules.js` | **不在 `npm test` 裡**（要 Java 與 Firebase 模擬器）。實際寫入模擬器驗證 `firebase.rules.json`：舊規則下一鍵清空整批被擋、新規則下清空與還原通過、沒帶標記的空名單與清空後的半筆補寫仍被擋、備份區格式。改規則前後都要跑 |
 | `audit/timeline.js` | **時光機**：用 Playwright 假時鐘把「現在」撥到出發前、出發日清晨、旅途中每天、回國後共 16 個時間點，印出首頁摘要（加 `--shots` 存截圖），再斷言台灣時間、過期廣播、最後一天、App 開著過夜、「現在＋N 分」、時間模擬；v3.20 加上航班卡去程／回程分段、廣播表單日期預設與「時間已過」防呆 |
 
-`audit/_lib.js` 負責找 playwright 與算出 `standalone.html` 的位置，測試裡不要再寫死路徑。
+`audit/_lib.js` 負責找 playwright、算出 `standalone.html` 的位置，並且**讓測試開的瀏覽器連不到外面**（HTTP 與 WebSocket 都擋，只放行 `file://` 與 127.0.0.1）。`standalone.html` 會載入正式的 `config.js`，沒有這層的話，在有網路的電腦上跑「會存檔」的測試就會寫進正式資料庫——v3.22 以前的 `membersave.js`、`synctest.js` 就有這個風險。測試裡不要寫死路徑，也不要繞過 `_lib` 自己開瀏覽器。
 
 ### 寫測試的原則（這個專案吃過虧）
 
@@ -191,6 +194,8 @@ Cowork 的容器**沒有 GitHub 憑證，不能 `git push`**，而且對話結�
 `audit/sheetfit.js` 就是這樣驗證的：把修正拿掉會立刻報 `zb1 155>36`。
 
 **斷言要先確認前提成立。** 例如測「首頁不顯示說明文字」時，要先斷言「那一天的行程確實有 5 句說明」，否則資料本來就空的話會假通過。
+
+**跟「今天」有關的測試一律固定時鐘。** 用 `page.clock.install({time:...})`，不要依賴真實日期。v3.21 的 `zonetest.js`、`hltest.js`、`functest.js` 默認「今天還沒出發」，9/24 出發之後再跑就全紅（跟程式對錯無關）；而且 `npm test` 是串起來跑的，一支紅了後面的全都沒跑到。v3.22 起固定在 2026-09-20 上午。
 
 ---
 
@@ -242,6 +247,10 @@ Cowork 的容器**沒有 GitHub 憑證，不能 `git push`**，而且對話結�
 
 測試裡只改 `document.documentElement.setAttribute('data-fs','xl')` 而沒改 `P.fs`，一呼叫 `render()` 就會被打回 `md`——曾經因此讓「320px 特大字」的檢查其實測到的是標準字級。要模擬字級一律 `P.fs='xl'` 再設屬性。
 
+### 8c. `render()` 也會把 `data-theme` 重設成 `P.theme`
+
+跟 8b 同一件事。v3.22 的深色對比測試第一版先 `setAttribute('data-theme','dark')` 再 `render()`，結果**量到的全是淺色**；是把修正拿掉之後測試沒變紅才發現的。要切深色一律 `P.theme='dark'`。
+
 ### 9. 存檔的寫法要選對
 
 | 方法 | 行為 | 用在哪 |
@@ -275,6 +284,12 @@ Cowork 的容器**沒有 GitHub 憑證，不能 `git push`**，而且對話結�
 
 另外 **LINE 是把預覽圖裁成右側小方塊**，所以 og:image 必須是方形（現在是 1000×1000 的 logo），`twitter:card` 要用 `summary` 不是 `summary_large_image`。
 
+### 11. Firebase 不會存空陣列、空物件
+
+寫進去 `items:[]`，讀回來整個 `items` 欄位都不見；清空後的名單回到手機就是 `{_ts,_cleared}`。取清單的函式要把空陣列**掛回文件上**（`members()`、`items()`、`photoMap()` 都是 `d.items||(d.items=[])`），不能回傳一個沒掛在資料上的新陣列——否則 push 進去的東西存檔時根本不在文件裡，畫面說「已儲存」其實什麼都沒存到（v3.22 修的就是這個）。
+
+本機測試是把 JSON 存在 `localStorage`，空陣列會留著，所以本機怎麼測都正常。`resettest.js` 的假雲端會照 Firebase 的習慣把空的拿掉。
+
 ---
 
 ## 八、資料模型
@@ -298,6 +313,18 @@ DOC_KEYS = ['settings','broadcast','itinerary','members','groups','rollcall','no
 
 **總計目前約 18 KB，底圖全放滿也只到 370 KB。** `localStorage` 上限 5 MB，還有十倍餘裕。
 
+### v3.22 一鍵清空與自動備份
+
+| 項目 | 內容 |
+|---|---|
+| 清空 | 8 份文件換成只剩 `_ts` 與 `_cleared`（清空時間）的空殼，設定只留 `pinHash` 與 `minVersion`（小麥指定「全部清到最乾淨」）。清空後首頁顯示「尚未建立旅程」，標頭顯示「日期未定」 |
+| 備份 | 清空、還原之前，自動把整包內容存成一份 `backups/<root>/<id>` = `{at, reason, ver, sum, docs}`。**不放在 `trip` 底下**：`trip` 底下的東西 33 支手機每次都要下載，備份只有主辦人打開清單時才讀（`Store.fetchBackups`）。雲端最多 3 份，做清空的那支手機的 `localStorage['sapa-bk']` 也留 3 份 |
+| 全有全無 | 8 份文件＋備份用同一筆 `db.ref().update()` 送出（`Store.pushMulti` → `bulkWrite()`）。規則擋下或斷線，什麼都不會動。必須在線上、而且佇列是空的才能做 |
+| `_cleared` 標記 | 規則靠它分辨「故意清空」與「程式出錯存成空的」。文件有內容之後，`save()` 會拿掉它；`savePath()` 遇到帶標記的文件會改成整份存檔（局部寫入拿不掉標記） |
+| 還原 | 管理專區 →「備份與還原」選一份、再輸入 PIN。還原前會先備份目前內容，所以還原本身也能還原回來 |
+| `minVersion` | 清空時設成目前版本：還停在舊版的手機會跳「有新版本」（舊版不認得清空後的格式，新增第一筆會存不進去） |
+| 舊的「重置為初始資料」 | 拿掉了。它會把資料換回程式內建的沙壩行程與 33 人，沒有密碼、也沒有備份 |
+
 ### v3.18 加上的保護（都在 `Store` 裡）
 
 | 機制 | 做什麼 |
@@ -314,7 +341,9 @@ DOC_KEYS = ['settings','broadcast','itinerary','members','groups','rollcall','no
 | 高亮提醒（v3.21） | `cardHL`：管理者開關 ON 就亮；團員自己收起的卡**收著時**不亮，**重新展開就繼續亮**（小麥指定，長輩常誤觸收起）。`hseen` 記在 `P.cards`，航班卡回程階段用 `hts+'|back'` 當鑰匙，看過去程不等於看過回程。管理者關掉再開一次＝所有人重新亮 |
 | `saveBroadcast` 防呆（v3.20） | 表單日期：上一則有效就沿用，過期就帶今天；存檔時集合時間已過 30 分鐘以上就擋下（日期時間沒改且這則仍有效時不擋，才能只改地點） |
 
-`firebase.rules.json` 也改成 `$doc` 層級才可寫、不可整份刪除、`members`／`itinerary` 至少要有 `items/0`。**2026-09-22 已貼到 Firebase 主控台並發布生效**。以後改規則一樣要到主控台貼上才會生效，repo 裡的檔案只是版本紀錄——兩邊要保持一致。
+`firebase.rules.json` 也改成 `$doc` 層級才可寫、不可整份刪除、`members`／`itinerary` 至少要有 `items/0`。**2026-09-22 已貼到 Firebase 主控台並發布生效**。
+
+**v3.22 的 repo 版本多了兩件事**：名單／行程帶 `_cleared`（數字）而且沒有 `items` 時也收（一鍵清空用）；新增 `backups/$root/$id`（要有 `at` 與 `docs`）。**要貼到主控台才會生效**——2026-09-29 部署 v3.22 時還沒貼，貼好之後請把這句改成生效日期。貼之前按一鍵清空會被整批擋下、什麼都不會動（`fbrules.js` 與端對端測試都驗過）。以後改規則一樣要到主控台貼上才會生效，repo 裡的檔案只是版本紀錄——兩邊要保持一致。
 
 > 規則模擬工具的「set」會把資料**合併**進現有資料再判斷，所以「整份存檔少了 items」這類情況在模擬器會誤判成通過；要驗證請用「update」或實際寫入。
 
@@ -345,7 +374,9 @@ DOC_KEYS = ['settings','broadcast','itinerary','members','groups','rollcall','no
 ## 十、安全性現況
 
 - `config.js` 裡的 Firebase 金鑰是**前端公開金鑰**，本來就會出現在網頁原始碼裡，不是秘密。真正的防線是資料庫規則。
-- 目前規則（`firebase.rules.json`，2026-09-22 生效）：**知道網址的人可讀、可改個別內容**，但不能一次覆寫整個團、不能整份刪除任何一份資料、名單與行程不能存成空的、每份資料都要帶 `_ts`、`trip` 以外一律不可讀寫。對一個 5 天的私人團可以接受，網址只在 LINE 群組流通。
+- 目前規則（`firebase.rules.json`）：**知道網址的人可讀、可改個別內容**，但不能一次覆寫整個團、不能整份刪除任何一份資料、名單與行程不能存成空的（v3.22 起：帶 `_cleared` 標記的故意清空除外）、每份資料都要帶 `_ts`、`trip` 與 `backups` 以外一律不可讀寫。對一個 5 天的私人團可以接受，網址只在 LINE 群組流通。
+- **備份跟一般資料一樣，知道網址就讀得到。** 清空是為了下一團重新開始，不是為了把個資從網路上拿掉。
+- v3.18 版規則（2026-09-22 貼上的那一版）的原文在 `audit/fbrules.js` 的 `OLD_RULES`；萬一 v3.22 版出問題可以貼回那一版（只有一鍵清空會失效，其他照常）。
 - 生效前的舊規則（`trip` 底下完全可讀寫）：`{"rules":{"trip":{".read":true,".write":true,"$doc":{".validate":"newData.hasChildren() && newData.child('_ts').isNumber()"}},"$other":{".read":false,".write":false}}}`——萬一新規則出問題，貼回這段就能還原。
 - 想收緊的話：`config.js` 的 `auth` 改成 `'anon'`，套用 `firebase.rules.auth.json`（`.write` 改成 `auth != null`），只有開過網頁的裝置能寫。**這個切換還沒做，由小麥決定。**
 - 管理 PIN 存的是 SHA-256 雜湊（`settings.pinHash`），不是明文。PIN 只是防誤觸，不是資安機制。

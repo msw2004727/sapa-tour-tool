@@ -8,11 +8,20 @@
       },
       "members": {
         ".write": "auth != null && newData.exists()",
-        ".validate": "newData.hasChildren() && newData.child('_ts').isNumber() && newData.child('items').child('0').exists()"
+        ".validate": "newData.hasChildren() && newData.child('_ts').isNumber() && (newData.child('items').child('0').exists() || (newData.child('_cleared').isNumber() && !newData.child('items').exists()))"
       },
       "itinerary": {
         ".write": "auth != null && newData.exists()",
-        ".validate": "newData.hasChildren() && newData.child('_ts').isNumber() && newData.child('items').child('0').exists()"
+        ".validate": "newData.hasChildren() && newData.child('_ts').isNumber() && (newData.child('items').child('0').exists() || (newData.child('_cleared').isNumber() && !newData.child('items').exists()))"
+      }
+    },
+    "backups": {
+      "$root": {
+        ".read": "auth != null",
+        "$id": {
+          ".write": "auth != null",
+          ".validate": "newData.hasChildren(['at','docs']) && newData.child('at').isNumber()"
+        }
       }
     },
     "$other": {
