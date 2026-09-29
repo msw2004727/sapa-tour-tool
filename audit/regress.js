@@ -3,7 +3,7 @@
    用法：node audit/regress.js [--shots] */
 const {chromium,FILE,at}=require('./_lib');
 const SHOTS=process.argv.includes('--shots');
-const SHORT='.tab span,.tab-home .lb,.chip,.btn:not(.wrap) .b2>span:first-child,.tcard b,.chead .ttl,.day-chip,.lcd .lg1,.lcd .lg2,.wf-k,.ic-h,h2.sec,.dayrow button,.me-strip .k,.seg button,.fl-h,.kv dt,.prep-lab';
+const SHORT='.tab span,.tab-home .lb,.chip,.btn:not(.wrap) .b2>span:first-child,.tcard b,.chead .ttl,.day-chip,.lcd .lg1,.lcd .lg2,.wf-k,.ic-h,h2.sec,.dayrow button,.me-strip .k,.seg button,.fl-h,.kv dt,.prep-lab,.catbar button span';
 const VIEWS=[
   ['home-guest',()=>{P.leader=false;P.meId='';P.tab='home';P.tipDismissed=true;render();}],
   ['home-me',()=>{P.meId=members()[0].id;P.tab='home';render();}],
@@ -17,7 +17,12 @@ const VIEWS=[
   ['rooms',()=>{P.tab='rooms';P.roomsSeg='rooms';render();}],
   ['list',()=>{P.roomsSeg='list';render();}],
   ['groups',()=>{P.tab='groups';P.scn='meal';render();}],
-  ['airline',()=>{P.scn='airline';render();}],
+  /* v3.25 分組：四個大分類。交通（舊資料轉出來的航班、接駁車）、餐飲、逛街（空的）、旅伴 */
+  ['groups-transport',()=>{P.tab='groups';P.cat='transport';P.scn='air';render();}],
+  ['groups-transport-me',()=>{members().slice(0,10).forEach(m=>m.airline='eva');P.meId=members()[0].id;render();}],
+  ['groups-shuttle',()=>{P.scn='shuttle';render();}],
+  ['groups-shop-empty',()=>{P.cat='shop';P.scn='';render();}],
+  ['groups-mate',()=>{P.cat='mate';P.scn='';render();}],
   ['tools',()=>{P.tab='tools';P.tool='menu';render();}],
   ['money',()=>{P.tool='money';render();}],
   ['phrases',()=>{P.tool='phrases';P.phCat='';render();}],
@@ -40,6 +45,8 @@ const VIEWS=[
   ['L-home',()=>{P.leader=true;P.tab='home';render();}],
   ['L-plan',()=>{P.tab='plan';render();}],
   ['L-groups',()=>{P.tab='groups';P.scn='meal';render();}],
+  ['L-groups-transport',()=>{P.tab='groups';P.cat='transport';P.scn='air';render();}],
+  ['L-groups-shop-empty',()=>{P.cat='shop';P.scn='';render();}],
   ['L-tools',()=>{P.tab='tools';P.tool='menu';render();}],
   ['L-rollcall',()=>{P.tool='rollcall';render();}],
   ['L-card',()=>{P.tool='card';P.card='entry';render();}],
@@ -51,7 +58,13 @@ const VIEWS=[
 const SHEETS=[
   ['settings',()=>ACT.settings()],['broadcast',()=>ACT.editBroadcast()],['item',()=>{P.tab='plan';render();document.querySelector('[data-act="editItem"]').click();}],
   ['member',()=>{P.tab='rooms';P.roomsSeg='list';render();document.querySelector('.mlist .mc').click();}],
-  ['hotel',()=>sheetHotelEdit('sapa')],['scenario',()=>sheetScenario('meal')],['airlines',()=>ACT.editAirlines()],
+  ['hotel',()=>sheetHotelEdit('sapa')],['scenario',()=>sheetScenario('meal')],
+  /* v3.25 情境編輯表單：每個分類的新增畫面、舊資料轉出來的航班、四個分類的預設欄位 */
+  ['scenario-air',()=>sheetScenario('air')],
+  ['scenario-new-transport',()=>sheetScenario('','transport')],['scenario-new-meal',()=>sheetScenario('','meal')],
+  ['scenario-new-shop',()=>sheetScenario('','shop')],['scenario-new-mate',()=>sheetScenario('','mate')],
+  ['scenario-hike',()=>sheetScenario('hike')],
+  ['move-transport',()=>{P.tab='groups';P.cat='transport';P.scn='air';render();sheetMoveMember2(members()[0].id);}],
   ['move',()=>{P.tab='groups';P.scn='meal';render();document.querySelector('.grp .gm .mc').click();}],
   ['tagopts',()=>{P.tab='groups';P.scn='meal';render();sheetTagOpts();}],
   ['tagoptEdit',()=>{P.tab='groups';P.scn='meal';render();sheetTagOptEdit('已點餐');}],

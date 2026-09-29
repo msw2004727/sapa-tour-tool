@@ -236,6 +236,6 @@ function toolRollcall(){
     (missing.length===0&&ms.length?'<div class="missing ok" style="margin-top:.6rem">'+ic('check')+'全員到齊，出發！</div>':'')+
     '<div class="row" style="margin-top:.6rem"><button class="btn ok" data-act="rcAll">全部到齊</button><button class="btn" data-act="rcReset">重新點名</button></div></section>'+
     '<div class="hint-lead">'+ic('info')+'點名字＝已到，再點一次取消。車長也可以用自己的手機一起點。</div>'+
-    '<div class="rc">'+ms.map(function(m){ var on=rc.present&&rc.present[m.id]; return '<button class="'+(on?'on':'')+'" data-act="rcToggle" data-id="'+m.id+'" aria-pressed="'+(on?'true':'false')+'"><span class="ck">'+ic('check')+'</span><span style="flex:1;min-width:0">'+esc(m.name)+'</span>'+badgeSVG(m.emoji)+airlineBadge(m.airline)+'</button>'; }).join('')+'</div>';
+    '<div class="rc">'+ms.map(function(m){ var on=rc.present&&rc.present[m.id]; return '<button class="'+(on?'on':'')+'" data-act="rcToggle" data-id="'+m.id+'" aria-pressed="'+(on?'true':'false')+'"><span class="ck">'+ic('check')+'</span><span style="flex:1;min-width:0">'+esc(m.name)+'</span>'+badgeSVG(m.emoji)+memBadge(m)+'</button>'; }).join('')+'</div>';
 }
 

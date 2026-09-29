@@ -21,6 +21,8 @@ document.addEventListener('keydown',function(ev){ if(ev.key!=='Tab') return; var
   var first=f[0], last=f[f.length-1];
   if(ev.shiftKey&&document.activeElement===first){ ev.preventDefault(); last.focus(); } else if(!ev.shiftKey&&document.activeElement===last){ ev.preventDefault(); first.focus(); } });
 function sv(n){ var e=el('sheetRoot').querySelector('[name="'+n+'"]'); return e?e.value.trim():''; }
+/* 把表單裡某個欄位的值設成 v（找不到欄位就算了）；時間欄要用 setTimeField，它同時要更新兩個下拉選單 */
+function setField(n,v){ var e=el('sheetRoot').querySelector('[name="'+n+'"]'); if(e) e.value=v; }
 function fld(label,html){ return '<div class="f"><label>'+label+'</label>'+html+'</div>'; }
 function timeField(n,v){ var p=String(v||'').split(':'); var hh=p[0]||'', mm=p[1]||''; var hs='<select class="in" data-tf="'+n+'" data-part="h" aria-label="時"><option value="">時</option>'; for(var i=0;i<24;i++){ var x=pad(i); hs+='<option value="'+x+'"'+(x===hh?' selected':'')+'>'+x+'</option>'; } hs+='</select>'; var mins=[]; for(var j=0;j<60;j+=5) mins.push(pad(j)); if(mm&&mins.indexOf(mm)<0) mins.push(mm); mins.sort(); var ms='<select class="in" data-tf="'+n+'" data-part="m" aria-label="分"><option value="">分</option>'+mins.map(function(x){return '<option value="'+x+'"'+(x===mm?' selected':'')+'>'+x+'</option>';}).join('')+'</select>'; return '<div class="tf">'+hs+'<b>:</b>'+ms+'<input type="hidden" name="'+n+'" value="'+esc(v||'')+'"></div>'; }
 function setTimeField(n,v){ var root=el('sheetRoot'); var h=root.querySelector('input[name="'+n+'"]'); if(!h) return; h.value=v||''; var p=(v||'').split(':'); root.querySelectorAll('select[data-tf="'+n+'"]').forEach(function(sel){ var want=sel.getAttribute('data-part')==='h'?(p[0]||''):(p[1]||''); if(want&&!Array.prototype.some.call(sel.options,function(o){return o.value===want;})){ var o=document.createElement('option'); o.value=want; o.textContent=want; sel.appendChild(o); } sel.value=want; }); }
@@ -312,17 +314,24 @@ function sheetMember(id){
       '<div class="bdg-hint">'+BADGES.map(function(d){return '<span>'+badgeSVG(d.id)+esc(d.label)+'</span>';}).join('')+'</div>')+
     fld('底色',swatches('bg',BGS,m.bg||'bg-white',function(v,l){return '<span class="mc sm '+v+'" style="min-height:2rem;padding:.2rem .5rem;width:auto;border-width:1px">'+l+'</span>';}))+
     fld('邊框',swatches('border',BDS,m.border||'bd-grey',function(v,l){return '<span class="mc sm '+v+'" style="min-height:2rem;padding:.2rem .5rem;width:auto">'+l+'</span>';}))+
-    fld('航空公司（小圓徽章）',swatches('airline',[['','無'],['eva',(airDef('eva')||{}).short],['ci',(airDef('ci')||{}).short]],m.airline||'',function(v,l){return v?airlineBadge(v,true):'<span class="al lg none">無</span>';}))+
+    '<div class="muted">搭哪一班交通、坐哪一桌、分在哪一組，請到「分組」頁點名字指定；名單這裡不用設定。</div>'+
     fld('公開備註（一行）',inp('remark',m.remark)+chipsFill('remark',['A 車車長','負責收護照','全素勿蒜','鍋邊素','需溫熱開水','容易暈車，請坐前排']))+
     '<div class="grid2">'+fld('房號',inp('room',m.room))+fld('電話（選填）',inp('phone',m.phone,'tel'))+'</div>',
     foot:footBtns('saveMember',id?'<button class="btn dng" data-act="delMember">移出</button>':'')});
   SHEET.id=id;
 }
+/* 團員資料卡裡的分組列：每個他被分到的情境一列，後面接時間、集合地點這類說明；
+   小圓徽章只有主要的交通情境有（跟名單、首頁一樣），它沒分到組時寫「尚未設定」 */
+function memGroupRows(m){ var pri=trPrimary();
+  return scnAll().map(function(sc){ var gi=scnGi(sc,m.id), isPri=!!(pri&&sc.id===pri.id);
+    if(gi<0) return (isPri&&sc.card)?'<dt>'+esc(sc.name)+'</dt><dd>尚未設定</dd>':'';
+    var meta=scnGMeta(sc,gi);
+    return '<dt>'+esc(sc.name)+'</dt><dd>'+(isPri?trBadge(sc,gi)+' ':'')+esc(scnGName(sc,gi))+(meta?' · '+esc(meta):'')+'</dd>'; }).join(''); }
 function sheetMemberView(id){
   var m=member(id); if(!m) return;
   var st=S().settings;
   openSheet({title:'團員',body:memberCard(m,{right:'groups',tag:'div',act:'noop'})+
-    '<dl class="kv"><dt>航空公司</dt><dd>'+(airDef(m.airline)?airlineBadge(m.airline)+' '+esc(airDef(m.airline).name)+(airDef(m.airline).note?' · '+esc(airDef(m.airline).note):''):'尚未設定')+'</dd><dt>房號</dt><dd>'+esc(m.room||'待分配')+'</dd>'+(m.remark?'<dt>備註</dt><dd>'+esc(m.remark)+'</dd>':'')+'</dl>'+
+    '<dl class="kv">'+memGroupRows(m)+'<dt>房號</dt><dd>'+esc(m.room||'待分配')+'</dd>'+(m.remark?'<dt>備註</dt><dd>'+esc(m.remark)+'</dd>':'')+'</dl>'+
     '<div class="stack">'+(P.meId===m.id?'<button class="btn" data-act="setMe" data-id="">取消「這是我」</button>':'<button class="btn pri" data-act="setMe" data-id="'+m.id+'">'+ic('star')+'這是我</button>')+(m.phone?'<a class="btn" href="'+telHref(m.phone)+'">'+ic('phone')+'撥打電話</a>':'')+'</div>'});
 }
 function sheetPickMe(){
@@ -353,23 +362,99 @@ function sheetHotelEdit(id){
     foot:footBtns('saveHotel',id?'<button class="btn dng" data-act="delHotel">刪除</button>':'')});
   SHEET.id=id;
 }
-function sheetScenario(id){
-  var sc=id?scenario(id):{name:'',count:3,names:[]};
-  var fixed=id&&scnFixed(sc), ut=id?scnUseTags(sc):false;
-  openSheet({title:id?'分組情境設定':'新增分組情境',focus:true,body:
-    fld('情境名稱',inp('name',sc.name,'text','placeholder="例：用餐分桌"'))+
-    fld('組數','<select class="in" name="count">'+[2,3,4,5,6,7,8].map(function(n){return '<option value="'+n+'"'+(sc.count===n?' selected':'')+'>'+n+' 組</option>';}).join('')+'</select>')+
-    fld('各組名稱（用「、」分隔，可留白）',inp('names',(sc.names||[]).join('、'),'text','placeholder="第 1 桌、第 2 桌、第 3 桌"'))+
-    fld('臨時標籤','<select class="in" name="useTags"><option value="1"'+(ut?' selected':'')+'>開啟（可貼素食、已點餐…）</option><option value="0"'+(ut?'':' selected')+'>關閉</option></select>')+
-    (fixed?'<div class="hint-lead">'+ic('lock')+'這是固定情境，可以改名稱與組數，但不能刪除。</div>':''),
-    foot:footBtns('saveScenario',(id&&!fixed)?'<button class="btn dng" data-act="delScenario">刪除</button>':'')});
-  SHEET.id=id;
+/* ===== 分組情境的編輯表單（v3.25）=====
+   一律「逐列」編輯：每一組一張小卡（名稱＋這個分類多出來的欄位）。新增、刪除、上移、下移只動表單裡的狀態，
+   按「儲存」才寫出去；存檔時用每一列記著的原本組別（o）重新對應每個人的分組，刪掉的那一組的人回到「尚未分組」。
+   表單的狀態放在 SHEET.st（名稱、各列、提醒…），SHEET.cat 是現在選的分類；scnRead() 把畫面上填的字讀回 SHEET.st。 */
+function scnState(sc){
+  var n=scnCount(sc), rows=[], cnt={};
+  members().forEach(function(m){ var gi=scnGi(sc,m.id); if(gi>=0) cnt[gi]=(cnt[gi]||0)+1; });
+  for(var i=0;i<n;i++) rows.push({o:i,cnt:cnt[i]||0,name:scnGName(sc,i),times:scnGTime(sc,'times',i),backs:scnGTime(sc,'backs',i),notes:scnGF(sc,'notes',i),shorts:scnGF(sc,'shorts',i),leaders:scnGF(sc,'leaders',i)});
+  return {name:String(sc.name||''),rows:rows,note:String(sc.note||''),tags:scnUseTags(sc)?'1':'0',card:sc.card?'1':'0',time:trTime(sc.time),place:String(sc.place==null?'':sc.place)};
 }
+function scnStateNew(cat){
+  var d=catDef(cat), rows=[]; for(var i=0;i<d.dn;i++) rows.push({o:-1,cnt:0,name:catGN(cat,i)});
+  /* 第一個交通情境預設列在首頁的交通資訊卡；已經有別的在卡片上了就不重複 */
+  var card=(cat==='transport'&&!scnAll().some(function(x){ return scnCat(x)==='transport'&&x.card; }))?'1':'0';
+  return {name:'',rows:rows,note:'',tags:d.tags?'1':'0',card:card,time:'',place:''};
+}
+/* 新增一列時的預設名稱：這一類的預設名稱裡第一個還沒被用掉的（刪過、換過順序，也不會跟現有的重複） */
+function scnNewName(cat,rows){ var used={}; rows.forEach(function(r){ used[r.name]=1; });
+  for(var i=0;i<SCN_MAX+rows.length+1;i++){ var n=catGN(cat,i); if(!used[n]) return n; }
+  return catGN(cat,rows.length); }
+/* 一列（一組）：名稱＋上移／下移／刪除，下面是這個分類多出來的欄位；時間欄兩個並排 */
+function scnRowHTML(cat,r,i,n){
+  var d=catDef(cat), fs=[], k=0;
+  while(k<d.gf.length){ var f=d.gf[k], g=d.gf[k+1];
+    if(f.t==='time'&&g&&g.t==='time'){ fs.push('<div class="grid2">'+scnFieldHTML(f,r,i)+scnFieldHTML(g,r,i)+'</div>'); k+=2; }
+    else { fs.push(scnFieldHTML(f,r,i)); k++; } }
+  return '<div class="scn-row" data-row="'+i+'">'+
+    '<div class="scn-rh"><input class="in" name="g_name_'+i+'" value="'+esc(r.name||'')+'" maxlength="20" placeholder="'+esc(catGN(cat,i))+'" aria-label="第 '+(i+1)+' 組的名稱">'+
+      '<button type="button" class="btn sm" data-act="scnRowMove" data-i="'+i+'" data-dir="-1" aria-label="第 '+(i+1)+' 組往上移"'+(i===0?' disabled':'')+'>'+ic('up')+'</button>'+
+      '<button type="button" class="btn sm" data-act="scnRowMove" data-i="'+i+'" data-dir="1" aria-label="第 '+(i+1)+' 組往下移"'+(i===n-1?' disabled':'')+'>'+ic('down')+'</button>'+
+      '<button type="button" class="btn sm dng" data-act="scnRowDel" data-i="'+i+'" aria-label="刪除第 '+(i+1)+' 組"'+(n<=1?' disabled':'')+'>'+ic('trash')+'</button></div>'+
+    (r.cnt>0?'<div class="muted scn-cnt">目前有 '+r.cnt+' 人在這一組；刪除這一組後，他們會回到「尚未分組」。</div>':'')+
+    fs.join('')+'</div>';
+}
+function scnFieldHTML(f,r,i){
+  var n='g_'+f.k+'_'+i, v=r[f.k]==null?'':String(r[f.k]);
+  if(f.t==='time') return fld(esc(f.l),timeField(n,trTime(v)));
+  return fld(esc(f.l),inp(n,v,'text','maxlength="'+(f.t==='short'?3:40)+'"'+(f.ph?' placeholder="'+esc(f.ph)+'"':'')));
+}
+function scnRowsHTML(cat,rows){ return rows.map(function(r,i){ return scnRowHTML(cat,r,i,rows.length); }).join(''); }
+/* 名稱建議：按一下帶入名稱（scnPreset 還會依分類順便帶預設的時間、組數） */
+function scnPreChips(d){ return '<div class="chips" style="margin-top:.4rem">'+d.pre.map(function(p){ return '<button type="button" class="chip pick" data-act="scnPreset" data-val="'+esc(p.n)+'">'+esc(p.n)+'</button>'; }).join('')+'</div>'; }
+/* 各組還是剛開表單時的預設樣子（沒改過名稱、沒填任何欄位、都是新的）：這時候換名稱建議才可以重排組數 */
+function scnRowsFresh(st,cat){ return st.rows.every(function(r,i){ return r.o<0&&r.name===catGN(cat,i)&&!r.times&&!r.backs&&!r.notes&&!r.shorts&&!r.leaders; }); }
+function scnBody(id,cat,st){
+  var d=catDef(cat);
+  return '<div class="muted">'+esc(d.blurb)+'</div>'+
+    (id?'<div class="f"><label>分類</label><div class="chips">'+SCN_CATS.map(function(c){ return '<button type="button" class="chip pick'+(c.id===cat?' on':'')+'" data-act="scnCat" data-cat="'+c.id+'">'+ic(c.icon)+esc(c.label)+'</button>'; }).join('')+'</div></div>':'')+
+    fld('情境名稱',inp('name',st.name,'text','maxlength="20" placeholder="例：'+esc(d.pre[0].n)+'"')+(id?'':scnPreChips(d)))+
+    '<div class="f"><label id="scnRowsLab">'+esc(d.label)+'的組別（共 '+st.rows.length+' 組）</label><div id="scnRows" class="scn-rows">'+scnRowsHTML(cat,st.rows)+'</div>'+
+      '<button type="button" class="btn block" data-act="scnRowAdd">'+ic('plus')+'新增一組</button></div>'+
+    d.sf.map(function(f){ var v=st[f.k]||''; return fld(esc(f.l),f.t==='time'?timeField('sf_'+f.k,trTime(v)):inp('sf_'+f.k,v,'text','maxlength="40"'+(f.ph?' placeholder="'+esc(f.ph)+'"':''))); }).join('')+
+    (cat==='transport'?fld('首頁「交通資訊」卡','<select class="in" name="card"><option value="1"'+(st.card==='1'?' selected':'')+'>列出（去程／回程時間顯示在首頁）</option><option value="0"'+(st.card==='1'?'':' selected')+'>不列出</option></select>'):'')+
+    fld('臨時標籤','<select class="in" name="useTags"><option value="1"'+(st.tags==='1'?' selected':'')+'>開啟（可貼素食、已點餐…）</option><option value="0"'+(st.tags==='1'?'':' selected')+'>關閉</option></select>')+
+    fld('給團員的提醒（選填，會顯示在這個情境最上面）',ta('note',st.note))+
+    (id?'<button type="button" class="btn dng block wrap" data-act="delScenario">'+ic('trash')+'刪除這個情境</button>':'');
+}
+function sheetScenario(id,cat,st){
+  var sc=id?scenario(id):null; if(id&&!sc) return;
+  cat=catDef(cat)?cat:(sc?scnCat(sc):curCat());
+  if(!st) st=sc?scnState(sc):scnStateNew(cat);
+  var d=catDef(cat);
+  openSheet({title:id?'編輯情境':'新增「'+d.label+'」情境',tall:true,focus:!id,body:scnBody(id,cat,st),foot:footBtns('saveScenario')});
+  SHEET.id=id; SHEET.cat=cat; SHEET.st=st;
+}
+/* 把畫面上填的字讀回 SHEET.st（只讀畫面上有的欄位；換分類時看不到的欄位保留原值） */
+function scnRead(){
+  var d=catDef(SHEET.cat), st=SHEET.st;
+  st.name=sv('name'); st.note=sv('note'); st.tags=sv('useTags')==='1'?'1':'0';
+  if(SHEET.cat==='transport') st.card=sv('card')==='1'?'1':'0';
+  d.sf.forEach(function(f){ st[f.k]=sv('sf_'+f.k); });
+  st.rows.forEach(function(r,i){ r.name=sv('g_name_'+i); d.gf.forEach(function(f){ r[f.k]=sv('g_'+f.k+'_'+i); }); });
+  return st;
+}
+/* 只重畫「各組」那一塊（其他欄位填的字不動）；新增一組之後把游標放進新那列的名稱欄 */
+function scnRowsPaint(focusIdx){
+  var st=SHEET.st, box=el('scnRows'); if(!box) return;
+  box.innerHTML=scnRowsHTML(SHEET.cat,st.rows);
+  var lab=el('scnRowsLab'); if(lab) lab.textContent=catDef(SHEET.cat).label+'的組別（共 '+st.rows.length+' 組）';
+  if(focusIdx!==undefined){ var f=el('sheetRoot').querySelector('[name="g_name_'+focusIdx+'"]'); if(f){ try{ f.focus(); f.scrollIntoView({block:'nearest'}); }catch(e){} } }
+}
+/* 「把這個人放進哪一組」的按鈕列：每一組一顆。交通的組帶小圓徽章，有時間、集合地點的組在名稱下面多一行小字
+   （這兩種情況用大按鈕 .btn.big＋.b2 兩行排版，跟以前航空公司那張表單一樣，長地點會自己換行） */
+function scnGroupBtns(sc,mid){ var out='', tr=(scnCat(sc)==='transport'), cur=scnGi(sc,mid);
+  for(var i=0;i<scnCount(sc);i++){ var meta=scnGMeta(sc,i), two=tr||!!meta;
+    out+='<button class="btn'+(two?' big':'')+(cur===i?' pri':'')+'" data-act="setGroup" data-id="'+mid+'" data-g="'+i+'">'+(tr?trBadge(sc,i,true):'')+
+      (two?'<span class="b2">'+esc(scnGName(sc,i))+(meta?'<small>'+esc(meta)+'</small>':'')+'</span>':esc(scnGName(sc,i)))+'</button>'; }
+  return out; }
 function sheetMoveMember2(id){
   var sc=scenario(), m=member(id); if(!sc||!m) return;
   var cur=mtagsOf(sc,id), opts=scnTagOpts(sc);
   var body='<div class="muted">'+esc(sc.name)+'</div><div class="stack">'+
-    sc.names.slice(0,sc.count).map(function(n,i){ return '<button class="btn'+(sc.assign&&sc.assign[id]===i?' pri':'')+'" data-act="setGroup" data-id="'+id+'" data-g="'+i+'">'+esc(n||('第 '+(i+1)+' 組'))+'</button>'; }).join('')+
+    scnGroupBtns(sc,id)+
     '<button class="btn dng" data-act="setGroup" data-id="'+id+'" data-g="-1">移出分組</button></div>';
   if(scnUseTags(sc)){
     body+='<h2 class="sec" style="margin-top:.9rem">'+ic('flag')+'臨時標籤</h2>'+
@@ -404,7 +489,7 @@ function sheetTagOptEdit(v){
 }
 function sheetMoveMember(id){
   var sc=scenario(), m=member(id); if(!sc||!m) return;
-  openSheet({title:'移動：'+esc(m.name),body:'<div class="muted">'+esc(sc.name)+'</div><div class="stack">'+sc.names.slice(0,sc.count).map(function(n,i){ return '<button class="btn'+(sc.assign&&sc.assign[id]===i?' pri':'')+'" data-act="setGroup" data-id="'+id+'" data-g="'+i+'">'+esc(n||('第 '+(i+1)+' 組'))+'</button>'; }).join('')+'<button class="btn dng" data-act="setGroup" data-id="'+id+'" data-g="-1">移出分組</button></div>'});
+  openSheet({title:'移動：'+esc(m.name),body:'<div class="muted">'+esc(sc.name)+'</div><div class="stack">'+scnGroupBtns(sc,id)+'<button class="btn dng" data-act="setGroup" data-id="'+id+'" data-g="-1">移出分組</button></div>'});
 }
 /* 目的地時區的選單：括號裡「比台灣快／慢幾小時」用今天的日期算（有夏令時間的地方會跟著季節變） */
 function tzDiffText(z){ var now=nowMs(), d=Math.round((tzOff(z,now)-tzOff(TW,now))/60000); if(!d) return '跟台灣一樣';
@@ -414,17 +499,18 @@ function tzSelect(cur){ var list=TZ_PRESETS.filter(function(x){ return tzValid(x
   return '<select class="in" name="tz"><option value="">跟台灣一樣（沒有時差）</option>'+list.map(function(x){ return '<option value="'+esc(x[0])+'"'+(x[0]===cur?' selected':'')+'>'+esc(x[1]+'（'+tzDiffText(x[0])+'）')+'</option>'; }).join('')+'</select>'; }
 function sheetSettings(){
   var st=S().settings, cs=(st.contacts&&st.contacts.length?st.contacts:contacts()).slice(); while(cs.length<4) cs.push({name:'',label:'',phone:'',line:''});
-  var f=st.flights||{}; f.eva=f.eva||{}; f.ci=f.ci||{};
+  var f=st.flights||{};
   openSheet({title:'團務設定',focus:true,body:
     fld('團名',inp('tripName',st.tripName))+
     '<div class="grid2">'+fld('出發日期（第 1 天）',inp('startDate',st.startDate,'date'))+fld('總天數',inp('days',st.days,'number','min="1" max="15" inputmode="numeric"'))+'</div>'+
     fld('今天是第幾天','<select class="in" name="dayOverride"><option value="0">依日期自動判斷</option>'+Array.apply(null,{length:st.days||5}).map(function(_,i){return '<option value="'+(i+1)+'"'+(st.dayOverride===i+1?' selected':'')+'>手動指定：第 '+(i+1)+' 天</option>';}).join('')+'</select><div class="muted" style="margin-top:.3rem">注意：手動指定會套用到<b>全團每一支手機</b>。只是想自己先看看，請用管理專區的「時間模擬」。</div>')+
-    fld('目的地時區（標頭「當地」時鐘、首頁倒數都用它）',tzSelect(st.tz||'')+'<div class="muted" style="margin-top:.3rem">出發日搭機前（最晚一班去程起飛以前）人還在台灣，那段一律用台灣時間。</div>')+
+    fld('目的地時區（標頭「當地」時鐘、首頁倒數都用它）',tzSelect(st.tz||'')+'<div class="muted" style="margin-top:.3rem">出發日出發前（最晚一項去程交通的搭乘時間以前）人還在台灣，那段一律用台灣時間。</div>')+
     fld('改管理 PIN（不改就留白）',inp('pin','','tel','maxlength="6" inputmode="numeric" placeholder="4 位數字" autocomplete="off"'))+
     '<div class="muted" style="margin-top:-.5rem">PIN 只會以雜湊保存，雲端看不到明文。外幣與匯率改在「工具 → 外幣點鈔速算」設定。</div>'+
-    '<h2 class="sec">'+ic('plane')+'航班（起飛時間）</h2>'+
-    '<div class="grid2">'+fld(esc(alShort('eva'))+' 去程 桃園起飛',timeField('eva_out',f.eva.out))+fld(esc(alShort('eva'))+' 回程起飛',timeField('eva_back',f.eva.back))+fld(esc(alShort('ci'))+' 去程 桃園起飛',timeField('ci_out',f.ci.out))+fld(esc(alShort('ci'))+' 回程起飛',timeField('ci_back',f.ci.back))+'</div>'+
-    fld('回程從哪個機場起飛（選填，會寫在航班卡上）',inp('backPort',f.backPort,'text','maxlength="20" placeholder="例：成田機場、河內內排機場"'))+'<div class="muted" style="margin-top:-.5rem">團員首頁不會同時看到去回程：出發前與第 1 天只顯示去程，第 '+Math.max(2,(st.days||5)-1)+' 天起只顯示回程，中間幾天航班卡收起。</div>'+fld('去程團體報到說明（只在去程階段顯示在航班卡下方）',ta('flight_note',f.note))+
+    '<h2 class="sec">'+ic('bus')+'交通</h2>'+
+    '<div class="muted" style="margin-top:-.5rem">各項交通（航班、接駁車、火車…）的名稱、搭乘時間、回程時間、上車地點，改在「分組 → 交通」。這裡有改其他設定的話，請先按「儲存」再前往。</div>'+
+    '<div class="row"><button type="button" class="btn" data-act="tab" data-tab="groups" data-cat="transport">'+ic('edit')+'前往「分組 → 交通」</button></div>'+
+    fld('回程從哪裡出發（選填，會寫在首頁的回程交通卡上）',inp('backPort',f.backPort,'text','maxlength="20" placeholder="例：成田機場、河內內排機場、高鐵左營站"'))+'<div class="muted" style="margin-top:-.5rem">團員首頁不會同時看到去回程：出發前與第 1 天只顯示去程，第 '+Math.max(2,(st.days||5)-1)+' 天起只顯示回程，中間幾天交通卡收起。</div>'+fld('去程團體集合說明（只在去程階段顯示在交通卡下方）',ta('flight_note',f.note))+
     '<h2 class="sec">'+ic('phone')+'緊急聯絡人</h2><div class="muted" style="margin-top:-.5rem">留白＝不顯示</div>'+
     cs.map(function(c,i){ return '<div class="f" style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem">'+inp('c_name_'+i,c.name,'text','placeholder="姓名"')+inp('c_label_'+i,c.label,'text','placeholder="例：當地電話"')+'<div style="grid-column:1/-1">'+inp('c_phone_'+i,c.phone,'tel','placeholder="含國碼，例：+886 912 345 678"')+'</div><div style="grid-column:1/-1">'+inp('c_line_'+i,c.line,'url','placeholder="LINE 加好友網址（選填）"')+'</div></div>'; }).join('')+
     '<div class="muted">當地的報警、救護車與駐外館處電話，改在「工具 → 緊急求助」頁編輯。</div>'+
@@ -433,7 +519,7 @@ function sheetSettings(){
   SHEET.nContacts=cs.length;
 }
 function sheetHomeScn(){
-  var list=(S().groups&&S().groups.scenarios)||[];
+  var list=scnAll();
   openSheet({title:'首頁分組顯示',body:
     '<div class="muted">團員選好自己的名字後，首頁「我的資訊」會列出他被分配到的分組。這裡可以把不想讓大家在首頁看到的情境關掉；關掉後「分組」頁籤仍正常使用，只是不會出現在首頁。</div>'+
     '<div class="it-wrap" style="margin-top:.6rem">'+(list.length?list.map(function(sc){
@@ -528,12 +614,12 @@ function sheetCardZones(){
   /* 條件只對還在「自動」的卡片有意義，其他的不佔版面 */
   var COND={
     prep:['prepUntil','出發前準備｜什麼時候收起來',[['start','出發當天收起'],['end','整趟都留著'],['off','不顯示']]],
-    flight:['flightSoon','航班資訊｜什麼時候排到「稍後」',[['auto','出發前＋去回程那幾天'],['ends','只有去回程那幾天'],['always','有顯示的日子都在稍後'],['never','一律放隨時查']]],
+    flight:['flightSoon','交通資訊｜什麼時候排到「稍後」',[['auto','出發前＋去回程那幾天'],['ends','只有去回程那幾天'],['always','有顯示的日子都在稍後'],['never','一律放隨時查']]],
     morning:['morningSoon','明早時程｜什麼時候排到「稍後」',[['trip','旅程中'],['always','整趟都在稍後'],['never','一律放隨時查']]]
   };
   var autos=['prep','flight','morning'].filter(function(id){ return cardPin(id)==='auto'; });
   h.push('<div class="muted"><b>高亮提醒</b>：打開後全團首頁那張卡會發光；團員自己把卡片收起來時不亮（表示看過了），再打開又會亮。要讓已經收起的人也重新看到，把開關關掉再打開。</div>');
-  h.push('<div class="muted">每張卡片可以自己決定要「自動跟著行程走」還是<b>釘死在某一區</b>。釘死的卡片旅程結束後也維持在你指定的位置。<br>例外：出發前準備出發後一定收起；航班卡出發前與第 1 天只顯示去程'+((S().settings.days||5)>=5?'、第 2～'+((S().settings.days||5)-2)+' 天收起':((S().settings.days||5)===4?'、第 2 天收起':''))+'、之後只顯示回程。<br>看板上的 ↑↓ 可以直接穿過分區標題，跨過去就等於釘住。</div>');
+  h.push('<div class="muted">每張卡片可以自己決定要「自動跟著行程走」還是<b>釘死在某一區</b>。釘死的卡片旅程結束後也維持在你指定的位置。<br>例外：出發前準備出發後一定收起；交通卡出發前與第 1 天只顯示去程'+((S().settings.days||5)>=5?'、第 2～'+((S().settings.days||5)-2)+' 天收起':((S().settings.days||5)===4?'、第 2 天收起':''))+'、之後只顯示回程。<br>看板上的 ↑↓ 可以直接穿過分區標題，跨過去就等於釘住。</div>');
   if(autos.length){
     autos.forEach(function(id){ var c=COND[id];
       h.push('<div class="f"><label>'+esc(c[1])+'</label>'+sl(c[0],z[c[0]],c[2])+'</div>'); });
@@ -606,9 +692,9 @@ function sheetClear(){
   L.push('團員名單'+n(s.members,'人')+'、分組'+n(s.groups,'個情境')+'、點名紀錄');
   L.push('記事本'+n(s.notebook,'頁')+'，包含出發前準備清單');
   L.push('即時廣播、明早時程');
-  L.push('團名'+(st.tripName?'「'+st.tripName+'」':'')+'、出發日期與天數、航班時間');
+  L.push('團名'+(st.tripName?'「'+st.tripName+'」':'')+'、出發日期與天數、去程集合說明與回程出發地');
   L.push('飯店資料'+n(s.hotels,'間')+'、緊急聯絡人'+n(s.contacts,'位'));
-  L.push('防呆標籤、航空公司名稱與航廈、首頁卡片位置與高亮、目的地時區');
+  L.push('防呆標籤、首頁卡片位置與高亮、目的地時區（分組裡的交通、餐飲、逛街、旅伴，包含搭乘時間，已在上面的「分組」一起清空）');
   L.push('工具頁內容：知識小卡'+n(s.cards,'張')+'、外語圖卡'+n(s.phrases,'句')+'、外幣、計程車卡、當地急救電話（之後可以到「工具頁範本」一鍵套用通用版）');
   openSheet({title:'一鍵清空內容',tall:true,body:
     '<div class="warn-box dng-box">'+ic('alert')+'<span>清空後，<b>全團每一支手機都會同步變成空白</b>，首頁只剩「尚未建立旅程」。</span></div>'+

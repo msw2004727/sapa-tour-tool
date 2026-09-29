@@ -25,6 +25,11 @@ const SHEETS=[
   ['tl-clear',()=>sheetTlClear('quick')],
   ['tpl',()=>sheetTpl()],
   ['push',()=>sheetPush()],
+  /* v3.25 分組情境的編輯表單：每一組一張小卡，交通那組欄位最多（時間兩欄＋地點＋徽章短名） */
+  ['scenario-air',()=>sheetScenario('air')],
+  ['scenario-new-transport',()=>sheetScenario('','transport')],
+  ['scenario-new-meal',()=>sheetScenario('','meal')],
+  ['move-transport',()=>{P.tab='groups';P.cat='transport';P.scn='air';render();sheetMoveMember2(members()[0].id);}],
 ];
 let fails=0;
 (async()=>{

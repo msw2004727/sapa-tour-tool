@@ -12,7 +12,7 @@ await shot('04-plan-detail',()=>{P.planMode='detail';render();},true);
 await shot('05-rooms',()=>{P.tab='rooms';P.roomsSeg='rooms';render();},true);
 await shot('06-list',()=>{P.roomsSeg='list';render();},true);
 await shot('07-groups',()=>{P.tab='groups';P.scn='meal';render();},true);
-await shot('08-airline',()=>{P.scn='airline';render();},true);
+await shot('08-transport',()=>{P.cat='transport';P.scn='air';render();},true);
 await shot('09-tools',()=>{P.tab='tools';P.tool='menu';render();},true);
 await shot('10-money',()=>{P.tool='money';render();},true);
 await shot('11-phrases',()=>{P.tool='phrases';render();},true);

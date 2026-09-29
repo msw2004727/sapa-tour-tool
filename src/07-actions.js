@@ -1,5 +1,4 @@
 /* ===== 事件處理 ===== */
-function scnPath(sc){ var g=S().groups||{}; return 'scenarios/'+(g.scenarios||[]).indexOf(sc); }
 /* 「現在＋N 分」：先算出絕對時間，再決定要寫成台灣時間還是當地時間（出發日搭機前人在台灣）。
    跨過午夜時日期跟著進位，不然倒數會變成「已過」。 */
 function wallAt(ms,tz){ var p=tzParts(tz,ms); return {date:p.date,hm:p.hm}; }
@@ -37,11 +36,15 @@ function bulkAsk(t,verb,make,reason,done){
   });
 }
 var ACT={
-  tab:function(t){ P.tab=t.getAttribute('data-tab'); if(t.getAttribute('data-scn')) P.scn=t.getAttribute('data-scn'); if(P.tab==='tools') P.tool='menu'; closeSheet(); render(); window.scrollTo(0,0); },
+  tab:function(t){ P.tab=t.getAttribute('data-tab');
+    /* 首頁「我的資訊」的格子帶 data-scn（直接跳到那個情境）；設定表單的按鈕帶 data-cat（跳到那個分類） */
+    if(t.getAttribute('data-scn')){ P.scn=t.getAttribute('data-scn'); P.cat=''; } else if(t.getAttribute('data-cat')){ P.cat=t.getAttribute('data-cat'); P.scn=''; }
+    if(P.tab==='tools') P.tool='menu'; closeSheet(); render(); window.scrollTo(0,0); },
   planDay:function(t){ P.planDay=Number(t.getAttribute('data-day')); render(); },
   planMode:function(t){ P.planMode=t.getAttribute('data-mode'); savePrefs(); render(); },
   roomsSeg:function(t){ P.roomsSeg=t.getAttribute('data-seg'); render(); },
-  scn:function(t){ P.scn=t.getAttribute('data-id'); render(); },
+  scn:function(t){ P.scn=t.getAttribute('data-id'); P.cat=''; render(); },
+  cat:function(t){ P.cat=t.getAttribute('data-cat'); P.scn=''; render(); },
   tool:function(t){ P.tab='tools'; P.tool=t.getAttribute('data-tool'); P.phCat=''; closeSheet(); render(); window.scrollTo(0,0); },
   phCat:function(t){ P.phCat=t.getAttribute('data-cat')||''; render(); window.scrollTo(0,0); },
   tipClose:function(){ P.tipDismissed=true; savePrefs(); render(); },
@@ -175,13 +178,9 @@ var ACT={
   memberTap:function(t){ var id=t.getAttribute('data-id'); if(P.leader) sheetMember(id); else sheetMemberView(id); },
   editMember:function(t){ sheetMember(t.getAttribute('data-id')||''); },
   saveMember:function(){ var name=sv('name'); if(!name){ toast('請輸入姓名'); return; } var ms=members(); var editId=SHEET.id; var m=editId?member(editId):null; if(!m){ m={id:uid()}; ms.push(m); }
-    m.name=name; m.emoji=sv('emoji'); m.bg=sv('bg')||'bg-white'; m.border=sv('border')||'bd-grey'; m.airline=sv('airline'); m.remark=sv('remark'); m.room=sv('room'); m.phone=sv('phone'); closeSheet();
+    m.name=name; m.emoji=sv('emoji'); m.bg=sv('bg')||'bg-white'; m.border=sv('border')||'bd-grey'; m.remark=sv('remark'); m.room=sv('room'); m.phone=sv('phone'); closeSheet();
     /* 注意：closeSheet() 會把 SHEET 設成 null，判斷分支一定要用上面先存好的 editId，不能再讀 SHEET.id */
     if(editId) Store.savePath('members','items/'+ms.indexOf(m), m); else Store.save('members'); toast('已儲存'); },
-  setAirlineAsk:function(t){ var m=member(t.getAttribute('data-id')); if(!m) return;
-    var ae=airDef('eva')||{}, ac=airDef('ci')||{};
-    openSheet({title:esc(m.name)+' 搭哪一家？',body:'<div class="stack">'+[['eva',ae.name,ae.note],['ci',ac.name,ac.note],['','尚未設定','']].map(function(c){ return '<button class="btn big'+((m.airline||'')===c[0]?' pri':'')+'" data-act="setAirline" data-id="'+m.id+'" data-v="'+c[0]+'">'+(c[0]?airlineBadge(c[0],true):'<span class="al lg none">無</span>')+'<span class="b2">'+esc(c[1]||'')+(c[2]?'<small>'+esc(c[2])+'</small>':'')+'</span></button>'; }).join('')+'</div>'}); },
-  setAirline:function(t){ var m=member(t.getAttribute('data-id')); if(!m) return; closeSheet(); Store.savePath('members','items/'+members().indexOf(m)+'/airline', t.getAttribute('data-v')||''); toast(m.name+'：'+(airDef(m.airline)?airDef(m.airline).short:'未設定')); },
   delMember:function(){ var id=SHEET.id; S().members.items=members().filter(function(m){return m.id!==id;}); closeSheet(); Store.save('members'); toast('已移出名單'); },
   editBroadcast:function(){ sheetBroadcast(); },
   saveBroadcast:function(){ var b=S().broadcast, z=el('sheetRoot').querySelector('[name="tz"]'), nd=sv('date'), nt=sv('time');
@@ -265,11 +264,6 @@ var ACT={
     try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(v); toast('已複製：'+v); return; } }catch(e){}
     try{ var ta=document.createElement('textarea'); ta.value=v; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); toast('已複製：'+v); }
     catch(e){ toast('請長按文字手動複製'); } },
-  editAirNote:function(){ var st=S().settings;
-    openSheet({title:'編輯機場提醒',focus:true,
-      body:'<div class="muted">這段字會顯示在「分組 → 航空公司」最下面。留白就整段不顯示。</div>'+fld('提醒內容',ta('airNote',airNote())),
-      foot:footBtns('saveAirNote')}); },
-  saveAirNote:function(){ S().settings.airNote=sv('airNote'); closeSheet(); Store.save('settings'); toast('提醒已更新'); },
   pickHotel:function(){ sheetHotel(); },
   homeScnVis:function(){ sheetHomeScn(); },
   pushInfo:function(){ if(P.leader) sheetPush(); },
@@ -279,31 +273,31 @@ var ACT={
   saveHotel:function(){ var st=S().settings; st.hotels=st.hotels||[]; var h=SHEET.id?st.hotels.filter(function(x){return x.id===SHEET.id;})[0]:null; if(!h){ h={id:uid()}; st.hotels.push(h); if(!st.currentHotelId) st.currentHotelId=h.id; }
     ['name','nameVi','addrVi','phone','leaderRoom','wifi','wifiPass','wifiNote','nights','breakfast'].forEach(function(k){ h[k]=sv(k); }); closeSheet(); Store.save('settings'); toast('飯店資料已儲存'); },
   delHotel:function(){ var st=S().settings; st.hotels=(st.hotels||[]).filter(function(x){return x.id!==SHEET.id;}); if(st.currentHotelId===SHEET.id) st.currentHotelId=(st.hotels[0]||{}).id||''; closeSheet(); Store.save('settings'); },
-  shuffle:function(){ var sc=scenario(); if(!sc) return; var units={}, list=[]; members().forEach(function(m){ var k=m.room||('_'+m.id); (units[k]=units[k]||[]).push(m.id); }); Object.keys(units).forEach(function(k){list.push(units[k]);});
+  shuffle:function(){ var sc=scnLive(scenario()); if(!sc) return; var cnt=scnCount(sc); if(!cnt) return; var units={}, list=[]; members().forEach(function(m){ var k=m.room||('_'+m.id); (units[k]=units[k]||[]).push(m.id); }); Object.keys(units).forEach(function(k){list.push(units[k]);});
     for(var i=list.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var tmp=list[i]; list[i]=list[j]; list[j]=tmp; }
-    list.sort(function(a,b){return b.length-a.length;}); var sizes=[], assign={}; for(var g=0;g<sc.count;g++) sizes.push(0);
-    list.forEach(function(u){ var gi=0; for(var g2=1;g2<sc.count;g2++) if(sizes[g2]<sizes[gi]) gi=g2; u.forEach(function(id){assign[id]=gi;}); sizes[gi]+=u.length; });
-    sc.assign=assign; Store.save('groups'); toast('已隨機分成 '+sc.count+' 組（同房不拆）'); },
-  editScenario:function(t){ sheetScenario(t.getAttribute('data-id')||''); },
-  mtagToggle:function(t){ var sc=scenario(); if(!sc) return; var id=t.getAttribute('data-id'), v=t.getAttribute('data-v');
+    list.sort(function(a,b){return b.length-a.length;}); var sizes=[], assign={}; for(var g=0;g<cnt;g++) sizes.push(0);
+    list.forEach(function(u){ var gi=0; for(var g2=1;g2<cnt;g2++) if(sizes[g2]<sizes[gi]) gi=g2; u.forEach(function(id){assign[id]=gi;}); sizes[gi]+=u.length; });
+    sc.assign=assign; Store.save('groups'); toast('已隨機分成 '+cnt+' 組（同房不拆）'); },
+  editScenario:function(t){ sheetScenario(t.getAttribute('data-id')||'',t.getAttribute('data-cat')||''); },
+  mtagToggle:function(t){ var sc=scnLive(scenario()); if(!sc) return; var id=t.getAttribute('data-id'), v=t.getAttribute('data-v');
     var a=mtagsOf(sc,id).slice(); var i=a.indexOf(v);
     if(i>=0) a.splice(i,1); else a.push(v);
     Store.savePath('groups',scnPath(sc)+'/mtags/'+id, a.length?a:null); sheetMoveMember2(id); },
-  mtagAdd:function(t){ var sc=scenario(); if(!sc) return; var id=t.getAttribute('data-id');
+  mtagAdd:function(t){ var sc=scnLive(scenario()); if(!sc) return; var id=t.getAttribute('data-id');
     var f=el('sheetRoot').querySelector('[name=newtag]'), v=f?f.value.trim():'';
     if(!v){ toast('請先輸入標籤文字'); return; }
     var opts=scnTagOpts(sc).slice(); if(opts.indexOf(v)<0){ opts.push(v); Store.savePath('groups',scnPath(sc)+'/tagOpts',opts); }
     var a=mtagsOf(sc,id).slice(); if(a.indexOf(v)<0) a.push(v);
     Store.savePath('groups',scnPath(sc)+'/mtags/'+id, a); sheetMoveMember2(id); },
-  mtagClearOne:function(t){ var sc=scenario(); if(!sc) return; var id=t.getAttribute('data-id');
+  mtagClearOne:function(t){ var sc=scnLive(scenario()); if(!sc) return; var id=t.getAttribute('data-id');
     Store.savePath('groups',scnPath(sc)+'/mtags/'+id, null); sheetMoveMember2(id); },
   clearTags:function(){ var sc=scenario(); if(!sc) return;
     openSheet({title:'清空「'+esc(sc.name)+'」的所有標籤？',body:'<div class="muted">會把這個情境裡每個人身上的臨時標籤都拿掉，分組本身不會變。</div>',
       foot:'<button class="btn" data-act="sheetClose">取消</button><button class="btn dng" data-act="clearTagsGo">確定清空</button>'}); },
-  clearTagsGo:function(){ var sc=scenario(); if(!sc) return; sc.mtags={}; closeSheet(); Store.save('groups'); toast('標籤已清空'); },
+  clearTagsGo:function(){ var sc=scnLive(scenario()); if(!sc) return; sc.mtags={}; closeSheet(); Store.save('groups'); toast('標籤已清空'); },
   manageTagOpts:function(){ sheetTagOpts(); },
   editTagOpt:function(t){ sheetTagOptEdit(t.getAttribute('data-v')||''); },
-  saveTagOpt:function(){ var sc=scenario(); if(!sc) return; var v=(sv('label')||'').trim(); if(!v){ toast('請輸入標籤文字'); return; }
+  saveTagOpt:function(){ var sc=scnLive(scenario()); if(!sc) return; var v=(sv('label')||'').trim(); if(!v){ toast('請輸入標籤文字'); return; }
     var old=SHEET.old||'', opts=scnTagOpts(sc).slice();
     if(old){
       if(v!==old && opts.indexOf(v)>=0){ toast('已經有這個標籤了'); return; }
@@ -315,38 +309,71 @@ var ACT={
       Object.keys(mt).forEach(function(id){ var a=mt[id]||[]; if(a.indexOf(old)>=0) Store.savePath('groups',scnPath(sc)+'/mtags/'+id, a.map(function(x){return x===old?v:x;})); });
     }
     closeSheet(); sheetTagOpts(); toast('標籤已儲存'); },
-  delTagOpt:function(){ var sc=scenario(); if(!sc) return; var old=SHEET.old; if(!old) return;
+  delTagOpt:function(){ var sc=scnLive(scenario()); if(!sc) return; var old=SHEET.old; if(!old) return;
     var opts=scnTagOpts(sc).filter(function(x){return x!==old;});
     Store.savePath('groups',scnPath(sc)+'/tagOpts',opts);
     var mt=sc.mtags||{};
     Object.keys(mt).forEach(function(id){ var a=mt[id]||[]; if(a.indexOf(old)>=0){ var na=a.filter(function(x){return x!==old;}); Store.savePath('groups',scnPath(sc)+'/mtags/'+id, na.length?na:null); } });
     closeSheet(); sheetTagOpts(); toast('已刪除標籤'); },
-  editAirlines:function(){ var e=airDef('eva')||{}, c=airDef('ci')||{};
-    openSheet({title:'航空公司與航廈設定',focus:true,body:
-      '<div class="muted">改成這次實際搭的航空公司即可，徽章顏色不變（綠色 / 紅色）。「報到航廈」會同步顯示在團員的「我的資訊」卡與首頁航班卡上，不是寫死的。</div>'+
-      '<h2 class="sec">'+airlineBadge('eva')+'綠色徽章</h2>'+
-      '<div class="grid2">'+fld('徽章短名（2–3 字）',inp('eva_short',e.short,'text','maxlength="3"'))+fld('報到航廈',inp('eva_note',e.note,'text','placeholder="例：桃園第二航廈"'))+'</div>'+
-      fld('全名',inp('eva_name',e.name))+
-      '<h2 class="sec">'+airlineBadge('ci')+'紅色徽章</h2>'+
-      '<div class="grid2">'+fld('徽章短名（2–3 字）',inp('ci_short',c.short,'text','maxlength="3"'))+fld('報到航廈',inp('ci_note',c.note,'text','placeholder="例：桃園第一航廈"'))+'</div>'+
-      fld('全名',inp('ci_name',c.name)),
-      foot:footBtns('saveAirlines')}); },
-  saveAirlines:function(){ var st=S().settings; st.airlines=st.airlines||{};
-    ['eva','ci'].forEach(function(k){ st.airlines[k]={short:sv(k+'_short')||AIRLINES[k].label,name:sv(k+'_name')||AIRLINES[k].name,note:sv(k+'_note')}; });
-    closeSheet(); Store.save('settings'); toast('航空公司已更新'); },
   clearGroups:function(){ var sc=scenario(); if(!sc) return;
     openSheet({title:'清除「'+esc(sc.name)+'」的分組？',body:'<div class="muted">會把這個情境裡所有人的分組拿掉，全部回到「尚未分組」。其他情境不受影響，可以再按一次「一鍵隨機分組」重排。</div>',
       foot:'<button class="btn" data-act="sheetClose">取消</button><button class="btn dng" data-act="clearGroupsGo">確定清除</button>'}); },
-  clearGroupsGo:function(){ var sc=scenario(); if(!sc) return; sc.assign={}; closeSheet(); Store.save('groups'); toast('已清除分組'); },
-  saveScenario:function(){ var g=S().groups; g.scenarios=g.scenarios||[]; var sc=SHEET.id?scenario(SHEET.id):null; if(!sc){ sc={id:uid(),assign:{}}; g.scenarios.push(sc); P.scn=sc.id; }
-    sc.name=sv('name')||'分組'; sc.count=Number(sv('count'))||2; var names=sv('names')?sv('names').split(/[、,，]/).map(function(s){return s.trim();}):[]; sc.names=[]; for(var i=0;i<sc.count;i++) sc.names.push(names[i]||('第 '+(i+1)+' 組')); sc.useTags=(sv('useTags')==='1')?1:0; closeSheet(); Store.save('groups'); },
-  delScenario:function(){ var g=S().groups; if(scnFixed(scenario(SHEET.id))){ toast('固定情境不能刪除'); return; } g.scenarios=(g.scenarios||[]).filter(function(x){return x.id!==SHEET.id;}); P.scn=''; closeSheet(); Store.save('groups'); },
+  clearGroupsGo:function(){ var sc=scnLive(scenario()); if(!sc) return; sc.assign={}; closeSheet(); Store.save('groups'); toast('已清除分組'); },
+  /* 分組情境存檔（v3.25）：一律整份 groups 存檔。每一列記著原本是第幾組（o），用它把每個人的分組重新對應到新的順序；
+     刪掉的那一組的人回到「尚未分組」。注意 closeSheet() 會把 SHEET 設成 null，要用的值都先讀出來 */
+  saveScenario:function(){
+    var id=SHEET.id, cat=SHEET.cat, d=catDef(cat), st=scnRead(), rows=st.rows;
+    if(!st.name){ toast('請輸入情境名稱'); return; }
+    if(!rows.length){ toast('至少要有一組'); return; }
+    var sc=id?scnLive(scenario(id)):null, isNew=!sc;
+    if(id&&!sc){ toast('這個情境已經被刪掉了'); closeSheet(); return; }
+    var old=isNew?{}:(sc.assign||{}), map={}, assign={};
+    rows.forEach(function(r,i){ if(r.o>=0) map[r.o]=i; });
+    Object.keys(old).forEach(function(mid){ var gi=Number(old[mid]); if(map[gi]!==undefined) assign[mid]=map[gi]; });
+    if(isNew){ sc={id:uid()}; scnReal().push(sc); }
+    sc.name=st.name; sc.cat=cat; sc.count=rows.length; sc.assign=assign;
+    sc.names=rows.map(function(r,i){ return r.name||catGN(cat,i); });
+    ['times','backs','notes','shorts','leaders'].forEach(function(k){
+      var arr=rows.map(function(r){ var v=(r[k]==null)?'':String(r[k]); return (k==='times'||k==='backs')?trTime(v):v; });
+      if(arr.some(Boolean)) sc[k]=arr; else delete sc[k]; });
+    ['time','place'].forEach(function(k){ var f=d.sf.filter(function(x){ return x.k===k; })[0], v=f?(f.t==='time'?trTime(st[k]):String(st[k]||'')):'';
+      if(v) sc[k]=v; else delete sc[k]; });
+    if(st.note) sc.note=st.note; else delete sc.note;
+    sc.useTags=(st.tags==='1')?1:0;
+    if(cat==='transport'&&st.card==='1') sc.card=1; else delete sc.card;
+    P.scn=sc.id; P.cat=cat; closeSheet(); Store.save('groups'); toast(isNew?'已新增「'+sc.name+'」':'已儲存'); },
+  /* 刪除一個情境。還沒搬家的舊航班情境（只存在畫面上）只要記下「已經搬過了」，不然會又冒出來 */
+  delScenario:function(t){ var id=SHEET.id, sc=scenario(id); if(!sc) return;
+    var n=members().filter(function(m){ return scnGi(sc,m.id)>=0; }).length, name=sc.name, wasInj=!!sc._inj;
+    if(!sure(t,'再按一次確定刪除'+(n?'（'+n+' 人的分組會一起清掉）':''))) return;
+    P.scn=''; P.cat=scnCat(sc); closeSheet();
+    if(wasInj){ S().settings.airMig=1; Store.save('settings'); }
+    else { S().groups.scenarios=scnReal().filter(function(x){ return x.id!==id; }); Store.save('groups'); }
+    toast('已刪除「'+name+'」'); },
+  /* 表單裡的操作：先把畫面上填的字讀回 SHEET.st，改完狀態再重畫，已經填的字不會不見 */
+  scnCat:function(t){ var cat=t.getAttribute('data-cat'); if(!catDef(cat)||cat===SHEET.cat) return; var id=SHEET.id, st=scnRead(); sheetScenario(id,cat,st); },
+  /* 名稱建議：帶入名稱；順便帶預設的情境欄位（沒填過才帶，例：晚餐 18:00）；新增時組數沒動過就依團員人數排（例：兩人一組、33 人 → 17 組） */
+  scnPreset:function(t){ var cat=SHEET.cat, d=catDef(cat), name=t.getAttribute('data-val'), p=d.pre.filter(function(x){ return x.n===name; })[0]; if(!p) return;
+    var st=scnRead(), fresh=!SHEET.id&&scnRowsFresh(st,cat); st.name=name; setField('name',name);
+    Object.keys(p.sf||{}).forEach(function(k){ var f=d.sf.filter(function(x){ return x.k===k; })[0]; if(!f||st[k]) return; st[k]=p.sf[k]; if(f.t==='time') setTimeField('sf_'+k,p.sf[k]); else setField('sf_'+k,p.sf[k]); });
+    var n=p.per?Math.ceil(members().length/p.per):0;
+    if(fresh&&n>0){ n=Math.max(1,Math.min(SCN_MAX,n)); if(n!==st.rows.length){ st.rows=[]; for(var i=0;i<n;i++) st.rows.push({o:-1,cnt:0,name:catGN(cat,i)}); scnRowsPaint(); } } },
+  scnRowAdd:function(){ var st=scnRead(); if(st.rows.length>=SCN_MAX){ toast('一個情境最多 '+SCN_MAX+' 組'); return; }
+    st.rows.push({o:-1,cnt:0,name:scnNewName(SHEET.cat,st.rows)}); scnRowsPaint(st.rows.length-1); },
+  scnRowDel:function(t){ var st=scnRead(), i=Number(t.getAttribute('data-i')); if(st.rows.length<=1){ toast('至少要有一組'); return; } if(!(i>=0&&i<st.rows.length)) return;
+    st.rows.splice(i,1); scnRowsPaint(); },
+  scnRowMove:function(t){ var st=scnRead(), i=Number(t.getAttribute('data-i')), j=i+Number(t.getAttribute('data-dir')); if(!(i>=0&&i<st.rows.length&&j>=0&&j<st.rows.length)) return;
+    var tmp=st.rows[i]; st.rows[i]=st.rows[j]; st.rows[j]=tmp; scnRowsPaint(); },
   moveMember:function(t){ sheetMoveMember2(t.getAttribute('data-id')); },
-  setGroup:function(t){ var sc=scenario(); if(!sc) return; var gi=Number(t.getAttribute('data-g')); var id=t.getAttribute('data-id'); closeSheet(); Store.savePath('groups',scnPath(sc)+'/assign/'+id, gi<0?null:gi); },
+  setGroup:function(t){ var sc=scnLive(scenario()); if(!sc) return; var gi=Number(t.getAttribute('data-g')); var id=t.getAttribute('data-id'); closeSheet(); Store.savePath('groups',scnPath(sc)+'/assign/'+id, gi<0?null:gi); },
   settings:function(){ sheetSettings(); },
   saveSettings:function(){ var st=S().settings; st.tripName=sv('tripName')||st.tripName; st.startDate=sv('startDate'); st.days=Math.max(1,Number(sv('days'))||5); st.dayOverride=Number(sv('dayOverride'))||0; if(sv('pin')){ st.pinHash=pinHash(sv('pin')); delete st.pin; }
     var tz=sv('tz'); if(tz&&tzValid(tz)) st.tz=tz; else delete st.tz;
-    st.flights={eva:{out:sv('eva_out'),back:sv('eva_back')},ci:{out:sv('ci_out'),back:sv('ci_back')},note:sv('flight_note'),backPort:sv('backPort')};
+    /* 各項交通的時間已經搬到「分組 → 交通」；這裡只存去程集合說明與回程出發地。
+       舊格式的 eva／ci 起飛時間（還沒搬家之前還在 flights 裡，舊資料轉成航班情境時要讀）原樣留著 */
+    var of=st.flights||{}, nf={note:sv('flight_note'),backPort:sv('backPort')};
+    Object.keys(of).forEach(function(k){ if(k!=='note'&&k!=='backPort'&&of[k]&&typeof of[k]==='object') nf[k]=of[k]; });
+    st.flights=nf;
     var cs=[]; for(var i=0;i<(SHEET.nContacts||0);i++){ var ph=sv('c_phone_'+i), ln=sv('c_line_'+i); if(ph||ln) cs.push({name:sv('c_name_'+i)||'聯絡人',label:sv('c_label_'+i),phone:ph,line:ln}); } st.contacts=cs; delete st.leaderName; delete st.leaderPhone; delete st.guideName; delete st.guidePhone;
     P.planDay=0; closeSheet(); Store.save('settings'); toast('設定已儲存'); },
   themeToggle:function(){ P.theme = (!P.theme) ? 'light' : (P.theme==='light' ? 'dark' : ''); savePrefs(); render();
@@ -386,7 +413,7 @@ var ACT={
     sheetClear(); },
   clearGo:function(t){ if(!P.leader||!SHEET) return;
     bulkAsk(t,'清空',blankDocs,'clear',function(bk){
-      P.meId=''; P.planDay=0; P.scn=''; P.nbPage=''; P.q=''; P.tab='home'; savePrefs();
+      P.meId=''; P.planDay=0; P.scn=''; P.cat=''; P.nbPage=''; P.q=''; P.tab='home'; savePrefs();
       closeSheet(); render(); window.scrollTo(0,0);
       toast(bk?'已清空。清空前的內容已自動備份（管理專區 → 備份與還原）':'已清空'); }); },
   bkList:function(){ if(!P.leader) return; sheetBackups(); },
@@ -394,7 +421,7 @@ var ACT={
   bkGo:function(t){ if(!P.leader||!SHEET) return; var e=bkFind(SHEET.bk);
     if(!e){ toast('找不到這份備份，請重新打開清單'); return; }
     bulkAsk(t,'還原',function(T){ return restoreDocs(e,T); },'restore',function(){
-      P.planDay=0; P.scn=''; P.nbPage=''; P.tab='home'; savePrefs();
+      P.planDay=0; P.scn=''; P.cat=''; P.nbPage=''; P.tab='home'; savePrefs();
       closeSheet(); render(); window.scrollTo(0,0);
       toast('已還原 '+whenText(e.at)+' 的備份，全團手機會同步'); }); },
   bkFile:function(t){ var e=bkFind(t.getAttribute('data-id')); if(!e) return;

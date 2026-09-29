@@ -209,11 +209,14 @@ a.btn{text-decoration:none}
 /* 叮嚀框的底色兩種主題都是白的，圖示固定用深藍（跟著 --indigo 的話深色主題會變成淺藍配白底） */
 .hero.pre .tip svg.i,.hero.done .tip svg.i{color:#2F4479}
 /* me strip */
-.me-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
+.me-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;grid-auto-flow:row dense}
+.me-strip button.w2{grid-column:span 2}
 .me-strip button{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.55rem .3rem;min-height:4.2rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.1rem;color:var(--ink)}
 .me-strip .k{font-size:.75rem;color:var(--ink-3);font-weight:800}
 .me-strip .v{font-size:1.25rem;font-weight:900;white-space:nowrap;line-height:1.15}
 .me-strip .v.s{font-size:1rem}
+/* 「集合」那格是主辦人自己寫的一句話（時間＋地點），長度不一定：允許換行，不要撐出格子 */
+.me-strip .v.s.n{white-space:normal;text-align:center;font-size:.95rem;line-height:1.25;overflow-wrap:anywhere}
 .me-hint{display:flex;align-items:center;gap:.6rem;background:var(--indigo-2);border-radius:12px;padding:.7rem .85rem;color:var(--indigo);font-weight:800;min-height:3.4rem;border:0;width:100%;text-align:left;font-size:1rem}
 .me-hint svg.i{margin-left:auto}
 /* morning */
@@ -310,8 +313,8 @@ a.btn{text-decoration:none}
 .mc .rk{display:block;font-size:.85rem;color:#4A5568;font-weight:700;margin-top:.22rem;line-height:1.3}
 .mc .rt{text-align:right;font-size:.875rem;font-weight:900;color:#4A5568;flex-shrink:0;white-space:nowrap;line-height:1.25}
 .al{display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;border-radius:50%;font-size:.74rem;font-weight:900;color:#fff;flex-shrink:0;letter-spacing:.02em;line-height:1;box-shadow:0 1px 2px rgba(0,0,0,.2)}
-.al.eva{background:#0A7A4C}
-.al.ci{background:#C4184F}
+.al.s3{font-size:.6rem;letter-spacing:0}
+.al.lg.s3{font-size:.72rem}
 .al.none{background:#fff;color:#9AA3B0;border:1.5px dashed #C9D2DC;box-shadow:none}
 .al.lg{width:2.6rem;height:2.6rem;font-size:.85rem}
 .mc .al{margin-left:auto}
@@ -354,7 +357,35 @@ a.btn{text-decoration:none}
 .grp{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:.7rem}
 .grp.me-grp{border:2px solid var(--indigo)}
 .grp h3{margin:0 0 .5rem;font-size:1.1rem;font-weight:900;display:flex;align-items:center;gap:.4rem}
-.grp h3 .n{margin-left:auto;font-size:.85rem;color:var(--ink-3);font-weight:800}
+.grp h3 .n{margin-left:auto;font-size:.85rem;color:var(--ink-3);font-weight:800;flex-shrink:0}
+.grp h3 .tn{min-width:0;overflow-wrap:anywhere}
+/* 搭乘時間、集合地點這行是長輩最需要的資訊：字大一點、顏色深一點 */
+.grp-meta{margin:-.25rem 0 .5rem;font-size:.95rem;color:var(--ink-2);font-weight:800;line-height:1.4;overflow-wrap:anywhere}
+.grp-meta.top{margin:0;padding:0 .2rem}
+/* 分組頁最上面的四個大分類：四等分，圖示在上、字在下，320px 也放得下 */
+.catbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.4rem}
+.catbar button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.15rem;min-height:3.6rem;padding:.4rem .15rem;border-radius:12px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font-weight:900;font-size:.95rem;line-height:1.15}
+.catbar button.on{background:var(--indigo);border-color:var(--indigo);color:#fff}
+:root[data-theme="dark"] .catbar button.on{color:#0F141C}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .catbar button.on{color:#0F141C}}
+.empty-cat{display:flex;flex-direction:column;gap:.35rem;line-height:1.5}
+/* 分組情境的編輯表單：每一組一張小卡 */
+.scn-rows{display:flex;flex-direction:column;gap:.6rem;margin-bottom:.6rem}
+.scn-row{border:1.5px solid var(--line);border-radius:12px;padding:.6rem;display:flex;flex-direction:column;gap:.55rem;background:var(--bg)}
+.scn-row>*{flex:none}
+/* 一列的標頭：窄螢幕（或字級放大）時名稱欄獨佔一行、三顆按鈕平分下一行；寬一點的螢幕全部排成一行 */
+.scn-rh{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center}
+.scn-rh .in{flex:1 1 100%;min-width:0}
+.scn-rh .btn.sm{flex:1 1 0;min-width:0;padding:0}
+@media (min-width:375px){
+  html[data-fs="md"] .scn-rh .in,html[data-fs="lg"] .scn-rh .in{flex:1 1 0}
+  html[data-fs="md"] .scn-rh .btn.sm,html[data-fs="lg"] .scn-rh .btn.sm{flex:0 0 2.75rem}
+}
+.scn-cnt{line-height:1.4}
+/* 窄螢幕配大字級：兩個時間欄並排每個只剩 49px，數字會被下拉小箭頭壓住；改成一個一行 */
+@media (max-width:360px){ html[data-fs="lg"] .scn-row .grid2,html[data-fs="xl"] .scn-row .grid2{grid-template-columns:minmax(0,1fr)} }
+/* 大按鈕裡的兩行字：地點很長時自己換行，不撐出表單 */
+.btn.big .b2,.btn.big .b2 small{overflow-wrap:anywhere}
 .grp .gm{display:grid;grid-template-columns:1fr 1fr;gap:.4rem}
 .grp .gm .mc{cursor:default}
 .grp .gm .mc.pk{cursor:pointer}
@@ -411,10 +442,6 @@ dl.kv2 dd:last-child{border-bottom:0;padding-bottom:0;margin-bottom:0}
 .wifi-card .wf-note{margin-top:.5rem;color:var(--ink-3);font-weight:700;font-size:.9rem;line-height:1.45}
 .wifi-card .wf-note.ed{display:flex;align-items:flex-start;gap:.35rem;width:100%;text-align:left;background:none;border:1px dashed var(--line);border-radius:10px;padding:.4rem .5rem;font:inherit;color:var(--ink-3);font-weight:700;font-size:.9rem;cursor:pointer}
 .wifi-card .wf-note.ed svg.i{flex-shrink:0;margin-top:.1rem;color:var(--indigo)}
-.air-note{display:flex;align-items:flex-start;gap:.5rem}
-.air-note svg.i{flex-shrink:0;margin-top:.15rem;color:var(--indigo)}
-.air-note>span{flex:1;min-width:0}
-.air-note .btn{flex-shrink:0;align-self:center}
 .warn-box{background:var(--alert-2);border-left:4px solid var(--alert);border-radius:10px;padding:.6rem .75rem;font-weight:800;line-height:1.45;font-size:.95rem;display:flex;gap:.45rem;align-items:flex-start}
 .warn-box svg.i{color:var(--alert);margin-top:.15rem}
 /* v3.22 一鍵清空・備份與還原 */

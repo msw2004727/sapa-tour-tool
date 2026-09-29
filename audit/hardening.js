@@ -164,7 +164,7 @@ const wait=(p,ms)=>p.waitForTimeout(ms);
   ck('工具卡小字 ≥ 14px',m10.tcardSmall>=14,m10.tcardSmall);
   ck('日期列小字 ≥ 12.5px（五等分日期列，天數字才是主角）',m10.dayrowSmall>=12.5,m10.dayrowSmall);
   ck('版本字 ≥ 14px',m10.ver>=14,m10.ver);
-  ck('航空徽章字 ≥ 11.5px 且圓圈 ≥ 32px（縮寫徽章，本來就小）',m10.al>=11.5&&m10.alBox>=32,{al:m10.al,box:m10.alBox});
+  ck('交通徽章字 ≥ 11.5px 且圓圈 ≥ 32px（縮寫徽章，本來就小）',m10.al>=11.5&&m10.alBox>=32,{al:m10.al,box:m10.alBox});
   ck('首頁地圖圖示 ≥ 44px',m10.mapBtn>=44,m10.mapBtn);
   ck('行程頁地圖標籤 ≥ 44px',m10.tagMap>=44,m10.tagMap);
   ck('安裝 App 按鈕 ≥ 36px',m10.instH>=36,m10.instH);
@@ -358,7 +358,7 @@ const wait=(p,ms)=>p.waitForTimeout(ms);
   ck('320/xl：今天行程標籤本身不折行、日期不截斷',u8.labRects===1&&u8.updClip<=1,{labRects:u8.labRects,updClip:u8.updClip,labH:u8.labH});
   ck('320/xl：工具格線不溢出',u8.toolOv<=0&&u8.pageOv<=0,u8);
   ck('320/xl：出發前準備按鈕文字不被切',u8.prepClip<=3,u8.prepClip);
-  ck('320/xl：航班欄標題不被切',u8.flClip<=3,u8.flClip);
+  ck('320/xl：交通欄標題不被切',u8.flClip<=3,u8.flClip);
   ck('320/xl：toast 用寬版換行，不是窄窄一條',u8.toastW>=240&&u8.toastH<=120,u8);
 
   ck('全程無 JS 錯誤',errs.length===0,errs.slice(0,3));

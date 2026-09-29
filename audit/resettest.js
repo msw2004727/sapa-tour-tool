@@ -49,13 +49,14 @@ const FAKE=()=>{
       if(o.length||ov||sov||dbl||word) bad.push({name,wrap:o,ov,sov,dbl,word}); };
     const views={home:()=>{P.tab='home';}, plan1:()=>{P.tab='plan';P.planDay=1;}, plan5:()=>{P.tab='plan';P.planDay=5;P.planMode='detail';},
       rooms:()=>{P.tab='rooms';P.roomsSeg='rooms';}, list:()=>{P.tab='rooms';P.roomsSeg='list';}, groups:()=>{P.tab='groups';P.scn='';},
-      airline:()=>{P.tab='groups';P.scn='airline';}, tools:()=>{P.tab='tools';P.tool='menu';}, sos:()=>{P.tab='tools';P.tool='sos';},
+      airline:()=>{P.tab='groups';P.cat='transport';P.scn='';}, catMeal:()=>{P.tab='groups';P.cat='meal';P.scn='';},
+      catShop:()=>{P.tab='groups';P.cat='shop';P.scn='';}, catMate:()=>{P.tab='groups';P.cat='mate';P.scn='';}, tools:()=>{P.tab='tools';P.tool='menu';}, sos:()=>{P.tab='tools';P.tool='sos';},
       rollcall:()=>{P.tab='tools';P.tool='rollcall';}, money:()=>{P.tab='tools';P.tool='money';}, notes:()=>{P.tab='notes';}};
     for(const leader of [false,true]){ P.leader=leader;
       for(const k in views){ views[k](); render(); look((leader?'管理 ':'團員 ')+k,true); } }
     P.leader=true;
     const sheets={settings:()=>ACT.settings(), broadcast:()=>ACT.editBroadcast(), item:()=>sheetItem(''), member:()=>sheetMember(''),
-      hotel:()=>sheetHotel(), hotelNew:()=>sheetHotelEdit(''), scenario:()=>sheetScenario(''), homeScn:()=>sheetHomeScn(), tags:()=>sheetTags(),
+      hotel:()=>sheetHotel(), hotelNew:()=>sheetHotelEdit(''), scenario:()=>sheetScenario(''), scnMeal:()=>sheetScenario('','meal'), scnShop:()=>sheetScenario('','shop'), scnMate:()=>sheetScenario('','mate'), homeScn:()=>sheetHomeScn(), tags:()=>sheetTags(),
       zones:()=>sheetCardZones(), prev:()=>sheetPrev(), pickMe:()=>sheetPickMe(), rooms:()=>sheetRooms(), morning:()=>sheetMorning(),
       nbPage:()=>sheetNbPage(''), backups:()=>sheetBackups(), share:()=>sheetShare(), leaderMenu:()=>sheetLeaderMenu()};
     for(const k in sheets){ sheets[k](); look('表單 '+k); closeSheet(); }
@@ -66,7 +67,7 @@ const FAKE=()=>{
   };
 };
 /* 空白狀態下逐頁檢查用的短標籤（跟 regress.js 同一套） */
-const SHORT='.tab span,.tab-home .lb,.chip,.btn:not(.wrap) .b2>span:first-child,.tcard b,.chead .ttl,.day-chip,.lcd .lg1,.lcd .lg2,.wf-k,.ic-h,h2.sec,.dayrow button,.me-strip .k,.seg button,.fl-h,.kv dt,.prep-lab';
+const SHORT='.tab span,.tab-home .lb,.chip,.btn:not(.wrap) .b2>span:first-child,.tcard b,.chead .ttl,.day-chip,.lcd .lg1,.lcd .lg2,.wf-k,.ic-h,h2.sec,.dayrow button,.me-strip .k,.seg button,.fl-h,.kv dt,.prep-lab,.catbar button span';
 
 (async()=>{
   const b=await chromium.launch();
@@ -213,12 +214,12 @@ const SHORT='.tab span,.tab-home .lb,.chip,.btn:not(.wrap) .b2>span:first-child,
   const a9=await p.evaluate(async(sel)=>{ const S0=JSON.stringify({m:S().members,i:S().itinerary});
     S().members={_ts:1,_cleared:1}; S().itinerary={_ts:1,_cleared:1};   /* 回到剛清空的樣子 */
     await sleep(0); const out={};
-    P.theme=''; out.light=walkAll(sel);   /* 12 個分頁 × 團員／管理 ＋ 18 張表單 ＋ 2 張全螢幕卡 ＝ 44 */
+    P.theme=''; out.light=walkAll(sel);   /* 15 個分頁（分組有四個分類）× 團員／管理 ＋ 21 張表單 ＋ 2 張全螢幕卡 ＝ 53 */
     P.theme='dark'; out.dark=walkAll(sel);
     P.theme=''; P.fs='md'; out.md=walkAll(sel); P.fs='xl';
     const o=JSON.parse(S0); S().members=o.m; S().itinerary=o.i; render(); return out; },SHORT).catch(e=>({err:String(e)}));
   if(a9.err) ck('空白狀態逐頁檢查可以執行',false,a9.err);
-  else for(const k of ['light','dark','md']){ ck(`空白狀態 ${k}：${a9[k].n} 個畫面都沒有溢出、斷行、雙重跳脫、禁用字`,a9[k].n===44&&!a9[k].bad.length,a9[k].bad.slice(0,4)); }
+  else for(const k of ['light','dark','md']){ ck(`空白狀態 ${k}：${a9[k].n} 個畫面都沒有溢出、斷行、雙重跳脫、禁用字`,a9[k].n===53&&!a9[k].bad.length,a9[k].bad.slice(0,4)); }
 
   console.log('[10] 備份清單與還原');
   const a10=await p.evaluate(async()=>{ ACT.bkList(); await sleep(250);

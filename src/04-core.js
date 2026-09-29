@@ -60,9 +60,9 @@ function dayInfo(){
   return {idx:diff+1,status:'on',days:days,diff:diff};
 }
 /* ===== 時區：第 1 天搭機前人還在台灣，那段時間是「台灣時間」，其餘一律當地時間（團務設定選的目的地時區）=====
-   判斷方式：出發日當天、時間不晚於最晚一班去程起飛（例：長榮 09:00）→ 台灣時間。
-   不用另外在資料裡標記，改航班時間就會自動跟著變。當地有夏令時間也算得對（tzOff 用那一天的時差）。 */
-function twCutoff(){ var f=(S().settings||{}).flights||{}, c=''; Object.keys(f).forEach(function(k){ var o=f[k]&&f[k].out; if(o&&/^\d{1,2}:\d{2}$/.test(o)&&o>c) c=o; }); return c||'09:00'; }
+   判斷方式：出發日當天、時間不晚於最晚一班去程交通的搭乘時間（例：長榮 09:00）→ 台灣時間。
+   不用另外在資料裡標記，改「分組 → 交通」裡的搭乘時間就會自動跟著變。當地有夏令時間也算得對（tzOff 用那一天的時差）。 */
+function twCutoff(){ var c=''; trCardGroups().forEach(function(g){ if(g.out&&g.out>c) c=g.out; }); return c||'09:00'; }
 function isTWSlot(date,hm){ var st=S().settings||{}; return !!(date&&hm&&date===st.startDate&&hm<=twCutoff()); }
 /* 某個日期＋時刻（依上面的規則決定時區）換成絕對時間（毫秒） */
 function slotMs(date,hm,tw){ var t=parseDate(date); if(isNaN(t)||!hm||hm.indexOf(':')<0) return NaN; var p=hm.split(':').map(Number);
@@ -424,8 +424,94 @@ function members(){ var d=S().members; if(!d||typeof d!=='object') return []; re
 function member(id){ return members().filter(function(m){return m.id===id;})[0]; }
 function getMe(){ return P.meId?member(P.meId):null; }
 function items(){ var d=S().itinerary; if(!d||typeof d!=='object') return []; return d.items||(d.items=[]); }
-function scenario(id){ var g=S().groups||{scenarios:[]}; var want=id||P.scn||g.activeId; var sc=(g.scenarios||[]).filter(function(x){return x.id===want;})[0]; return sc||(id?null:(g.scenarios||[])[0]); }
-function groupNameOf(scnId,mid){ var sc=scenario(scnId); if(!sc) return ''; var gi=sc.assign&&sc.assign[mid]; if(gi===undefined||gi===null||gi<0) return ''; return sc.names[gi]||('第 '+(gi+1)+' 組'); }
+/* ===== 分組：大分類與情境（v3.25）=====
+   groups.scenarios[] 的每個情境 {id,name,cat,count,names[],assign{團員id:第幾組},…}。
+   cat 是大分類（SCN_CATS：交通、餐飲、逛街、旅伴）；每一組的欄位存成跟 names 一樣長的陣列：
+   times（搭乘／集合時間）、backs（回程時間）、notes（上車／集合地點、桌位說明…）、shorts（徽章短名）、leaders（組長）；
+   情境本身的欄位：card（交通：要不要列在首頁「去程／回程交通」卡）、time／place（餐飲）、note（給團員的提醒）、
+   useTags／tagOpts／mtags（臨時標籤）。舊資料的情境沒有 cat，讀的時候用 scnCat() 推回去。 */
+function catDef(id){ for(var i=0;i<SCN_CATS.length;i++) if(SCN_CATS[i].id===id) return SCN_CATS[i]; return null; }
+var SCN_LEGACY_CAT={meal:'meal',shuttle:'transport',air:'transport'};
+function scnCat(sc){ if(!sc) return 'mate'; if(catDef(sc.cat)) return sc.cat; if(SCN_LEGACY_CAT[sc.id]) return SCN_LEGACY_CAT[sc.id];
+  var n=String(sc.name||'');
+  if(/餐|桌|飯|食|宴/.test(n)) return 'meal';
+  if(/車|航|機|船|交通|接駁|鐵|捷運|搭/.test(n)) return 'transport';
+  if(/逛|購|買|市|店|街/.test(n)) return 'shop';
+  return 'mate'; }
+/* 預設的組別名稱：# 換成第幾組、@ 換成 A、B、C… */
+function catGN(cat,i){ var d=catDef(cat)||SCN_CATS[3]; return d.gn.replace('#',i+1).replace('@',String.fromCharCode(65+i%26)); }
+function trTime(v){ var m=/^(\d{1,2}):(\d{2})$/.exec(String(v||'')); return (m&&+m[1]<24&&+m[2]<60)?pad(+m[1])+':'+m[2]:''; }
+function scnCount(sc){ var n=Math.floor(Number(sc&&sc.count)); return n>0?Math.min(n,100):0; }
+function scnGName(sc,i){ var n=sc&&sc.names&&sc.names[i]; return n?String(n):catGN(scnCat(sc),i); }
+function scnGF(sc,k,i){ var a=sc&&sc[k], v=a&&a[i]; return (v===undefined||v===null)?'':String(v); }
+function scnGTime(sc,k,i){ return trTime(scnGF(sc,k,i)); }
+/* 這位團員在這個情境的第幾組（0 起算），沒分組或超出範圍回傳 -1 */
+function scnGi(sc,mid){ var gi=sc&&sc.assign?sc.assign[mid]:undefined; if(gi===undefined||gi===null) return -1; gi=Number(gi); return (gi>=0&&gi<scnCount(sc))?Math.floor(gi):-1; }
+/* 真正存在雲端的情境。清空後從雲端回來時陣列不見了（Firebase 不存空陣列），要把空陣列掛回文件上，跟 members() 一樣 */
+function scnReal(){ var g=S().groups; if(!g||typeof g!=='object') g=Store.s.groups={};
+  if(!Array.isArray(g.scenarios)) g.scenarios=(g.scenarios&&typeof g.scenarios==='object')?Object.keys(g.scenarios).sort(function(a,b){ return a-b; }).map(function(k){ return g.scenarios[k]; }).filter(Boolean):[];
+  return g.scenarios; }
+/* 舊資料（v3.24 以前）沒有「交通」情境：航空公司存在 settings.airlines、去回程起飛時間在 settings.flights.eva／ci、
+   每位團員屬於哪一家在 members[].airline。還沒有人改過分組時，把這些轉成一個暫時的「航班」情境（_inj）給畫面用，
+   所有手機算出來都一樣、什麼都不用寫；主辦人第一次修改分組時才真的存進 groups（scnLive）。
+   settings.airMig 是「已經搬過了」的記號：搬過之後就算把航班情境刪掉，也不會再冒出來。 */
+function scnLegacy(){
+  var st=S().settings||{}; if(st.airMig) return null;
+  var al=st.airlines||{}, fl=st.flights||{}, keys=Object.keys(TR_LEGACY);
+  var has=keys.some(function(k){ return al[k]||fl[k]; })||members().some(function(m){ return TR_LEGACY[m.airline]; });
+  if(!has) return null;
+  var sc={_inj:1,id:'air',cat:'transport',name:'航班',card:1,count:keys.length,names:[],shorts:[],notes:[],times:[],backs:[],assign:{}};
+  keys.forEach(function(k){ var d=TR_LEGACY[k], o=al[k]||{}, f=fl[k]||{};
+    sc.names.push(o.name||d.name); sc.shorts.push(o.short||d.short); sc.notes.push((o.note===undefined||o.note===null)?d.note:o.note);
+    sc.times.push(f.out||''); sc.backs.push(f.back||''); });
+  members().forEach(function(m){ var i=keys.indexOf(m.airline); if(i>=0) sc.assign[m.id]=i; });
+  if(st.airNote) sc.note=st.airNote;   /* v3.24 以前沒改過就是內建的桃園機場說明，那段不帶過來 */
+  return sc; }
+/* 目前所有情境：存在雲端的，加上（還沒搬家的話）舊資料轉出來的航班情境，排在最後——搬家前後畫面上的順序一樣 */
+function scnAll(){ var a=scnReal(); if(a.some(function(x){ return x&&x.id==='air'; })) return a; var l=scnLegacy(); return l?a.concat([l]):a; }
+/* 要修改一個情境之前呼叫。它如果還是「舊資料轉出來的暫時版本」，先把它連同搬家記號存進去（整份存檔），
+   之後才有 scenarios/N 這個路徑可以做局部寫入；回傳真正存在 groups 裡的那一份 */
+function scnLive(sc){ if(!sc||!sc._inj) return sc;
+  var a=scnReal(), real=clone(sc); delete real._inj; a.push(real);
+  S().settings.airMig=1;
+  Store.save('groups'); Store.savePath('settings','airMig',1);
+  return real; }
+function scnPath(sc){ var i=scnReal().indexOf(sc); if(i<0) throw new Error('scnPath: 情境還沒存進 groups'); return 'scenarios/'+i; }
+/* 分組頁現在停在哪個分類、哪個情境。P.cat／P.scn 都只記在這次開啟的畫面上，沒設的話從情境反推 */
+function curCat(){ if(catDef(P.cat)) return P.cat;
+  var all=scnAll(), want=P.scn||(S().groups||{}).activeId, sc=want?all.filter(function(x){ return x.id===want; })[0]:null;
+  if(sc) return scnCat(sc);
+  for(var i=0;i<SCN_CATS.length;i++) if(all.some(function(x){ return scnCat(x)===SCN_CATS[i].id; })) return SCN_CATS[i].id;
+  return SCN_CATS[0].id; }
+function curScn(){ var cat=curCat(), l=scnAll().filter(function(x){ return scnCat(x)===cat; }); return l.filter(function(x){ return x.id===P.scn; })[0]||l[0]||null; }
+/* 沒給 id＝分組頁現在看的那個情境；給 id＝那個情境（找不到回傳 null） */
+function scenario(id){ if(id) return scnAll().filter(function(x){ return x.id===id; })[0]||null; return curScn(); }
+function groupNameOf(scnId,mid){ var sc=scenario(scnId); if(!sc) return ''; var gi=scnGi(sc,mid); return gi<0?'':scnGName(sc,gi); }
+/* --- 交通：徽章、首頁交通卡 --- */
+function trShort(sc,i){ var s=scnGF(sc,'shorts',i); if(s) return s; return Array.from(scnGName(sc,i).replace(/\s+/g,'')).slice(0,2).join(''); }
+function trBadge(sc,gi,lg){ var s=trShort(sc,gi);
+  return '<span class="al'+(lg?' lg':'')+(Array.from(s).length>2?' s3':'')+'" style="background:'+TR_COLORS[gi%TR_COLORS.length]+'" title="'+esc(scnGName(sc,gi))+'">'+esc(s)+'</span>'; }
+/* 首頁交通卡要列的組：所有勾了「顯示在首頁交通資訊」的交通情境，每一組的搭乘（去程）與回程時間 */
+function trCardGroups(){ var out=[];
+  scnAll().forEach(function(sc){ if(scnCat(sc)!=='transport'||!sc.card) return;
+    for(var i=0;i<scnCount(sc);i++) out.push({sc:sc,gi:i,name:scnGName(sc,i),short:trShort(sc,i),note:scnGF(sc,'notes',i),out:scnGTime(sc,'times',i),back:scnGTime(sc,'backs',i)}); });
+  return out; }
+/* 名單、點名上的小圓徽章：看「主要的交通情境」（有勾首頁交通資訊的第一個，沒有就第一個交通情境）分到哪一組 */
+function trPrimary(){ var l=scnAll().filter(function(x){ return scnCat(x)==='transport'; }); return l.filter(function(x){ return x.card; })[0]||l[0]||null; }
+function memBadge(m,lg){ if(!m) return ''; var sc=trPrimary(); if(!sc) return ''; var gi=scnGi(sc,m.id); return gi<0?'':trBadge(sc,gi,lg); }
+/* 名單右邊那行小字：第一個餐飲情境的桌次、加上（不是徽章那個的）第一個交通情境的組別 */
+function memGroupsText(m){ var all=scnAll(), pri=trPrimary(), out=[];
+  var meal=all.filter(function(x){ return scnCat(x)==='meal'; })[0], tr=all.filter(function(x){ return scnCat(x)==='transport'&&(!pri||x.id!==pri.id); })[0];
+  [meal,tr].forEach(function(sc){ if(!sc) return; var gi=scnGi(sc,m.id); if(gi>=0) out.push(scnGName(sc,gi)); });
+  return out.join(' · '); }
+/* 一組的說明行：把這一組填的欄位串成一行（交通：搭乘 09:00 · 回程 12:05 · 桃園第二航廈） */
+function scnGMeta(sc,i){ var d=catDef(scnCat(sc)), out=[]; if(!d) return '';
+  d.gf.forEach(function(f){ if(f.t==='short') return; var v=(f.t==='time')?scnGTime(sc,f.k,i):scnGF(sc,f.k,i); if(v) out.push(f.pfx+v); });
+  return out.join(' · '); }
+/* 整個情境的說明行（餐飲：用餐 18:00 · 餐廳名稱） */
+function scnMeta(sc){ var d=catDef(scnCat(sc)), out=[]; if(!d) return '';
+  d.sf.forEach(function(f){ var v=(f.t==='time')?trTime(sc[f.k]):String((sc[f.k]==null)?'':sc[f.k]); if(v) out.push(f.pfx+v); });
+  return out.join(' · '); }
 /* 首頁「我的資訊」分組列：管理者可以把特定分組情境從首頁關掉（分組頁籤不受影響，只是不出現在首頁） */
 function homeScnHidden(id){ return !!((S().settings.hiddenScn||{})[id]); }
 function homeScnToggle(id){ var st=S().settings; if(!st.hiddenScn) st.hiddenScn={}; if(st.hiddenScn[id]) delete st.hiddenScn[id]; else st.hiddenScn[id]=true; Store.save('settings'); sheetHomeScn(); }
@@ -623,7 +709,7 @@ function cardLead(id){
    v3.21（小麥指定）：收起後再打開就恢復發光——長輩常誤觸收起，打開來還要看得到提醒。
    預設就是收起的卡片（團員沒動過）照樣發光，提醒他點開。
    管理者關掉再開一次會產生新的 hts，所有人（包括收起過的）重新亮。
-   航班卡去程與回程算兩件事：看過去程不等於看過回程，回程階段用另一把鑰匙。 */
+   交通卡去程與回程算兩件事：看過去程不等於看過回程，回程階段用另一把鑰匙。 */
 function hlKey(id,L){ L=L||cardLead(id); return (id==='flight'&&flightPhase()==='back')?(L.hts+'|back'):L.hts; }
 function cardHL(id){
   var L=cardLead(id); if(!L.hl) return false;
@@ -689,8 +775,8 @@ function setPin(id,v){
   if(!z.manual) z.manual={};
   z.manual[id]=v;
 }
-/* 航班卡的階段：出發前與第 1 天只看去程；倒數第 2 天起到回國後只看回程（沙壩團是搭夜臥火車回河內那天）；
-   中間幾天沒有要搭的飛機，整張收起。小麥指定：不要同時列出去回程，免得長輩看錯。 */
+/* 交通卡（id 仍叫 flight，設定裡存的鍵不能改）的階段：出發前與第 1 天只看去程；倒數第 2 天起到回國後只看回程
+   （沙壩團是搭夜臥火車回河內那天）；中間幾天沒有要搭的交通，整張收起。小麥指定：不要同時列出去回程，免得長輩看錯。 */
 function flightPhase(di){
   di=di||dayInfo(); var days=di.days||5, back=Math.max(2,days-1);
   if(di.status==='before') return 'out';
@@ -704,12 +790,12 @@ function cardZone(id,di){
   var z=zoneCfg();
   /* 出發前準備「要不要出現」看 prepUntil，就算被釘在某一區也一樣：出發後（或旅程結束後）就收起來 */
   if(id==='prep'&&(z.prepUntil==='off'||(z.prepUntil==='end'?di.status==='after':di.status!=='before'))) return 'hide';
-  /* 航班卡同理：沒有要搭飛機的日子（第 2、3 天）就算被釘住也收起 */
+  /* 交通卡同理：沒有要搭交通的日子（第 2、3 天）就算被釘住也收起 */
   if(id==='flight'&&flightPhase(di)==='none') return 'hide';
   var pin=cardPin(id);
   if(pin!=='auto') return pin;
   var before=(di.status==='before'), after=(di.status==='after'), idx=di.idx, days=di.days;
-  /* 旅程結束後：回程航班最重要，擺到最上面；只留住宿備查，其餘收起 */
+  /* 旅程結束後：回程交通最重要，擺到最上面；只留住宿備查，其餘收起 */
   if(after) return id==='flight'?'now':(id==='hotel'?'ref':'hide');
   if(id==='prep') return z.prepUntil==='off'?'hide':(z.prepUntil==='end'?'later':(before?'later':'hide'));
   if(id==='flight'){
@@ -772,7 +858,7 @@ function cardAutoOpen(id,di){
   return 1;
 }
 function cardDefOpen(id,di){ var L=cardLead(id); return L.ts===0?!!cardAutoOpen(id,di):!!L.o; }
-var ZONE_NAMES={today:'今日行程',prep:'出發前準備',flight:'航班資訊',morning:'明早時程',hotel:'目前住宿'};
+var ZONE_NAMES={today:'今日行程',prep:'出發前準備',flight:'交通資訊',morning:'明早時程',hotel:'目前住宿'};
 var ZONE_LABELS={now:'現在',later:'稍後',ref:'隨時查',hide:'不顯示'};
 function foldCard(id,icon,title,sub,sum,inner,opt){
   opt=opt||{};
@@ -884,24 +970,44 @@ function memberCard(m,opt){
   var cls='mc '+(m.bg||'bg-white')+' '+(m.border||'bd-grey')+(opt.sm?' sm':'')+(P.meId===m.id?' me':'')+(opt.pk?' pk':'');
   var right='';
   if(opt.right==='room') right=m.room?('<div class="rt">'+ic('key')+' '+esc(m.room)+'</div>'):'';
-  else if(opt.right==='groups'){ var g1=groupNameOf('meal',m.id), g2=groupNameOf('shuttle',m.id); right='<div class="rt">'+(m.room?esc(m.room)+' 房<br>':'')+esc([g1,g2].filter(Boolean).join(' · '))+'</div>'; }
+  else if(opt.right==='groups'){ right='<div class="rt">'+(m.room?esc(m.room)+' 房<br>':'')+esc(memGroupsText(m))+'</div>'; }
   var tag=opt.tag||'button';
   return '<'+tag+' class="'+cls+'" data-act="'+(opt.act||'memberTap')+'" data-id="'+m.id+'"'+(opt.extra||'')+'>'+
     '<span class="em'+(badgeDef(m.emoji)?'':' none')+'">'+badgeSVG(m.emoji)+'</span>'+
     '<span class="tx"><span class="nm">'+esc(m.name)+'</span>'+(!opt.sm&&m.remark?'<span class="rk">'+esc(m.remark)+'</span>':'')+
     ((opt.mtags&&opt.mtags.length)?'<span class="mtags">'+opt.mtags.slice(0,3).map(function(x){return '<span class="mtag">'+esc(x)+'</span>';}).join('')+(opt.mtags.length>3?'<span class="mtag more">+'+(opt.mtags.length-3)+'</span>':'')+'</span>':'')+
-    '</span>'+(opt.noAir?'':airlineBadge(m.airline))+right+'</'+tag+'>';
+    '</span>'+(opt.noTr?'':memBadge(m))+right+'</'+tag+'>';
 }
-function airDef(k){ var d=AIRLINES[k]; if(!d) return null; var o=((S().settings||{}).airlines||{})[k]||{};
-  return {cls:d.cls, short:(o.short||d.label), name:(o.name||d.name), note:(o.note===undefined||o.note===null?d.note:o.note)}; }
-function alShort(k){ var d=airDef(k); return d?d.short:k; }
-function airlineBadge(a,lg){ var d=airDef(a); if(!d) return ''; return '<span class="al '+d.cls+(lg?' lg':'')+'" title="'+esc(d.name)+'">'+esc(d.short)+'</span>'; }
-/* 分組情境：固定不可刪除、臨時標籤 */
-var FIXED_SCN={meal:1};
-function scnFixed(sc){ return !!(sc && (sc.fixed || FIXED_SCN[sc.id])); }
-function scnUseTags(sc){ if(!sc) return false; return sc.useTags===undefined||sc.useTags===null ? sc.id==='meal' : !!sc.useTags; }
+/* 分組情境的臨時標籤：沒明確設定時看分類（餐飲預設開，其他預設關） */
+function scnUseTags(sc){ if(!sc) return false; if(sc.useTags!==undefined&&sc.useTags!==null) return !!sc.useTags; var d=catDef(scnCat(sc)); return !!(d&&d.tags); }
 function scnTagOpts(sc){ var t=sc&&sc.tagOpts; return (t&&t.length)?t:MEAL_TAGS.slice(); }
 function mtagsOf(sc,id){ return (sc&&sc.mtags&&sc.mtags[id])||[]; }
+
+/* 首頁「我的資訊」那一排格子：主要的交通情境（例：航班）、我的房號，然後是我被分配到的其他分組。
+   交通情境的格子是「小圓徽章＋短名」，後面再跟一格「在哪裡集合」。
+   勾了「顯示在首頁交通資訊」的交通情境：時間首頁的交通卡已經列了，這裡只補集合地點，而且只有去程階段有意義
+   （回程時顯示去程的集合地點反而會誤導）；其他交通情境（例：接駁車）把搭乘時間跟集合地點放在同一格。 */
+function stripCells(me,di){
+  var pri=trPrimary(), cells=[];
+  /* wide：集合地點這種主辦人自己寫的一句話比較長，佔兩格寬，才不會擠成又窄又高的一條 */
+  function cell(sc,k,v,cls,wide){ return '<button data-act="tab" data-tab="groups" data-scn="'+esc(sc.id)+'"'+(wide?' class="w2"':'')+'><span class="k">'+esc(k)+'</span><span class="v s'+(cls||'')+'">'+v+'</span></button>'; }
+  function cellsOf(sc){
+    var out=[], gi=scnGi(sc,me.id); if(homeScnHidden(sc.id)) return out;
+    if(scnCat(sc)==='transport'){
+      var isPri=!!(pri&&sc.id===pri.id);
+      /* 主要的交通情境沒分到組時還是留一格「待設定」，主辦人才知道這個人漏了；小圓徽章也只有主要的那個有（跟名單上的一樣） */
+      if(gi<0){ if(isPri&&sc.card) out.push(cell(sc,sc.name,'待設定')); return out; }
+      out.push(cell(sc,sc.name,isPri?trBadge(sc,gi)+' '+esc(trShort(sc,gi)):esc(scnGName(sc,gi))));
+      var note=scnGF(sc,'notes',gi);
+      if(sc.card){ if(note&&flightPhase(di)==='out') out.push(cell(sc,sc.name+'集合',esc(note),' n',note.length>8)); }
+      else { var t=scnGTime(sc,'times',gi), txt=(t?t+' ':'')+note; if(t||note) out.push(cell(sc,sc.name+'集合',esc(txt),' n',txt.length>8)); }
+      return out; }
+    if(gi>=0) out.push(cell(sc,sc.name,esc(scnGName(sc,gi))));
+    return out; }
+  if(pri) cells=cells.concat(cellsOf(pri));
+  cells.push('<button data-act="tab" data-tab="rooms"><span class="k">我的房號</span><span class="v">'+esc(me.room||'待分配')+'</span></button>');
+  scnAll().forEach(function(sc){ if(!pri||sc.id!==pri.id) cells=cells.concat(cellsOf(sc)); });
+  return cells; }
 
 /* --- 首頁 --- */
 VIEWS.home=function(){
@@ -968,27 +1074,14 @@ VIEWS.home=function(){
     (P.leader?'<div class="ctl"><button class="btn" data-act="editBroadcast">'+ic('edit')+'修改廣播</button><button class="btn" data-act="tool" data-tool="rollcall">'+ic('clipboard')+'點名</button><button class="btn" data-act="bumpTime" data-min="15">現在＋15分</button><button class="btn" data-act="bumpTime" data-min="30">現在＋30分</button></div>'+(tm||b.location||b.tip?'<div class="hero-foot"><button class="clr" data-act="clearBroadcast">'+ic('trash')+'清空廣播</button><button class="clr shr" data-act="shareBroadcast" aria-label="把這則廣播貼到 LINE 群組">'+ic('lineshare')+'LINE</button></div>':''):'')+
   '</section>');
   }
-  /* 我的資訊：不分出發前後，固定顯示航空公司／報到航廈／房號，再加上「我被分配到的每一個分組」；
-     管理者可在「管理專區→首頁分組顯示」把不想曝光的分組情境關掉。報到航廈跟著航空公司走，
-     管理者在「分組→航空公司→航空公司與航廈設定」改，不是寫死在程式裡。 */
+  /* 我的資訊：不分出發前後，固定顯示交通（原本的航空公司）／房號，再加上「我被分配到的每一個分組」；
+     管理者可在「管理專區→首頁分組顯示」把不想曝光的分組情境關掉。交通的集合地點跟著分組走，
+     管理者在「分組 → 交通」改，不是寫死在程式裡。 */
   var me=getMe();
   if(me){
-    var ad=airDef(me.airline);
-    var strip=[];
-    strip.push('<button data-act="tab" data-tab="groups" data-scn="airline"><span class="k">航空公司</span><span class="v s">'+(ad?airlineBadge(me.airline)+' '+esc(ad.short):'待設定')+'</span></button>');
-    /* 報到航廈是桃園的航廈，只在去程階段有意義；回程在國外的機場，顯示桃園航廈反而會誤導 */
-    if(flightPhase(di)==='out') strip.push('<button data-act="tab" data-tab="groups" data-scn="airline"><span class="k">報到航廈</span><span class="v s">'+esc(ad&&ad.note?ad.note.replace(/^桃園/,''):'—')+'</span></button>');
-    strip.push('<button data-act="tab" data-tab="rooms"><span class="k">我的房號</span><span class="v">'+esc(me.room||'待分配')+'</span></button>');
-    (S().groups.scenarios||[]).forEach(function(sc){
-      if(homeScnHidden(sc.id)) return;
-      var gi=sc.assign&&sc.assign[me.id];
-      if(gi===undefined||gi===null||gi<0) return;
-      var gname=sc.names[gi]||('第 '+(gi+1)+' 組');
-      strip.push('<button data-act="tab" data-tab="groups" data-scn="'+esc(sc.id)+'"><span class="k">'+esc(sc.name)+'</span><span class="v s">'+esc(gname)+'</span></button>');
-    });
-    h.push('<div class="me-strip">'+strip.join('')+'</div>');
+    h.push('<div class="me-strip">'+stripCells(me,di).join('')+'</div>');
   } else {
-    h.push('<button class="btn big block" data-act="pickMe">'+ic('search')+'<span class="b2">點這裡選你的名字<small>首頁就會顯示你的航空公司、房號、分組</small></span></button>');
+    h.push('<button class="btn big block" data-act="pickMe">'+ic('search')+'<span class="b2">點這裡選你的名字<small>首頁就會顯示你的交通、房號、分組</small></span></button>');
   }
 
 
@@ -1074,29 +1167,28 @@ function hotelCard(){
   return foldCard('hotel','bed','目前住宿',sum,(ho.nights||sum),inner);
 }
 
-/* 航班資訊（可收合） */
+/* 交通資訊（可收合）：勾了「顯示在首頁交通資訊」的交通情境（例：航班），每一組的去程（搭乘時間）／回程出發時間。
+   v3.25 以前叫「航班」，固定長榮、華航兩家，時間存在團務設定；現在跟著「分組 → 交通」的每一組走。
+   只列出有填時間的組：去程或回程任一個有填就列出，另一個沒填的寫「待公布」；兩個都沒填的不列。
+   卡片 id 仍叫 flight：首頁卡片位置與高亮設定存的鍵不能改。 */
 function flightCard(){
   var st=S().settings, f=st.flights||{}, days=st.days||5, di=dayInfo(), ph=flightPhase(di);
   if(ph==='none') return '';
   var back=(ph==='back');
-  function alN(k){ var d=airDef(k)||{}; return d.name||''; }
-  function alS(k){ var d=airDef(k)||{}; return d.short||''; }
-  function alT(k){ var d=airDef(k)||{}, n=d.note||'', mm=n.match(/第([一二三四五六七八九])/);
-    if(mm) return 'T'+('一二三四五六七八九'.indexOf(mm[1])+1);
-    mm=n.match(/T\s*([1-9])/i); if(mm) return 'T'+mm[1];
-    return (AIRLINES[k]||{}).term||''; }
-  function tm(k){ var x=f[k]||{}; return back?x.back:x.out; }
-  /* 去程：長榮 09:00・華航 08:20；回程：華航 11:30・長榮 12:05 —— 依起飛時間排，先飛的在前 */
-  var keys=['eva','ci'].sort(function(a,b){ var ta=tm(a)||'99:99', tb=tm(b)||'99:99'; return ta<tb?-1:(ta>tb?1:0); });
-  function col(k){ var t=tm(k);
-    return '<div class="fl-col"><div class="fl-h">'+airlineBadge(k)+esc(alN(k))+'</div>'+
-      '<div class="fl-r"><b>'+(t?esc(t):'<span class="muted" style="font-size:1rem">待公布</span>')+'</b><span class="k">'+
-      (back?'回程 · '+(f.backPort?esc(f.backPort)+' ':'')+'起飛':'去程 · 桃園 '+esc(alT(k))+' 起飛')+'</span></div></div>'; }
-  var inner='<div class="fl">'+keys.map(col).join('')+'</div>'+
-    (!back&&f.note&&!(di.status==='before'&&!(S().broadcast||{}).time)?'<div class="warn-box" style="margin-top:.6rem">'+ic('clock')+'<span>'+esc(f.note)+'</span></div>':'');
-  /* 收起時的摘要：每家航空一段、段內不斷行，窄螢幕時整段換行而不是被「…」切掉 */
-  var sum=keys.map(function(k){ return '<span class="nw">'+esc(alS(k)+' '+(tm(k)||'待公布'))+'</span>'; }).join('<span class="sep">・</span>');
-  return foldCard('flight','plane',back?'回程航班':'去程航班',(back?dayDate(days):dayDate(1)).split('（')[0],sum,inner,{sumHtml:true});
+  function tm(g){ return back?g.back:g.out; }
+  /* 去程：長榮 09:00・華航 08:20；回程：華航 11:30・長榮 12:05 —— 依時間排，先走的在前 */
+  var list=trCardGroups().filter(function(g){ return g.out||g.back; }).sort(function(a,b){ var ta=tm(a)||'99:99', tb=tm(b)||'99:99'; return ta<tb?-1:(ta>tb?1:0); });
+  var scs={}; list.forEach(function(g){ scs[g.sc.id]=1; }); var multi=Object.keys(scs).length>1;
+  var noteBox=(!back&&f.note&&!(di.status==='before'&&!(S().broadcast||{}).time))?'<div class="warn-box" style="margin-top:.6rem">'+ic('clock')+'<span>'+esc(f.note)+'</span></div>':'';
+  if(!list.length&&!noteBox) return '';
+  function col(g){ var x=tm(g);
+    return '<div class="fl-col"><div class="fl-h">'+trBadge(g.sc,g.gi)+esc((multi?g.sc.name+'・':'')+g.name)+'</div>'+
+      '<div class="fl-r"><b>'+(x?esc(x):'<span class="muted" style="font-size:1rem">待公布</span>')+'</b><span class="k">'+
+      (back?'回程出發'+(f.backPort?' · '+esc(f.backPort):''):'去程出發'+(g.note?' · '+esc(g.note):''))+'</span></div></div>'; }
+  var inner=(list.length?'<div class="fl">'+list.map(col).join('')+'</div>':'')+noteBox;
+  /* 收起時的摘要：每一組一段、段內不斷行，窄螢幕時整段換行而不是被「…」切掉 */
+  var sum=list.length?list.map(function(g){ return '<span class="nw">'+esc(g.short+' '+(tm(g)||'待公布'))+'</span>'; }).join('<span class="sep">・</span>'):'團體報到說明';
+  return foldCard('flight','bus',back?'回程交通':'去程交通',(back?dayDate(days):dayDate(1)).split('（')[0],sum,inner,{sumHtml:true});
 }
 
 /* ===== 行程卡片底圖（每個行程項目一張）=====
@@ -1199,11 +1291,11 @@ VIEWS.rooms=function(){
     var keys=Object.keys(byRoom).sort(function(a,b){ return a.localeCompare(b,undefined,{numeric:true}); });
     var me=getMe();
     h.push('<div class="rooms">'+keys.map(function(r){
-      return '<div class="room'+(me&&me.room===r?' me-room':'')+'"><h3>'+ic('key')+esc(r)+' 房</h3>'+byRoom[r].map(function(m){return memberCard(m,{sm:true,noAir:true});}).join('')+'</div>';
+      return '<div class="room'+(me&&me.room===r?' me-room':'')+'"><h3>'+ic('key')+esc(r)+' 房</h3>'+byRoom[r].map(function(m){return memberCard(m,{sm:true,noTr:true});}).join('')+'</div>';
     }).join('')+'</div>');
     if(me&&!me.room) h.push('<div class="card me-wait">'+ic('key')+'<span>'+esc(me.name)+'，你的房號公布後會顯示在這裡，並且排在最前面。</span></div>');
     if(none.length){ var meFirst=none.slice().sort(function(a,b){ return (b.id===(me||{}).id)-(a.id===(me||{}).id); });
-      h.push('<h2 class="sec">尚未分配房號<span class="n" style="margin-left:auto;font-size:.85rem;color:var(--ink-3)">'+none.length+' 人</span></h2><div class="mlist two">'+meFirst.map(function(m){return memberCard(m,{sm:true,noAir:true});}).join('')+'</div>'); }
+      h.push('<h2 class="sec">尚未分配房號<span class="n" style="margin-left:auto;font-size:.85rem;color:var(--ink-3)">'+none.length+' 人</span></h2><div class="mlist two">'+meFirst.map(function(m){return memberCard(m,{sm:true,noTr:true});}).join('')+'</div>'); }
   } else {
     h.push('<div class="search">'+ic('search')+'<input id="memberSearch" type="search" placeholder="找我的名字…" autocomplete="off" aria-label="搜尋團員"></div>');
     h.push('<div id="memberList">'+memberListHTML()+'</div>');
@@ -1212,25 +1304,6 @@ VIEWS.rooms=function(){
   return h.join('');
 };
 
-var AIR_NOTE_DEF='提醒：桃園機場長榮多在第二航廈、華航多在第一航廈，出發前請再對一次航班上的航廈；兩航廈之間有免費電車，約 5 分鐘。';
-function airNote(){ var v=S().settings.airNote; return (v===undefined||v===null)?AIR_NOTE_DEF:v; }
-
-/* 航空公司分流：不是隨機分組，而是每個人固定的屬性；卡片本身不掛徽章（徽章只在全員名單顯示），這裡改用分類區塊呈現 */
-function airlineView(){
-  var me=getMe(), ae=airDef('eva')||{}, ac=airDef('ci')||{};
-  var cols=[['eva',ae.name],['ci',ac.name],['','尚未設定']], h=[];
-  h.push('<div class="hint-lead">'+ic('info')+(P.leader?'點團員即可設定航空公司；點各區塊右上角的鉛筆可設定該航空公司的報到航廈與名稱，此頁會依航空公司自動分類顯示':'團員已依照航空公司分類顯示；機場集合請看自己排在哪一區')+'</div>');
-  if(P.leader) h.push('<div class="row"><button class="btn" data-act="editAirlines">'+ic('edit')+'航空公司與航廈設定</button></div>');
-  cols.forEach(function(c){
-    var list=members().filter(function(m){ return (m.airline||'')===c[0]; });
-    if(!c[0]&&!list.length) return;
-    var mine=me&&list.some(function(m){return m.id===me.id;});
-    h.push('<section class="grp'+(mine?' me-grp':'')+'"><h3>'+(c[0]?airlineBadge(c[0]):'')+esc(c[1])+'<span class="n">'+list.length+' 人</span>'+(P.leader&&c[0]?'<button class="btn sm edit" data-act="editAirlines" aria-label="設定'+esc(c[1])+'的航廈與名稱">'+ic('edit')+'</button>':'')+'</h3><div class="gm">'+list.map(function(m){return memberCard(m,{sm:true,pk:P.leader,act:P.leader?'setAirlineAsk':'memberTap',noAir:true});}).join('')+(list.length?'':'<div class="muted">（尚無）</div>')+'</div></section>');
-  });
-  var an=airNote();
-  if(an||P.leader) h.push('<div class="card muted air-note" style="line-height:1.5">'+ic('plane')+'<span>'+(an?esc(an):'（提醒已留白，團員看不到這段）')+'</span>'+(P.leader?'<button class="btn sm" data-act="editAirNote">'+ic('edit')+'編輯</button>':'')+'</div>');
-  return h.join('');
-}
 function memberListHTML(){
   var q=(P.q||'').trim();
   var list=members().filter(function(m){ return !q||m.name.indexOf(q)>=0||(m.remark||'').indexOf(q)>=0||(m.room||'').indexOf(q)>=0; });
@@ -1239,24 +1312,31 @@ function memberListHTML(){
 }
 
 /* --- 分組 --- */
+/* 分組頁最上面固定四個大分類：交通、餐飲、逛街、旅伴。點進分類才看得到那一類的情境，「新增情境」也在分類裡面，
+   新增時的預設欄位跟著分類走（交通有搭乘時間、餐飲有桌次…，見 SCN_CATS） */
+function scnHint(sc,cat,useTag){
+  if(cat==='transport') return '點任一位團員可指定他搭哪一組。搭乘時間、上車地點在「編輯情境」裡設定，團員的首頁會自動顯示';
+  if(useTag) return '點任一位團員可移到別組，也可以貼上「素食、已點餐」等臨時標籤';
+  return '隨機分組會讓同房的人在同一組；點任一位團員可移到別組'; }
 VIEWS.groups=function(){
-  var g=S().groups, h=[], me=getMe();
-  var isAir=P.scn==='airline';
-  var sc=isAir?null:scenario();
-  var curId=isAir?'airline':(sc?sc.id:'');
-  h.push('<div class="chips">'+(g.scenarios||[]).map(function(x){ return '<button class="chip pick'+(x.id===curId?' on':'')+'" data-act="scn" data-id="'+x.id+'">'+esc(x.name)+'</button>'; }).join('')+
-    '<button class="chip pick'+(isAir?' on':'')+'" data-act="scn" data-id="airline">'+ic('plane')+'航空公司</button>'+
-    (P.leader?'<button class="chip pick" data-act="editScenario" data-id="">'+ic('plus')+'情境</button>':'')+'</div>');
-  if(isAir) return h.join('')+airlineView();
-  if(!sc) return h.join('')+'<div class="card muted">尚無分組情境</div>';
-  var useTag=scnUseTags(sc), anyTag=useTag&&Object.keys(sc.mtags||{}).some(function(k){return (sc.mtags[k]||[]).length;});
-  if(P.leader) h.push('<div class="row"><button class="btn pri" data-act="shuffle">'+ic('shuffle')+'一鍵隨機分組</button><button class="btn" data-act="clearGroups">'+ic('refresh')+'一鍵清除分組</button><button class="btn" data-act="editScenario" data-id="'+sc.id+'">'+ic('edit')+'組數／名稱</button>'+(useTag?'<button class="btn" data-act="manageTagOpts">'+ic('edit')+'管理標籤</button>':'')+(anyTag?'<button class="btn" data-act="clearTags">'+ic('flag')+'清空所有標籤</button>':'')+'</div><div class="hint-lead">'+ic('info')+(useTag?'點任一位團員可移到別組，也可以貼上「素食、已點餐」等臨時標籤':'隨機分組會讓同房的人在同一組；點任一位團員可移到別組')+'</div>');
-  var buckets=[], un=[]; for(var i=0;i<sc.count;i++) buckets.push([]);
-  members().forEach(function(m){ var gi=sc.assign?sc.assign[m.id]:undefined; if(gi===undefined||gi===null||gi<0||gi>=sc.count) un.push(m); else buckets[gi].push(m); });
+  var h=[], me=getMe(), L=P.leader, cat=curCat(), d=catDef(cat), all=scnAll(), sc=curScn();
+  var inCat=all.filter(function(x){ return scnCat(x)===cat; });
+  h.push('<div class="catbar" role="tablist" aria-label="分組的分類">'+SCN_CATS.map(function(c){
+    return '<button type="button" role="tab" aria-selected="'+(c.id===cat?'true':'false')+'" class="'+(c.id===cat?'on':'')+'" data-act="cat" data-cat="'+c.id+'">'+ic(c.icon)+'<span>'+esc(c.label)+'</span></button>'; }).join('')+'</div>');
+  if(inCat.length||L) h.push('<div class="chips">'+inCat.map(function(x){ return '<button class="chip pick'+(sc&&x.id===sc.id?' on':'')+'" data-act="scn" data-id="'+esc(x.id)+'">'+esc(x.name)+'</button>'; }).join('')+
+    (L?'<button class="chip pick" data-act="editScenario" data-id="" data-cat="'+cat+'">'+ic('plus')+'新增情境</button>':'')+'</div>');
+  if(!sc) return h.join('')+'<div class="card empty-cat"><b>「'+esc(d.label)+'」還沒有情境</b><div class="muted">'+esc(d.blurb)+'</div><div class="muted">'+(L?'按上面的「新增情境」建立，例如：'+esc(d.pre.slice(0,3).map(function(x){ return x.n; }).join('、'))+'。':'主辦人還沒有建立，建好之後會顯示在這裡。')+'</div></div>';
+  var isTr=(cat==='transport'), useTag=scnUseTags(sc), anyTag=useTag&&Object.keys(sc.mtags||{}).some(function(k){ return (sc.mtags[k]||[]).length; });
+  if(L) h.push('<div class="row">'+(isTr?'':'<button class="btn pri" data-act="shuffle">'+ic('shuffle')+'一鍵隨機分組</button>')+'<button class="btn" data-act="clearGroups">'+ic('refresh')+'一鍵清除分組</button><button class="btn'+(isTr?' pri':'')+'" data-act="editScenario" data-id="'+esc(sc.id)+'">'+ic('edit')+'編輯情境</button>'+(useTag?'<button class="btn" data-act="manageTagOpts">'+ic('edit')+'管理標籤</button>':'')+(anyTag?'<button class="btn" data-act="clearTags">'+ic('flag')+'清空所有標籤</button>':'')+'</div><div class="hint-lead">'+ic('info')+esc(scnHint(sc,cat,useTag))+'</div>');
+  var meta=scnMeta(sc); if(meta) h.push('<div class="grp-meta top">'+esc(meta)+'</div>');
+  if(sc.note) h.push('<div class="hint-lead">'+ic('info')+esc(sc.note)+'</div>');
+  var n=scnCount(sc), buckets=[], un=[]; for(var i=0;i<n;i++) buckets.push([]);
+  members().forEach(function(m){ var gi=scnGi(sc,m.id); if(gi<0) un.push(m); else buckets[gi].push(m); });
+  function cards(list){ return list.map(function(m){ return memberCard(m,{sm:true,pk:L,act:L?'moveMember':'memberTap',mtags:useTag?mtagsOf(sc,m.id):null,noTr:true}); }).join(''); }
   buckets.forEach(function(b,i){
-    var mine=me&&b.some(function(m){return m.id===me.id;});
-    h.push('<section class="grp'+(mine?' me-grp':'')+'"><h3>'+ic('flag')+esc(sc.names[i]||('第 '+(i+1)+' 組'))+'<span class="n">'+b.length+' 人</span></h3><div class="gm">'+b.map(function(m){return memberCard(m,{sm:true,pk:P.leader,act:P.leader?'moveMember':'memberTap',mtags:useTag?mtagsOf(sc,m.id):null,noAir:true});}).join('')+(b.length?'':'<div class="muted">（空）</div>')+'</div></section>');
+    var mine=me&&b.some(function(m){ return m.id===me.id; }), gm=scnGMeta(sc,i);
+    h.push('<section class="grp'+(mine?' me-grp':'')+'"><h3>'+(isTr?trBadge(sc,i):ic('flag'))+'<span class="tn">'+esc(scnGName(sc,i))+'</span><span class="n">'+b.length+' 人</span></h3>'+(gm?'<div class="grp-meta">'+esc(gm)+'</div>':'')+'<div class="gm">'+cards(b)+(b.length?'':'<div class="muted">（空）</div>')+'</div></section>');
   });
-  if(un.length) h.push('<section class="grp"><h3>'+ic('users')+'尚未分組<span class="n">'+un.length+' 人</span></h3><div class="gm">'+un.map(function(m){return memberCard(m,{sm:true,pk:P.leader,act:P.leader?'moveMember':'memberTap',mtags:useTag?mtagsOf(sc,m.id):null,noAir:true});}).join('')+'</div></section>');
+  if(un.length) h.push('<section class="grp"><h3>'+ic('users')+'<span class="tn">尚未分組</span><span class="n">'+un.length+' 人</span></h3><div class="gm">'+cards(un)+'</div></section>');
   return h.join('');
 };

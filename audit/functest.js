@@ -84,7 +84,7 @@ out.editMemberNoThrow=await p.evaluate(()=>{
 out.editMemberErr=await p.evaluate(()=>window.__editErr||null);
 out.editQueueHasOp=await p.evaluate(()=>Store.q.length>0);
 out.editCachedRoom=await p.evaluate(()=>{ var c=JSON.parse(localStorage.getItem('sapa-data')); var id=window.__editTestId; var it=(c.docs.members.items||[]).filter(function(x){return x.id===id;})[0]; return it&&it.room; });
-// 房號／分組頁籤的團員卡片不顯示航空公司徽章，只有全員名單保留
+// 房號／分組頁籤的團員卡片不顯示交通徽章，只有全員名單保留（v3.25：徽章來自「交通」分類的主要情境；舊資料的 airline 欄位由 scnLegacy 轉成航班情境）
 await p.evaluate(()=>{ var m=members()[0]; Store.savePath('members','items/'+members().indexOf(m),Object.assign({},m,{airline:'eva'})); });
 await p.evaluate(()=>{P.tab='rooms';P.roomsSeg='rooms';render();});await p.waitForTimeout(150);
 out.roomsCardNoAirline=await p.evaluate(()=>document.querySelectorAll('#view .mc .al').length===0);
@@ -92,7 +92,7 @@ await p.evaluate(()=>{P.roomsSeg='list';render();});await p.waitForTimeout(150);
 out.rosterCardHasAirline=await p.evaluate(()=>document.querySelectorAll('#view .mc .al').length>0);
 await p.evaluate(()=>{P.tab='groups';P.scn='meal';render();});await p.waitForTimeout(150);
 out.groupsCardNoAirline=await p.evaluate(()=>document.querySelectorAll('#view .mc .al').length===0);
-await p.evaluate(()=>{P.scn='airline';render();});await p.waitForTimeout(150);
+await p.evaluate(()=>{P.cat='transport';P.scn='air';render();});await p.waitForTimeout(150);
 out.airlineViewCardNoAirline=await p.evaluate(()=>document.querySelectorAll('#view .grp .gm .mc .al').length===0);
 out.airlineViewHeaderHasBadge=await p.evaluate(()=>document.querySelectorAll('#view .grp h3 .al').length>0);
 // 標頭第二列：越南／台灣／集合倒數／連線狀態同一行，順序固定為 越南→台灣→集合→連線狀態（v2.7 起）；
@@ -111,8 +111,8 @@ await p.evaluate(()=>{P.leader=false;P.tab='home';P.meId='';render();});await p.
 out.quickToolsSecGone=await p.evaluate(()=>Array.from(document.querySelectorAll('#view h2.sec')).every(function(h){return h.textContent.indexOf('常用工具')<0;}));
 out.quickToolsBtnGone=await p.evaluate(()=>document.querySelectorAll('#view [data-act="tool"][data-tool="money"]').length===0);
 await p.evaluate(()=>{ var sc=scenario('meal'); sc.assign=sc.assign||{}; sc.assign[members()[0].id]=0; P.meId=members()[0].id; render(); });await p.waitForTimeout(100);
-out.meStripHasAirline=await p.evaluate(()=>document.querySelector('.me-strip').textContent.indexOf('航空公司')>=0);
-out.meStripHasTerminal=await p.evaluate(()=>document.querySelector('.me-strip').textContent.indexOf('報到航廈')>=0);
+out.meStripHasAirline=await p.evaluate(()=>document.querySelector('.me-strip').textContent.indexOf('航班')>=0);
+out.meStripHasTerminal=await p.evaluate(()=>document.querySelector('.me-strip').textContent.indexOf('航班集合')>=0);
 out.meStripHasRoom=await p.evaluate(()=>document.querySelector('.me-strip').textContent.indexOf('我的房號')>=0);
 out.meStripHasMealGroup=await p.evaluate(()=>{ var sc=scenario('meal'); var gname=sc.names[0]||'第 1 組'; return document.querySelector('.me-strip').textContent.indexOf(gname)>=0; });
 await p.evaluate(()=>{P.leader=true;render();ACT.homeScnVis();});await p.waitForTimeout(150);
@@ -130,14 +130,14 @@ await p.evaluate(()=>closeSheet());
 await p.evaluate(()=>{P.tab='home';render();});await p.waitForTimeout(100);
 out.mealShownAgainAfterToggleBack=await p.evaluate(()=>{ var sc=scenario('meal'); var gname=sc.names[0]||'第 1 組'; return document.querySelector('.me-strip').textContent.indexOf(gname)>=0; });
 await p.evaluate(()=>{P.leader=false;P.meId='';render();});
-// v2.5：我的資訊卡片拿掉「換一個名字」；報到航廈可在「分組→航空公司→航空公司與航廈設定」設定，不寫死
+// v2.5：我的資訊卡片拿掉「換一個名字」；集合地點（原本的報到航廈）v3.25 起在「分組 → 交通 → 編輯情境」設定，不寫死
 out.meStripNoRename=await p.evaluate(()=>!document.querySelector('.me-strip [data-act="pickMe"]'));
-await p.evaluate(()=>{P.leader=true;P.tab='groups';P.scn='airline';render();});await p.waitForTimeout(100);
-out.airlineSettingsBtnLabel=await p.evaluate(()=>{ var b=document.querySelector('[data-act="editAirlines"]'); return b?b.textContent:'BUTTON NOT FOUND'; });
-out.airlineSectionEditBtnCount=await p.evaluate(()=>document.querySelectorAll('.grp h3 [data-act="editAirlines"]').length);
-await p.evaluate(()=>ACT.editAirlines());await p.waitForTimeout(100);
-out.airlineSheetMentionsTerminal=await p.evaluate(()=>{ var t=document.getElementById('sheetRoot').textContent; return t.indexOf('報到航廈')>=0 && t.indexOf('不是寫死的')>=0; });
-await p.evaluate(()=>{ document.querySelector('[name=eva_note]').value='桃園第三航廈（regress）'; ACT.saveAirlines(); });await p.waitForTimeout(100);
+await p.evaluate(()=>{P.leader=true;P.tab='groups';P.cat='transport';P.scn='air';render();});await p.waitForTimeout(100);
+out.airlineSettingsBtnLabel=await p.evaluate(()=>{ var b=document.querySelector('[data-act="editScenario"]:not([data-id=""])'); return b?b.textContent:'BUTTON NOT FOUND'; });
+out.airlineSectionEditBtnCount=await p.evaluate(()=>document.querySelectorAll('.grp h3 [data-act="editScenario"]').length);
+await p.evaluate(()=>document.querySelector('[data-act="editScenario"]:not([data-id=""])').click());await p.waitForTimeout(100);
+out.airlineSheetMentionsTerminal=await p.evaluate(()=>{ var t=document.getElementById('sheetRoot').textContent; return t.indexOf('上車／集合地點')>=0 && t.indexOf('搭乘時間')>=0; });
+await p.evaluate(()=>{ document.querySelector('[name=g_notes_0]').value='桃園第三航廈（regress）'; ACT.saveScenario(); });await p.waitForTimeout(100);
 await p.evaluate(()=>{ var m=members()[0]; m.airline='eva'; P.meId=m.id; P.tab='home'; render(); });await p.waitForTimeout(100);
 out.terminalReflectsEditedNote=await p.evaluate(()=>document.querySelector('.me-strip').textContent.indexOf('第三航廈（regress）')>=0);
 await p.evaluate(()=>{P.leader=false;P.meId='';render();});
