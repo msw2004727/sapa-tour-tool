@@ -47,7 +47,7 @@ const BC={time:'05:30',label:'集合',location:'桃園機場第二航廈',tip:''
         const today=[...document.querySelectorAll('.zsec')].map(g=>({z:((g.querySelector('.zlab')||{}).textContent||'').replace(/\s+/g,'').slice(0,4),cards:[...g.children].filter(c=>!c.classList.contains('zlab')).map(c=>{const h=c.querySelector('.card-h h2,.chead');return (h?h.textContent:c.textContent).replace(/\s+/g,' ').trim().slice(0,14);})}));
         const cur=[...document.querySelectorAll('.tl .cur, .today .cur, .badge.cur, .t-now')].map(e=>e.textContent.trim());
         P.tab='plan'; P.planDay=0; render(); const planDay=tx('.dayrow button.on')+' 頂列='+tx('#hdDay'); P.tab='home'; render();
-        return {status:di.status,idx:di.idx,vn:tzParts(VN).hm,tw:tzParts(TW).hm,
+        return {status:di.status,idx:di.idx,vn:tzParts(LTZ()).hm,tw:tzParts(TW).hm,
           heroLab:tx('.hero .lab'),heroTime:tx('.hero .time'),heroLoc:tx('.hero .loc'),count:q('#countdown')&&!q('#countdown').hidden?tx('#countdown'):'',
           lcd:tx('#hdCountdown'),next:ns?ns.kind+' '+ns.time+' '+ns.title:'—',zones:today,cur,planDay,greet:tx('#syncBar')};
       },withBc?BC:null);

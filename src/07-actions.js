@@ -1,15 +1,17 @@
 /* ===== 事件處理 ===== */
 function scnPath(sc){ var g=S().groups||{}; return 'scenarios/'+(g.scenarios||[]).indexOf(sc); }
-/* 「現在＋N 分」：先算出絕對時間，再決定要寫成台灣時間還是越南時間（出發日搭機前人在台灣）。
+/* 「現在＋N 分」：先算出絕對時間，再決定要寫成台灣時間還是當地時間（出發日搭機前人在台灣）。
    跨過午夜時日期跟著進位，不然倒數會變成「已過」。 */
-function wallAt(ms,off){ var d=new Date(ms+off*3600000); return {date:ymd(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate())),hm:pad(d.getUTCHours())+':'+pad(d.getUTCMinutes())}; }
-function nowPlusSlot(min){ var ms=Math.floor(nowMs()/60000)*60000+min*60000, tw=wallAt(ms,8), vn=wallAt(ms,7);
-  /* 挑「寫下去之後倒數算得回同一個時間」的那種寫法；出發日越南 08:01～09:00 兩種都對不上（大家在飛機上），
-     這時寫越南時間並另外記 tz:'VN'，倒數照 tz 算 */
-  if(slotMs(tw.date,tw.hm)===ms) return tw; if(slotMs(vn.date,vn.hm)===ms) return vn; vn.tz='VN'; return vn; }
+function wallAt(ms,tz){ var p=tzParts(tz,ms); return {date:p.date,hm:p.hm}; }
+function nowPlusSlot(min){ var ms=Math.floor(nowMs()/60000)*60000+min*60000, tw=wallAt(ms,TW), lt=wallAt(ms,LTZ());
+  /* 挑「寫下去之後倒數算得回同一個時間」的那種寫法；出發日（例：越南）08:01～09:00 兩種都對不上（大家在飛機上），
+     這時寫當地時間並另外記 tz:'VN'（舊名字，意思是「當地時間」），倒數照 tz 算 */
+  if(slotMs(tw.date,tw.hm)===ms) return tw; if(slotMs(lt.date,lt.hm)===ms) return lt; lt.tz='VN'; return lt; }
 function nowPlus(min){ return nowPlusSlot(min).hm; }
 function nowPlusDate(min){ return nowPlusSlot(min).date; }
 function stamp(){ return nowPlus(0); }
+/* 刪除、清空這類按鈕：第一次按只把字換成「再按一次…」，第二次才真的做 */
+function sure(t,label){ if(t.getAttribute('data-sure')==='1') return true; t.setAttribute('data-sure','1'); t.innerHTML=ic('alert')+esc(label); return false; }
 /* 下載一段文字成檔案（匯出備份檔、下載某一份自動備份） */
 function dlText(name,text){ try{ var blob=new Blob([text],{type:'application/json'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },500); return true; }catch(e){ return false; } }
 /* 清空與還原共用：驗 PIN → 按鈕變「處理中」→ 整批寫入。
@@ -72,7 +74,78 @@ var ACT={
   fullTaxi:function(){ FULL_LOCK=false; openFull(taxiFull()); },
   fullLock:function(){ FULL_LOCK=true; openFull(taxiFull()); toast('已鎖定，關閉前請按住解鎖鍵 2 秒'); },
   fullUnlock:function(){ /* 由長按處理，點一下不放行 */ toast('請按住 2 秒'); },
-  phrase:function(t){ var p=PHRASES[Number(t.getAttribute('data-i'))]; if(p) openFull(phraseFull(p)); },
+  phrase:function(t){ var p=phById(t.getAttribute('data-id')); if(p) openFull(phraseFull(p)); },
+  lostCard:function(){ openFull(phraseFull(lostPhrase())); },
+  /* ===== 工具頁內容（v3.23）===== */
+  tlCard:function(t){ P.tab='tools'; P.tool='card'; P.card=t.getAttribute('data-id')||''; closeSheet(); render(); window.scrollTo(0,0); },
+  tlCardEdit:function(t){ sheetCardEdit(t.getAttribute('data-id')||'',t.getAttribute('data-sec')||''); },
+  mdIns:function(t){ mdInsert(t.getAttribute('data-v'),t.getAttribute('data-inline')==='1'); },
+  mdBold:function(){ mdWrap('**'); },
+  tlCardSave:function(){ var id=SHEET.id, title=sv('title'); if(!title){ toast('請輸入標題'); return; }
+    var c=id?tlCard(id):null; if(!c){ c={id:uid()}; tlArr('cards').push(c); }
+    c.sec=sv('sec')==='local'?'local':'pre'; c.title=title; c.sub=sv('sub'); c.icon=ICONS[sv('icon')]?sv('icon'):'info';
+    var b=el('sheetRoot').querySelector('[name=body]'); c.body=b?b.value.replace(/\s+$/,''):'';
+    closeSheet(); Store.save('tools'); toast(id?'小卡已儲存':'已新增小卡'); },
+  tlCardDel:function(t){ if(!sure(t,'再按一次刪除')) return; var id=SHEET.id; Store.keepPrev('tools');
+    tl().cards=tlArr('cards').filter(function(c){ return !(c&&c.id===id); }); if(P.tool==='card'&&P.card===id) P.tool='menu';
+    closeSheet(); Store.save('tools'); toast('已刪除小卡'); },
+  /* 只跟同一區的小卡交換位置；表單留著，已經打的字不會不見 */
+  tlCardMove:function(t){ var c=tlCard(SHEET.id); if(!c) return; var dir=Number(t.getAttribute('data-dir')), all=tlArr('cards'), same=tlCards(c.sec==='local'?'local':'pre'), i=same.indexOf(c), j=i+dir;
+    if(i<0||j<0||j>=same.length){ toast(dir<0?'已經在最前面':'已經在最後面'); return; }
+    var a=all.indexOf(c), b=all.indexOf(same[j]); all[a]=same[j]; all[b]=c; Store.save('tools'); toast(dir<0?'已往前移':'已往後移'); },
+  taxiEdit:function(){ closeFull(); sheetTaxi(); },
+  taxiSave:function(){ var t=tl(); t.taxi={fl:sv('fl'),zh:sv('zh'),tip:sv('tip')}; t.lab={hotel:sv('lab_hotel'),addr:sv('lab_addr'),phone:sv('lab_phone'),call:sv('lab_call')};
+    closeSheet(); Store.save('tools'); toast('計程車卡已儲存'); },
+  langEdit:function(){ sheetLang(); },
+  langSave:function(){ var t=tl(); t.lang=sv('lang'); t.langTag=sv('langTag'); t.thanks=sv('thanks'); closeSheet(); Store.save('tools'); toast('外語設定已儲存'); },
+  phCatEdit:function(t){ sheetPhCat(t.getAttribute('data-id')||''); },
+  phCatSave:function(){ var name=sv('name'); if(!name){ toast('請輸入類別名稱'); return; }
+    var id=SHEET.id, c=id?tlCats().filter(function(x){ return x.id===id; })[0]:null; if(!c){ c={id:uid()}; tlArr('cats').push(c); }
+    c.name=name; c.e=sv('e'); c.sub=sv('sub'); closeSheet(); Store.save('tools'); toast('類別已儲存'); },
+  phCatDel:function(t){ if(!sure(t,'連圖卡一起刪？再按一次')) return; var id=SHEET.id, d=tl(); Store.keepPrev('tools');
+    d.cats=tlArr('cats').filter(function(c){ return !(c&&c.id===id); }); d.phrases=tlArr('phrases').filter(function(p){ return !(p&&p.cat===id); });
+    if(P.phCat===id) P.phCat=''; closeSheet(); Store.save('tools'); toast('已刪除類別'); },
+  phCatMove:function(t){ var dir=Number(t.getAttribute('data-dir')), cs=tlArr('cats'), i=cs.findIndex(function(c){ return c&&c.id===SHEET.id; }), j=i+dir;
+    if(i<0||j<0||j>=cs.length){ toast(dir<0?'已經在最前面':'已經在最後面'); return; }
+    var tmp=cs[i]; cs[i]=cs[j]; cs[j]=tmp; Store.save('tools'); toast(dir<0?'已往前移':'已往後移'); },
+  phEdit:function(t){ sheetPhrase(t.getAttribute('data-id')||'',t.getAttribute('data-cat')||P.phCat); },
+  phSave:function(){ var zh=sv('zh'); if(!zh){ toast('請輸入中文'); return; }
+    var id=SHEET.id, p=id?phById(id):null; if(!p){ p={id:uid()}; tlArr('phrases').push(p); }
+    p.zh=zh; p.fl=sv('fl'); p.say=sv('say'); p.e=sv('e'); p.cat=sv('cat')||p.cat||''; if(sck('lost')) p.lost=1; else delete p.lost;
+    closeSheet(); Store.save('tools'); toast('圖卡已儲存'); },
+  phDel:function(t){ if(!sure(t,'再按一次刪除')) return; var id=SHEET.id; tl().phrases=tlArr('phrases').filter(function(p){ return !(p&&p.id===id); });
+    closeSheet(); Store.save('tools'); toast('已刪除'); },
+  phMove:function(t){ var p=phById(SHEET.id); if(!p) return; var dir=Number(t.getAttribute('data-dir')), all=tlArr('phrases');
+    var cid=tlCats().some(function(c){ return c.id===p.cat; })?p.cat:'_', same=phInCat(cid), i=same.indexOf(p), j=i+dir;
+    if(i<0||j<0||j>=same.length){ toast(dir<0?'已經在最上面':'已經在最下面'); return; }
+    var a=all.indexOf(p), b=all.indexOf(same[j]); all[a]=same[j]; all[b]=p; Store.save('tools'); toast(dir<0?'已上移':'已下移'); },
+  phClearAsk:function(){ sheetTlClear('phrases'); },
+  tlClearAsk:function(t){ sheetTlClear(t.getAttribute('data-sec')); },
+  tlClearGo:function(t){ var sec=t.getAttribute('data-sec'), d=tl(); Store.keepPrev('tools');
+    if(sec==='quick'){ d.taxi={}; d.lab={}; d.money={}; d.cats=[]; d.phrases=[]; d.sos=[]; d.lang=''; d.langTag=''; d.thanks=''; P.money=[]; P.phCat=''; }
+    else if(sec==='phrases'){ d.cats=[]; d.phrases=[]; P.phCat=''; }
+    else d.cards=tlArr('cards').filter(function(c){ return !(c&&(c.sec==='local'?'local':'pre')===sec); });
+    closeSheet(); Store.save('tools'); toast('已清空'); },
+  sosEdit:function(){ sheetSOS(); },
+  sosSave:function(){ var out=[]; for(var i=0;i<(SHEET.n||0);i++){ var n=sv('s_name_'+i), ph=sv('s_phone_'+i), sb=sv('s_sub_'+i); if(n||ph) out.push({name:n||'電話',sub:sb,phone:ph}); }
+    tl().sos=out; var st=S().settings; if(st.embassyPhone){ delete st.embassyPhone; Store.save('settings'); }
+    closeSheet(); Store.save('tools'); toast('當地電話已儲存'); },
+  moneyEdit:function(){ sheetMoney(); },
+  moneyPreset:function(t){ var p=MONEY_PRESETS.filter(function(x){ return x.id===t.getAttribute('data-id'); })[0]; if(!p) return; moneyFill(p);
+    t.parentNode.querySelectorAll('.chip').forEach(function(b){ b.classList.toggle('on',b===t); }); toast('已帶入「'+p.name+'」，確認匯率後按儲存'); },
+  moneyRow:function(){ moneyAddRow({}); },
+  moneySave:function(){ var rate=Number(sv('m_rate')), notes=[];
+    for(var i=0;i<(SHEET.mn||0);i++){ var v=Number(sv('n_v_'+i)); if(v>0) notes.push({v:v,color:hex6(sv('n_c_'+i)),note:sv('n_t_'+i)}); }
+    if(!notes.length){ toast('至少要填一種面額'); return; }
+    if(!(rate>0)){ toast('請填匯率'); return; }
+    notes.sort(function(a,b){ return b.v-a.v; });
+    tl().money={name:sv('m_name'),unit:sv('m_unit'),dir:sv('m_dir')==='twd'?'twd':'fx',rate:rate,warn:sv('m_warn'),notes:notes};
+    P.money=[]; closeSheet(); Store.save('tools'); toast('外幣已儲存'); },
+  moneyWipe:function(t){ if(!sure(t,'再按一次清空')) return; Store.keepPrev('tools'); tl().money={}; P.money=[]; closeSheet(); Store.save('tools'); toast('已清空外幣'); },
+  tplList:function(){ sheetTpl(); },
+  tplGo:function(t){ var k=t.getAttribute('data-id'); if(!TPL[k]) return; if(!sure(t,'確定？')) return;
+    Store.keepPrev('tools'); Store.s.tools=clone(TPL[k].tools); P.tool='menu'; P.phCat=''; P.money=[];
+    closeSheet(); Store.save('tools'); toast('已套用「'+TPL[k].name+'」'); },
   noop:function(){},
   resetLocal:function(){ try{ localStorage.removeItem('sapa-data'); }catch(e){} location.reload(); },
   /* 更新：先把 Service Worker 與快取清掉再重載，不然重載回來的還是舊版 */
@@ -138,7 +211,7 @@ var ACT={
     '<div class="hero" style="margin-top:.6rem"><div class="lab">'+ic('megaphone')+'即時廣播</div><div class="time" style="font-size:1.9rem">自由活動</div><div class="loc"><span>目前沒有集合安排，請等下次廣播通知。</span></div></div>'+
     '<div class="muted" style="margin-top:.6rem">下一次設定集合時間時會自動恢復正常顯示。</div>',
     foot:'<button class="btn" data-act="sheetClose">取消</button><button class="btn warn" data-act="clearBroadcastGo">'+ic('trash')+'確定清空</button>'}); },
-  clearBroadcastGo:function(){ var b=S().broadcast; b.time=''; b.label=''; b.location=''; b.tip=''; b.idle=true; b.date=tzParts(VN).date; b.updatedAt=stamp();   /* 帶日期：隔天自動失效 */
+  clearBroadcastGo:function(){ var b=S().broadcast; b.time=''; b.label=''; b.location=''; b.tip=''; b.idle=true; b.date=tzParts(LTZ()).date; b.updatedAt=stamp();   /* 帶日期：隔天自動失效 */
     closeSheet(); Store.save('broadcast'); toast('已清空，現在顯示「自由活動」'); },
   bumpTime:function(t){ var b=S().broadcast, n=Number(t.getAttribute('data-min')), sl=nowPlusSlot(n); b.time=sl.hm; b.date=sl.date; if(sl.tz) b.tz=sl.tz; else delete b.tz; b.idle=false; b.updatedAt=stamp(); Store.save('broadcast'); toast('集合時間改為 '+b.time); },
   chipSet:function(t){ var e=el('sheetRoot').querySelector('[name="'+t.getAttribute('data-target')+'"]'); if(e){ e.value=t.getAttribute('data-val'); e.focus(); } },
@@ -270,10 +343,11 @@ var ACT={
   moveMember:function(t){ sheetMoveMember2(t.getAttribute('data-id')); },
   setGroup:function(t){ var sc=scenario(); if(!sc) return; var gi=Number(t.getAttribute('data-g')); var id=t.getAttribute('data-id'); closeSheet(); Store.savePath('groups',scnPath(sc)+'/assign/'+id, gi<0?null:gi); },
   settings:function(){ sheetSettings(); },
-  saveSettings:function(){ var st=S().settings; st.tripName=sv('tripName')||st.tripName; st.startDate=sv('startDate'); st.days=Math.max(1,Number(sv('days'))||5); st.dayOverride=Number(sv('dayOverride'))||0; if(sv('pin')){ st.pinHash=pinHash(sv('pin')); delete st.pin; } st.vndPerTwd=Number(sv('vndPerTwd'))||820;
-    st.flights={eva:{out:sv('eva_out'),back:sv('eva_back')},ci:{out:sv('ci_out'),back:sv('ci_back')},note:sv('flight_note')};
+  saveSettings:function(){ var st=S().settings; st.tripName=sv('tripName')||st.tripName; st.startDate=sv('startDate'); st.days=Math.max(1,Number(sv('days'))||5); st.dayOverride=Number(sv('dayOverride'))||0; if(sv('pin')){ st.pinHash=pinHash(sv('pin')); delete st.pin; }
+    var tz=sv('tz'); if(tz&&tzValid(tz)) st.tz=tz; else delete st.tz;
+    st.flights={eva:{out:sv('eva_out'),back:sv('eva_back')},ci:{out:sv('ci_out'),back:sv('ci_back')},note:sv('flight_note'),backPort:sv('backPort')};
     var cs=[]; for(var i=0;i<(SHEET.nContacts||0);i++){ var ph=sv('c_phone_'+i), ln=sv('c_line_'+i); if(ph||ln) cs.push({name:sv('c_name_'+i)||'聯絡人',label:sv('c_label_'+i),phone:ph,line:ln}); } st.contacts=cs; delete st.leaderName; delete st.leaderPhone; delete st.guideName; delete st.guidePhone;
-    st.embassyPhone=sv('embassyPhone'); P.planDay=0; closeSheet(); Store.save('settings'); toast('設定已儲存'); },
+    P.planDay=0; closeSheet(); Store.save('settings'); toast('設定已儲存'); },
   themeToggle:function(){ P.theme = (!P.theme) ? 'light' : (P.theme==='light' ? 'dark' : ''); savePrefs(); render();
     toast(!P.theme?'主題：跟隨系統設定':(P.theme==='dark'?'主題：固定深色':'主題：固定淺色')); },
   cardFold:function(b){ cardToggle(b.getAttribute('data-id')); },
@@ -323,10 +397,10 @@ var ACT={
       closeSheet(); render(); window.scrollTo(0,0);
       toast('已還原 '+whenText(e.at)+' 的備份，全團手機會同步'); }); },
   bkFile:function(t){ var e=bkFind(t.getAttribute('data-id')); if(!e) return;
-    var d=new Date(e.at||Date.now()), name='sapa-backup-'+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+'-'+pad(d.getHours())+pad(d.getMinutes())+'.json';
+    var d=new Date(e.at||Date.now()), name='trip-backup-'+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+'-'+pad(d.getHours())+pad(d.getMinutes())+'.json';
     /* 格式跟「匯出備份檔」一樣，可以直接用團務設定的「匯入備份檔」讀回來 */
     toast(dlText(name,JSON.stringify({app:'sapa-tour-tool',version:e.ver||APP_VERSION,exportedAt:new Date(e.at||Date.now()).toISOString(),reason:e.reason||'',docs:e.docs},null,2))?'已下載備份檔':'這個環境不支援下載'); },
-  exportData:function(){ toast(dlText('sapa-backup-'+tzParts(TW).date+'.json',Store.exportJSON())?'已匯出備份檔':'這個環境不支援下載'); },
+  exportData:function(){ toast(dlText('trip-backup-'+tzParts(TW).date+'.json',Store.exportJSON())?'已匯出備份檔':'這個環境不支援下載'); },
   noteTap:function(t){ P.money.push(Number(t.getAttribute('data-v'))); render(); },
   moneyUndo:function(){ P.money.pop(); render(); },
   moneyClear:function(){ P.money=[]; render(); },
@@ -350,7 +424,8 @@ document.addEventListener('input',function(ev){
   var t=ev.target;
   if(t.id==='memberSearch'){ P.q=t.value; var l=el('memberList'); if(l) l.innerHTML=memberListHTML(); }
   else if(t.id==='meSearch'){ var ml=el('meList'); if(ml) ml.innerHTML=meListHTML(t.value.trim()); }
-  else if(t.id==='twdIn'){ var v=Number(t.value)||0, r=Number(S().settings.vndPerTwd)||820; el('twdOut').textContent=v?fmtVND(Math.round(v*r/1000)*1000):'—'; }
+  else if(t.id==='twdIn'){ var v=Number(t.value)||0; el('twdOut').textContent=v?fmtFx(twdToFx(v)):'—'; }
+  else if(t.id==='mdBody'){ clearTimeout(window._mdT); window._mdT=setTimeout(mdPreview,150); }
   else if(t.id==='tnInput'){ var c=el('tnCount'); if(c) c.textContent=[].slice.call(t.value).length+' / 20 字'; }
   else if(t.id==='dbgZ'){ if(DBG){ DBG.z=(Number(t.value)||100)/100; dbgLayout(); } var zv=el('dbgZV'); if(zv) zv.textContent=t.value+'%'; }
   else if(t.id==='dbgX'||t.id==='dbgY'){ if(DBG){ if(t.id==='dbgX') DBG.px=Number(t.value)||0; else DBG.py=Number(t.value)||0; DBG.bySlider=true; dbgLayout(); } }

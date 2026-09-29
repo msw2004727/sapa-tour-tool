@@ -8,7 +8,7 @@
      sapa-tool.html   ← artifact 預覽版（沒有 doctype 與 head，由 claude.ai 包）
    ---------------------------------------------------------------
    接的順序不能亂（後面的檔案會用到前面定義的東西）：
-     01 樣式 → 02 骨架 → 03 常數/圖示 → 03b 預設資料
+     01 樣式 → 02 骨架 → 03 常數/圖示 → 03a 工具頁範本 → 03b 預設資料（空殼）
      → 04 核心/首頁 → 05 工具頁 → 06 表單 → 07 事件/啟動
 */
 const fs = require('fs');
@@ -23,6 +23,7 @@ const read = (f) => fs.readFileSync(p(f), 'utf8');
 /* src/ 底下的檔名刻意用編號開頭，排序就是組裝順序，一眼看得出來 */
 const JS_FILES = [
   'src/03-data.js',
+  'src/03a-tpl.js',
   'src/03b-seed.js',
   'src/04-core.js',
   'src/05-tools.js',
@@ -49,22 +50,22 @@ const HEAD = `<!doctype html>
 <meta name="robots" content="noindex,nofollow">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="月半越南團旅">
-<meta name="description" content="我們是一群在越南吃吃喝喝團體自由行的旅遊好咖">
+<meta name="apple-mobile-web-app-title" content="月半團旅">
+<meta name="description" content="我們是一群到處吃吃喝喝團體自由行的旅遊好咖">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="月半越南團旅">
-<meta property="og:title" content="月半越南團旅">
-<meta property="og:description" content="我們是一群在越南吃吃喝喝團體自由行的旅遊好咖">
+<meta property="og:site_name" content="月半團旅">
+<meta property="og:title" content="月半團旅">
+<meta property="og:description" content="我們是一群到處吃吃喝喝團體自由行的旅遊好咖">
 <meta property="og:url" content="https://750hd.com/">
 <meta property="og:image" content="https://750hd.com/icons/og-logo.jpg">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1000">
 <meta property="og:image:height" content="1000">
-<meta property="og:image:alt" content="月半越南團旅">
+<meta property="og:image:alt" content="月半團旅">
 <meta property="og:locale" content="zh_TW">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="月半越南團旅">
-<meta name="twitter:description" content="我們是一群在越南吃吃喝喝團體自由行的旅遊好咖">
+<meta name="twitter:title" content="月半團旅">
+<meta name="twitter:description" content="我們是一群到處吃吃喝喝團體自由行的旅遊好咖">
 <meta name="twitter:image" content="https://750hd.com/icons/og-logo.jpg">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" type="image/png" href="./icons/icon-192.png">

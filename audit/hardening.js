@@ -55,7 +55,7 @@ const wait=(p,ms)=>p.waitForTimeout(ms);
   ck('天數藥丸在特大字級下有變大',lcd.xl.chip>lcd.md.chip,lcd);
   ck('標準字級下狀態字 ≥ 11px',lcd.md.sy>=11,lcd.md);
   ck('單機模式顯示「未連線」而不是「單機」',lcd.txt==='未連線',lcd.txt);
-  ck('title 用站名',/月半越南團旅/.test(lcd.title),lcd.title);
+  ck('title 用站名（v3.23 改成月半團旅）',/^月半團旅 v/.test(lcd.title),lcd.title);
   ck('320px 特大字時頂列不被裁切',await (async()=>{ const q=await ctx.newPage(); await q.setViewportSize({width:320,height:568}); await q.goto(FILE); await wait(q,400);
     const r=await q.evaluate(()=>{ document.documentElement.setAttribute('data-fs','xl'); const e=document.querySelector('.lcd'); return {clip:e.scrollWidth-e.clientWidth}; }); await q.close(); return r.clip<=0; })());
 
@@ -143,7 +143,7 @@ const wait=(p,ms)=>p.waitForTimeout(ms);
   ck('標題是橫的一行，沒被擠成直排',sos.th<=40,sos.th);
   ck('按鈕文字沒有被切掉',!sos.clipped,sos);
   for(const [w,fs] of [[320,'xl'],[375,'lg']]){ const q=await ctx.newPage(); await q.setViewportSize({width:w,height:600}); await q.goto(FILE); await wait(q,300);
-    const r=await q.evaluate(fs=>{ P.fs=fs; document.documentElement.setAttribute('data-fs',fs); S().settings.contacts=[{name:'麥松華',phone:'+886912920024',line:'https://line.me/ti/p/X'}]; S().settings.dayOverride=2; P.tab='home'; render();
+    const r=await q.evaluate(fs=>{ P.fs=fs; document.documentElement.setAttribute('data-fs',fs); S().settings.contacts=[{name:'主辦人',phone:'+886900000000',line:'https://line.me/ti/p/X'}]; S().settings.dayOverride=2; P.tab='home'; render();
       const row=document.querySelector('.sos-row'); return {th:Math.round(row.querySelector('.t').getBoundingClientRect().height),clipped:[...row.querySelectorAll('a,button')].some(e=>e.scrollWidth>e.clientWidth+3),ov:document.documentElement.scrollWidth>innerWidth}; },fs);
     await q.close(); ck(w+'px '+fs+'：緊急求助列不擠不切不溢出',r.th<=48&&!r.clipped&&!r.ov,r); }
 

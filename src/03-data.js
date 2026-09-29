@@ -1,5 +1,5 @@
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '3.22';
+var APP_VERSION = '3.23';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -95,95 +95,9 @@ var BDS = [['bd-grey','一般'],['bd-gold','金框'],['bd-red','紅虛線'],['bd
 var AIRLINES = {eva:{label:'長榮',name:'長榮航空',note:'桃園第二航廈',term:'T2',cls:'eva'},ci:{label:'華航',name:'中華航空',note:'桃園第一航廈',term:'T1',cls:'ci'}};
 var MEAL_TAGS = ['素食','不吃牛','不吃辣','要溫水','已點餐','已上菜','還沒到','要打包'];
 
-/* 越南鈔票（顏色為近似值，重點是提醒「同色系」的混淆組） */
-var NOTES = [
-  {v:500000,label:'500k',color:'#4BB3C6',note:'藍綠色 ⚠'},
-  {v:200000,label:'200k',color:'#B65A3C',note:'紅棕色'},
-  {v:100000,label:'100k',color:'#3E8E5B',note:'綠色'},
-  {v:50000,label:'50k',color:'#C2678F',note:'粉紫色'},
-  {v:20000,label:'20k',color:'#4C86C4',note:'藍色 ⚠'},
-  {v:10000,label:'10k',color:'#B8862D',note:'黃褐色'}
-];
-
-/* 越語圖卡：出示給對方看為主，讀音只是輔助 */
-/* 溝通圖卡分類：先點分類、再點圖卡（張數多了才不會滑不完） */
-var PHRASE_CATS = [
-  {id:'hi',   e:'🙏', name:'基本禮貌',  sub:'你好、謝謝、聽不懂'},
-  {id:'eat',  e:'🍜', name:'點餐與飲食', sub:'溫水、不要香菜、過敏'},
-  {id:'shop', e:'🛒', name:'購物與殺價', sub:'多少錢、便宜一點、刷卡'},
-  {id:'go',   e:'🚕', name:'交通與問路', sub:'載我去、計費表、廁所'},
-  {id:'stay', e:'🏨', name:'飯店',      sub:'退房、寄行李、沒熱水'},
-  {id:'sick', e:'🤒', name:'身體不適',   sub:'頭暈、肚子痛、藥局'},
-  {id:'sos',  e:'🧭', name:'走散與緊急', sub:'走散卡、報警、救護車'}
-];
-/* say = 空耳中文：照著念就有七八分像，長輩不用學越南文也講得出口 */
-var PHRASES = [
-  /* --- 基本禮貌 --- */
-  {cat:'hi',e:'👋',zh:'你好',vi:'Xin chào.',say:'新 照'},
-  {cat:'hi',e:'🙏',zh:'謝謝',vi:'Cảm ơn.',say:'感 恩'},
-  {cat:'hi',e:'🙇',zh:'對不起',vi:'Xin lỗi.',say:'新 羅依'},
-  {cat:'hi',e:'🙅',zh:'不用了，謝謝',vi:'Không cần, cảm ơn.',say:'空 艮，感 恩'},
-  {cat:'hi',e:'❓',zh:'我聽不懂',vi:'Tôi không hiểu.',say:'兜依 空 修'},
-  {cat:'hi',e:'✍️',zh:'請寫在這裡',vi:'Xin viết ra đây.',say:'新 越 匝 呆'},
-  {cat:'hi',e:'🐢',zh:'請說慢一點',vi:'Xin nói chậm lại.',say:'新 諾依 讚 賴'},
-  {cat:'hi',e:'⭕',zh:'好 / 不是',vi:'Vâng. / Không.',say:'翁 / 空'},
-  /* --- 點餐與飲食 --- */
-  {cat:'eat',e:'🍵',zh:'溫開水，不加冰',vi:'Cho tôi xin nước ấm, không đá.',say:'糗 兜依 新 呢 暗，空 達'},
-  {cat:'eat',e:'♨️',zh:'請給我熱水',vi:'Cho tôi xin nước nóng.',say:'糗 兜依 新 呢 弄'},
-  {cat:'eat',e:'🌿',zh:'請不要放香菜',vi:'Xin đừng cho rau mùi.',say:'新 登 糗 繞 妹'},
-  {cat:'eat',e:'🌶️',zh:'不要辣',vi:'Không cay.',say:'空 該'},
-  {cat:'eat',e:'🧂',zh:'請不要加味精',vi:'Xin đừng cho bột ngọt.',say:'新 登 糗 撥 諾'},
-  {cat:'eat',e:'🥗',zh:'我吃素（全素）',vi:'Tôi ăn chay. Không thịt, không cá, không nước mắm.',say:'兜依 安 齋'},
-  {cat:'eat',e:'🦐',zh:'我對海鮮過敏（蝦、蟹、魷魚、螺），請不要放進菜裡',vi:'Tôi bị dị ứng hải sản (tôm, cua, mực, ốc). Xin đừng cho vào món ăn.',say:'兜依 逼 基 恩 嗨 賞'},
-  {cat:'eat',e:'🥜',zh:'我對花生過敏，請不要放進菜裡',vi:'Tôi bị dị ứng lạc (đậu phộng). Xin đừng cho vào món ăn.',say:'兜依 逼 基 恩 辣'},
-  {cat:'eat',e:'🐄',zh:'我不吃牛肉',vi:'Tôi không ăn thịt bò.',say:'兜依 空 安 提 播'},
-  {cat:'eat',e:'👥',zh:'兩人份',vi:'Cho hai người ăn.',say:'糗 嗨 額 安'},
-  {cat:'eat',e:'👍',zh:'有什麼推薦的？',vi:'Có món gì ngon?',say:'果 蒙 記 濃'},
-  {cat:'eat',e:'🥢',zh:'請再給我一雙筷子',vi:'Cho tôi thêm một đôi đũa.',say:'糗 兜依 添 莫 堆 度'},
-  {cat:'eat',e:'🥡',zh:'請幫我打包',vi:'Cho tôi mang về.',say:'糗 兜依 芒 為'},
-  {cat:'eat',e:'🧾',zh:'買單，謝謝',vi:'Tính tiền. Cảm ơn!',say:'丁 電，感 恩'},
-  /* --- 購物與殺價 --- */
-  {cat:'shop',e:'💰',zh:'多少錢？',vi:'Bao nhiêu tiền?',say:'包 妞 電'},
-  {cat:'shop',e:'😮',zh:'太貴了，便宜一點',vi:'Đắt quá! Bớt chút đi.',say:'達 瓜！播 竹 低'},
-  {cat:'shop',e:'👀',zh:'我看看就好，謝謝',vi:'Tôi chỉ xem thôi, cảm ơn.',say:'兜依 機 顯 拖依，感 恩'},
-  {cat:'shop',e:'💳',zh:'可以刷卡嗎？',vi:'Tôi trả bằng thẻ được không?',say:'兜依 匝 幫 鐵 得 空'},
-  {cat:'shop',e:'🎨',zh:'有別的顏色嗎？',vi:'Có màu khác không?',say:'果 毛 卡 空'},
-  {cat:'shop',e:'👕',zh:'可以試穿嗎？',vi:'Tôi mặc thử được không?',say:'兜依 麥 圖 得 空'},
-  {cat:'shop',e:'🛍️',zh:'請幫我裝袋',vi:'Cho tôi cái túi.',say:'糗 兜依 蓋 堆'},
-  {cat:'shop',e:'✅',zh:'我要這個',vi:'Tôi lấy cái này.',say:'兜依 雷 蓋 耐'},
-  /* --- 交通與問路 --- */
-  {cat:'go',e:'🚕',zh:'請載我去這裡',vi:'Làm ơn đưa tôi đến đây.',say:'藍 恩 度 兜依 頂 呆'},
-  {cat:'go',e:'🧮',zh:'請開計費表',vi:'Xin bật đồng hồ tính tiền.',say:'新 拔 動 賀 丁 電'},
-  {cat:'go',e:'💵',zh:'到這裡多少錢？',vi:'Đến đây bao nhiêu tiền?',say:'頂 呆 包 妞 電'},
-  {cat:'go',e:'🛑',zh:'請在這裡停',vi:'Dừng ở đây.',say:'仲 兒 呆'},
-  {cat:'go',e:'⏱️',zh:'還要多久？',vi:'Còn bao lâu nữa?',say:'共 包 撈 呢'},
-  {cat:'go',e:'📍',zh:'這個地方在哪裡？',vi:'Chỗ này ở đâu?',say:'主 耐 兒 鬥'},
-  {cat:'go',e:'📱',zh:'請幫我叫一台車',vi:'Gọi giúp tôi một chiếc taxi.',say:'軌 族 兜依 莫 這 taxi'},
-  {cat:'go',e:'🚻',zh:'洗手間在哪裡？',vi:'Nhà vệ sinh ở đâu?',say:'呀 唯 星 兒 鬥'},
-  /* --- 飯店 --- */
-  {cat:'stay',e:'🏨',zh:'我住在這間飯店',vi:'Tôi ở khách sạn này.',say:'兜依 兒 卡 上 耐'},
-  {cat:'stay',e:'🕙',zh:'幾點要退房？',vi:'Mấy giờ phải trả phòng?',say:'埋 者 費 匝 峰'},
-  {cat:'stay',e:'🧳',zh:'可以寄放行李嗎？',vi:'Tôi gửi hành lý ở đây được không?',say:'兜依 規 漢 里 兒 呆 得 空'},
-  {cat:'stay',e:'🚿',zh:'房間沒有熱水',vi:'Phòng tôi không có nước nóng.',say:'峰 兜依 空 果 呢 弄'},
-  {cat:'stay',e:'📶',zh:'Wi-Fi 密碼是什麼？',vi:'Mật khẩu wifi là gì?',say:'麥 靠 wifi 拉 記'},
-  {cat:'stay',e:'🧻',zh:'請再給我一條毛巾',vi:'Cho tôi thêm một cái khăn tắm.',say:'糗 兜依 添 莫 蓋 看 膽'},
-  {cat:'stay',e:'❄️',zh:'冷氣壞了',vi:'Điều hòa bị hỏng.',say:'丟 華 逼 紅'},
-  /* --- 身體不適 --- */
-  {cat:'sick',e:'🤒',zh:'我不舒服',vi:'Tôi không khỏe.',say:'兜依 空 傀'},
-  {cat:'sick',e:'😵',zh:'我頭暈',vi:'Tôi bị chóng mặt.',say:'兜依 逼 中 麥'},
-  {cat:'sick',e:'🤢',zh:'我肚子痛',vi:'Tôi bị đau bụng.',say:'兜依 逼 到 崩'},
-  {cat:'sick',e:'💊',zh:'附近有藥局嗎？',vi:'Gần đây có nhà thuốc không?',say:'亙 呆 果 呀 拖 空'},
-  {cat:'sick',e:'🩺',zh:'我需要看醫生',vi:'Tôi cần đi khám bác sĩ.',say:'兜依 艮 低 康 拔 西'},
-  {cat:'sick',e:'🆘',zh:'請幫我叫救護車 115',vi:'Tôi không khỏe. Xin gọi cấp cứu 115 giúp tôi.',say:'（出示此卡）'},
-  /* --- 走散與緊急 --- */
-  {cat:'sos',e:'🧑‍🤝‍🧑',zh:'走散了，請幫我打電話',vi:'Tôi bị lạc đoàn. Xin gọi giúp tôi số điện thoại bên dưới.',say:'（出示此卡並指向下方電話）',lost:true},
-  {cat:'sos',e:'🇹🇼',zh:'我是台灣來的旅客',vi:'Tôi là khách du lịch Đài Loan.',say:'兜依 拉 卡 租 力 呆 巒'},
-  {cat:'sos',e:'👮',zh:'請幫我報警 113',vi:'Xin gọi công an 113 giúp tôi.',say:'新 軌 工 安 113 族 兜依'},
-  {cat:'sos',e:'🗺️',zh:'請幫我看地圖，我迷路了',vi:'Tôi bị lạc đường. Xin xem giúp bản đồ này.',say:'兜依 逼 辣 冷。新 顯 族 半 抖 耐'}
-];
-
-/* ===== 預設示範資料（正式使用時由管理者在管理模式修改，或由雲端資料覆蓋） ===== */
+/* ===== 雲端同步的文件 ===== */
 /* photos 獨立成一份文件：底圖不能塞在 itinerary 裡，
    因為新增／編輯行程會用 Store.save('itinerary') 整份覆寫，那樣每改一個字都要重傳所有圖。 */
-var DOC_KEYS = ['settings','broadcast','itinerary','members','groups','rollcall','notebook','photos'];
-var DOC_NAMES = {settings:'團務設定',broadcast:'廣播',itinerary:'行程',members:'名單',groups:'分組',rollcall:'點名',notebook:'記事本',photos:'底圖'};
+/* tools（v3.23）：工具頁的內容（知識小卡、外語圖卡、外幣、計程車卡、當地急救電話），範本在 03a-tpl.js */
+var DOC_KEYS = ['settings','broadcast','itinerary','members','groups','rollcall','notebook','photos','tools'];
+var DOC_NAMES = {settings:'團務設定',broadcast:'廣播',itinerary:'行程',members:'名單',groups:'分組',rollcall:'點名',notebook:'記事本',photos:'底圖',tools:'工具內容'};

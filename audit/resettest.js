@@ -26,7 +26,7 @@ const FAKE=()=>{
       Object.keys(u).forEach(function(p){ if(p.indexOf('backups/trip/')===0){ var id=p.slice(13); if(u[p]===null) delete __cloud.bk[id]; else __cloud.bk[id]=JSON.parse(JSON.stringify(u[p])); } });
       return Promise.resolve(); };
   };
-  /* 雲端把剛剛整批寫進去的 8 份文件推回來（跟 Firebase 一樣，空陣列／空物件不見了） */
+  /* 雲端把剛剛整批寫進去的所有文件推回來（跟 Firebase 一樣，空陣列／空物件不見了） */
   window.cloudEcho=function(){ var u=__cloud.updates[__cloud.updates.length-1], d={};
     Object.keys(u).forEach(function(p){ if(p.indexOf('trip/')===0) d[p.slice(5)]=fbNorm(u[p])||{}; });
     Store.applyRemote(d); return d; };
@@ -60,7 +60,7 @@ const FAKE=()=>{
       nbPage:()=>sheetNbPage(''), backups:()=>sheetBackups(), share:()=>sheetShare(), leaderMenu:()=>sheetLeaderMenu()};
     for(const k in sheets){ sheets[k](); look('表單 '+k); closeSheet(); }
     openFull(taxiFull()); look('計程車卡'); closeFull();
-    openFull(phraseFull(PHRASES.filter(x=>x.lost)[0])); look('走散卡'); closeFull();
+    openFull(phraseFull(lostPhrase())); look('走散卡'); closeFull();
     P.tab='home'; render();
     return {n,bad};
   };
@@ -163,11 +163,11 @@ const SHORT='.tab span,.tab-home .lb,.chip,.btn:not(.wrap) .b2>span:first-child,
       members:u['trip/members'],itinerary:u['trip/itinerary'],settings:u['trip/settings'],
       sheet:!!document.querySelector('.sheet'),tab:P.tab,meId:P.meId,hero:(document.querySelector('.hero')||{}).textContent||'',
       day:document.getElementById('hdDay').textContent,toast:document.getElementById('toast').textContent,
-      local:bkLocalList().map(x=>x.id),now:{m:members().length,i:items().length},pin:pinOK('8888')}; });
-  ck('只送出一次整批寫入：8 份文件＋1 份備份在同一筆',a6.sent===1&&a6.keys.length===9&&a6.keys.filter(k=>k.indexOf('trip/')===0).length===8,a6.keys);
-  ck('備份是清空前的完整內容（33 人、30 站、底圖、團名）',a6.bk&&a6.bk.m===33&&a6.bk.i===30&&a6.bk.ph===1&&a6.bk.trip==='沙壩雲海五日'&&a6.bk.reason==='clear'&&a6.bk.ver==='3.22',a6.bk);
+      local:bkLocalList().map(x=>x.id),now:{m:members().length,i:items().length},pin:pinOK('8888'),ver:APP_VERSION,docs:DOC_KEYS.length}; });
+  ck('只送出一次整批寫入：9 份文件（v3.23 多了工具內容）＋1 份備份在同一筆',a6.docs===9&&a6.sent===1&&a6.keys.length===10&&a6.keys.filter(k=>k.indexOf('trip/')===0).length===9&&a6.keys.indexOf('trip/tools')>=0,a6.keys);
+  ck('備份是清空前的完整內容（33 人、30 站、底圖、團名）',a6.bk&&a6.bk.m===33&&a6.bk.i===30&&a6.bk.ph===1&&a6.bk.trip==='沙壩雲海五日'&&a6.bk.reason==='clear'&&a6.bk.ver===a6.ver,a6.bk);
   ck('名單、行程只剩 _ts 與 _cleared（新規則認得的標記）',JSON.stringify(Object.keys(a6.members).sort())==='["_cleared","_ts"]'&&JSON.stringify(Object.keys(a6.itinerary).sort())==='["_cleared","_ts"]',{m:a6.members,i:a6.itinerary});
-  ck('設定只留 PIN 雜湊與最低版本（全部清到最乾淨）',JSON.stringify(Object.keys(a6.settings).sort())==='["_cleared","_ts","minVersion","pinHash"]'&&a6.settings.minVersion==='3.22',a6.settings);
+  ck('設定只留 PIN 雜湊與最低版本（全部清到最乾淨）',JSON.stringify(Object.keys(a6.settings).sort())==='["_cleared","_ts","minVersion","pinHash"]'&&a6.settings.minVersion===a6.ver,a6.settings);
   ck('清空後原本的 PIN 照樣能用',a6.pin);
   ck('表單關掉、回到首頁',!a6.sheet&&a6.tab==='home',a6);
   ck('首頁顯示「尚未建立旅程」',/尚未建立旅程/.test(a6.hero)&&/目前沒有旅程資料/.test(a6.hero),a6.hero);

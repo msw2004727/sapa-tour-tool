@@ -7,27 +7,27 @@
 <meta name="robots" content="noindex,nofollow">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="月半越南團旅">
-<meta name="description" content="我們是一群在越南吃吃喝喝團體自由行的旅遊好咖">
+<meta name="apple-mobile-web-app-title" content="月半團旅">
+<meta name="description" content="我們是一群到處吃吃喝喝團體自由行的旅遊好咖">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="月半越南團旅">
-<meta property="og:title" content="月半越南團旅">
-<meta property="og:description" content="我們是一群在越南吃吃喝喝團體自由行的旅遊好咖">
+<meta property="og:site_name" content="月半團旅">
+<meta property="og:title" content="月半團旅">
+<meta property="og:description" content="我們是一群到處吃吃喝喝團體自由行的旅遊好咖">
 <meta property="og:url" content="https://750hd.com/">
 <meta property="og:image" content="https://750hd.com/icons/og-logo.jpg">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1000">
 <meta property="og:image:height" content="1000">
-<meta property="og:image:alt" content="月半越南團旅">
+<meta property="og:image:alt" content="月半團旅">
 <meta property="og:locale" content="zh_TW">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="月半越南團旅">
-<meta name="twitter:description" content="我們是一群在越南吃吃喝喝團體自由行的旅遊好咖">
+<meta name="twitter:title" content="月半團旅">
+<meta name="twitter:description" content="我們是一群到處吃吃喝喝團體自由行的旅遊好咖">
 <meta name="twitter:image" content="https://750hd.com/icons/og-logo.jpg">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" type="image/png" href="./icons/icon-192.png">
 <link rel="apple-touch-icon" href="./icons/icon-192.png">
-<title>月半越南團旅</title>
+<title>月半團旅</title>
 <style>
 :root{
   --bg:#EEF2F5; --card:#FFFFFF; --ink:#1B2437; --ink-2:#4A5568; --ink-3:#5F6B7A; --line:#D9E0E8; --frame:#C9D2DC;
@@ -118,7 +118,7 @@ svg.i{width:1.25rem;height:1.25rem;flex-shrink:0;fill:none;stroke:currentColor;s
 .lcd .cd.late{color:var(--lcd-red);text-shadow:0 0 8px var(--lcd-red-glow)}
 .lcd .cd.none{color:var(--lcd-dim);text-shadow:none}
 html[data-fs="xl"] .lcd .dv2{display:none}
-/* 面板分成「越南｜台灣」與「集合倒數｜連線」兩組；放不下一行時第二組自動換到下一行，
+/* 面板分成「當地｜台灣」與「集合倒數｜連線」兩組；放不下一行時第二組自動換到下一行，
    中間那條分隔線在換行時藏起來。這樣字級可以放大到看得清楚，不用為了塞成一行而縮字。 */
 @media (max-width:360px){
   html[data-fs="lg"] .lcd .dv2,html[data-fs="xl"] .lcd .dv2{display:none}
@@ -516,7 +516,7 @@ ul.clr-list{gap:.3rem;margin-top:.35rem;line-height:1.45}
 .note-item{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.75rem .85rem;font-size:1rem;line-height:1.55;font-weight:600;color:var(--ink);white-space:pre-line}
 .it-wrap{display:flex;flex-direction:column;gap:.5rem}
 .it-row{display:flex;gap:.4rem;align-items:stretch}
-.it-row>.ck-row,.it-row>.note-item{flex:1;min-width:0}
+.it-row>.ck-row,.it-row>.note-item,.it-row>.ph{flex:1;min-width:0}
 .it-row>.nb-head{flex:1}
 .it-row .edit{width:44px;min-width:44px;padding:0;flex-shrink:0;align-self:center;min-height:44px}
 .tf{display:flex;align-items:center;gap:.35rem}
@@ -696,6 +696,29 @@ select.in.sm{min-height:2.5rem;font-size:.88rem;padding:0 1.6rem 0 .55rem;width:
 .tcard svg.i{width:1.5rem;height:1.5rem;color:var(--indigo);margin-bottom:.15rem}
 .tcard b{font-size:1rem;font-weight:900;white-space:nowrap;word-break:keep-all}
 .tcard small{font-size:.875rem;color:var(--ink-3);font-weight:700;line-height:1.25}
+/* ===== 工具頁內容（v3.23）：主辦人自己寫的，長度不一定，寧可換行也不要撐破版面 ===== */
+.tcard b{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.tl-lead{margin-top:-.35rem}
+.tl-lead>.btn{flex:0 1 auto}
+.kc{display:flex;flex-direction:column;gap:.8rem}
+.kc .ic-h,.kc dl.kv2 dt{white-space:normal}
+.kc .info-card>*+*{margin-top:.6rem}
+.kc .info-card>.ic-h+*{margin-top:0}
+.kc h2.sec::before{content:'';display:inline-block;width:.28rem;height:1.05em;border-radius:2px;background:var(--indigo);flex-shrink:0}
+.kc .info-card,.kc .warn-box{overflow-wrap:anywhere}
+.md-bar{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.4rem}
+.md-bar .chip{min-height:2.5rem}
+textarea.in.md-ta{min-height:14rem;font-size:1rem;line-height:1.55}
+.md-help{margin-top:.35rem;line-height:1.5}
+.md-prev{border:1.5px dashed var(--line);border-radius:12px;padding:.6rem;background:var(--bg)}
+.rate-row{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:.4rem}
+.mn-rows{display:flex;flex-direction:column;gap:.4rem;margin-bottom:.45rem}
+.mn-row{display:grid;grid-template-columns:minmax(0,1fr) 3rem minmax(0,1.3fr);gap:.4rem;align-items:center}
+.mn-row input[type=color]{padding:.2rem;height:3rem;cursor:pointer}
+.sos-ed{display:flex;flex-direction:column;gap:.4rem;padding-bottom:.6rem;border-bottom:1px dashed var(--line)}
+.ck-line{display:flex;gap:.55rem;align-items:flex-start;font-weight:700;line-height:1.45;padding:.3rem 0;cursor:pointer}
+.ck-line input{width:1.5rem;height:1.5rem;flex-shrink:0;margin-top:.05rem;accent-color:var(--indigo)}
+.full .fh-b{display:flex;gap:.4rem;flex-shrink:0}
 .ver{text-align:center;font-size:.875rem;color:var(--ink-3);font-weight:700;padding:.4rem 0 .2rem;letter-spacing:.04em}
 .btn.line{background:#0B7A3A;color:#fff;border-color:#0B7A3A}
 .btn.line svg.i{width:1.1rem;height:1.1rem}
@@ -730,7 +753,7 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
 <div class="app" id="app">
   <header class="top">
     <div class="top-r1">
-      <div class="trip-name" id="hdTrip">沙壩雲海五日</div>
+      <div class="trip-name" id="hdTrip">月半團旅</div>
       <button class="pen" id="btnTrip" data-act="editTripName" aria-label="修改團名" title="修改團名" hidden>✏️</button>
       <span class="day-chip" id="hdDay">第 1 天</span>
       <button class="icon-btn" id="btnTheme" data-act="themeToggle" aria-label="切換深淺色主題" title="深淺色"></button>
@@ -739,7 +762,7 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
     </div>
     <div class="top-r2">
       <div class="lcd" aria-live="off">
-        <span class="lg1"><span class="lb">越南</span><span class="n" id="clockVN">--:--</span>
+        <span class="lg1"><span class="lb">當地</span><span class="n" id="clockLT">--:--</span>
         <span class="dv"></span><span class="tw">台灣 <span id="clockTW">--:--</span></span></span>
         <span class="dv dv2"></span>
         <span class="lg2"><span class="cd" id="hdCountdown" hidden></span>
@@ -761,7 +784,7 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
 <script src="./config.js"></script>
 <script>
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '3.22';
+var APP_VERSION = '3.23';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -857,370 +880,891 @@ var BDS = [['bd-grey','一般'],['bd-gold','金框'],['bd-red','紅虛線'],['bd
 var AIRLINES = {eva:{label:'長榮',name:'長榮航空',note:'桃園第二航廈',term:'T2',cls:'eva'},ci:{label:'華航',name:'中華航空',note:'桃園第一航廈',term:'T1',cls:'ci'}};
 var MEAL_TAGS = ['素食','不吃牛','不吃辣','要溫水','已點餐','已上菜','還沒到','要打包'];
 
-/* 越南鈔票（顏色為近似值，重點是提醒「同色系」的混淆組） */
-var NOTES = [
-  {v:500000,label:'500k',color:'#4BB3C6',note:'藍綠色 ⚠'},
-  {v:200000,label:'200k',color:'#B65A3C',note:'紅棕色'},
-  {v:100000,label:'100k',color:'#3E8E5B',note:'綠色'},
-  {v:50000,label:'50k',color:'#C2678F',note:'粉紫色'},
-  {v:20000,label:'20k',color:'#4C86C4',note:'藍色 ⚠'},
-  {v:10000,label:'10k',color:'#B8862D',note:'黃褐色'}
-];
-
-/* 越語圖卡：出示給對方看為主，讀音只是輔助 */
-/* 溝通圖卡分類：先點分類、再點圖卡（張數多了才不會滑不完） */
-var PHRASE_CATS = [
-  {id:'hi',   e:'🙏', name:'基本禮貌',  sub:'你好、謝謝、聽不懂'},
-  {id:'eat',  e:'🍜', name:'點餐與飲食', sub:'溫水、不要香菜、過敏'},
-  {id:'shop', e:'🛒', name:'購物與殺價', sub:'多少錢、便宜一點、刷卡'},
-  {id:'go',   e:'🚕', name:'交通與問路', sub:'載我去、計費表、廁所'},
-  {id:'stay', e:'🏨', name:'飯店',      sub:'退房、寄行李、沒熱水'},
-  {id:'sick', e:'🤒', name:'身體不適',   sub:'頭暈、肚子痛、藥局'},
-  {id:'sos',  e:'🧭', name:'走散與緊急', sub:'走散卡、報警、救護車'}
-];
-/* say = 空耳中文：照著念就有七八分像，長輩不用學越南文也講得出口 */
-var PHRASES = [
-  /* --- 基本禮貌 --- */
-  {cat:'hi',e:'👋',zh:'你好',vi:'Xin chào.',say:'新 照'},
-  {cat:'hi',e:'🙏',zh:'謝謝',vi:'Cảm ơn.',say:'感 恩'},
-  {cat:'hi',e:'🙇',zh:'對不起',vi:'Xin lỗi.',say:'新 羅依'},
-  {cat:'hi',e:'🙅',zh:'不用了，謝謝',vi:'Không cần, cảm ơn.',say:'空 艮，感 恩'},
-  {cat:'hi',e:'❓',zh:'我聽不懂',vi:'Tôi không hiểu.',say:'兜依 空 修'},
-  {cat:'hi',e:'✍️',zh:'請寫在這裡',vi:'Xin viết ra đây.',say:'新 越 匝 呆'},
-  {cat:'hi',e:'🐢',zh:'請說慢一點',vi:'Xin nói chậm lại.',say:'新 諾依 讚 賴'},
-  {cat:'hi',e:'⭕',zh:'好 / 不是',vi:'Vâng. / Không.',say:'翁 / 空'},
-  /* --- 點餐與飲食 --- */
-  {cat:'eat',e:'🍵',zh:'溫開水，不加冰',vi:'Cho tôi xin nước ấm, không đá.',say:'糗 兜依 新 呢 暗，空 達'},
-  {cat:'eat',e:'♨️',zh:'請給我熱水',vi:'Cho tôi xin nước nóng.',say:'糗 兜依 新 呢 弄'},
-  {cat:'eat',e:'🌿',zh:'請不要放香菜',vi:'Xin đừng cho rau mùi.',say:'新 登 糗 繞 妹'},
-  {cat:'eat',e:'🌶️',zh:'不要辣',vi:'Không cay.',say:'空 該'},
-  {cat:'eat',e:'🧂',zh:'請不要加味精',vi:'Xin đừng cho bột ngọt.',say:'新 登 糗 撥 諾'},
-  {cat:'eat',e:'🥗',zh:'我吃素（全素）',vi:'Tôi ăn chay. Không thịt, không cá, không nước mắm.',say:'兜依 安 齋'},
-  {cat:'eat',e:'🦐',zh:'我對海鮮過敏（蝦、蟹、魷魚、螺），請不要放進菜裡',vi:'Tôi bị dị ứng hải sản (tôm, cua, mực, ốc). Xin đừng cho vào món ăn.',say:'兜依 逼 基 恩 嗨 賞'},
-  {cat:'eat',e:'🥜',zh:'我對花生過敏，請不要放進菜裡',vi:'Tôi bị dị ứng lạc (đậu phộng). Xin đừng cho vào món ăn.',say:'兜依 逼 基 恩 辣'},
-  {cat:'eat',e:'🐄',zh:'我不吃牛肉',vi:'Tôi không ăn thịt bò.',say:'兜依 空 安 提 播'},
-  {cat:'eat',e:'👥',zh:'兩人份',vi:'Cho hai người ăn.',say:'糗 嗨 額 安'},
-  {cat:'eat',e:'👍',zh:'有什麼推薦的？',vi:'Có món gì ngon?',say:'果 蒙 記 濃'},
-  {cat:'eat',e:'🥢',zh:'請再給我一雙筷子',vi:'Cho tôi thêm một đôi đũa.',say:'糗 兜依 添 莫 堆 度'},
-  {cat:'eat',e:'🥡',zh:'請幫我打包',vi:'Cho tôi mang về.',say:'糗 兜依 芒 為'},
-  {cat:'eat',e:'🧾',zh:'買單，謝謝',vi:'Tính tiền. Cảm ơn!',say:'丁 電，感 恩'},
-  /* --- 購物與殺價 --- */
-  {cat:'shop',e:'💰',zh:'多少錢？',vi:'Bao nhiêu tiền?',say:'包 妞 電'},
-  {cat:'shop',e:'😮',zh:'太貴了，便宜一點',vi:'Đắt quá! Bớt chút đi.',say:'達 瓜！播 竹 低'},
-  {cat:'shop',e:'👀',zh:'我看看就好，謝謝',vi:'Tôi chỉ xem thôi, cảm ơn.',say:'兜依 機 顯 拖依，感 恩'},
-  {cat:'shop',e:'💳',zh:'可以刷卡嗎？',vi:'Tôi trả bằng thẻ được không?',say:'兜依 匝 幫 鐵 得 空'},
-  {cat:'shop',e:'🎨',zh:'有別的顏色嗎？',vi:'Có màu khác không?',say:'果 毛 卡 空'},
-  {cat:'shop',e:'👕',zh:'可以試穿嗎？',vi:'Tôi mặc thử được không?',say:'兜依 麥 圖 得 空'},
-  {cat:'shop',e:'🛍️',zh:'請幫我裝袋',vi:'Cho tôi cái túi.',say:'糗 兜依 蓋 堆'},
-  {cat:'shop',e:'✅',zh:'我要這個',vi:'Tôi lấy cái này.',say:'兜依 雷 蓋 耐'},
-  /* --- 交通與問路 --- */
-  {cat:'go',e:'🚕',zh:'請載我去這裡',vi:'Làm ơn đưa tôi đến đây.',say:'藍 恩 度 兜依 頂 呆'},
-  {cat:'go',e:'🧮',zh:'請開計費表',vi:'Xin bật đồng hồ tính tiền.',say:'新 拔 動 賀 丁 電'},
-  {cat:'go',e:'💵',zh:'到這裡多少錢？',vi:'Đến đây bao nhiêu tiền?',say:'頂 呆 包 妞 電'},
-  {cat:'go',e:'🛑',zh:'請在這裡停',vi:'Dừng ở đây.',say:'仲 兒 呆'},
-  {cat:'go',e:'⏱️',zh:'還要多久？',vi:'Còn bao lâu nữa?',say:'共 包 撈 呢'},
-  {cat:'go',e:'📍',zh:'這個地方在哪裡？',vi:'Chỗ này ở đâu?',say:'主 耐 兒 鬥'},
-  {cat:'go',e:'📱',zh:'請幫我叫一台車',vi:'Gọi giúp tôi một chiếc taxi.',say:'軌 族 兜依 莫 這 taxi'},
-  {cat:'go',e:'🚻',zh:'洗手間在哪裡？',vi:'Nhà vệ sinh ở đâu?',say:'呀 唯 星 兒 鬥'},
-  /* --- 飯店 --- */
-  {cat:'stay',e:'🏨',zh:'我住在這間飯店',vi:'Tôi ở khách sạn này.',say:'兜依 兒 卡 上 耐'},
-  {cat:'stay',e:'🕙',zh:'幾點要退房？',vi:'Mấy giờ phải trả phòng?',say:'埋 者 費 匝 峰'},
-  {cat:'stay',e:'🧳',zh:'可以寄放行李嗎？',vi:'Tôi gửi hành lý ở đây được không?',say:'兜依 規 漢 里 兒 呆 得 空'},
-  {cat:'stay',e:'🚿',zh:'房間沒有熱水',vi:'Phòng tôi không có nước nóng.',say:'峰 兜依 空 果 呢 弄'},
-  {cat:'stay',e:'📶',zh:'Wi-Fi 密碼是什麼？',vi:'Mật khẩu wifi là gì?',say:'麥 靠 wifi 拉 記'},
-  {cat:'stay',e:'🧻',zh:'請再給我一條毛巾',vi:'Cho tôi thêm một cái khăn tắm.',say:'糗 兜依 添 莫 蓋 看 膽'},
-  {cat:'stay',e:'❄️',zh:'冷氣壞了',vi:'Điều hòa bị hỏng.',say:'丟 華 逼 紅'},
-  /* --- 身體不適 --- */
-  {cat:'sick',e:'🤒',zh:'我不舒服',vi:'Tôi không khỏe.',say:'兜依 空 傀'},
-  {cat:'sick',e:'😵',zh:'我頭暈',vi:'Tôi bị chóng mặt.',say:'兜依 逼 中 麥'},
-  {cat:'sick',e:'🤢',zh:'我肚子痛',vi:'Tôi bị đau bụng.',say:'兜依 逼 到 崩'},
-  {cat:'sick',e:'💊',zh:'附近有藥局嗎？',vi:'Gần đây có nhà thuốc không?',say:'亙 呆 果 呀 拖 空'},
-  {cat:'sick',e:'🩺',zh:'我需要看醫生',vi:'Tôi cần đi khám bác sĩ.',say:'兜依 艮 低 康 拔 西'},
-  {cat:'sick',e:'🆘',zh:'請幫我叫救護車 115',vi:'Tôi không khỏe. Xin gọi cấp cứu 115 giúp tôi.',say:'（出示此卡）'},
-  /* --- 走散與緊急 --- */
-  {cat:'sos',e:'🧑‍🤝‍🧑',zh:'走散了，請幫我打電話',vi:'Tôi bị lạc đoàn. Xin gọi giúp tôi số điện thoại bên dưới.',say:'（出示此卡並指向下方電話）',lost:true},
-  {cat:'sos',e:'🇹🇼',zh:'我是台灣來的旅客',vi:'Tôi là khách du lịch Đài Loan.',say:'兜依 拉 卡 租 力 呆 巒'},
-  {cat:'sos',e:'👮',zh:'請幫我報警 113',vi:'Xin gọi công an 113 giúp tôi.',say:'新 軌 工 安 113 族 兜依'},
-  {cat:'sos',e:'🗺️',zh:'請幫我看地圖，我迷路了',vi:'Tôi bị lạc đường. Xin xem giúp bản đồ này.',say:'兜依 逼 辣 冷。新 顯 族 半 抖 耐'}
-];
-
-/* ===== 預設示範資料（正式使用時由管理者在管理模式修改，或由雲端資料覆蓋） ===== */
+/* ===== 雲端同步的文件 ===== */
 /* photos 獨立成一份文件：底圖不能塞在 itinerary 裡，
    因為新增／編輯行程會用 Store.save('itinerary') 整份覆寫，那樣每改一個字都要重傳所有圖。 */
-var DOC_KEYS = ['settings','broadcast','itinerary','members','groups','rollcall','notebook','photos'];
-var DOC_NAMES = {settings:'團務設定',broadcast:'廣播',itinerary:'行程',members:'名單',groups:'分組',rollcall:'點名',notebook:'記事本',photos:'底圖'};
-/* ===== 預設示範資料（seed）=====
-   換一團時只改這個檔：團名、日期、名單、行程、記事本。程式碼在 src/ 其他檔案，不用動。
-   正式使用時由管理者在管理模式修改，或由雲端資料覆蓋；這裡刻意不含任何電話。 */
-var DEFAULTS = {
-  photos:{items:{}},
-  settings:{
-    tripName:'沙壩雲海五日', startDate:'2026-09-24', days:5, dayOverride:0, pin:'8888',
-    /* 管理者決定團員第一次看到時，卡片是展開(1)還是收起(0)；ts 變動時團員自己的選擇會重置 */
-    cards:{prep:{o:1,ts:0},flight:{o:1,ts:0},morning:{o:1,ts:0},hotel:{o:0,ts:0}},
-    /* 防呆標籤：管理者可自訂增減，改了全團同步 */
-    tags:[
-      {id:'coat',icon:'coat',label:'厚外套'},{id:'shoes',icon:'shoes',label:'防滑鞋'},{id:'toilet',icon:'toilet',label:'有洗手間'},
-      {id:'rain',icon:'rain',label:'雨具'},{id:'meal',icon:'meal',label:'用餐'},{id:'ticket',icon:'ticket',label:'帶護照'},
-      {id:'alt',icon:'mountain',label:'高海拔'},{id:'bus',icon:'bus',label:'長途車'},{id:'cash',icon:'cash',label:'備現金'},
-      {id:'walk',icon:'walk',label:'步行多'},{id:'camera',icon:'camera',label:'拍照點'},{id:'pill',icon:'thermo',label:'易暈車'},
-      {id:'bed',icon:'bed',label:'入住'}
-    ],
-    airlines:{eva:{short:'長榮',name:'長榮航空',note:'桃園第二航廈'},ci:{short:'華航',name:'中華航空',note:'桃園第一航廈'}},
-    vndPerTwd:820,
-    /* 電話刻意留白：正式版請管理者進管理模式 → 團務設定 填入，資料只存在同步後端，不會出現在原始碼 */
-    contacts:[
-      {name:'黃氏添',label:'越南電話',phone:'',line:''},
-      {name:'黃氏添',label:'台灣電話',phone:'',line:''},
-      {name:'麥松華',label:'台灣電話',phone:'',line:''}
-    ],
-    flights:{ ci:{out:'08:20',back:'11:30'}, eva:{out:'09:00',back:'12:05'}, note:'團體報到：全體 05:30 在桃園第二航廈集合（不分航空公司）。分發護照與行李吊牌後，華航團員一起搭免費電車到第一航廈辦登機，長榮團員留在第二航廈。' },
-    embassyPhone:'+84913219986',
-    currentHotelId:'sapa',
-    hotels:[
-      {id:'sapa',name:"沙壩 Pao's Sapa Leisure Hotel",nameVi:"Khách sạn Pao's Sapa Leisure",addrVi:'Tổ dân phố Cầu Mây 1, Sa Pa, Lào Cai 31752, Việt Nam',phone:'',wifi:'入住時公布',wifiPass:'入住時公布',wifiNote:'連不上請到櫃台問，或跟主辦人說。',breakfast:'06:00–09:00',leaderRoom:'',nights:'第 1、2、3 晚'},
-      {id:'train',name:'夜臥火車 Chapa Express',nameVi:'Tàu Chapa Express · Ga Lào Cai',addrVi:'Ga Lào Cai, Phố Mới, TP. Lào Cai, Lào Cai',phone:'',wifi:'車上沒有 Wi-Fi',wifiPass:'',wifiNote:'火車上沒有 Wi-Fi，請先在飯店把要看的東西下載好。',breakfast:'車上不供餐，抵達河內後用早餐',leaderRoom:'',nights:'第 4 晚（老街 → 河內）'}
-    ],
-    morning:{wake:'',breakfast:'',luggage:'',depart:'',note:'每晚會在這裡公布明早時間。'}
-  },
-  broadcast:{ time:'', label:'集合', location:'', tip:'', idle:false, updatedAt:'' },
-  itinerary:{ items:[
-    /* ===== 第 1 天 9/24（三）桃園 → 河內 → 沙壩 ===== */
-    {id:'d1a',day:1,place:'Taoyuan International Airport Terminal 2',time:'05:30',title:'桃園機場集合',
-     desc:'全體不分航空公司，05:30 在第二航廈集合。',
-     detail:'請提早出門，05:30 準時到第二航廈出境大廳集合。\n液體超過 100ml 一律託運；行動電源、鋰電池必須隨身，不可以放託運行李。\n手機記得充飽電，並帶一條充電線與轉接頭（越南是雙圓孔，台灣扁插頭多半可以直接用）。',
-     tags:['ticket','toilet']},
-    {id:'d1b',day:1,place:'Taoyuan International Airport Terminal 1',time:'06:00',title:'分頭辦登機',
-     desc:'🔴 華航團員搭電車到第一航廈；🟢 長榮團員留在第二航廈。',
-     detail:'兩航廈間的免費電車約 5 分鐘一班、車程 2 分鐘，跟著大家走不會迷路。\n辦完登機各自過安檢，登機門看登機證上的號碼。\n過安檢後如果找不到人，直接看本網頁的「緊急求助」打電話，不要自己亂走。',
-     tags:['ticket','walk']},
-    {id:'d1c',day:1,place:'Noi Bai International Airport',time:'11:15',title:'河內機場會合',
-     desc:'華航約 10:30、長榮約 11:15 抵達，先到的在行李轉盤外等。',
-     detail:'越南時間比台灣慢 1 小時，下機後請確認手機時間已自動調整；本網頁所有時間都是越南當地時間。\n入境要出示護照與越南電子簽證列印本，請放在隨身包好拿的地方。\n領完行李在出關大廳等全員到齊，再跟著主辦人一起去搭車。',
-     tags:['ticket','bus']},
-    {id:'d1d',day:1,place:'Sa Pa, Lao Cai, Vietnam',time:'12:00',title:'出發前往沙壩',
-     desc:'車程約 6 小時，中途休息站停 2 次可上洗手間。',
-     detail:'河內到沙壩約 320 公里，走高速公路約 5.5～6 小時，是這趟最長的一段車程。\n容易暈車的人請在上車前 30 分鐘先吃暈車藥，坐前排、看遠方、少滑手機。\n山路後半段彎道多，隨身行李請放腳邊或行李架綁好。\n休息站有洗手間但不一定有衛生紙，請自備一小包。',
-     tags:['bus','pill','toilet']},
-    {id:'d1e',day:1,place:"Pao's Sapa Leisure Hotel, To dan pho Cau May 1, Sa Pa, Lao Cai",time:'18:00',title:'抵達沙壩入住',
-     desc:"入住 Pao's Sapa Leisure Hotel。",
-     detail:'沙壩海拔約 1,500 公尺，晚上常降到 15 度以下，下車第一件事就是把外套拿出來。\n進房先確認：熱水、吹風機、插座、保險箱。有問題馬上跟主辦人說，不要忍到隔天。\n這間飯店會住 3 個晚上（9/24、9/25、9/26），行李可以整個攤開，不用每天收。',
-     tags:['bed','coat']},
-    {id:'d1f',day:1,time:'19:00',title:'晚餐：飯店',
-     desc:'第一晚在飯店內用餐，餐後早點休息。',
-     detail:'今天坐了一整天車，晚餐後建議早點睡，讓身體適應高度與溫差。\n山上空氣乾，睡前多喝一點溫水。',
-     tags:['meal']},
-
-    /* ===== 第 2 天 9/25（四）番西邦峰・貓貓村 ===== */
-    {id:'d2a',day:2,time:'06:00',title:'早餐：飯店',
-     desc:'飯店內自助早餐，06:00–08:00。',
-     detail:'今天要上番西邦峰，早餐請吃飽一點，山頂餐廳選擇不多。\n建議帶一顆水煮蛋或麵包上山備用。',
-     tags:['meal']},
-    {id:'d2b',day:2,place:'Sun World Fansipan Legend',time:'08:00',title:'番西邦峰纜車',
-     desc:'搭三索纜車直上「印度支那屋脊」，俯瞰梯田雲海。',
-     detail:'番西邦峰海拔 3,143 公尺，是中南半島最高峰。纜車全長 6.3 公里，約 15 分鐘直達上站。\n山頂比沙壩鎮再冷 5～8 度，而且風大，厚外套一定要帶著，不要放在車上。\n上站到峰頂還有 600 階石梯，走不動的人可以加購山頂纜車（單程約 150,000 越盾），或在觀景平台等大家，不要勉強。\n高海拔容易喘、頭暈，慢慢走、多休息；有心臟或高血壓問題的長輩請先告訴主辦人。\n山上雲霧變化很快，看到雲海就先拍，不要等下一個點。',
-     tags:['coat','alt','shoes','camera','toilet']},
-    {id:'d2c',day:2,place:'33 Hoang Lien, Sa Pa, Lao Cai',time:'11:30',title:'午餐：越式合菜',
-     desc:'Viet Trekking 餐廳，越式合菜（番西邦套餐）。',
-     detail:'地址：33 Hoàng Liên, Sa Pa, Lào Cai，就在鎮上主要道路旁。\n吃素或有忌口的人請在上車前先告訴主辦人，餐廳需要提前備料。',
-     tags:['meal']},
-    {id:'d2d',day:2,place:'Cat Cat Village, Sa Pa',time:'13:30',title:'貓貓村健行',
-     desc:'沿石板步道下坡穿過梯田、水車與法國時期小水電站。',
-     detail:'貓貓村（Cát Cát）是黑苗族的村落，距沙壩鎮約 2 公里，全程下坡約 1.5 公里。\n石板路走多了會滑，尤其下過雨之後，請穿防滑的鞋子，不要穿新鞋或涼鞋。\n回程是上坡，走不動可以在村口叫摩托計程車（約 50,000 越盾）回鎮上，先跟主辦人說一聲。\n村裡的苗族婦女會跟著你兜售手工藝品，不想買就微笑說「không, cảm ơn」（不用了，謝謝）並繼續走，不要停下來翻看。\n拍照前請先問一下，尤其是拍人。',
-     tags:['shoes','walk','rain','camera','cash']},
-    {id:'d2e',day:2,place:'Sa Pa Xua Restaurant, Sa Pa',time:'17:30',title:'晚餐：夜市旁餐廳',
-     desc:'Sapa Xưa，沙壩夜市正對面，用餐到 22:00。',
-     detail:'地址：SN 005, Đường N02（Đỗ Quyên），沙壩夜市正對面。\n山上腸胃比較敏感，生食與冰飲建議少碰，多喝溫的。\n餐後走幾步就是夜市，想逛的人跟主辦人說一聲，回飯店的路只有 5 分鐘，但天黑後路燈不多，兩人以上一起走。',
-     tags:['meal','cash','coat']},
-
-    /* ===== 第 3 天 9/26（五）達灣・按摩・廣場 ===== */
-    {id:'d3a',day:3,time:'06:00',title:'早餐：飯店',
-     desc:'飯店內自助早餐，06:00–09:00。',
-     detail:'今天行程比較輕鬆，可以睡晚一點再下樓。',
-     tags:['meal']},
-    {id:'d3b',day:3,place:'Ta Van Village, Sa Pa',time:'09:00',title:'達灣梯田村',
-     desc:'達灣 Tả Van，沙壩最美的梯田村落。',
-     detail:'達灣（Tả Van）在沙壩鎮東南約 10 公里的山谷裡，是整個沙壩梯田風景最完整的一段。\n九月底正好是稻穗轉金黃的時候，這裡是全程最值得拍照的地方。\n田埂路窄又可能有泥，請跟著大家走同一條路，不要為了取景走進田裡。\n村裡有吊橋，一次不要太多人上去，過橋時扶好欄杆。\n山谷訊號較弱，跟大家走在一起，不要落單。',
-     tags:['walk','shoes','camera','rain']},
-    {id:'d3c',day:3,place:'Sailing Ta Van, Sa Pa',time:'11:30',title:'午餐：達灣景觀',
-     desc:'Sailing Ta Van，梯田景觀餐廳。',
-     detail:'餐廳有大片落地窗看得到整片梯田，早到的人可以先去露台拍照。\n吃素或有忌口的人請提前告訴主辦人。',
-     tags:['meal','camera']},
-    {id:'d3d',day:3,time:'14:00',title:'自由按摩行程',
-     desc:'下午自由安排，可以做腳底或全身按摩。',
-     detail:'走了兩天山路，這個下午是特地留給大家休息的。\n沙壩鎮上的按摩店行情：腳底 60 分鐘約 200,000～300,000 越盾，全身約 350,000～450,000 越盾，記得先問價再進去。\n有高血壓、心臟病、剛開過刀或懷孕的人，請避免全身重壓的按摩。\n不想按摩的人可以留在飯店休息，或到廣場附近喝咖啡，晚餐前回到飯店集合。',
-     tags:['cash','pill']},
-    {id:'d3e',day:3,place:'Nha hang O Quy Ho, Sa Pa',time:'17:30',title:'晚餐：山區風味',
-     desc:'Nhà hàng Ô Quý Hồ，沙壩山區特色料理。',
-     detail:'沙壩的高山冷水養殖鮭魚是當地招牌，跟海水鮭魚口感不同，值得試試。\n這一帶的菜偏酸辣，怕辣的人點餐時說「không cay」（不要辣）。\n山上的雞湯與燉品很適合長輩，可以多喝一點湯暖身。',
-     tags:['meal']},
-    {id:'d3f',day:3,place:'Sa Pa Square, Sa Pa',time:'19:30',title:'廣場自由活動',
-     desc:'飯後可以到廣場喝咖啡、逛街，21:30 前回飯店。',
-     detail:'沙壩廣場與石教堂就在飯店步行 5～10 分鐘範圍內，晚上有當地人跳廣場舞，很熱鬧。\n越南咖啡很濃，晚上喝建議點一杯就好，或改點椰子咖啡。\n夜市與路邊攤開價通常可以殺 3～5 成，慢慢殺不要急。\n山上晚上溫差大，出門一定要加件外套。\n找不到路回飯店就打開本網頁的「計程車回飯店卡」給司機或路人看。',
-     tags:['walk','cash','coat']},
-
-    /* ===== 第 4 天 9/27（六）飯店設施・老街・夜臥火車 ===== */
-    {id:'d4a',day:4,time:'06:00',title:'早餐：飯店',
-     desc:'飯店內自助早餐，06:00–09:00。今天要退房。',
-     detail:'今晚睡火車，早餐後請先把行李整理好，該託運的、隨身的分開裝。',
-     tags:['meal','bed']},
-    {id:'d4b',day:4,time:'08:00',title:'飯店設施自由',
-     desc:'自由使用飯店設施，或自費去玻璃橋。',
-     detail:'玻璃橋（Rồng Mây 龍雲玻璃橋）在沙壩往萊州的公路上，車程約 40 分鐘，門票需自費。\n想去的人請在前一晚跟主辦人登記，人數夠才會安排車輛。\n懼高、有心臟病或高血壓的長輩不建議前往。\n不去的人可以留在飯店泡湯、泡咖啡，或到附近散步，12:00 前回房間收行李。',
-     tags:['cash','camera']},
-    {id:'d4c',day:4,place:"Pao's Sapa Leisure Hotel, To dan pho Cau May 1, Sa Pa, Lao Cai",time:'12:00',title:'退房・寄行李',
-     desc:'12:00 退房，行李統一寄放在飯店。',
-     detail:'退房前請務必檢查：保險箱（很多人把護照忘在裡面）、浴室、床頭櫃、插座上的充電器。\n退房後行李寄放在飯店大廳，下午還可以自由活動，16:00 上車前再一起取。\n護照、錢包、藥品、當晚換洗衣物請放隨身包，不要放進寄放的大行李。',
-     tags:['bed','ticket']},
-    {id:'d4d',day:4,place:'22 Ngu Chi Son, Sa Pa, Lao Cai',time:'12:30',title:'午餐：沙壩最後',
-     desc:'Chạm Quán Sapa - Restaurant & Drinks。',
-     detail:'地址：22 Ngũ Chỉ Sơn, Sa Pa, Lào Cai。\n吃完飯後鎮上還有時間可以買伴手禮：竹筒飯、山茶、乾燥草藥包、苗族刺繡都是這裡的特產。\n剩下的越盾建議在沙壩花掉，火車站與機場的東西比較貴。',
-     tags:['meal','cash']},
-    {id:'d4e',day:4,place:'Lao Cai Railway Station',time:'16:00',title:'前往老街站',
-     desc:'搭車下山到老街火車站，車程約 1 小時。',
-     detail:'從沙壩下到老街市區約 35 公里、車程 1 小時，全程下坡彎道多，容易暈車的人請先吃藥。\n老街市就在中越邊境旁，可以看到對岸的中國河口。\n到了火車站先上洗手間，火車上的洗手間比較克難。',
-     tags:['bus','pill','toilet']},
-    {id:'d4f',day:4,time:'19:00',title:'晚餐：老街',
-     desc:'在老街市區用晚餐，之後前往月台候車。',
-     detail:'上車前請把水裝滿、想吃的零食先買好，火車上沒有餐車。\n建議先換上舒服好睡的衣服。',
-     tags:['meal']},
-    {id:'d4g',day:4,place:'Lao Cai Railway Station',time:'21:30',title:'搭夜臥火車',
-     desc:'Chapa Express 臥鋪，21:30 發車，隔天 05:30 抵達河內。',
-     detail:'搭的是 Chapa Express 觀光臥鋪列車，四人一間的上下舖，舖位上車前會公布，行李放在下舖底下或走道行李架。\n上舖有爬梯，長輩請睡下舖，上車先跟主辦人講。\n貴重物品（護照、錢包、手機）請放在枕頭邊或隨身腰包，不要放在走道上。\n火車會搖晃且有聲音，帶耳塞和眼罩會好睡很多。\n車廂冷氣偏強，睡覺記得蓋好被子或加件外套。\n洗手間在車廂兩端，晚上走動請扶著扶手。',
-     tags:['bed','coat','toilet','ticket']},
-
-    /* ===== 第 5 天 9/28（日）河內 → 桃園 ===== */
-    {id:'d5a',day:5,place:'Hanoi Railway Station',time:'05:30',title:'抵達河內',
-     desc:'05:30 抵達河內火車站，清點行李下車。',
-     detail:'下車前請把舖位、行李架、枕頭底下再檢查一次，火車靠站時間短，東西掉了很難找回來。\n月台燈光昏暗，請跟緊大家，慢慢走不要趕。',
-     tags:['ticket','walk']},
-    {id:'d5b',day:5,time:'06:00',title:'早餐：河粉',
-     desc:'河內道地牛肉河粉（Phở），這趟最後一餐越南味。',
-     detail:'河粉配的生菜與豆芽是生的，腸胃敏感的人可以不要放。\n桌上的辣椒醬與魚露請先沾一點試味道，越南魚露比台灣的鹹。\n吃完可以買一杯越南煉乳咖啡在車上喝。',
-     tags:['meal']},
-    {id:'d5c',day:5,place:'Noi Bai International Airport Terminal 2',time:'08:00',title:'前往內排機場',
-     desc:'車程約 45 分鐘，剩餘越盾可在機場花掉。',
-     detail:'越盾出境後幾乎換不回來，也不好用，請在機場免稅店或便利商店花完。\n機場有賣咖啡、腰果、椰子糖，是常見的伴手禮。\n手推車在航廈外就有，長輩的行李可以先放上去。',
-     tags:['cash','bus']},
-    {id:'d5d',day:5,place:'Noi Bai International Airport Terminal 2',time:'09:00',title:'辦登機託運',
-     desc:'🔴 華航、🟢 長榮分別到各自櫃檯辦理報到。',
-     detail:'請把護照與登機證拿在手上，不要收進行李。\n買的山茶、草藥、水果乾請放託運；打火機不能託運也不能隨身（越南規定較嚴，建議直接丟掉）。\n過海關後在登機門附近等，不要走太遠去逛免稅店。',
-     tags:['ticket']},
-    {id:'d5e',day:5,time:'11:30',title:'華航起飛回台',
-     desc:'11:30 起飛，台灣時間約 15:45 抵達桃園第一航廈。',
-     detail:'領完行李在入境大廳解散，回程請注意台灣的天氣與交通。',
-     tags:['ticket']},
-    {id:'d5f',day:5,time:'12:05',title:'長榮起飛回台',
-     desc:'12:05 起飛，台灣時間約 16:20 抵達桃園第二航廈。',
-     detail:'領完行李在入境大廳解散，辛苦大家了，平安回家。',
-     tags:['ticket']}
+/* tools（v3.23）：工具頁的內容（知識小卡、外語圖卡、外幣、計程車卡、當地急救電話），範本在 03a-tpl.js */
+var DOC_KEYS = ['settings','broadcast','itinerary','members','groups','rollcall','notebook','photos','tools'];
+var DOC_NAMES = {settings:'團務設定',broadcast:'廣播',itinerary:'行程',members:'名單',groups:'分組',rollcall:'點名',notebook:'記事本',photos:'底圖',tools:'工具內容'};
+/* ===== 工具頁內容範本（v3.23）=====
+   工具頁（現場馬上用、出發前先看、在地小知識）的內容存在雲端的 tools 文件，主辦人可以編輯、清空，
+   或在管理專區「工具頁範本」一鍵換成下面其中一套：
+     generic 通用版＝不分國家的出國常識，外語預設英文，外幣與當地電話留給主辦人填；
+     vietnam 越南範本＝v3.22 以前寫死在程式裡的 2026 沙壩團內容（只把「越幣／越語」工具名稱換成新的通用名稱，匯率那一行改指向點鈔速算）。
+   這個檔案只放資料，改內容不用動其他程式。知識小卡的格式說明在 05-tools.js 的 mdCard()。 */
+function tplL(){ return [].slice.call(arguments).join('\n'); }
+/* 知識小卡的兩個區塊 */
+var TOOL_SECS=[{id:'pre',name:'出發前先看',icon:'book'},{id:'local',name:'在地小知識',icon:'mountain'}];
+/* 知識小卡可以選的圖示（都是 03-data.js 裡的 inline SVG） */
+var CARD_ICONS=['info','ticket','thermo','phone','cash','wifi','gift','plug','taxi','toilet','meal','cup','walk','camera','bed','bus','plane','mountain','coat','rain','sun','heart','star','alert','clock','pin','book','check','users','flag'];
+/* 目的地時區（團務設定）：沒選＝跟台灣一樣。選單上「快／慢幾小時」是用當下日期算的，有夏令時間的地方會自動跟著變 */
+var TZ_PRESETS=[['Asia/Tokyo','日本'],['Asia/Seoul','韓國'],['Asia/Shanghai','中國'],['Asia/Hong_Kong','香港、澳門'],
+  ['Asia/Singapore','新加坡'],['Asia/Kuala_Lumpur','馬來西亞'],['Asia/Manila','菲律賓'],['Asia/Makassar','印尼峇里島'],['Asia/Bangkok','泰國'],['Asia/Ho_Chi_Minh','越南'],
+  ['Asia/Phnom_Penh','柬埔寨'],['Asia/Jakarta','印尼雅加達'],['Asia/Yangon','緬甸'],['Asia/Kolkata','印度'],['Asia/Kathmandu','尼泊爾'],['Asia/Dubai','杜拜'],
+  ['Europe/Istanbul','土耳其'],['Europe/Paris','歐洲中部（法、德、義、西、荷…）'],['Europe/London','英國'],['America/Los_Angeles','美國西岸'],['America/New_York','美國東岸'],
+  ['Australia/Sydney','澳洲東部'],['Pacific/Auckland','紐西蘭'],['Pacific/Guam','關島']];
+/* 外幣點鈔速算的常用貨幣：匯率與鈔票顏色都是約略值（2026 年），重點是提醒「長得像」的那幾張。
+   dir:'fx'＝「1 台幣 ≈ rate 外幣」（越南盾、韓元這種數字很大的），'twd'＝「1 外幣 ≈ rate 台幣」 */
+var MONEY_PRESETS=[
+  {id:"jpy",name:"日圓",unit:"日圓",dir:"twd",rate:0.21,warn:"**500 圓是硬幣**，價值約 100 台幣，別當零錢亂花。",notes:[
+    {v:10000,color:"#8B6D4F",note:"一萬 · 咖啡色"},
+    {v:5000,color:"#8A6BA8",note:"五千 · 紫色"},
+    {v:1000,color:"#4A73B3",note:"一千 · 藍色"},
+    {v:500,color:"#C9A248",note:"500 硬幣 · 金色"},
+    {v:100,color:"#B9BDC4",note:"100 硬幣 · 銀色"},
+    {v:10,color:"#B87333",note:"10 硬幣 · 銅色"}
   ]},
-  members:{ items:[
-    {id:'m01',name:'麥松華',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m02',name:'黃氏添',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m03',name:'黃玉杏',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m04',name:'李智弘',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m05',name:'賴維宏',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m06',name:'蔣秋銀',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m07',name:'王宏盟',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m08',name:'王郁宣',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m09',name:'張程豪',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m10',name:'王郁雯',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m11',name:'林秀玉',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m12',name:'洪水清',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m13',name:'劉月芬',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m14',name:'鄭麗卿',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m15',name:'謝宛頤',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m16',name:'梁惠卿',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m17',name:'麥瑀倩',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m18',name:'楊睿智',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m19',name:'林登祥',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m20',name:'林瓊暖',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m21',name:'林韋臻',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m22',name:'何賢杰',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m23',name:'周珀芬',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m24',name:'吳佩蓉',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m25',name:'鄭美環',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m26',name:'陳佳慧',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m27',name:'王文俊',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m28',name:'王峯良',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m29',name:'林坤宏',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m30',name:'孫武雄',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m31',name:'施佳伃',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m32',name:'施佳如',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''},
-    {id:'m33',name:'鐘立承',emoji:'',bg:'bg-white',border:'bd-grey',remark:'',room:'',phone:'',airline:''}
+  {id:"krw",name:"韓元",unit:"韓元",dir:"fx",rate:45,warn:"**50,000 與 5,000 只差一個零**，付錢前看清楚位數。",notes:[
+    {v:50000,color:"#D9A93B",note:"五萬 · 黃色"},
+    {v:10000,color:"#5A9A63",note:"一萬 · 綠色"},
+    {v:5000,color:"#D0744A",note:"五千 · 橘紅色"},
+    {v:1000,color:"#5B86B8",note:"一千 · 藍色"},
+    {v:500,color:"#B9BDC4",note:"500 硬幣"},
+    {v:100,color:"#B9BDC4",note:"100 硬幣"}
   ]},
-  groups:{ activeId:'meal', scenarios:[
-    {id:'meal',name:'用餐分桌',count:4,names:['第 1 桌','第 2 桌','第 3 桌','第 4 桌'],assign:{},fixed:1,useTags:1,mtags:{},tagOpts:MEAL_TAGS.slice()},
-    {id:'shuttle',name:'接駁車',count:2,names:['A 車','B 車'],assign:{}},
-    {id:'hike',name:'健行分流',count:2,names:['健走組','咖啡悠閒組'],assign:{}}
+  {id:"thb",name:"泰銖",unit:"泰銖",dir:"twd",rate:0.95,warn:"鈔票上有國王肖像，**不要踩、不要折、不要亂丟**。",notes:[
+    {v:1000,color:"#8C7B6B",note:"一千 · 灰褐色"},
+    {v:500,color:"#8A5EA8",note:"五百 · 紫色"},
+    {v:100,color:"#C8474A",note:"一百 · 紅色"},
+    {v:50,color:"#4C7FC0",note:"五十 · 藍色"},
+    {v:20,color:"#4E9A5A",note:"二十 · 綠色"},
+    {v:10,color:"#C9A248",note:"10 硬幣 · 金銀雙色"}
   ]},
-  rollcall:{ label:'', present:{}, startedAt:'' },
-  /* 旅遊提醒記事本：內容全部由管理者即時編輯；勾選狀態只存在各自手機 */
-  notebook:{ pages:[
-    {id:'prep',icon:'🧳',title:'出發前準備',type:'check',items:[
-      {id:'p00',kind:'head',text:'證件與錢'},
-      {id:'p01',text:'護照（效期 6 個月以上）'},
-      {id:'p02',text:'越南電子簽證列印本（姓名拼音要正確）'},
-      {id:'p03',text:'護照影本＋2 吋照片 2 張'},
-      {id:'p04',text:'現金：美金或台幣（換越盾用）'},
-      {id:'p05',text:'信用卡 1～2 張'},
-      {id:'p10',kind:'head',text:'衣物'},
-      {id:'p11',text:'厚外套或羽絨背心（山頂約 10 度）'},
-      {id:'p12',text:'薄長袖 + 短袖，洋蔥式穿法'},
-      {id:'p13',text:'雨衣或折傘（午後常有雨）'},
-      {id:'p14',text:'防滑好走的鞋'},
-      {id:'p15',text:'帽子、圍巾、太陽眼鏡'},
-      {id:'p20',kind:'head',text:'藥品與日用'},
-      {id:'p21',text:'個人常備藥（放隨身包）'},
-      {id:'p22',text:'暈車藥、腸胃藥、OK 繃、防蚊液'},
-      {id:'p23',text:'保溫杯、口罩、濕紙巾、小包衛生紙'},
-      {id:'p24',text:'老花眼鏡、備用眼鏡'},
-      {id:'p30',kind:'head',text:'3C 與通訊'},
-      {id:'p31',text:'越南網卡或 eSIM（已安裝並測試）'},
-      {id:'p32',text:'行動電源（放隨身，不可託運）'},
-      {id:'p33',text:'充電線、充電頭（越南 220V，多可直插）'},
-      {id:'p34',text:'加入 LINE 群組、本網頁加到主畫面'}
-    ]},
-    {id:'basics',icon:'🏔️',title:'沙壩小常識',type:'notes',items:[
-      {id:'b1',text:'🕐 越南比台灣慢 1 小時。本網頁所有時間都是沙壩當地時間，抬頭看右上角時鐘就對了。'},
-      {id:'b2',text:'🌡️ 沙壩海拔 1,500 公尺、番西邦山頂 3,143 公尺，一天可以差 10 度以上；洋蔥式穿法最實用。'},
-      {id:'b3',text:'🌦️ 9 月底的沙壩：白天約 18～25 度、早晚 12～16 度，午後常有一陣雨；山頂約 8～12 度、風大。'},
-      {id:'b4',text:'🛵 過馬路：看準空隙慢慢直走不要停，機車會繞開您；突然停下或倒退反而危險。'},
-      {id:'b5',text:'🚻 景點洗手間有時要付 2,000～5,000 盾，口袋留幾張小鈔。'},
-      {id:'b6',text:'📶 山區訊號時好時壞，看到「離線中」不用緊張，重新整理或走到開闊處就會恢復。'}
-    ]},
-    {id:'lost',icon:'🧭',title:'走散怎麼辦',type:'notes',items:[
-      {id:'l1',text:'1️⃣ 原地不動，站在明顯的店家或路口，先打給黃氏添（越南電話）。'},
-      {id:'l2',text:'2️⃣ 打不通就把手機交給附近店員，出示「工具 → 緊急求助」裡的「我走散了」越文卡。'},
-      {id:'l3',text:'3️⃣ 想直接回飯店，用「計程車回飯店卡」出示給司機；上車前先問價。'},
-      {id:'l4',text:'🪪 護照影本、飯店名片、本網頁的走散卡，出門前請放在同一個隨身口袋。'},
-      {id:'l5',text:'👥 兩人以上同行最安全；自由活動請務必約好回程時間與集合點。'}
-    ]},
-    {id:'money',icon:'💰',title:'金錢與購物',type:'notes',items:[
-      {id:'m1',text:'💡 越南人習慣把「千」省略——店家說「năm mươi（50）」通常就是 50,000 盾；用「工具 → 越幣速算」按鈔票就能算。'},
-      {id:'m2',text:'⚠️ 20,000 與 500,000 都是藍色系、10,000 與 200,000 都偏紅褐色，付錢前請數清楚後面幾個零。'},
-      {id:'m3',text:'🛍️ 路邊攤開價通常可殺 3～5 成，明碼標價的店面比較穩妥；不想買就微笑說「Không cần, cảm ơn」。'},
-      {id:'m4',text:'💵 包車司機的小費由團上統一處理，個別不用再給；飯店行李員可給 10,000～20,000 盾。'},
-      {id:'m5',text:'🏧 換匯：機場匯率較差，市區銀行或金飾店較好；ATM 提款每筆有手續費，一次領夠。'}
-    ]},
-    {id:'food',icon:'🍜',title:'吃喝與健康',type:'notes',items:[
-      {id:'f1',text:'💧 自來水不能生飲，飯店每天有瓶裝水；冰塊盡量在餐廳或飯店才用。'},
-      {id:'f2',text:'🍵 需要溫熱水、不加冰、不加香菜、不辣、吃素，都可用「越語圖卡」出示給店員。'},
-      {id:'f3',text:'🌶️ 越南菜偏酸甜、香菜多；腸胃敏感的長輩前兩天先吃熟食、少吃生菜。'},
-      {id:'f4',text:'⛰️ 番西邦山頂海拔高，動作放慢、多喝水；覺得頭暈就坐下休息，告訴身邊的人。'}
-    ]}
+  {id:"vnd",name:"越南盾",unit:"盾",dir:"fx",rate:820,warn:"**20,000 與 500,000 都是藍色系**、10,000 與 200,000 都偏紅褐色——付錢前請數清楚後面幾個零！",notes:[
+    {v:500000,color:"#4BB3C6",note:"藍綠色 ⚠"},
+    {v:200000,color:"#B65A3C",note:"紅棕色"},
+    {v:100000,color:"#3E8E5B",note:"綠色"},
+    {v:50000,color:"#C2678F",note:"粉紫色"},
+    {v:20000,color:"#4C86C4",note:"藍色 ⚠"},
+    {v:10000,color:"#B8862D",note:"黃褐色"}
+  ]},
+  {id:"usd",name:"美元",unit:"美元",dir:"twd",rate:31,warn:"**美鈔大小都一樣、顏色都偏綠**，付錢前看清楚角落的數字。",notes:[
+    {v:100,color:"#86A98B",note:"一百 · 淡藍綠"},
+    {v:50,color:"#B9A0A8",note:"五十 · 淡粉"},
+    {v:20,color:"#A9B48E",note:"二十 · 淡綠"},
+    {v:10,color:"#C9A57A",note:"十元 · 淡橘"},
+    {v:5,color:"#A99BBF",note:"五元 · 淡紫"},
+    {v:1,color:"#7E9B7E",note:"一元 · 綠色"}
+  ]},
+  {id:"eur",name:"歐元",unit:"歐元",dir:"twd",rate:35,warn:"**1 歐元、2 歐元是硬幣**，價值約 35～70 台幣，別當零錢亂花。",notes:[
+    {v:200,color:"#D9B84A",note:"兩百 · 黃色"},
+    {v:100,color:"#4E9A63",note:"一百 · 綠色"},
+    {v:50,color:"#E08A3C",note:"五十 · 橘色"},
+    {v:20,color:"#4C7FC0",note:"二十 · 藍色"},
+    {v:10,color:"#C8474A",note:"十元 · 紅色"},
+    {v:5,color:"#8C8C8C",note:"五元 · 灰色"},
+    {v:2,color:"#C9A248",note:"2 元硬幣"},
+    {v:1,color:"#C9A248",note:"1 元硬幣"}
+  ]},
+  {id:"cny",name:"人民幣",unit:"元",dir:"twd",rate:4.3,warn:"很多店家主要用**行動支付**，現金找不開時請主辦人協助。",notes:[
+    {v:100,color:"#D0474A",note:"一百 · 紅色"},
+    {v:50,color:"#4E9A63",note:"五十 · 綠色"},
+    {v:20,color:"#A8745A",note:"二十 · 棕色"},
+    {v:10,color:"#4C7FC0",note:"十元 · 藍色"},
+    {v:5,color:"#8A5EA8",note:"五元 · 紫色"},
+    {v:1,color:"#8FA05A",note:"一元 · 橄欖綠"}
+  ]},
+  {id:"hkd",name:"港幣",unit:"港幣",dir:"twd",rate:4,warn:"港幣有**三家銀行**各自發行，同面額長得不一樣，看數字就好。",notes:[
+    {v:1000,color:"#D9B84A",note:"一千 · 金色"},
+    {v:500,color:"#A8745A",note:"五百 · 棕色"},
+    {v:100,color:"#C8474A",note:"一百 · 紅色"},
+    {v:50,color:"#5A9A8A",note:"五十 · 綠色"},
+    {v:20,color:"#4C7FC0",note:"二十 · 藍色"},
+    {v:10,color:"#8A5EA8",note:"十元 · 紫色"}
+  ]},
+  {id:"sgd",name:"新加坡幣",unit:"新幣",dir:"twd",rate:23,warn:"**1 元是硬幣**，價值約 23 台幣。",notes:[
+    {v:100,color:"#E08A3C",note:"一百 · 橘色"},
+    {v:50,color:"#4C7FC0",note:"五十 · 藍色"},
+    {v:10,color:"#C8474A",note:"十元 · 紅色"},
+    {v:5,color:"#4E9A63",note:"五元 · 綠色"},
+    {v:2,color:"#8A5EA8",note:"二元 · 紫色"},
+    {v:1,color:"#C9A248",note:"1 元硬幣"}
+  ]},
+  {id:"myr",name:"馬來西亞令吉",unit:"令吉",dir:"twd",rate:7,warn:"",notes:[
+    {v:100,color:"#8A5EA8",note:"一百 · 紫色"},
+    {v:50,color:"#4E8A9A",note:"五十 · 藍綠"},
+    {v:20,color:"#E08A3C",note:"二十 · 橘色"},
+    {v:10,color:"#C8474A",note:"十元 · 紅色"},
+    {v:5,color:"#4E9A63",note:"五元 · 綠色"},
+    {v:1,color:"#4C7FC0",note:"一元 · 藍色"}
+  ]},
+  {id:"php",name:"菲律賓披索",unit:"披索",dir:"twd",rate:0.55,warn:"",notes:[
+    {v:1000,color:"#4C7FC0",note:"一千 · 藍色"},
+    {v:500,color:"#D9B84A",note:"五百 · 黃色"},
+    {v:200,color:"#4E9A63",note:"兩百 · 綠色"},
+    {v:100,color:"#8A5EA8",note:"一百 · 紫色"},
+    {v:50,color:"#C8474A",note:"五十 · 紅色"},
+    {v:20,color:"#E08A3C",note:"二十 · 橘色"}
+  ]},
+  {id:"idr",name:"印尼盾",unit:"盾",dir:"fx",rate:530,warn:"**零很多**：看到價格先去掉三個零再算。",notes:[
+    {v:100000,color:"#C8474A",note:"十萬 · 紅色"},
+    {v:50000,color:"#4C7FC0",note:"五萬 · 藍色"},
+    {v:20000,color:"#4E9A63",note:"兩萬 · 綠色"},
+    {v:10000,color:"#8A5EA8",note:"一萬 · 紫色"},
+    {v:5000,color:"#A8745A",note:"五千 · 棕色"},
+    {v:2000,color:"#8C8C8C",note:"兩千 · 灰色"}
   ]}
+];
+var TPL={
+  generic:{name:'通用版',desc:'不分國家的出國常識；外語圖卡、計程車卡是英文；外幣與當地急救電話留給你填',tools:{
+    lang:'英語',langTag:'ENGLISH',thanks:'Thank you so much!',
+    lab:{hotel:'HOTEL',addr:'ADDRESS',phone:'HOTEL PHONE',call:'CONTACT'},
+    taxi:{fl:'Please take me to this hotel. Thank you!',zh:'請載我回這間飯店，謝謝！',tip:'小提醒：上車前先確認車資，或請司機跳表；請餐廳或飯店幫忙叫車、或用叫車 App 最穩妥。'},
+    money:{},
+    sos:[],
+    cats:[
+      {id:"hi",e:"🙏",name:"基本禮貌",sub:"你好、謝謝、聽不懂"},
+      {id:"eat",e:"🍜",name:"點餐與飲食",sub:"溫水、不要香菜、過敏"},
+      {id:"shop",e:"🛒",name:"購物與殺價",sub:"多少錢、便宜一點、刷卡"},
+      {id:"go",e:"🚕",name:"交通與問路",sub:"載我去、計費表、廁所"},
+      {id:"stay",e:"🏨",name:"飯店",sub:"退房、寄行李、沒熱水"},
+      {id:"sick",e:"🤒",name:"身體不適",sub:"頭暈、肚子痛、藥局"},
+      {id:"sos",e:"🧭",name:"走散與緊急",sub:"走散卡、報警、救護車"}
+    ],
+    phrases:[
+      {id:"g1",cat:"hi",e:"👋",zh:"你好",fl:"Hello.",say:""},
+      {id:"g2",cat:"hi",e:"🙏",zh:"謝謝",fl:"Thank you.",say:""},
+      {id:"g3",cat:"hi",e:"🙇",zh:"對不起",fl:"I'm sorry.",say:""},
+      {id:"g4",cat:"hi",e:"🙅",zh:"不用了，謝謝",fl:"No, thank you.",say:""},
+      {id:"g5",cat:"hi",e:"❓",zh:"我聽不懂",fl:"I don't understand.",say:""},
+      {id:"g6",cat:"hi",e:"✍️",zh:"請寫在這裡",fl:"Please write it down here.",say:""},
+      {id:"g7",cat:"hi",e:"🐢",zh:"請說慢一點",fl:"Please speak slowly.",say:""},
+      {id:"g8",cat:"hi",e:"⭕",zh:"好 / 不是",fl:"Yes. / No.",say:""},
+      {id:"g9",cat:"eat",e:"🍵",zh:"溫開水，不加冰",fl:"Warm water, no ice, please.",say:""},
+      {id:"g10",cat:"eat",e:"♨️",zh:"請給我熱水",fl:"Hot water, please.",say:""},
+      {id:"g11",cat:"eat",e:"🌿",zh:"請不要放香菜",fl:"No coriander (cilantro), please.",say:""},
+      {id:"g12",cat:"eat",e:"🌶️",zh:"不要辣",fl:"Not spicy, please.",say:""},
+      {id:"g13",cat:"eat",e:"🧂",zh:"請不要加味精",fl:"No MSG, please.",say:""},
+      {id:"g14",cat:"eat",e:"🥗",zh:"我吃素（全素）",fl:"I am vegan. No meat, no seafood, no egg, no milk.",say:""},
+      {id:"g15",cat:"eat",e:"🦐",zh:"我對海鮮過敏（蝦、蟹、魷魚、貝類），請不要放進菜裡",fl:"I am allergic to seafood (shrimp, crab, squid, shellfish). Please do not put any in my food.",say:""},
+      {id:"g16",cat:"eat",e:"🥜",zh:"我對花生過敏，請不要放進菜裡",fl:"I am allergic to peanuts. Please do not put any in my food.",say:""},
+      {id:"g17",cat:"eat",e:"🐄",zh:"我不吃牛肉",fl:"I don't eat beef.",say:""},
+      {id:"g18",cat:"eat",e:"👥",zh:"兩人份",fl:"For two people, please.",say:""},
+      {id:"g19",cat:"eat",e:"👍",zh:"有什麼推薦的？",fl:"What do you recommend?",say:""},
+      {id:"g20",cat:"eat",e:"🥢",zh:"請再給我一雙筷子",fl:"Another pair of chopsticks, please.",say:""},
+      {id:"g21",cat:"eat",e:"🥡",zh:"請幫我打包",fl:"Can I take this to go, please?",say:""},
+      {id:"g22",cat:"eat",e:"🧾",zh:"買單，謝謝",fl:"Check, please. Thank you!",say:""},
+      {id:"g23",cat:"shop",e:"💰",zh:"多少錢？",fl:"How much is it?",say:""},
+      {id:"g24",cat:"shop",e:"😮",zh:"太貴了，便宜一點",fl:"That's too expensive. Can you give me a discount?",say:""},
+      {id:"g25",cat:"shop",e:"👀",zh:"我看看就好，謝謝",fl:"I'm just looking, thank you.",say:""},
+      {id:"g26",cat:"shop",e:"💳",zh:"可以刷卡嗎？",fl:"Can I pay by credit card?",say:""},
+      {id:"g27",cat:"shop",e:"🎨",zh:"有別的顏色嗎？",fl:"Do you have other colors?",say:""},
+      {id:"g28",cat:"shop",e:"👕",zh:"可以試穿嗎？",fl:"Can I try it on?",say:""},
+      {id:"g29",cat:"shop",e:"🛍️",zh:"請幫我裝袋",fl:"Can I have a bag, please?",say:""},
+      {id:"g30",cat:"shop",e:"✅",zh:"我要這個",fl:"I'll take this one.",say:""},
+      {id:"g31",cat:"go",e:"🚕",zh:"請載我去這裡",fl:"Please take me here.",say:""},
+      {id:"g32",cat:"go",e:"🧮",zh:"請開計費表",fl:"Please use the meter.",say:""},
+      {id:"g33",cat:"go",e:"💵",zh:"到這裡多少錢？",fl:"How much to go here?",say:""},
+      {id:"g34",cat:"go",e:"🛑",zh:"請在這裡停",fl:"Please stop here.",say:""},
+      {id:"g35",cat:"go",e:"⏱️",zh:"還要多久？",fl:"How much longer will it take?",say:""},
+      {id:"g36",cat:"go",e:"📍",zh:"這個地方在哪裡？",fl:"Where is this place?",say:""},
+      {id:"g37",cat:"go",e:"📱",zh:"請幫我叫一台車",fl:"Please call a taxi for me.",say:""},
+      {id:"g38",cat:"go",e:"🚻",zh:"洗手間在哪裡？",fl:"Where is the restroom?",say:""},
+      {id:"g39",cat:"stay",e:"🏨",zh:"我住在這間飯店",fl:"I am staying at this hotel.",say:""},
+      {id:"g40",cat:"stay",e:"🕙",zh:"幾點要退房？",fl:"What time is check-out?",say:""},
+      {id:"g41",cat:"stay",e:"🧳",zh:"可以寄放行李嗎？",fl:"Can I leave my luggage here?",say:""},
+      {id:"g42",cat:"stay",e:"🚿",zh:"房間沒有熱水",fl:"There is no hot water in my room.",say:""},
+      {id:"g43",cat:"stay",e:"📶",zh:"Wi-Fi 密碼是什麼？",fl:"What is the Wi-Fi password?",say:""},
+      {id:"g44",cat:"stay",e:"🧻",zh:"請再給我一條毛巾",fl:"Can I have another towel, please?",say:""},
+      {id:"g45",cat:"stay",e:"❄️",zh:"冷氣壞了",fl:"The air conditioner is not working.",say:""},
+      {id:"g46",cat:"sick",e:"🤒",zh:"我不舒服",fl:"I don't feel well.",say:""},
+      {id:"g47",cat:"sick",e:"😵",zh:"我頭暈",fl:"I feel dizzy.",say:""},
+      {id:"g48",cat:"sick",e:"🤢",zh:"我肚子痛",fl:"I have a stomachache.",say:""},
+      {id:"g49",cat:"sick",e:"💊",zh:"附近有藥局嗎？",fl:"Is there a pharmacy nearby?",say:""},
+      {id:"g50",cat:"sick",e:"🩺",zh:"我需要看醫生",fl:"I need to see a doctor.",say:""},
+      {id:"g51",cat:"sick",e:"🆘",zh:"請幫我叫救護車",fl:"I don't feel well. Please call an ambulance for me.",say:"（出示此卡）"},
+      {id:"g52",cat:"sos",e:"🧑‍🤝‍🧑",zh:"走散了，請幫我打電話",fl:"I am separated from my group. Please call the phone number below for me.",say:"（出示此卡並指向下方電話）",lost:1},
+      {id:"g53",cat:"sos",e:"🇹🇼",zh:"我是台灣來的旅客",fl:"I am a tourist from Taiwan.",say:""},
+      {id:"g54",cat:"sos",e:"👮",zh:"請幫我報警",fl:"Please call the police for me.",say:""},
+      {id:"g55",cat:"sos",e:"🗺️",zh:"請幫我看地圖，我迷路了",fl:"I am lost. Could you help me with this map?",say:""}
+    ],
+    cards:[
+    {id:"entry",sec:"pre",icon:"ticket",title:"入境與通關",sub:"護照效期、入境順序",body:tplL(
+      "### 一句話結論",
+      "出國最重要的是**護照效期**與**簽證**。每個國家規定不同，主辦人會在這張卡寫清楚這次要不要簽證；自己也可以查外交部領事事務局網站的「各國簽證及入境須知」。",
+      "",
+      "## 出發前自己核對",
+      "- **護照效期至少還有 6 個月**（從入境日算起）。翻到護照個人資料頁看「效期截止日」，快到期就要馬上去換，別拖。",
+      "- **護照上的英文名要跟機票一模一樣。**拼錯一個字母就可能上不了飛機，收到電子機票就先對一次。",
+      "- **護照裡至少留兩頁空白**，入境與出境可能各要蓋一次章。",
+      "- **簽證或入境許可：**有的國家免簽、有的要先上網申請電子簽證，主辦人會通知；自己辦的話認明官方網站，其他代辦網站收費高很多。",
+      "- 有些國家要**事先上網填入境資料**（入境卡、海關申報），主辦人會提醒。",
+      "",
+      "## 可以帶多少現金",
+      "從台灣出境｜新台幣以 **10 萬元**為限；外幣現鈔超過等值 **1 萬美元**要向海關申報",
+      "目的地入境｜各國門檻不同，請主辦人補上",
+      "! 一般旅行正常帶**不會超過門檻**，這段只是讓你知道界線在哪。",
+      "",
+      "## 下飛機之後的順序",
+      "1. 跟著人群與「**Arrival／Immigration**」指標走到**證照查驗**，排「外國人（Foreigners）」那排。",
+      "2. 把**護照**（有入境卡就一起）交給櫃檯人員，可能會請你看鏡頭拍照、按指紋。聽不懂就微笑等他指示。",
+      "3. 蓋完章往前走，看螢幕找我們的班機號碼，到**行李轉盤**提行李。",
+      "4. 出口前是**海關**，沒有要申報的東西就走綠色通道直接出去。",
+      "5. 出關後在大廳等，**跟緊大家、不要自己先走**。",
+      "",
+      "## 護照怎麼顧",
+      "- **護照絕對不要放托運行李。**隨身背包貼身放，過關後就收好。",
+      "- 出發前**拍一張護照資料頁**存在手機相簿，再印一份紙本放行李箱。萬一遺失，補辦會快很多。",
+      "- 飯店入住時櫃檯可能會收走護照登記，**記得要拿回來**，離開飯店前確認一次。",
+      "- 護照掉了先找主辦人，並聯絡駐外館處（電話在「緊急求助」頁）。"
+    )},
+    {id:"weather",sec:"pre",icon:"thermo",title:"天氣與穿搭",sub:"洋蔥式穿法最省事",body:tplL(
+      "### 一句話結論",
+      "出發前一週看**目的地的天氣預報**，注意三件事：**早晚溫差、會不會下雨、太陽大不大**。主辦人會在這張卡補上當地的溫度。",
+      "",
+      "## 出發前這樣查",
+      "- 手機的天氣 App 加入目的地城市，看**最高溫與最低溫**，外套厚度照最低溫準備。",
+      "- 有上山的行程：高度每升高 100 公尺大約降 0.6 度，**山上比平地冷很多**。",
+      "旅途中各地溫度｜請主辦人填，例如「市區 25～30 度、山上 10～15 度」",
+      "",
+      "## 這樣穿最省事",
+      "- **洋蔥式穿法**：短袖或薄長袖打底，外面一件薄外套，最外面一件**防風防潑水外套**。熱了脫、冷了加，比穿一件厚的好用。",
+      "- **鞋子要防滑、好走。**石板路、步道下過雨很滑，穿包鞋或運動鞋，不要穿新鞋或拖鞋。",
+      "- **帶輕便雨衣，勝過雨傘。**風大的地方傘常常撐不住，雨衣還能擋風。",
+      "- 怕冷的人多帶一條**薄圍巾或帽子**，脖子跟頭保暖，體感差很多。",
+      "- 行李裡放一套**乾的替換衣物**，淋濕了有得換。",
+      "",
+      "## 太陽與蚊蟲",
+      "- 熱帶或高山地區紫外線強，帶**帽子、太陽眼鏡、防曬乳**。",
+      "- 天氣熱時**多喝水**，戶外走一段就找陰涼處休息。",
+      "- 蚊子多的地方帶**防蚊液**，傍晚與草叢邊最需要。"
+    )},
+    {id:"phoneset",sec:"pre",icon:"phone",title:"手機出發前設定",sub:"關漫遊、先裝好",body:tplL(
+      "### 為什麼要先弄",
+      "這幾件事**在台灣用 Wi-Fi 做只要十分鐘**，落地後沒網路才弄會很麻煩。出發前一晚照著做一次就好。",
+      "",
+      "## 第一件事：關掉數據漫遊",
+      "這是最容易收到高額帳單的地方，出發前一定要關。",
+      "- **iPhone：**設定 → 行動服務 → 找到你的台灣門號 → 把「數據漫遊」關掉。",
+      "- **Android：**設定 → 網路和網際網路 → SIM 卡 → 關閉「數據漫遊」。",
+      "- 台灣門號**不要整個關掉**，留著才能收銀行或驗證碼簡訊，只關「數據漫遊」即可。",
+      "- 有買 eSIM 的人，上網走 eSIM，作法看「eSIM 怎麼買」那張卡。",
+      "",
+      "## 出發前先裝好、先下載好",
+      "- **叫車 App**（主辦人會說這次用哪一個）：註冊要用手機號碼收簡訊驗證，**一定要在台灣用台灣門號註冊好**，落地才裝常常收不到驗證碼。",
+      "- **Google 地圖離線地圖**：搜尋目的地城市 → 點地名 → 下載離線地圖。沒網路也能看自己在哪。",
+      "- **Google 翻譯**：進 App 把目的地的語言下載成離線，相機即時翻譯菜單很好用。",
+      "- **本工具站**：用瀏覽器打開後「加入主畫面」，之後像 App 一樣點開，沒網路也看得到。",
+      "",
+      "## 存好這些資料",
+      "- 把**主辦人電話**存進通訊錄（緊急求助頁有）。",
+      "- **飯店名稱與地址截圖**存在相簿，走散時可以直接給司機看——本工具站的「計程車回飯店卡」更好用。",
+      "- 護照資料頁拍照存起來。",
+      "- 記得帶**行動電源**；出國拍照、導航，電量掉得比平常快。",
+      "",
+      "### 打電話怎麼打",
+      "eSIM 多半只有上網、沒有電話號碼。要聯絡團員請用 **LINE 免費通話**；打當地電話（飯店、餐廳）才需要用台灣門號直撥，會算國際漫遊費。"
+    )},
+    {id:"exchange",sec:"pre",icon:"cash",title:"換匯與付款",sub:"在哪換、刷卡還付現",body:tplL(
+      "### 先記一個心算法",
+      "請主辦人依這次的貨幣寫一個好記的換算，例如「**去掉三個零、再乘以 1.2**」。",
+      "算不出來就用工具頁的「外幣點鈔速算」，按鈔票就好，不用打字。",
+      "",
+      "## 在哪裡換錢",
+      "- **常見貨幣在台灣先換好。**美金、日圓、韓元、歐元這類在台灣的銀行換通常比較划算；少見的貨幣可以先換美金，到當地再換。",
+      "- **機場換一點就好。**機場匯率通常較差，換夠當天車資與零用即可。",
+      "- **ATM 提款**方便但每筆有手續費；要用的人出發前先確認金融卡有開通**海外提款**與密碼。",
+      "- 換錢時**當場點清楚再走**，並要求多給一些小面額。",
+      "",
+      "## 刷卡還是付現",
+      "飯店、大餐廳｜多半可以刷卡，記得選**用當地貨幣結帳**（選台幣結帳匯率較差）",
+      "市場、小攤｜多半只收現金，準備小鈔",
+      "行動支付｜各國不同，主辦人會說明能不能用",
+      "信用卡手續費｜海外刷卡大多另收 1.5% 左右，出發前可以問發卡銀行",
+      "",
+      "## 付錢時要小心",
+      "- 外國鈔票**顏色、大小可能很像**，付錢跟找零都要**看清楚數字**再收。",
+      "- 小費與零錢要**小面額**，只有大鈔會很難處理。",
+      "- 錢分兩三個地方放，**不要全部放在同一個錢包**。"
+    )},
+    {id:"esim",sec:"pre",icon:"wifi",title:"eSIM 怎麼買",sub:"出國上網最省事",body:tplL(
+      "### 什麼是 eSIM",
+      "不用換實體 SIM 卡，直接在手機裡「下載」一組當地的上網門號。出國前在台灣就能買好，落地開機就有網路，不必到機場排隊買卡，也不會弄丟原本的 SIM 卡。",
+      "",
+      "## 在哪裡買",
+      "- **旅遊平台**：例如 KKday、Klook，搜尋「**目的地名稱＋eSIM**」，買完 QR Code 會寄到 email。",
+      "- **eSIM App**：例如 Saily、Airalo，買、裝、開通都在同一個 App 裡完成。",
+      "- 天數選**比行程多一兩天**。只用 LINE 與地圖，每天 1GB 通常夠；常看影片的人選吃到飽。",
+      "",
+      "## 怎麼安裝",
+      "1. 出發前一天，在家用 Wi-Fi 安裝（**安裝一定要有網路**）。",
+      "2. 用 email 的 QR Code 安裝：iPhone 到「設定 → 行動服務 → 加入 eSIM」；Android 到「設定 → 網路 → SIM → 下載 eSIM」。用 App 買的就在 App 裡按「安裝」。",
+      "3. 落地後到「設定 → 行動網路」把這張新的 eSIM 打開、**開啟數據漫遊**就會通。",
+      "! **QR Code 通常只能掃一次**，掃了就綁定那支手機，不能換機也不能刪掉重來。掃之前先確定是要用的那支手機。",
+      "",
+      "## 注意須知",
+      "- **先確認手機支援 eSIM。**撥 ***#06#**，畫面有出現「EID」才代表支援；有些在台灣買的 Android 手機不支援，不確定就問主辦人。",
+      "- **不要刪掉原本的台灣門號。**eSIM 是額外加一組，台灣號碼留著才能收簡訊驗證碼；把「行動數據」切到新的那張、台灣那張**關掉數據漫遊**就不會被扣漫遊費。",
+      "- **eSIM 多半只有數據、沒有電話號碼**，不能打電話或收簡訊。要打電話請用 LINE 語音通話。",
+      "- 落地後如果沒網路：關飛航模式再開一次 → 確認新 eSIM 已開啟 → 打開「數據漫遊」 → 還是不行就重開機。",
+      "- 山區、郊外訊號會變差，這是正常的，不是卡有問題。",
+      "- 不想自己弄的人可以直接用飯店 Wi-Fi，或跟主辦人說，出發前一起處理。"
+    )},
+    {id:"tips",sec:"pre",icon:"gift",title:"小費文化",sub:"給不給、給多少",body:tplL(
+      "### 一句話結論",
+      "每個國家的小費習慣差很多：有的國家**不用給**（例如日本、韓國），有的是**習慣要給**（例如美國餐廳約 15～20%）。主辦人會在這張卡寫下這次目的地的行情。",
+      "",
+      "## 常見場合與行情",
+      "請主辦人依目的地修改下面的行情。",
+      "飯店房務｜有給小費習慣的國家，每天放一點在枕頭上或桌上",
+      "行李員｜每件行李給一點",
+      "餐廳｜先看帳單有沒有已經收**服務費（service charge）**，收了就不用再給",
+      "按摩｜做得舒服再給",
+      "計程車｜多半湊整數、不用找零就好",
+      "包車司機／導覽｜大家一起出比較好處理，跟主辦人討論",
+      "",
+      "## 給小費的眉角",
+      "- **準備小面額的當地貨幣。**只有大鈔會很尷尬。",
+      "- **用當地貨幣，不要給台幣或硬幣。**外國硬幣他們換不掉，等於沒給。",
+      "- **雙手遞、面帶微笑**，或直接放在桌上；不要丟或塞。",
+      "- 在不用給小費的國家，硬塞反而會讓對方為難，**入境隨俗**就好。"
+    )},
+    {id:"power",sec:"pre",icon:"plug",title:"電壓與插頭",sub:"電壓、插座形狀",body:tplL(
+      "### 先查兩件事",
+      "目的地的**電壓**與**插座形狀**。台灣是 **110V**、兩腳扁插頭。主辦人會在這張卡補上這次目的地的規格。",
+      "這次目的地｜請主辦人填，例如「220V、雙圓孔」",
+      "",
+      "## 哪些東西可以直接插",
+      "- **手機、平板、筆電、相機充電器：**變壓器上印著「INPUT 100–240V」就能吃全球電壓，只要插頭插得進去就能用。",
+      "- 插座形狀不同，就用一個**轉接頭**（台灣的百元商店或機場都買得到）；**萬國轉接頭**最省事。",
+      "- 行動電源、行李秤、電動牙刷等 USB 充電的東西也都沒問題。",
+      "",
+      "## 這些千萬不要直接插",
+      "- 去 **220V** 的國家時，台灣帶去的**吹風機、電湯匙、捲髮棒、小電鍋**這類只吃 110V 的電器，直接插會燒掉甚至冒煙。飯店多半有吹風機，不用自己帶。",
+      "- 插上去前先**看變壓器上的字**：有「100–240V」才安全，只寫「110V」就不能用。",
+      "- 轉接頭**只轉形狀、不會降電壓**，不要以為插了轉接頭就安全。真的要用 110V 電器要買「變壓器」。",
+      "",
+      "### 順帶提醒",
+      "- **行動電源只能放隨身行李，不可以托運。**",
+      "- 手機與行動電源**睡前先充飽**，隔天整天在外面才不會沒電。"
+    )},
+    {id:"ride",sec:"local",icon:"taxi",title:"叫車與交通",sub:"叫車 App、計程車",body:tplL(
+      "### 為什麼用叫車 App",
+      "叫車 App **叫車前就看得到車資**，可以直接在 App 付或付現金，不用喊價也不怕繞路，對不會講當地話的人最安全。主辦人會告訴你這次用哪一個（例如東南亞多用 Grab，很多國家用 Uber）。",
+      "",
+      "## 最重要：註冊要在台灣先做",
+      "! 叫車 App 註冊要用**手機號碼收簡訊驗證碼**。出國買的 eSIM 多半**只有上網、沒有電話號碼**，落地才註冊會收不到驗證碼卡住。**請在台灣就用台灣門號註冊完成。**",
+      "1. App Store／Google Play 搜尋主辦人說的叫車 App 下載。",
+      "2. 用**台灣手機號碼**註冊，收簡訊填驗證碼。",
+      "3. 填姓名、email 就完成了；可以不綁信用卡的話，到時選現金付款。",
+      "",
+      "## 怎麼叫車",
+      "1. 打開 App，上面那格是**上車地點**（通常自動抓你現在位置），下面那格輸入**目的地**。看不懂當地地名就從地圖上點，或先在 Google 地圖找好、複製名稱貼上。",
+      "2. 選車型：一般選**四人座轎車**；機車載客長輩不建議。",
+      "3. 螢幕會直接顯示**車資**，覺得可以就按下訂。",
+      "4. 配對後會出現**司機姓名、車型、車牌號碼**。上車前**核對車牌**，不對就不要上。",
+      "5. 到了付現金或 App 扣款。車資已經談好，**不用再議價**。",
+      "",
+      "## 搭一般計程車",
+      "- 上車前先**問好價錢**，或請司機**跳表**。",
+      "- 叫不到車就**請飯店櫃檯幫忙叫**，這是最穩的方法，也可以請他們先問好價錢。",
+      "- 要回飯店時，打開工具頁的「**計程車回飯店卡**」直接給司機看。",
+      "- 下車前確認隨身物品都拿了，**手機、包包最常掉在車上**。"
+    )},
+    {id:"health",sec:"local",icon:"thermo",title:"身體不適",sub:"暈車、腸胃、帶藥",body:tplL(
+      "### 先講最重要的",
+      "在國外不舒服，**第一件事是告訴主辦人**，不要自己忍。早講可以調整行程、早點就醫；忍到晚上或上了山才說，處理起來麻煩很多。",
+      "",
+      "## 暈車",
+      "- 山路、長途車**彎道多**，容易暈車的人請提早跟主辦人說，**坐前排**會好很多。",
+      "- 上車前**不要吃太飽**，也不要空腹。",
+      "- 會暈車的人**自己從台灣帶慣用的暈車藥**，出發前一段時間先吃（依你平常的習慣或藥師指示）。",
+      "- 車上**看遠方、不要滑手機**，開一點窗透氣。",
+      "",
+      "## 腸胃不舒服",
+      "- 自來水能不能生飲各國不同，**不確定就只喝瓶裝水**，開瓶前確認封膜完好。",
+      "- 生冷的食物（生菜、生魚、切好的水果）與**來路不明的冰塊**斟酌，腸胃弱的人避開。",
+      "- 吃東西前**洗手或用乾洗手**。",
+      "- 拉肚子時**先補水**（瓶裝水、電解質飲料），少量多次；狀況沒改善或有發燒，跟主辦人說並就醫。",
+      "",
+      "## 藥品自己帶",
+      "- **慢性病藥一定要帶足全程的量**，放隨身行李不要托運，並多帶幾天備用。",
+      "- 把藥名或藥袋**拍照存手機**，萬一需要就醫，可以直接給醫生看。",
+      "- 常備：個人習慣的**止痛、感冒、腸胃、暈車、OK 繃**。台灣帶慣用的最安心，國外藥局的品項與名稱不一定對得上。",
+      "- 找藥局或看醫生的說法，在「外語溝通圖卡 → 身體不適」那一類裡。",
+      "",
+      "## 上高山的行程",
+      "- 海拔 **2,500 公尺以上**，有些人會覺得**頭悶、喘、走幾步就累**，這是常見的高山反應。",
+      "- 上去以後**走慢一點、少講話、不要跑跳**，多喝水。",
+      "- 覺得頭痛、噁心、喘不過來，**就往低處走**，並且告訴主辦人。",
+      "- 本來就有心臟、肺部或高血壓問題的人，出發前**先跟主辦人說一聲**。",
+      "",
+      "! **緊急狀況打當地的救護車電話**（在「緊急求助」頁，一鍵可撥），並立刻聯絡主辦人。"
+    )},
+    {id:"market",sec:"local",icon:"cash",title:"購物與禮儀",sub:"殺價、拍照、宗教場所",body:tplL(
+      "### 先有個概念",
+      "各國購物習慣不同：**百貨公司、超市、便利商店不議價**；觀光區的市場、小攤常常**開價偏高、可以議價**。主辦人會在這張卡補上這次目的地的狀況。",
+      "",
+      "## 殺價怎麼開口",
+      "- 心裡先想好「**這東西我願意付多少**」，從對方開價的**一半到七成**開始談，通常會落在中間。",
+      "- **不想買就不要問價。**一問價對方就會認真跟你談，之後不買容易尷尬、也容易被纏著。",
+      "- **轉身走是最有效的一招。**價錢談不下來就微笑說謝謝離開，可以接受的話對方多半會叫住你。",
+      "- **多買可以要求算便宜一點**，同一攤買三件比分開買三攤好談。",
+      "- 付錢前**再確認一次金額與位數**，找零當場點清楚。",
+      "",
+      "## 被推銷跟著怎麼辦",
+      "- 觀光區常有人**一路跟著推銷**，多半不是針對你，也沒有危險。",
+      "- 不想買就**看著對方、微笑、清楚說「不用了，謝謝」**，然後繼續走（外語說法在「外語溝通圖卡 → 基本禮貌」）。",
+      "- **不要停下來翻看商品**，一旦拿在手上就很難脫身。",
+      "- 對方主動幫你帶路、拍照之後才開口要錢，是常見情況；**不需要的協助一開始就婉拒**。",
+      "",
+      "## 拍照的禮貌",
+      "- **拍人之前先問一聲**，舉起相機比個手勢、看對方點不點頭。",
+      "- **不要對著小孩猛拍**；有些地方拍照後會被要求付費，先問清楚再拍。",
+      "- 寺廟、教堂等宗教場所，**先看告示可不可以拍**，有些地方禁止用閃光燈。",
+      "",
+      "## 宗教場所與當地禮儀",
+      "- 進寺廟、清真寺常要**脫鞋**，衣著**不要露肩、露膝**，帶一件薄外套或圍巾方便遮。",
+      "- 在寺廟裡**說話小聲、不要摸神像**。",
+      "- 各國的禁忌不同（例如有的國家不能摸小孩的頭），主辦人會在這裡補充。"
+    )},
+    {id:"basics",sec:"local",icon:"toilet",title:"廁所與飲水",sub:"自備衛生紙",body:tplL(
+      "### 兩句話結論",
+      "**衛生紙自己帶；水不確定能不能喝，就只喝瓶裝的。**這兩件事做到，旅途會順很多。",
+      "",
+      "## 廁所",
+      "- **隨身帶一包衛生紙與濕紙巾。**景區、休息站、山區的廁所經常沒有供應，這是最常後悔沒帶的東西。",
+      "- 衛生紙能不能丟馬桶**各國不同**：旁邊有垃圾桶、或牆上有貼告示的，就**丟垃圾桶不要丟馬桶**，管線細很容易堵住。",
+      "- 觀光區廁所**有時要收費**，身上留一點零錢。",
+      "- 看到廁所就先去，**不要等到上車前才去**。長途車一開就是一段路，中間不一定有地方停。",
+      "- 找廁所的外語說法，在「外語溝通圖卡 → 交通與問路」那一類。",
+      "",
+      "## 喝水",
+      "- 自來水能不能生飲，主辦人會在這裡寫清楚；**不確定就只喝瓶裝水**，開瓶前看一下**封膜是否完整**。",
+      "- 路邊小攤的**碎冰**腸胃弱的人就避開；不想加冰就出示「溫開水，不加冰」那張圖卡。",
+      "- 天冷時**喝溫水比冰水舒服**，帶個保溫瓶請餐廳或飯店裝熱水很方便。",
+      "",
+      "## 其他小事",
+      "- 吃飯前**用乾洗手**，有些地方洗手台不一定有肥皂。",
+      "- 飯店的**牙刷牙膏不一定會附**（有些國家為了環保不提供），習慣用自己的就自己帶。",
+      "- 多帶一雙襪子與一套換洗衣物，淋濕或流汗時會舒服很多。"
+    )}
+    ]}},
+  vietnam:{name:'越南範本',desc:'2026 沙壩團用過的內容：越南語圖卡 55 句、越南盾、越南急救電話與駐越南辦事處',tools:{
+    lang:'越南語',langTag:'TIẾNG VIỆT',thanks:'Xin cảm ơn!',
+    lab:{hotel:'KHÁCH SẠN',addr:'ĐỊA CHỈ',phone:'ĐIỆN THOẠI KHÁCH SẠN',call:'LIÊN HỆ'},
+    taxi:{fl:'Làm ơn đưa tôi về khách sạn này. Cảm ơn!',zh:'請載我回這間飯店，謝謝！',tip:'小提醒：上車前先問「Bao nhiêu tiền?」（多少錢）並講好價；請餐廳或飯店幫忙叫車、或用 Grab 叫車最穩妥。鎮內短程車資多在幾萬盾之間，喊價太高可以微笑婉拒。'},
+    money:null,
+    sos:[
+      {name:'越南報警',sub:'Công an · 24 小時',phone:'113'},
+      {name:'救護車',sub:'Cấp cứu · 24 小時',phone:'115'},
+      {name:'消防',sub:'Cứu hỏa · 24 小時',phone:'114'},
+      {name:'駐越南台北經濟文化辦事處',sub:'河內 · 急難救助專線',phone:'+84913219986'}
+    ],
+    cats:[
+      {id:"hi",e:"🙏",name:"基本禮貌",sub:"你好、謝謝、聽不懂"},
+      {id:"eat",e:"🍜",name:"點餐與飲食",sub:"溫水、不要香菜、過敏"},
+      {id:"shop",e:"🛒",name:"購物與殺價",sub:"多少錢、便宜一點、刷卡"},
+      {id:"go",e:"🚕",name:"交通與問路",sub:"載我去、計費表、廁所"},
+      {id:"stay",e:"🏨",name:"飯店",sub:"退房、寄行李、沒熱水"},
+      {id:"sick",e:"🤒",name:"身體不適",sub:"頭暈、肚子痛、藥局"},
+      {id:"sos",e:"🧭",name:"走散與緊急",sub:"走散卡、報警、救護車"}
+    ],
+    phrases:[
+      {id:"v1",cat:"hi",e:"👋",zh:"你好",fl:"Xin chào.",say:"新 照"},
+      {id:"v2",cat:"hi",e:"🙏",zh:"謝謝",fl:"Cảm ơn.",say:"感 恩"},
+      {id:"v3",cat:"hi",e:"🙇",zh:"對不起",fl:"Xin lỗi.",say:"新 羅依"},
+      {id:"v4",cat:"hi",e:"🙅",zh:"不用了，謝謝",fl:"Không cần, cảm ơn.",say:"空 艮，感 恩"},
+      {id:"v5",cat:"hi",e:"❓",zh:"我聽不懂",fl:"Tôi không hiểu.",say:"兜依 空 修"},
+      {id:"v6",cat:"hi",e:"✍️",zh:"請寫在這裡",fl:"Xin viết ra đây.",say:"新 越 匝 呆"},
+      {id:"v7",cat:"hi",e:"🐢",zh:"請說慢一點",fl:"Xin nói chậm lại.",say:"新 諾依 讚 賴"},
+      {id:"v8",cat:"hi",e:"⭕",zh:"好 / 不是",fl:"Vâng. / Không.",say:"翁 / 空"},
+      {id:"v9",cat:"eat",e:"🍵",zh:"溫開水，不加冰",fl:"Cho tôi xin nước ấm, không đá.",say:"糗 兜依 新 呢 暗，空 達"},
+      {id:"v10",cat:"eat",e:"♨️",zh:"請給我熱水",fl:"Cho tôi xin nước nóng.",say:"糗 兜依 新 呢 弄"},
+      {id:"v11",cat:"eat",e:"🌿",zh:"請不要放香菜",fl:"Xin đừng cho rau mùi.",say:"新 登 糗 繞 妹"},
+      {id:"v12",cat:"eat",e:"🌶️",zh:"不要辣",fl:"Không cay.",say:"空 該"},
+      {id:"v13",cat:"eat",e:"🧂",zh:"請不要加味精",fl:"Xin đừng cho bột ngọt.",say:"新 登 糗 撥 諾"},
+      {id:"v14",cat:"eat",e:"🥗",zh:"我吃素（全素）",fl:"Tôi ăn chay. Không thịt, không cá, không nước mắm.",say:"兜依 安 齋"},
+      {id:"v15",cat:"eat",e:"🦐",zh:"我對海鮮過敏（蝦、蟹、魷魚、螺），請不要放進菜裡",fl:"Tôi bị dị ứng hải sản (tôm, cua, mực, ốc). Xin đừng cho vào món ăn.",say:"兜依 逼 基 恩 嗨 賞"},
+      {id:"v16",cat:"eat",e:"🥜",zh:"我對花生過敏，請不要放進菜裡",fl:"Tôi bị dị ứng lạc (đậu phộng). Xin đừng cho vào món ăn.",say:"兜依 逼 基 恩 辣"},
+      {id:"v17",cat:"eat",e:"🐄",zh:"我不吃牛肉",fl:"Tôi không ăn thịt bò.",say:"兜依 空 安 提 播"},
+      {id:"v18",cat:"eat",e:"👥",zh:"兩人份",fl:"Cho hai người ăn.",say:"糗 嗨 額 安"},
+      {id:"v19",cat:"eat",e:"👍",zh:"有什麼推薦的？",fl:"Có món gì ngon?",say:"果 蒙 記 濃"},
+      {id:"v20",cat:"eat",e:"🥢",zh:"請再給我一雙筷子",fl:"Cho tôi thêm một đôi đũa.",say:"糗 兜依 添 莫 堆 度"},
+      {id:"v21",cat:"eat",e:"🥡",zh:"請幫我打包",fl:"Cho tôi mang về.",say:"糗 兜依 芒 為"},
+      {id:"v22",cat:"eat",e:"🧾",zh:"買單，謝謝",fl:"Tính tiền. Cảm ơn!",say:"丁 電，感 恩"},
+      {id:"v23",cat:"shop",e:"💰",zh:"多少錢？",fl:"Bao nhiêu tiền?",say:"包 妞 電"},
+      {id:"v24",cat:"shop",e:"😮",zh:"太貴了，便宜一點",fl:"Đắt quá! Bớt chút đi.",say:"達 瓜！播 竹 低"},
+      {id:"v25",cat:"shop",e:"👀",zh:"我看看就好，謝謝",fl:"Tôi chỉ xem thôi, cảm ơn.",say:"兜依 機 顯 拖依，感 恩"},
+      {id:"v26",cat:"shop",e:"💳",zh:"可以刷卡嗎？",fl:"Tôi trả bằng thẻ được không?",say:"兜依 匝 幫 鐵 得 空"},
+      {id:"v27",cat:"shop",e:"🎨",zh:"有別的顏色嗎？",fl:"Có màu khác không?",say:"果 毛 卡 空"},
+      {id:"v28",cat:"shop",e:"👕",zh:"可以試穿嗎？",fl:"Tôi mặc thử được không?",say:"兜依 麥 圖 得 空"},
+      {id:"v29",cat:"shop",e:"🛍️",zh:"請幫我裝袋",fl:"Cho tôi cái túi.",say:"糗 兜依 蓋 堆"},
+      {id:"v30",cat:"shop",e:"✅",zh:"我要這個",fl:"Tôi lấy cái này.",say:"兜依 雷 蓋 耐"},
+      {id:"v31",cat:"go",e:"🚕",zh:"請載我去這裡",fl:"Làm ơn đưa tôi đến đây.",say:"藍 恩 度 兜依 頂 呆"},
+      {id:"v32",cat:"go",e:"🧮",zh:"請開計費表",fl:"Xin bật đồng hồ tính tiền.",say:"新 拔 動 賀 丁 電"},
+      {id:"v33",cat:"go",e:"💵",zh:"到這裡多少錢？",fl:"Đến đây bao nhiêu tiền?",say:"頂 呆 包 妞 電"},
+      {id:"v34",cat:"go",e:"🛑",zh:"請在這裡停",fl:"Dừng ở đây.",say:"仲 兒 呆"},
+      {id:"v35",cat:"go",e:"⏱️",zh:"還要多久？",fl:"Còn bao lâu nữa?",say:"共 包 撈 呢"},
+      {id:"v36",cat:"go",e:"📍",zh:"這個地方在哪裡？",fl:"Chỗ này ở đâu?",say:"主 耐 兒 鬥"},
+      {id:"v37",cat:"go",e:"📱",zh:"請幫我叫一台車",fl:"Gọi giúp tôi một chiếc taxi.",say:"軌 族 兜依 莫 這 taxi"},
+      {id:"v38",cat:"go",e:"🚻",zh:"洗手間在哪裡？",fl:"Nhà vệ sinh ở đâu?",say:"呀 唯 星 兒 鬥"},
+      {id:"v39",cat:"stay",e:"🏨",zh:"我住在這間飯店",fl:"Tôi ở khách sạn này.",say:"兜依 兒 卡 上 耐"},
+      {id:"v40",cat:"stay",e:"🕙",zh:"幾點要退房？",fl:"Mấy giờ phải trả phòng?",say:"埋 者 費 匝 峰"},
+      {id:"v41",cat:"stay",e:"🧳",zh:"可以寄放行李嗎？",fl:"Tôi gửi hành lý ở đây được không?",say:"兜依 規 漢 里 兒 呆 得 空"},
+      {id:"v42",cat:"stay",e:"🚿",zh:"房間沒有熱水",fl:"Phòng tôi không có nước nóng.",say:"峰 兜依 空 果 呢 弄"},
+      {id:"v43",cat:"stay",e:"📶",zh:"Wi-Fi 密碼是什麼？",fl:"Mật khẩu wifi là gì?",say:"麥 靠 wifi 拉 記"},
+      {id:"v44",cat:"stay",e:"🧻",zh:"請再給我一條毛巾",fl:"Cho tôi thêm một cái khăn tắm.",say:"糗 兜依 添 莫 蓋 看 膽"},
+      {id:"v45",cat:"stay",e:"❄️",zh:"冷氣壞了",fl:"Điều hòa bị hỏng.",say:"丟 華 逼 紅"},
+      {id:"v46",cat:"sick",e:"🤒",zh:"我不舒服",fl:"Tôi không khỏe.",say:"兜依 空 傀"},
+      {id:"v47",cat:"sick",e:"😵",zh:"我頭暈",fl:"Tôi bị chóng mặt.",say:"兜依 逼 中 麥"},
+      {id:"v48",cat:"sick",e:"🤢",zh:"我肚子痛",fl:"Tôi bị đau bụng.",say:"兜依 逼 到 崩"},
+      {id:"v49",cat:"sick",e:"💊",zh:"附近有藥局嗎？",fl:"Gần đây có nhà thuốc không?",say:"亙 呆 果 呀 拖 空"},
+      {id:"v50",cat:"sick",e:"🩺",zh:"我需要看醫生",fl:"Tôi cần đi khám bác sĩ.",say:"兜依 艮 低 康 拔 西"},
+      {id:"v51",cat:"sick",e:"🆘",zh:"請幫我叫救護車 115",fl:"Tôi không khỏe. Xin gọi cấp cứu 115 giúp tôi.",say:"（出示此卡）"},
+      {id:"v52",cat:"sos",e:"🧑‍🤝‍🧑",zh:"走散了，請幫我打電話",fl:"Tôi bị lạc đoàn. Xin gọi giúp tôi số điện thoại bên dưới.",say:"（出示此卡並指向下方電話）",lost:1},
+      {id:"v53",cat:"sos",e:"🇹🇼",zh:"我是台灣來的旅客",fl:"Tôi là khách du lịch Đài Loan.",say:"兜依 拉 卡 租 力 呆 巒"},
+      {id:"v54",cat:"sos",e:"👮",zh:"請幫我報警 113",fl:"Xin gọi công an 113 giúp tôi.",say:"新 軌 工 安 113 族 兜依"},
+      {id:"v55",cat:"sos",e:"🗺️",zh:"請幫我看地圖，我迷路了",fl:"Tôi bị lạc đường. Xin xem giúp bản đồ này.",say:"兜依 逼 辣 冷。新 顯 族 半 抖 耐"}
+    ],
+    cards:[
+    {id:"entry",sec:"pre",icon:"ticket",title:"入境與通關",sub:"護照效期、帶多少現金",body:tplL(
+      "### 一句話結論",
+      "",
+      "台灣護照去越南**要簽證**，不是免簽。本團由旅行社統一辦理，你自己要顧的只有一件事：**護照效期夠不夠**。",
+      "",
+      "## 出發前自己核對這三項",
+      "",
+      "- **護照效期至少還有 6 個月**（從入境日算起）。翻到護照個人資料頁看「效期截止日」，2027 年 3 月以後到期才安全；快到期就要馬上去換，別拖。",
+      "- **護照上的英文名要跟機票一模一樣。**拼錯一個字母就可能上不了飛機，收到電子機票就先對一次。",
+      "- **護照裡至少留兩頁空白**，入境與出境各要蓋一次章。舊護照蓋滿的人先確認一下。",
+      "- **簽證由旅行社辦。**如果你是自己辦，是上越南官方網站 **evisa.gov.vn** 申請電子簽證，約 3～7 個工作天，觀光簽效期不超過 90 天。認明這個網址，其他代辦網站收費高很多。",
+      "",
+      "## 可以帶多少現金",
+      "",
+      "外幣｜超過 **5,000 美元**等值就要向海關申報",
+      "越南盾｜超過 **1,500 萬越盾**要申報",
+      "黃金｜金塊禁止攜入；18K 以上金飾**超過 300 公克**要申報",
+      "",
+      "! 五天的行程用不到那麼多現金，**正常帶不會超過門檻**，這段只是讓你知道界線在哪。身上金項鍊金手鐲之類的日常配戴不用緊張。",
+      "",
+      "## 下飛機之後的順序",
+      "",
+      "1. 跟著人群走到**證照查驗（Immigration）**，排「Foreigners／外國人」那排。",
+      "2. 把**護照**交給櫃檯人員，可能會請你看鏡頭拍照、按指紋。不用講話，聽不懂就微笑等他指示。",
+      "3. 蓋完章往前走，看螢幕找我們的班機號碼，到**行李轉盤**提行李。",
+      "4. 出口前是**海關**，沒有要申報的東西就走綠色通道直接出去。",
+      "5. 出關後在大廳等，**跟緊大家、不要自己先走**。",
+      "",
+      "## 護照怎麼顧",
+      "",
+      "- **護照絕對不要放托運行李。**隨身背包貼身放，過關後就收好。",
+      "- 出發前**拍一張護照資料頁**存在手機相簿，再印一份紙本放行李箱。萬一遺失，補辦會快很多。",
+      "- 飯店入住時櫃檯可能會收走護照登記，**記得當天要回來**，離開飯店前確認拿回。",
+      "- 護照掉了先找主辦人，並聯絡駐越南台北經濟文化辦事處（電話在「緊急求助」頁）。"
+    )},
+    {id:"weather",sec:"pre",icon:"thermo",title:"天氣與穿搭",sub:"山上比你想的冷",body:tplL(
+      "### 一句話結論",
+      "",
+      "沙壩在**海拔 1,500 公尺**的山上，九月白天約 **21 度**、晚上會降到 **16 度**，而且十天有六天在下雨。台灣同期還在三十幾度，**溫差比你想像的大**。",
+      "",
+      "## 各地溫度差很多",
+      "",
+      "河內（平地）｜悶熱潮濕，跟台灣夏天差不多",
+      "沙壩（1,500m）｜白天約 21 度、夜裡約 16 度，早晚涼",
+      "番西邦山頂（3,143m）｜比沙壩鎮上**再低約 10 度**，加上山頂風大，體感可能只有幾度",
+      "",
+      "! 上番西邦那天**一定要帶外套**，不要看沙壩鎮上出太陽就輕裝上山。纜車上去只要十幾分鐘，溫度卻差一大截。",
+      "",
+      "## 這樣穿最省事",
+      "",
+      "- **洋蔥式穿法**：短袖或薄長袖打底，外面一件薄外套，最外面一件**防風防潑水外套**。熱了脫、冷了加，比穿一件厚的好用。",
+      "- **鞋子要防滑。**山區石板路、梯田步道下過雨很滑，穿包鞋或運動鞋，不要穿新鞋或拖鞋。",
+      "- **帶輕便雨衣，勝過雨傘。**山上風大，傘常常撐不住，雨衣還能擋風。",
+      "- 怕冷的人多帶一條**薄圍巾或帽子**，脖子跟頭保暖，體感差很多。",
+      "- 行李裡放一套**乾的替換衣物**，淋濕了有得換。",
+      "",
+      "## 雨季尾巴要有心理準備",
+      "",
+      "- 九月是沙壩雨量最多的月份之一（月雨量約 315 毫米、約 20 個雨天），**遇到下雨是正常的**，通常是陣雨不是整天下。",
+      "- 山上常起**雲霧**，看不看得到雲海要碰運氣；霧散得快，等一下再看常有驚喜。",
+      "- 雨後**石階很滑**，走路手不要插口袋，慢慢走。",
+      "- 房間可能**濕氣重、沒有暖氣**，怕冷的人可以請飯店多給一條被子。"
+    )},
+    {id:"phoneset",sec:"pre",icon:"phone",title:"手機出發前設定",sub:"關漫遊、先裝好",body:tplL(
+      "### 為什麼要先弄",
+      "",
+      "這幾件事**在台灣用 Wi-Fi 做只要十分鐘**，落地後沒網路才弄會很麻煩。出發前一晚照著做一次就好。",
+      "",
+      "## 第一件事：關掉數據漫遊",
+      "",
+      "這是最容易收到高額帳單的地方，出發前一定要關。",
+      "",
+      "- **iPhone：**設定 → 行動服務 → 找到你的台灣門號 → 把「數據漫遊」關掉。",
+      "- **Android：**設定 → 網路和網際網路 → SIM 卡 → 關閉「數據漫遊」。",
+      "- 台灣門號**不要整個關掉**，留著才能收銀行或驗證碼簡訊，只關「數據漫遊」即可。",
+      "- 有買 eSIM 的人，上網走 eSIM，作法看「eSIM 網路卡怎麼買」那張卡。",
+      "",
+      "## 出發前先裝好、先下載好",
+      "",
+      "- **Grab**（叫車用）：註冊要用手機號碼收簡訊驗證，**一定要在台灣用台灣門號註冊好**，落地才裝常常收不到驗證碼。",
+      "- **Google 地圖離線地圖**：搜尋「Sa Pa」→ 點地名 → 下載 → 下載離線地圖。沒網路也能看自己在哪。",
+      "- **Google 翻譯**：進 App 把「越南文」語言包下載成離線，相機即時翻譯菜單很好用。",
+      "- **本工具站**：用瀏覽器打開後「加入主畫面」，之後像 App 一樣點開，沒網路也看得到。",
+      "",
+      "## 存好這些資料",
+      "",
+      "- 把**主辦人電話**存進通訊錄（緊急求助頁有）。",
+      "- **飯店名稱與地址截圖**存在相簿，走散時可以直接給司機看——本工具站的「計程車回飯店卡」已經是越文版，更好用。",
+      "- 護照資料頁拍照存起來。",
+      "- **把手機的緊急聯絡人設定好**，並記得帶**行動電源**；山區冷、訊號差，電量掉得比平常快。",
+      "",
+      "### 打電話怎麼打",
+      "",
+      "eSIM 多半只有上網、沒有電話號碼。要聯絡團員請用 **LINE 免費通話**；打當地電話（飯店、餐廳）才需要用台灣門號直撥，會算國際漫遊費。"
+    )},
+    {id:"exchange",sec:"pre",icon:"cash",title:"換匯與付款",sub:"心算法、刷卡還付現",body:tplL(
+      "### 先記這個心算法",
+      "",
+      "**越盾去掉三個零，再乘以 1.2，就是台幣。**",
+      "例如 100,000 盾 → 去掉三個零剩 100 → ×1.2 ＝ **約 120 台幣**。",
+      "算不出來就用工具頁的「外幣點鈔速算」，按鈔票就好，不用打字。",
+      "",
+      "## 在哪裡換錢",
+      "",
+      "- **台灣的銀行也能換越南盾，但匯率通常比較差。**多數人是在台灣先換好美金，到越南再換成越盾，或直接在當地提款。",
+      "- **機場換一點就好。**機場匯率差，換夠當天車資與零用即可，其餘到市區再換。",
+      "- **ATM 提款**方便但每筆有手續費，還可能被台灣的銀行再收一次；要用的人出發前先確認金融卡有開通海外提款與密碼。",
+      "- 換錢時**當場點清楚再走**，並要求多給一些小面額。",
+      "",
+      "## 越南盾的三個坑",
+      "",
+      "- **零很多。**一碗河粉五萬盾聽起來嚇人，其實約 60 台幣。看到價格先去掉三個零再算。",
+      "- **顏色很像。**20,000（藍）和 500,000（藍綠）容易看錯，付錢跟找零都要**看清楚位數**，一張差 25 倍。",
+      "- **小費與零錢要小面額。**10,000、20,000、50,000 各留幾張，只有大鈔會很難處理。",
+      "",
+      "## 刷卡還是付現",
+      "",
+      "飯店、大餐廳｜可以刷卡，記得選**用越盾結帳**（選台幣結帳匯率較差）",
+      "市場、小攤、路邊攤｜只收現金，準備小鈔",
+      "計程車 / Grab｜現金最保險；Grab 也可綁卡",
+      "參考匯率｜1 台幣 ≈ 820 越盾（以工具頁「外幣點鈔速算」裡的設定為準）"
+    )},
+    {id:"esim",sec:"pre",icon:"wifi",title:"eSIM 怎麼買",sub:"KKday、Saily",body:tplL(
+      "### 什麼是 eSIM",
+      "",
+      "不用換實體 SIM 卡，直接在手機裡「下載」一組越南門號上網。出國前在台灣就能買好，落地開機就有網路，不必到機場排隊買卡，也不會弄丟原本的 SIM 卡。",
+      "",
+      "## 方法一：KKday",
+      "",
+      "買完把 QR Code 寄到你的 email，自己掃描安裝。",
+      "",
+      "1. 打開 KKday 網站或 App，搜尋「**越南 eSIM**」。",
+      "2. 挑天數與流量。我們是 5 天 4 夜，選 **5～7 天**、每日 1～2GB 的方案就很夠用（看影片多的人選吃到飽）。",
+      "3. 結帳後 **QR Code 會寄到你的 email**，沒收到請先看垃圾郵件匣。",
+      "4. 出發前一天在家用 Wi-Fi 掃描 QR Code 安裝（安裝要有網路）。",
+      "5. 落地越南後，到「設定 → 行動網路」把這張新的 eSIM 打開、開啟數據漫遊就會通。",
+      "",
+      "! **QR Code 只能掃一次**，掃了就綁定那支手機，不能換機也不能刪掉重來。掃之前先確定是要用的那支手機。",
+      "",
+      "## 方法二：Saily App",
+      "",
+      "買、裝、開通全部在同一個 App 裡完成。",
+      "",
+      "1. App Store／Google Play 下載 **Saily**，用 Apple ID 或 Google 帳號註冊。",
+      "2. 點「Explore Plans」→ 搜尋 **Vietnam（越南）**，選流量與天數。",
+      "3. 用信用卡、Apple Pay 或 Google Pay 付款。",
+      "4. 付完在 App 裡點「**Install eSIM**」，iPhone 會自動加入行動方案；Android 到「設定 → 網路 → SIM → 下載 eSIM」。",
+      "5. Saily 的流量是**第一次連上越南電信時才開始算**，所以可以在台灣提早裝好，不會浪費天數。",
+      "",
+      "## eSIM 注意須知",
+      "",
+      "- **先確認手機支援 eSIM。**iPhone XS（2018）以後大多支援，但**在中國大陸買的 iPhone 幾乎都不支援**（只有 2026 年的 iPhone Air、17e 等少數新機才開放）；Android 看 Google Pixel 3 以後、三星 S20 以後的國際版，**台灣買的三星多半不支援**（連 S25 台灣版都沒有）。不確定就撥 ***#06#**，畫面有出現「EID」才代表支援。",
+      "- **安裝一定要有網路。**在台灣用家裡或飯店 Wi-Fi 裝好最保險，落地後才裝可能連不上網而卡住。",
+      "- **不要刪掉原本的台灣門號。**eSIM 是額外加一組，台灣號碼留著才能收簡訊驗證碼；只要把「行動數據」切到越南那張、台灣那張**關掉數據漫遊**就不會被扣漫遊費。",
+      "- **KKday 的 QR Code 只能掃一次**，Saily 可以在 App 內重新安裝，怕操作失誤的人選 Saily 比較保險。",
+      "- **eSIM 多半只有數據、沒有電話號碼**，不能打電話或收簡訊。要打電話請用 LINE、Messenger 語音通話。",
+      "- 落地後如果沒網路：關飛航模式再開一次 → 確認新 eSIM 已開啟 → 打開「數據漫遊」 → 還是不行就重開機。",
+      "- 沙壩山區、番西邦纜車上訊號會變差，這是正常的，不是卡有問題。",
+      "- 不想自己弄的人可以直接用飯店 Wi-Fi，或跟主辦人說，出發前一起處理。"
+    )},
+    {id:"tips",sec:"pre",icon:"gift",title:"小費文化",sub:"給多少、哪些場合",body:tplL(
+      "### 一句話結論",
+      "",
+      "越南**沒有強制小費**的規定，不給也不會被白眼。但在觀光區給一點是常見的禮貌，金額小、心意到就好。",
+      "",
+      "## 常見場合與行情",
+      "",
+      "飯店房務｜每天 20,000～50,000 越盾，放在枕頭上或桌上",
+      "行李員｜每件行李 20,000～50,000 越盾",
+      "餐廳｜帳單如果已收 5～10% service charge 就不用再給；沒收的話留零錢即可",
+      "按摩｜50,000～100,000 越盾，做得舒服再給",
+      "計程車 / Grab｜不用給，湊整數不用找零就很夠",
+      "包車司機 / 導覽｜大家一起出比較好處理，可以跟主辦人討論",
+      "",
+      "## 給小費的眉角",
+      "",
+      "- **準備小面額。**10,000、20,000、50,000 越盾各留幾張，不然只有 500,000 大鈔會很尷尬。",
+      "- **用越盾，不要給台幣或硬幣。**外幣硬幣他們換不掉，等於沒給。",
+      "- **雙手遞、面帶微笑**，或直接放在桌上；不要丟或塞。",
+      "- 服務讓你不舒服就**不用給**，不要有壓力。",
+      "- 小心「找零陷阱」：越盾 20,000 和 500,000 顏色接近，付錢與找零時**看清楚位數**再收。"
+    )},
+    {id:"power",sec:"pre",icon:"plug",title:"電壓與插頭",sub:"220V、雙圓孔",body:tplL(
+      "### 越南的電",
+      "",
+      "**電壓 220V、頻率 50Hz**（台灣是 110V、60Hz）。插座大多是**雙圓孔**，很多飯店是圓孔與扁孔通用的萬用插座。",
+      "",
+      "## 哪些東西可以直接插",
+      "",
+      "- **手機、平板、筆電、相機充電器：可以直接用。**這類變壓器上都印著「INPUT 100–240V」，本來就吃全球電壓。",
+      "- 台灣的**兩腳扁插頭**大多可以直接插進越南的萬用插座；插不進去就用一個小圓轉接頭（台灣的百元商店或機場都買得到）。",
+      "- 行動電源、行李秤、電動牙刷等 USB 充電的東西也都沒問題。",
+      "",
+      "## 這些千萬不要直接插",
+      "",
+      "- **台灣帶去的吹風機、電湯匙、捲髮棒、小電鍋**——這類只吃 110V，直接插 220V 會燒掉甚至冒煙。飯店都有吹風機，不用自己帶。",
+      "- 插上去前先**看變壓器上的字**：有「100–240V」才安全，只寫「110V」就不能用。",
+      "- 轉接頭**只轉形狀、不會降電壓**，不要以為插了轉接頭就安全。真的要用 110V 電器要買「變壓器」。",
+      "",
+      "### 順帶提醒",
+      "",
+      "沙壩山區偶爾會短暫停電，手機與行動電源**睡前先充飽**。夜臥火車上的插座不一定每個舖位都有，建議帶一顆行動電源。"
+    )},
+    {id:"grab",sec:"local",icon:"taxi",title:"Grab 叫車",sub:"先看價錢不喊價",body:tplL(
+      "### 為什麼推薦用 Grab",
+      "",
+      "Grab 是東南亞版的計程車 App。**叫車前就看得到車資、直接在 App 付或現金付**，不用喊價也不怕繞路，對不會講越南文的人最安全。",
+      "",
+      "## 最重要：註冊要在台灣先做",
+      "",
+      "! Grab 註冊要用**手機號碼收簡訊驗證碼**。出國買的 eSIM 多半**只有上網、沒有電話號碼**，落地才註冊會收不到驗證碼卡住。**請在台灣就用台灣門號註冊完成。**",
+      "",
+      "1. App Store／Google Play 搜尋「**Grab**」下載。",
+      "2. 用**台灣手機號碼**註冊，收簡訊填驗證碼。",
+      "3. 填姓名、email 就完成了，可以不綁信用卡（到時選現金付款）。",
+      "",
+      "## 怎麼叫車",
+      "",
+      "1. 打開 App，上面那格是**上車地點**（通常自動抓你現在位置），下面那格輸入**目的地**。看不懂越南地名就從地圖上點，或先在 Google 地圖找好、複製名稱貼上。",
+      "2. 選車型：**Car 是四人座轎車**（推薦），Bike 是機車載客，長輩不建議。",
+      "3. 螢幕會直接顯示**車資**，覺得可以就按下訂。",
+      "4. 配對後會出現**司機姓名、車型、車牌號碼**。上車前**核對車牌**，不對就不要上。",
+      "5. 到了付現金或 App 扣款。車資已經談好，**不用再議價**。",
+      "",
+      "## 沙壩的實際狀況",
+      "",
+      "- 沙壩**叫得到 Grab，但司機比河內少很多**，**清晨與深夜特別難叫**，可能等比較久或叫不到。",
+      "- 另一個選擇是 **Xanh SM**（越南的電動計程車，車身是青綠色），沙壩也有跑，可以用它的 App 叫，路邊也招得到。",
+      "- 叫不到車就**請飯店櫃檯幫忙叫**，這是最穩的方法，也可以請他們先問好價錢。",
+      "- 從老街火車站到沙壩這段山路**不適合用 App**，一般是搭接駁巴士或共乘小巴，跟著團走就好。",
+      "- 真的要搭路邊計程車，上車前先問「Bao nhiêu tiền?（包 妞 電）多少錢」講好價，或請司機**開計費表**。"
+    )},
+    {id:"health",sec:"local",icon:"thermo",title:"身體不適",sub:"暈車、腸胃、上高山",body:tplL(
+      "### 先講最重要的",
+      "",
+      "在國外不舒服，**第一件事是告訴主辦人**，不要自己忍。早講可以調整行程、早點就醫；忍到晚上或上了山才說，處理起來麻煩很多。",
+      "",
+      "## 上番西邦會不會高山症",
+      "",
+      "- 沙壩鎮上海拔約 1,500 公尺，**一般不會有高山反應**。",
+      "- 番西邦山頂 **3,143 公尺**，纜車幾分鐘就上去，有些人會覺得**頭悶、喘、走幾步就累**，這在高海拔是常見反應。",
+      "- 上去以後**走慢一點、少講話、不要跑跳**，山頂那幾百階不必勉強走完，坐著看風景一樣值得。",
+      "- 覺得頭痛、噁心、喘不過來，**就往下走、搭纜車下山**，下降高度是最有效的方法，並且告訴主辦人。",
+      "- 本來就有心臟、肺部或高血壓問題的人，上山前**先跟主辦人說一聲**，行程中互相照應。",
+      "",
+      "## 暈車",
+      "",
+      "- 河內到沙壩的山路**彎道很多**，容易暈車的人請提早跟主辦人說，**坐前排**會好很多。",
+      "- 上車前**不要吃太飽**，也不要空腹。",
+      "- 會暈車的人**自己從台灣帶慣用的暈車藥**，出發前一段時間先吃（依你平常的習慣或藥師指示）。",
+      "- 車上**看遠方、不要滑手機**，開一點窗透氣。",
+      "",
+      "## 腸胃不舒服",
+      "",
+      "- **只喝瓶裝水**，開瓶前確認封膜完好；水龍頭的水不要生飲，刷牙用瓶裝水比較保險。",
+      "- 生冷的食物（生菜、生魚、切好的水果）與**來路不明的冰塊**斟酌，腸胃弱的人避開。",
+      "- 吃東西前**洗手或用乾洗手**。",
+      "- 拉肚子時**先補水**（瓶裝水、電解質飲料），少量多次；狀況沒改善或有發燒，跟主辦人說並就醫。",
+      "",
+      "## 藥品自己帶",
+      "",
+      "- **慢性病藥一定要帶足全程的量**，放隨身行李不要托運，並多帶幾天備用。",
+      "- 把藥名或藥袋**拍照存手機**，萬一需要就醫，可以直接給醫生看。",
+      "- 常備：個人習慣的**止痛、感冒、腸胃、暈車、OK 繃**。台灣帶慣用的最安心，越南藥局的品項與名稱不一定對得上。",
+      "- 越南藥局招牌寫 **Nhà thuốc**，市區很常見。找藥局或看醫生的越南話，在「外語溝通圖卡 → 身體不適」那一類裡。",
+      "",
+      "! **緊急狀況打 115（救護車）**，並立刻聯絡主辦人。電話都在「緊急求助」頁，一鍵可撥。"
+    )},
+    {id:"market",sec:"local",icon:"cash",title:"購物與禮儀",sub:"殺價、拍照、被推銷",body:tplL(
+      "### 沙壩的市場長什麼樣",
+      "",
+      "沙壩是**黑苗族、紅瑤族**等少數民族的聚居地，市場與街上會看到穿著傳統服飾的婦女賣手工織品、銀飾、草藥。東西有特色，但**幾乎都要議價**。",
+      "",
+      "## 殺價怎麼開口",
+      "",
+      "- **觀光區開價通常偏高。**心裡先想好「這東西我願意付多少」，從對方開價的**一半左右**開始談，通常會落在中間。",
+      "- **不想買就不要問價。**一問價對方就會認真跟你談，之後不買容易尷尬、也容易被纏著。",
+      "- **轉身走是最有效的一招。**價錢談不下來就微笑說謝謝離開，可以接受的話對方多半會叫住你。",
+      "- **多買可以要求算便宜一點**，同一攤買三件比分開買三攤好談。",
+      "- 付錢前**再確認一次金額與位數**（越南盾零很多，20,000 和 500,000 容易看錯），找零當場點清楚。",
+      "",
+      "## 被小販跟著怎麼辦",
+      "",
+      "- 沙壩街上常有婦女或小孩**一路跟著推銷**，這是當地常態，不是針對你，也**沒有危險**。",
+      "- 不想買就**看著對方、微笑、清楚說「Không, cảm ơn（空，感 恩）」不用了謝謝**，然後繼續走。含糊其辭或一直笑而不答，反而會被跟更久。",
+      "- **不要停下來翻看商品**，一旦拿在手上就很難脫身。",
+      "- 對方幫你帶路、陪你走一段之後才開口要錢，是常見情況；**不需要的協助一開始就婉拒**。",
+      "",
+      "## 拍照的禮貌",
+      "",
+      "- **拍人之前先問一聲**，舉起相機比個手勢、看對方點不點頭。少數民族長輩不見得喜歡被拍。",
+      "- **不要對著小孩猛拍**，也不要拍完就走；有些地方拍照後會被要求付費，先問清楚再拍。",
+      "- 進入村寨、民宅或有宗教意味的地方，**先問可不可以進、可不可以拍**。",
+      "- 大家一起拍團體照時**注意腳下**，梯田田埂窄又滑。",
+      "",
+      "## 一個小提醒",
+      "",
+      "路上會遇到賣東西或討錢的孩子。**不建議直接給錢或糖果**——這會讓家長更傾向讓孩子上街而不是上學。真的想幫忙，**跟大人買一件他們做的東西**，比較實際。"
+    )},
+    {id:"basics",sec:"local",icon:"toilet",title:"廁所與飲水",sub:"自備衛生紙",body:tplL(
+      "### 兩句話結論",
+      "",
+      "**衛生紙自己帶，用完丟垃圾桶不要丟馬桶；水只喝瓶裝的。**這兩件事做到，旅途會順很多。",
+      "",
+      "## 廁所",
+      "",
+      "- **隨身帶一包衛生紙與濕紙巾。**景區、休息站、山區的廁所經常沒有供應，這是最常後悔沒帶的東西。",
+      "- **用過的衛生紙丟旁邊的垃圾桶**，不要丟進馬桶。當地管線細，很容易堵住。",
+      "- 觀光區廁所**有時要收費**（幾千盾），身上留一點零錢。",
+      "- 看到廁所就先去，**不要等到上車前才去**。山路一開就是一段路，中間不一定有地方停。",
+      "- 找廁所的越南話：**Nhà vệ sinh ở đâu?（呀 唯 星 兒 鬥）**，圖卡在「交通與問路」那一類。",
+      "",
+      "## 喝水",
+      "",
+      "- **只喝瓶裝水**，開瓶前看一下**封膜是否完整**。飯店房間每天會附贈幾瓶。",
+      "- **水龍頭的水不要生飲**；講究一點的人連刷牙都用瓶裝水。",
+      "- 餐廳的**冰塊**：正規餐廳多半用製冰廠的乾淨冰塊（中間有孔的圓柱狀），路邊小攤的碎冰腸胃弱的人就避開。不想加冰就出示「溫開水，不加冰」那張圖卡。",
+      "- 山上早晚涼，**喝溫水比冰水舒服**，帶個保溫瓶請餐廳或飯店裝熱水很方便。",
+      "",
+      "## 其他小事",
+      "",
+      "- 吃飯前**用乾洗手**，山區洗手台不一定有肥皂。",
+      "- 飯店的**牙刷牙膏不一定會附**，習慣用自己的就自己帶。",
+      "- 山區**濕氣重**，衣服不容易乾，多帶一雙襪子與一套換洗會比較舒服。"
+    )}
+    ]}}
 };
-
-/* 示範用：先依名單順序排好桌次與車次，管理者可隨時「一鍵隨機分組」或手動調整 */
-(function(){
-  var ms = DEFAULTS.members.items;
-  var meal = DEFAULTS.groups.scenarios[0], sh = DEFAULTS.groups.scenarios[1];
-  ms.forEach(function(m,i){ meal.assign[m.id] = Math.floor(i/9); sh.assign[m.id] = i<17?0:1; });
+/* 越南範本的外幣就是上面的越南盾（同一份資料，不重複寫） */
+TPL.vietnam.tools.money=(function(){ var p=MONEY_PRESETS.filter(function(x){ return x.id==='vnd'; })[0];
+  return {name:p.name,unit:p.unit,dir:p.dir,rate:p.rate,warn:p.warn,notes:JSON.parse(JSON.stringify(p.notes))}; })();
+/* ===== 內建預設資料：空殼（v3.23）=====
+   程式不再內建任何一團的行程與名單（小麥指定「清空原先焊死的內建名單與行程，留下空殼」）。
+   新手機第一次打開、還沒同步到雲端的那一兩秒，看到的就是這個空殼；正式內容一律由主辦人在管理模式建立，
+   或從雲端同步下來。唯一的例外是工具頁：預設放通用版範本（03a-tpl.js），出國常識一打開就有得看。
+   測試：audit/_lib.js 會在網頁載入前把一團假資料放在 window.__SEED__（audit/fixture-trip.js），
+   這裡逐份蓋過空殼；tools 可以寫範本名稱（例如 'vietnam'）。正式網站沒有這個變數。 */
+var DEFAULTS=(function(){
+  var d={settings:{},broadcast:{},itinerary:{items:[]},members:{items:[]},groups:{scenarios:[]},
+    rollcall:{present:{}},notebook:{pages:[]},photos:{items:{}},tools:JSON.parse(JSON.stringify(TPL.generic.tools))};
+  var s=(typeof window!=='undefined')&&window.__SEED__;
+  if(s&&typeof s==='object') Object.keys(s).forEach(function(k){ var v=s[k];
+    if(k==='tools'&&typeof v==='string'&&TPL[v]) v=JSON.parse(JSON.stringify(TPL[v].tools));
+    if(v&&typeof v==='object') d[k]=v; });
+  return d;
 })();
 /* ===== 工具函式 ===== */
-var VN='Asia/Ho_Chi_Minh', TW='Asia/Taipei';
+var TW='Asia/Taipei';
 function el(id){ return document.getElementById(id); }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
 function clone(o){ return JSON.parse(JSON.stringify(o)); }
@@ -1238,10 +1782,18 @@ try{ var _sm=/[?&]sim=([^&#]+)/.exec(location.search), _sv=null;
   var _st=simParse(_sv); if(!isNaN(_st)){ SIM_OFF=(_st-Date.now())||1; try{ sessionStorage.setItem('sapa-sim',_sv); }catch(e){} }
   else { try{ sessionStorage.removeItem('sapa-sim'); }catch(e){} } }catch(e){}   /* 壞掉的網址不留舊的模擬 */
 function nowMs(){ return Date.now()+SIM_OFF; }
-function tzParts(tz){
-  var d=new Date(nowMs());
+/* 目的地時區（v3.23）：團務設定選的 settings.tz；沒選、或存了認不得的值，就跟台灣同一個時區。
+   家鄉固定是台灣（台灣時間、台幣）。 */
+var TZ_OK={}, TZ_FMT={};
+function tzValid(z){ if(!z||typeof z!=='string') return false;
+  if(TZ_OK[z]===undefined){ try{ new Intl.DateTimeFormat('en-GB',{timeZone:z}); TZ_OK[z]=true; }catch(e){ TZ_OK[z]=false; } }
+  return TZ_OK[z]; }
+function LTZ(){ var z=((Store&&Store.s&&Store.s.settings)||{}).tz; return tzValid(z)?z:TW; }
+/* 某個時區在某一刻（預設是現在）的日期與時刻 */
+function tzParts(tz,ms){
+  var d=new Date(ms===undefined?nowMs():ms);
   try{
-    var f=new Intl.DateTimeFormat('en-GB',{timeZone:tz,hour12:false,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+    var f=TZ_FMT[tz]||(TZ_FMT[tz]=new Intl.DateTimeFormat('en-GB',{timeZone:tz,hour12:false,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}));
     var o={}; f.formatToParts(d).forEach(function(p){o[p.type]=p.value;});
     var h=parseInt(o.hour,10); if(h===24) h=0;
     return {date:o.year+'-'+o.month+'-'+o.day,h:h,m:parseInt(o.minute,10),hm:pad(h)+':'+o.minute};
@@ -1255,9 +1807,16 @@ var WD=['日','一','二','三','四','五','六'];
 /* 2026-09-24 → 9/24（四） */
 function mdw(s){ var t=parseDate(s); if(isNaN(t)) return ''; var d=new Date(t); return (d.getUTCMonth()+1)+'/'+d.getUTCDate()+'（'+WD[d.getUTCDay()]+'）'; }
 function dayDate(n){ var t=parseDate(S().settings.startDate); if(isNaN(t)) return ''; return mdw(ymd(t+(n-1)*86400000)); }
+/* 某個時區在某一刻比 UTC 快多少毫秒（有夏令時間的地方，同一個時區在不同日期會不一樣） */
+function tzOff(tz,ms){ var p=tzParts(tz,ms); return parseDate(p.date)+(p.h*60+p.m)*60000-Math.floor(ms/60000)*60000; }
 function dayInfo(){
-  var st=S().settings, vn=tzParts(VN), days=st.days||5;
-  var start=parseDate(st.startDate), today=parseDate(vn.date);
+  var st=S().settings, days=st.days||5;
+  var start=parseDate(st.startDate), today=parseDate(tzParts(LTZ()).date);
+  /* 「今天」用當地日期算，但出發前人還在台灣：
+     台灣還沒到出發日 → 一律算出發前（目的地比台灣快的，例如紐西蘭，前一晚當地已經過了午夜）；
+     台灣已經是出發日、當地還是前一天 → 算第 1 天（目的地比台灣慢很多的，例如美國） */
+  var twd=parseDate(tzParts(TW).date);
+  if(!isNaN(start)&&!isNaN(twd)){ if(twd<start) today=Math.min(today,twd); else if(twd===start&&today<start) today=start; }
   var diff=isNaN(start)?0:Math.round((today-start)/86400000);
   if(st.dayOverride>0) return {idx:Math.min(st.dayOverride,days),status:'override',days:days,diff:diff};
   if(isNaN(start)) return {idx:1,status:'on',days:days,diff:0};
@@ -1265,15 +1824,17 @@ function dayInfo(){
   if(diff>=days) return {idx:days,status:'after',days:days,diff:diff};
   return {idx:diff+1,status:'on',days:days,diff:diff};
 }
-/* ===== 時區：第 1 天搭機前人還在台灣，那段時間是「台灣時間」，其餘一律越南時間 =====
+/* ===== 時區：第 1 天搭機前人還在台灣，那段時間是「台灣時間」，其餘一律當地時間（團務設定選的目的地時區）=====
    判斷方式：出發日當天、時間不晚於最晚一班去程起飛（例：長榮 09:00）→ 台灣時間。
-   不用另外在資料裡標記，改航班時間就會自動跟著變。越南、台灣都沒有日光節約時間。 */
+   不用另外在資料裡標記，改航班時間就會自動跟著變。當地有夏令時間也算得對（tzOff 用那一天的時差）。 */
 function twCutoff(){ var f=(S().settings||{}).flights||{}, c=''; Object.keys(f).forEach(function(k){ var o=f[k]&&f[k].out; if(o&&/^\d{1,2}:\d{2}$/.test(o)&&o>c) c=o; }); return c||'09:00'; }
 function isTWSlot(date,hm){ var st=S().settings||{}; return !!(date&&hm&&date===st.startDate&&hm<=twCutoff()); }
 /* 某個日期＋時刻（依上面的規則決定時區）換成絕對時間（毫秒） */
 function slotMs(date,hm,tw){ var t=parseDate(date); if(isNaN(t)||!hm||hm.indexOf(':')<0) return NaN; var p=hm.split(':').map(Number);
   if(tw===undefined) tw=isTWSlot(date,hm);
-  return t+(p[0]*60+p[1])*60000-(tw?8:7)*3600000; }
+  var w=t+(p[0]*60+p[1])*60000;   /* 先把「那一天的那個時刻」當成 UTC，再扣掉時差 */
+  if(tw) return w-8*3600000;
+  var z=LTZ(), o=tzOff(z,w); return w-tzOff(z,w-o); }   /* 先猜一次時差再校正一次：夏令時間切換那天也對 */
 /* 行程第 N 天的某個時刻是不是台灣時間（第 1 天搭機前） */
 function twItem(day,hm){ return day===1&&!!hm&&hm<=twCutoff(); }
 function dayYmd(n){ var t=parseDate(S().settings.startDate); return isNaN(t)?'':ymd(t+(n-1)*86400000); }
@@ -1285,7 +1846,7 @@ function nextStop(di){
   var cur=list.filter(function(x){return x.isCurrent;})[0];
   if(cur) return {id:cur.id,time:cur.time,title:cur.title,kind:'cur',tw:twItem(day,cur.time)};
   /* 手動指定第幾天時，把「今天」當成那一天，只比時刻；否則用那一天的實際日期 */
-  var dd=(di.status==='override')?tzParts(twItem(day,'00:00')?TW:VN).date:dayYmd(day), nm=nowMin();
+  var dd=(di.status==='override')?tzParts(twItem(day,'00:00')?TW:LTZ()).date:dayYmd(day), nm=nowMin();
   var up=list.filter(function(x){ var ms=slotMs(dd,x.time,twItem(day,x.time)); return !isNaN(ms)&&ms/60000>=nm; })[0];
   if(up) return {id:up.id,time:up.time,title:up.title,kind:'next',tw:twItem(day,up.time)};
   return {id:'',time:'',title:'',kind:'done'};
@@ -1303,12 +1864,12 @@ function bcDate(){
   /* 沒有日期的舊廣播：用「存檔的那一刻」推回它指的是哪一天，才不會每天早上復活。
      出發前存的 → 出發日；旅途中存的 → 存檔當天（時間已經過了就是隔天）。 */
   if(b._ts&&!isNaN(parseDate(st.startDate))&&b.time){
-    var sd=ymd(Math.floor((b._ts+7*3600000)/86400000)*86400000);   /* 存檔當下的越南日期 */
+    var sd=tzParts(LTZ(),b._ts).date;   /* 存檔當下的當地日期 */
     if(sd<st.startDate) return st.startDate;
     return slotMs(sd,b.time)>=b._ts-60000?sd:ymd(parseDate(sd)+86400000);
   }
   if(dayInfo().status==='before'&&!isNaN(parseDate(st.startDate))) return st.startDate;
-  return tzParts(VN).date;
+  return tzParts(LTZ()).date;
 }
 /* 距離集合還有幾分鐘（負數＝已經過了）；沒設集合時間就回 null。跨日靠 bcDate() 補上天數差。 */
 function bcDiffMin(){
@@ -1321,13 +1882,13 @@ function bcDiffMin(){
 function bcActive(){
   var b=S().broadcast||{};
   if(b.time){ var d=bcDiffMin(); return d===null||d>-240; }
-  if(b.idle) return !(b.date&&b.date<tzParts(VN).date);
+  if(b.idle) return !(b.date&&b.date<tzParts(LTZ()).date);
   return false;
 }
 function bcIsTW(){ var b=S().broadcast||{}; if(!b.time) return false; return b.tz?b.tz==='TW':isTWSlot(bcDate(),b.time); }
 function countdown(){
   var diff=bcDiffMin(); if(diff===null) return null;
-  var bd=bcDate(), pre=(bd===tzParts(VN).date)?'':(mdw(bd)+' · ');
+  var bd=bcDate(), pre=(bd===tzParts(LTZ()).date)?'':(mdw(bd)+' · ');
   if(diff>0) return {text:pre+'還有 '+fmtDur(diff),late:false};
   if(diff===0) return {text:'集合時間到了！',late:true};
   if(diff>-240) return {text:'已過 '+fmtDur(-diff),late:true};
@@ -1493,7 +2054,11 @@ var Store={
       if(P.leader) toast(DOC_NAMES[k]+'突然從 '+cnt+' 筆變成 '+nxt+' 筆，已自動留下上一版（管理專區 → 還原上一版）');
     }
   },
-  docCount:function(k,d){ if(!d) return 0; if(d.items) return Array.isArray(d.items)?d.items.length:Object.keys(d.items).length; if(d.pages) return d.pages.length; if(d.scenarios) return d.scenarios.length; return 0; },
+  docCount:function(k,d){ if(!d) return 0; if(k==='tools') return toolsCount(d); if(d.items) return Array.isArray(d.items)?d.items.length:Object.keys(d.items).length; if(d.pages) return d.pages.length; if(d.scenarios) return d.scenarios.length; return 0; },
+  /* 主辦人自己要清空或整份換掉之前（清空工具頁的一區、套用範本），先留一份上一版；規則跟上面一樣，一天內留最完整的那份 */
+  keepPrev:function(k){ if(SIM_OFF) return; var cnt=Store.docCount(k,Store.s[k]); if(!cnt) return;
+    try{ var old=JSON.parse(localStorage.getItem('sapa-prev-'+k)||'null');
+      if(!(old&&old.n>cnt&&Date.now()-old.at<86400000)) localStorage.setItem('sapa-prev-'+k,JSON.stringify({at:Date.now(),n:cnt,doc:Store.s[k]})); }catch(e){} },
   prevSnapshots:function(){ var out=[]; DOC_KEYS.forEach(function(k){ try{ var v=JSON.parse(localStorage.getItem('sapa-prev-'+k)||'null'); if(v&&v.doc) out.push({key:k,at:v.at,n:v.n}); }catch(e){} }); return out; },
   restorePrev:function(k){ if(SIM_OFF) return false; try{ var v=JSON.parse(localStorage.getItem('sapa-prev-'+k)||'null'); if(!v||!v.doc) return false; Store.s[k]=v.doc; localStorage.removeItem('sapa-prev-'+k); Store.save(k); return true; }catch(e){ return false; } },
   /* 雲端快照進來：先套用雲端，再把「這支手機還沒送出去的修改」重新疊上去，離線期間的修改不會被舊快照蓋掉 */
@@ -1633,6 +2198,11 @@ function contacts(){ var st=S().settings; if(st.contacts&&st.contacts.length) re
 function nbPages(){ var n=S().notebook; return (n&&n.pages)||[]; }
 function nbPage(id){ var ps=nbPages(); return ps.filter(function(p){return p.id===(id||P.nbPage);})[0]||ps[0]; }
 function checkStats(pg){ var items=(pg.items||[]).filter(function(i){return i.kind!=='head';}); var ck=(P.checks||{})[pg.id]||{}; var done=items.filter(function(i){return ck[i.id];}).length; return {done:done,total:items.length}; }
+/* 工具頁內容（v3.23）：清空後從雲端回來時陣列都不見了（Firebase 不存空陣列），一樣要把空陣列掛回文件上 */
+function tl(){ var d=S().tools; if(!d||typeof d!=='object') d=Store.s.tools={}; return d; }
+function tlArr(k){ var d=tl(); if(!Array.isArray(d[k])) d[k]=(d[k]&&typeof d[k]==='object')?Object.keys(d[k]).map(function(x){ return d[k][x]; }).filter(Boolean):[]; return d[k]; }
+function toolsCount(d){ if(!d||typeof d!=='object') return 0;
+  return lenOf(d.cards)+lenOf(d.phrases)+lenOf(d.sos)+lenOf(d.money&&d.money.notes)+((d.taxi&&(d.taxi.fl||d.taxi.zh))?1:0); }
 function hotel(){ var st=S().settings; return (st.hotels||[]).filter(function(h){return h.id===st.currentHotelId;})[0]||(st.hotels||[])[0]||{}; }
 
 /* ===== 一鍵清空・自動備份（v3.22）=====
@@ -1657,10 +2227,12 @@ function bkSum(docs){ docs=docs||{}; var st=docs.settings||{};
   return {trip:st.tripName||'', start:st.startDate||'',
     members:lenOf((docs.members||{}).items), itinerary:lenOf((docs.itinerary||{}).items), groups:lenOf((docs.groups||{}).scenarios),
     notebook:lenOf((docs.notebook||{}).pages), photos:lenOf((docs.photos||{}).items), hotels:lenOf(st.hotels),
+    cards:lenOf((docs.tools||{}).cards), phrases:lenOf((docs.tools||{}).phrases),
     contacts:(Array.isArray(st.contacts)?st.contacts:[]).filter(function(c){ return c&&(c.phone||c.line); }).length}; }
 function bkSumText(s){ var a=[];
   if(s.itinerary) a.push('行程 '+s.itinerary+' 站'); if(s.members) a.push('團員 '+s.members+' 人');
   if(s.groups) a.push('分組 '+s.groups+' 個'); if(s.notebook) a.push('記事本 '+s.notebook+' 頁'); if(s.photos) a.push('底圖 '+s.photos+' 張');
+  if(s.cards) a.push('知識小卡 '+s.cards+' 張'); if(s.phrases) a.push('外語圖卡 '+s.phrases+' 句');
   return a.join('、')||'沒有行程與名單'; }
 function whenText(ms){ var d=new Date(ms||0); return (d.getMonth()+1)+'/'+d.getDate()+' '+pad(d.getHours())+':'+pad(d.getMinutes()); }
 /* 清空後的樣子 */
@@ -1674,7 +2246,10 @@ function blankDocs(T){
 }
 /* 從備份還原成的樣子：時間戳記換成現在；空的名單／行程要補上標記，規則才收 */
 function restoreDocs(e,T){ var out={}, src=(e&&e.docs)||{};
-  DOC_KEYS.forEach(function(k){ var d=clone(src[k]||{}); d._ts=T;
+  DOC_KEYS.forEach(function(k){ var d=clone(src[k]||{});
+    /* 3.23 以前的備份沒有工具頁內容：那時工具頁寫死越南內容，還原時一併換回越南範本 */
+    if(k==='tools'&&!src.tools&&e&&verCmp(String(e.ver||'0'),'3.23')<0) d=clone(TPL.vietnam.tools);
+    d._ts=T;
     if(Store.docCount(k,d)>0) delete d._cleared; else if(docBlank(k,d)) d._cleared=T;
     out[k]=d; });
   return out; }
@@ -1702,8 +2277,8 @@ function bkLoad(cb){
     function(){ cb(BK_VIEW,'fail'); });
 }
 function bkFind(id){ return BK_VIEW.filter(function(e){ return e.id===id; })[0]||bkLocalList().filter(function(e){ return e.id===id; })[0]||null; }
-/* 整批換掉 8 份文件（清空、還原都走這裡），換之前先備份目前內容。
-   make(T) 回傳新的 8 份文件；next(err, 備份)：err 是 null 代表成功，
+/* 整批換掉所有文件（清空、還原都走這裡），換之前先備份目前內容。
+   make(T) 回傳新的整組文件；next(err, 備份)：err 是 null 代表成功，
    'sim' 時間模擬中、'offline' 沒連上雲端、'pending' 還有修改沒送出、'denied' 雲端規則擋下（整批都沒寫進去）、
    'nospace' 單機模式手機放不下備份、'fail' 其他錯誤 */
 function bulkWrite(make,reason,next){
@@ -1879,8 +2454,8 @@ function setPin(id,v){
   if(!z.manual) z.manual={};
   z.manual[id]=v;
 }
-/* 航班卡的階段：出發前與第 1 天只看去程；倒數第 2 天（搭夜臥火車回河內那天）起到回國後只看回程；
-   中間在沙壩的日子沒有要搭的飛機，整張收起。小麥指定：不要同時列出去回程，免得長輩看錯。 */
+/* 航班卡的階段：出發前與第 1 天只看去程；倒數第 2 天起到回國後只看回程（沙壩團是搭夜臥火車回河內那天）；
+   中間幾天沒有要搭的飛機，整張收起。小麥指定：不要同時列出去回程，免得長輩看錯。 */
 function flightPhase(di){
   di=di||dayInfo(); var days=di.days||5, back=Math.max(2,days-1);
   if(di.status==='before') return 'out';
@@ -1988,7 +2563,7 @@ function zlab(t){ return '<div class="zlab"><span>'+t+'</span><i></i></div>'; }
 function grp(key,label,cards){ cards=cards.filter(Boolean); if(!cards.length) return ''; return '<div class="zsec g-'+key+'">'+zlab(label)+cards.join('')+'</div>'; }
 function renderSync(){
   renderSim();
-  /* 連線狀態（點＋字）併進標頭第二列，跟越南／台灣時間同一行；狀態字固定用簡短版本 */
+  /* 連線狀態（點＋字）併進標頭第二列，跟當地／台灣時間同一行；狀態字固定用簡短版本 */
   var state='', txt='';
   if(Store.mode==='cloud'){ state=(navigator.onLine===false?'off':'on'); txt=navigator.onLine===false?'離線':'已連線'; }
   else if(Store.mode==='connecting'){ txt='連線中'; }
@@ -1997,7 +2572,7 @@ function renderSync(){
   var dot=el('hdDot'), sy=el('hdSyncTx');
   dot.className='dot'+(state?' '+state:'');
   sy.textContent=txt;
-  sy.title='月半越南團旅 v'+APP_VERSION+(Store.q.length?'（'+Store.q.length+' 筆修改待送出）':'');
+  sy.title='月半團旅 v'+APP_VERSION+(Store.q.length?'（'+Store.q.length+' 筆修改待送出）':'');
   /* 離線提示條：看得到的資料是幾點的，免得照著舊的集合時間走 */
   var ob=el('offBar');
   if(ob){
@@ -2012,7 +2587,7 @@ function renderSync(){
   /* 選過名字的人：下面單獨一列問候；沒選名字時這列整個隱藏（連線狀態已經在上面那排看得到） */
   var me=getMe(), bar=el('syncBar');
   if(me){
-    var h=tzParts(VN).h, g=(h<11?'早安':(h<18?'午安':'晚安'));
+    var h=tzParts(LTZ()).h, g=(h<11?'早安':(h<18?'午安':'晚安'));
     bar.hidden=false;
     bar.innerHTML='<span class="me">'+esc(g)+'，'+esc(me.name)+'</span>';
   } else { bar.hidden=true; bar.innerHTML=''; }
@@ -2033,7 +2608,7 @@ function renderTabs(){
 /* 首頁該長什麼樣的「鍵」：日期 + 下一站。鍵變了才重畫，不會每 15 秒閃一次 */
 function homeKey(){ var di=dayInfo(); var n=nextStop(di); return di.status+':'+di.idx+':'+(n?n.id+':'+n.kind:''); }
 function tick(){
-  var vn=tzParts(VN), tw=tzParts(TW);
+  var lt=tzParts(LTZ()), tw=tzParts(TW);
   var hk=''; try{ hk=homeKey(); }catch(e){}
   if(tick._hk===undefined) tick._hk=hk;
   else if(hk!==tick._hk){
@@ -2041,7 +2616,7 @@ function tick(){
     if(!busy){ if(String(hk).split(':').slice(0,2).join(':')!==String(tick._hk).split(':').slice(0,2).join(':')) P.planDay=0;   /* 換天了：行程頁回到今天 */
       tick._hk=hk; render(); }   /* 正在打字或表單開著就先不動，下一次 tick 再補畫 */
   }
-  el('clockVN').textContent=vn.hm; el('clockTW').textContent=tw.hm;
+  el('clockLT').textContent=lt.hm; el('clockTW').textContent=tw.hm;
   if(SIM_OFF){ var sn=el('simNow'); if(sn) sn.textContent=simLabel(); }
   var c=el('countdown'); if(c){ var cd=countdown(); c.hidden=!cd; if(cd){ c.innerHTML=ic('clock')+esc(cd.text); c.classList.toggle('late',cd.late); } }
   var hc=el('hdCountdown');
@@ -2084,6 +2659,7 @@ function memberCard(m,opt){
 }
 function airDef(k){ var d=AIRLINES[k]; if(!d) return null; var o=((S().settings||{}).airlines||{})[k]||{};
   return {cls:d.cls, short:(o.short||d.label), name:(o.name||d.name), note:(o.note===undefined||o.note===null?d.note:o.note)}; }
+function alShort(k){ var d=airDef(k); return d?d.short:k; }
 function airlineBadge(a,lg){ var d=airDef(a); if(!d) return ''; return '<span class="al '+d.cls+(lg?' lg':'')+'" title="'+esc(d.name)+'">'+esc(d.short)+'</span>'; }
 /* 分組情境：固定不可刪除、臨時標籤 */
 var FIXED_SCN={meal:1};
@@ -2165,7 +2741,7 @@ VIEWS.home=function(){
     var ad=airDef(me.airline);
     var strip=[];
     strip.push('<button data-act="tab" data-tab="groups" data-scn="airline"><span class="k">航空公司</span><span class="v s">'+(ad?airlineBadge(me.airline)+' '+esc(ad.short):'待設定')+'</span></button>');
-    /* 報到航廈是桃園的航廈，只在去程階段有意義；回程在河內內排機場，顯示桃園航廈反而會誤導 */
+    /* 報到航廈是桃園的航廈，只在去程階段有意義；回程在國外的機場，顯示桃園航廈反而會誤導 */
     if(flightPhase(di)==='out') strip.push('<button data-act="tab" data-tab="groups" data-scn="airline"><span class="k">報到航廈</span><span class="v s">'+esc(ad&&ad.note?ad.note.replace(/^桃園/,''):'—')+'</span></button>');
     strip.push('<button data-act="tab" data-tab="rooms"><span class="k">我的房號</span><span class="v">'+esc(me.room||'待分配')+'</span></button>');
     (S().groups.scenarios||[]).forEach(function(sc){
@@ -2280,7 +2856,7 @@ function flightCard(){
   function col(k){ var t=tm(k);
     return '<div class="fl-col"><div class="fl-h">'+airlineBadge(k)+esc(alN(k))+'</div>'+
       '<div class="fl-r"><b>'+(t?esc(t):'<span class="muted" style="font-size:1rem">待公布</span>')+'</b><span class="k">'+
-      (back?'回程 · 河內內排機場起飛':'去程 · 桃園 '+esc(alT(k))+' 起飛')+'</span></div></div>'; }
+      (back?'回程 · '+(f.backPort?esc(f.backPort)+' ':'')+'起飛':'去程 · 桃園 '+esc(alT(k))+' 起飛')+'</span></div></div>'; }
   var inner='<div class="fl">'+keys.map(col).join('')+'</div>'+
     (!back&&f.note&&!(di.status==='before'&&!(S().broadcast||{}).time)?'<div class="warn-box" style="margin-top:.6rem">'+ic('clock')+'<span>'+esc(f.note)+'</span></div>':'');
   /* 收起時的摘要：每家航空一段、段內不斷行，窄螢幕時整段換行而不是被「…」切掉 */
@@ -2456,492 +3032,222 @@ VIEWS.tools=function(){
     case 'money': return toolMoney();
     case 'phrases': return toolPhrases();
     case 'sos': return toolSOS();
-    case 'esim': return toolESIM();
-    case 'tips': return toolTips();
-    case 'power': return toolPower();
-    case 'entry': return toolEntry();
-    case 'weather': return toolWeather();
-    case 'exchange': return toolExchange();
-    case 'phoneset': return toolPhoneSetup();
-    case 'grab': return toolGrab();
-    case 'health': return toolHealth();
-    case 'market': return toolMarket();
-    case 'basics': return toolBasics();
+    case 'card': return toolCard();
     case 'rollcall': return P.leader?toolRollcall():toolMenu();
     default: return toolMenu();
   }
 };
+/* ===== 工具頁內容（v3.23）=====
+   內容全部來自雲端的 tools 文件（範本在 03a-tpl.js），主辦人在管理模式可以編輯、清空、套用範本。
+   團員看不到「還沒設定」的工具（外幣沒設、圖卡是空的）；主辦人看得到，點進去就能設定。 */
+function tlCards(sec){ return tlArr('cards').filter(function(c){ return c&&typeof c==='object'&&(!sec||(c.sec==='local'?'local':'pre')===sec); }); }
+function tlCard(id){ return tlCards().filter(function(c){ return c.id===id; })[0]||null; }
+function tlPhrases(){ return tlArr('phrases').filter(function(p){ return p&&typeof p==='object'; }); }
+function tlCats(){ return tlArr('cats').filter(function(c){ return c&&typeof c==='object'&&c.id; }); }
+function tlMoney(){ var m=tl().money; return (m&&typeof m==='object')?m:{}; }
+function tlLab(){ var b=tl().lab; return (b&&typeof b==='object')?b:{}; }
+function moneyNotes(){ return (Array.isArray(tlMoney().notes)?tlMoney().notes:[]).filter(function(n){ return n&&Number(n.v)>0; }); }
+function moneyOK(){ return Number(tlMoney().rate)>0&&moneyNotes().length>0; }
+function nbHas(id){ return nbPages().some(function(p){ return p&&p.id===id; }); }
+/* 顏色會放進 style 屬性，只收 #RGB／#RRGGBB，其他一律灰色（雲端資料誰都寫得進去，不能讓它跳出屬性） */
+function safeColor(c){ return /^#[0-9a-f]{3}([0-9a-f]{3})?$/i.test(String(c||''))?c:'#9AA3B2'; }
+/* 數字加千分位；小數最多兩位 */
+function fmtNum(v){ var n=Number(v)||0, neg=n<0, s=String(Math.round(Math.abs(n)*100)/100), p=s.split('.');
+  p[0]=p[0].replace(/\B(?=(\d{3})+(?!\d))/g,','); return (neg?'-':'')+p.join('.'); }
+/* 外幣 ↔ 台幣：dir 'twd'＝「1 外幣 ≈ rate 台幣」，其他（'fx'）＝「1 台幣 ≈ rate 外幣」 */
+function fxToTwd(v){ var m=tlMoney(), r=Number(m.rate)||0; if(!r) return 0; return m.dir==='twd'?v*r:v/r; }
+function twdToFx(v){ var m=tlMoney(), r=Number(m.rate)||0; if(!r) return 0; return m.dir==='twd'?v/r:v*r; }
+function fmtTwd(v){ return (v>=10||v===0)?fmtNum(Math.round(v)):fmtNum(Math.round(v*10)/10); }
+/* 反過來算的結果只要「大約」：大數字取到千、中等取到十 */
+function fmtFx(v){ var a=Math.abs(v); if(a>=100000) v=Math.round(v/1000)*1000; else if(a>=1000) v=Math.round(v/10)*10; else if(a>=10) v=Math.round(v); return fmtNum(v); }
+function moneyUnit(){ var m=tlMoney(); return m.unit||m.name||'外幣'; }
+function rateText(){ var m=tlMoney(); if(!(Number(m.rate)>0)) return ''; return m.dir==='twd'?('1 '+moneyUnit()+' ≈ '+fmtNum(m.rate)+' 台幣'):('1 台幣 ≈ '+fmtNum(m.rate)+' '+moneyUnit()); }
+/* 全螢幕卡的小標：外語在前、中文在後，例如「KHÁCH SẠN · 飯店」；沒填外語就只有中文 */
+function fkLab(fl,zh){ return fl?fl+' · '+zh:zh; }
+function langHead(){ var t=tl(); return (t.langTag?t.langTag+' · ':'')+(t.lang||'外語'); }
 function toolMenu(){
-  var st=S().settings, h=[];
+  var h=[], L=P.leader, t=tl(), lang=t.lang||'', m=tlMoney(), ho=hotel();
   /* 裝成 App 的入口放在這裡：工具頁是團員最常回來的一頁，
      已經從主畫面開啟（standalone）就不用再出現 */
   var instBtn=isStandalone()?'':'<button class="inst-btn" data-act="installApp">'+ic(uaEnv().ios?'share':'install')+(uaEnv().ios?'加到主畫面':'安裝 App')+'</button>';
-  h.push('<h2 class="sec">'+ic('grid')+'現場馬上用'+instBtn+'</h2><div class="stack">'+
-    '<button class="btn big warn" data-act="fullTaxi">'+ic('taxi')+'<span class="b2">計程車回飯店卡<small>全螢幕越文，直接出示給司機</small></span></button>'+
-    '<button class="btn big" data-act="tool" data-tool="money">'+ic('cash')+'<span class="b2">越幣點鈔速算<small>按鈔票就算台幣，不用打字</small></span></button>'+
-    '<button class="btn big" data-act="tool" data-tool="phrases">'+ic('chat')+'<span class="b2">越語點餐與溝通圖卡<small>溫水、不要香菜、多少錢…</small></span></button>'+
-    '<button class="btn big" data-act="tool" data-tool="sos">'+ic('alert')+'<span class="b2">緊急求助與走失卡<small>聯絡電話、113 / 115、駐外館處</small></span></button>'+
-  '</div>');
-  h.push('<h2 class="sec">'+ic('book')+'出發前先看</h2><div class="tool-grid">'+
-    '<button class="tcard" data-act="tool" data-tool="entry">'+ic('ticket')+'<b>入境與通關</b><small>護照效期、帶多少現金</small></button>'+
-    '<button class="tcard" data-act="tool" data-tool="weather">'+ic('thermo')+'<b>天氣與穿搭</b><small>山上比你想的冷</small></button>'+
-    '<button class="tcard" data-act="tool" data-tool="phoneset">'+ic('phone')+'<b>手機出發前設定</b><small>關漫遊、先裝好</small></button>'+
-    '<button class="tcard" data-act="tool" data-tool="exchange">'+ic('cash')+'<b>換匯與付款</b><small>心算法、刷卡還付現</small></button>'+
-    '<button class="tcard" data-act="tool" data-tool="esim">'+ic('wifi')+'<b>eSIM 怎麼買</b><small>KKday、Saily</small></button>'+
-    '<button class="tcard" data-act="tool" data-tool="tips">'+ic('gift')+'<b>小費文化</b><small>給多少、哪些場合</small></button>'+
-    '<button class="tcard" data-act="tool" data-tool="power">'+ic('plug')+'<b>電壓與插頭</b><small>220V、雙圓孔</small></button>'+
-    '<button class="tcard" data-act="tab" data-tab="notes">'+ic('book')+'<b>提醒記事本</b><small>小常識、行前準備</small></button>'+
-  '</div>');
-  h.push('<h2 class="sec">'+ic('mountain')+'在地小知識</h2><div class="tool-grid">'+
-    '<button class="tcard" data-act="tool" data-tool="grab">'+ic('taxi')+'<b>Grab 叫車</b><small>先看價錢不喊價</small></button>'+
-    '<button class="tcard" data-act="tool" data-tool="health">'+ic('thermo')+'<b>身體不適</b><small>暈車、腸胃、上高山</small></button>'+
-    '<button class="tcard" data-act="tool" data-tool="market">'+ic('cash')+'<b>購物與禮儀</b><small>殺價、拍照、被推銷</small></button>'+
-    '<button class="tcard" data-act="tool" data-tool="basics">'+ic('toilet')+'<b>廁所與飲水</b><small>自備衛生紙</small></button>'+
-  '</div>');
-  if(P.leader){
+  var q=[], hasHotel=!!(ho.name||ho.nameVi||ho.addrVi);
+  if(L||hasHotel) q.push('<button class="btn big warn" data-act="fullTaxi">'+ic('taxi')+'<span class="b2">計程車回飯店卡<small>'+(hasHotel?'全螢幕'+(lang?esc(lang):'')+'，直接出示給司機':'還沒有飯店資料')+'</small></span></button>');
+  if(L||moneyOK()) q.push('<button class="btn big" data-act="tool" data-tool="money">'+ic('cash')+'<span class="b2">外幣點鈔速算<small>'+(moneyOK()?(m.name?esc(m.name)+' · ':'')+'按鈔票就算台幣，不用打字':'還沒設定外幣，點進去設定')+'</small></span></button>');
+  if(L||tlPhrases().length) q.push('<button class="btn big" data-act="tool" data-tool="phrases">'+ic('chat')+'<span class="b2">外語點餐與溝通圖卡<small>'+(tlPhrases().length?(lang?esc(lang)+' · ':'')+'點餐、問路、買東西…':'還沒有圖卡，點進去新增')+'</small></span></button>');
+  q.push('<button class="btn big" data-act="tool" data-tool="sos">'+ic('alert')+'<span class="b2">緊急求助與走失卡<small>聯絡電話、當地急救、駐外館處</small></span></button>');
+  /* 清空後（或全新）主辦人第一眼就知道可以一鍵套用範本 */
+  if(L&&!toolsCount(t)) h.push('<div class="hint-lead">'+ic('info')+'工具頁目前是空的：可以到最下面管理專區的「工具頁範本」一鍵套用通用版或越南範本，再改成這次的內容。</div>');
+  h.push('<h2 class="sec">'+ic('grid')+'現場馬上用'+instBtn+'</h2><div class="stack">'+q.join('')+'</div>');
+  if(L&&toolsCount(t)) h.push('<div class="row tl-lead"><button class="btn sm" data-act="tlClearAsk" data-sec="quick">'+ic('trash')+'清空這一區</button></div>');
+  TOOL_SECS.forEach(function(sec){
+    var cs=tlCards(sec.id), tiles=cs.map(function(c){ return '<button class="tcard" data-act="tlCard" data-id="'+esc(c.id)+'">'+ic(ICONS[c.icon]?c.icon:'info')+'<b>'+esc(c.title||'（沒有標題）')+'</b>'+(c.sub?'<small>'+esc(c.sub)+'</small>':'')+'</button>'; });
+    /* 記事本固定掛在「出發前先看」最後一格；團員那邊記事本是空的就不放 */
+    if(sec.id==='pre'&&(L||nbPages().length)) tiles.push('<button class="tcard" data-act="tab" data-tab="notes">'+ic('book')+'<b>提醒記事本</b><small>小常識、行前準備</small></button>');
+    if(!tiles.length&&!L) return;
+    h.push('<h2 class="sec">'+ic(sec.icon)+esc(sec.name)+'</h2>'+(tiles.length?'<div class="tool-grid">'+tiles.join('')+'</div>':''));
+    if(L) h.push('<div class="row tl-lead"><button class="btn sm" data-act="tlCardEdit" data-id="" data-sec="'+sec.id+'">'+ic('plus')+'新增小卡</button>'+(cs.length?'<button class="btn sm" data-act="tlClearAsk" data-sec="'+sec.id+'">'+ic('trash')+'清空這一區</button>':'')+'</div>');
+  });
+  if(L){
     h.push('<h2 class="sec">'+badgeSVG('lead')+'管理專區</h2><div class="stack">'+
       '<button class="btn big" data-act="tool" data-tool="rollcall">'+ic('clipboard')+'<span class="b2">集合點名<small>誰還沒到</small></span></button>'+
       '<button class="btn big" data-act="editBroadcast">'+ic('megaphone')+'<span class="b2">修改廣播<small>時間、地點、叮嚀</small></span></button>'+
-      '<button class="btn big" data-act="settings">'+ic('gear')+'<span class="b2">團務設定<small>日期、PIN、電話</small></span></button>'+
+      '<button class="btn big" data-act="settings">'+ic('gear')+'<span class="b2">團務設定<small>日期、時區、PIN、電話</small></span></button>'+
       '<button class="btn big" data-act="pickHotel">'+ic('bed')+'<span class="b2">飯店資料<small>入住切換、Wi-Fi</small></span></button>'+
+      '<button class="btn big" data-act="tplList">'+ic('book')+'<span class="b2">工具頁範本<small>一鍵換成通用版或越南範本</small></span></button>'+
       '<button class="btn big" data-act="editTags">'+ic('flag')+'<span class="b2">防呆標籤<small>自訂增減、改名</small></span></button>'+
-      '<button class="btn big" data-act="homeScnVis">'+ic('users')+'<span class="b2">首頁分組顯示<small>選擇哪些分組情境出現在首頁</small></span></button>'+
+      '<button class="btn big" data-act="homeScnVis">'+ic('users')+'<span class="b2">首頁分組顯示<small>哪些分組情境出現在首頁</small></span></button>'+
       '<button class="btn big" data-act="cardZones">'+ic('grid')+'<span class="b2">首頁卡片位置<small>卡片何時移到稍後／隨時查／收起</small></span></button>'+
       '<button class="btn big" data-act="simPick">'+ic('clock')+'<span class="b2">時間模擬<small>預覽旅途中、回國後的畫面，只在這支手機</small></span></button>'+
-      '<button class="btn big" data-act="prevList">'+ic('refresh')+'<span class="b2">還原上一版<small>資料突然變少時，自動留下的備份</small></span></button>'+
+      '<button class="btn big" data-act="prevList">'+ic('refresh')+'<span class="b2">還原上一版<small>資料突然變少、清空工具頁之前自動留下的</small></span></button>'+
       '<button class="btn big" data-act="bkList">'+ic('history')+'<span class="b2">備份與還原<small>一鍵清空、還原之前自動留下的備份</small></span></button>'+
     '</div><div class="row"><button class="btn dng" data-act="clearAsk">'+ic('trash')+'一鍵清空內容</button><button class="btn" data-act="leaderLock">'+ic('lock')+'鎖定管理模式</button></div>');
   }
-  h.push('<div class="ver">月半越南團旅 v'+APP_VERSION+' · '+(Store.backend==='firebase'?'雲端同步':(Store.backend==='claude'?'預覽同步':'單機'))+'</div>');
+  h.push('<div class="ver">月半團旅 v'+APP_VERSION+' · '+(Store.backend==='firebase'?'雲端同步':(Store.backend==='claude'?'預覽同步':'單機'))+'</div>');
   return h.join('');
 }
-/* eSIM 網路卡 */
-function toolESIM(){
-  return backBar('eSIM 網路卡怎麼買')+
-  '<div class="info-card"><div class="ic-h">'+ic('info')+'什麼是 eSIM</div>'+
-    '<p>不用換實體 SIM 卡，直接在手機裡「下載」一組越南門號上網。出國前在台灣就能買好，落地開機就有網路，不必到機場排隊買卡，也不會弄丟原本的 SIM 卡。</p></div>'+
-
-  '<h2 class="sec">'+ic('cash')+'方法一：KKday</h2>'+
-  '<div class="info-card"><p style="margin-bottom:.6rem">買完把 QR Code 寄到你的 email，自己掃描安裝。</p><ol class="steps">'+
-    '<li>打開 KKday 網站或 App，搜尋「<b>越南 eSIM</b>」。</li>'+
-    '<li>挑天數與流量。我們是 5 天 4 夜，選 <b>5～7 天</b>、每日 1～2GB 的方案就很夠用（看影片多的人選吃到飽）。</li>'+
-    '<li>結帳後 <b>QR Code 會寄到你的 email</b>，沒收到請先看垃圾郵件匣。</li>'+
-    '<li>出發前一天在家用 Wi-Fi 掃描 QR Code 安裝（安裝要有網路）。</li>'+
-    '<li>落地越南後，到「設定 → 行動網路」把這張新的 eSIM 打開、開啟數據漫遊就會通。</li>'+
-  '</ol>'+
-  '<div class="warn-box" style="margin-top:.6rem">'+ic('alert')+'<span><b>QR Code 只能掃一次</b>，掃了就綁定那支手機，不能換機也不能刪掉重來。掃之前先確定是要用的那支手機。</span></div></div>'+
-
-  '<h2 class="sec">'+ic('wifi')+'方法二：Saily App</h2>'+
-  '<div class="info-card"><p style="margin-bottom:.6rem">買、裝、開通全部在同一個 App 裡完成。</p><ol class="steps">'+
-    '<li>App Store／Google Play 下載 <b>Saily</b>，用 Apple ID 或 Google 帳號註冊。</li>'+
-    '<li>點「Explore Plans」→ 搜尋 <b>Vietnam（越南）</b>，選流量與天數。</li>'+
-    '<li>用信用卡、Apple Pay 或 Google Pay 付款。</li>'+
-    '<li>付完在 App 裡點「<b>Install eSIM</b>」，iPhone 會自動加入行動方案；Android 到「設定 → 網路 → SIM → 下載 eSIM」。</li>'+
-    '<li>Saily 的流量是<b>第一次連上越南電信時才開始算</b>，所以可以在台灣提早裝好，不會浪費天數。</li>'+
-  '</ol></div>'+
-
-  '<h2 class="sec">'+ic('alert')+'eSIM 注意須知</h2>'+
-  '<div class="info-card"><ul class="dots">'+
-    '<li><b>先確認手機支援 eSIM。</b>iPhone XS（2018）以後大多支援，但<b>在中國大陸買的 iPhone 幾乎都不支援</b>（只有 2026 年的 iPhone Air、17e 等少數新機才開放）；Android 看 Google Pixel 3 以後、三星 S20 以後的國際版，<b>台灣買的三星多半不支援</b>（連 S25 台灣版都沒有）。不確定就撥 <b>*#06#</b>，畫面有出現「EID」才代表支援。</li>'+
-    '<li><b>安裝一定要有網路。</b>在台灣用家裡或飯店 Wi-Fi 裝好最保險，落地後才裝可能連不上網而卡住。</li>'+
-    '<li><b>不要刪掉原本的台灣門號。</b>eSIM 是額外加一組，台灣號碼留著才能收簡訊驗證碼；只要把「行動數據」切到越南那張、台灣那張<b>關掉數據漫遊</b>就不會被扣漫遊費。</li>'+
-    '<li><b>KKday 的 QR Code 只能掃一次</b>，Saily 可以在 App 內重新安裝，怕操作失誤的人選 Saily 比較保險。</li>'+
-    '<li><b>eSIM 多半只有數據、沒有電話號碼</b>，不能打電話或收簡訊。要打電話請用 LINE、Messenger 語音通話。</li>'+
-    '<li>落地後如果沒網路：關飛航模式再開一次 → 確認新 eSIM 已開啟 → 打開「數據漫遊」 → 還是不行就重開機。</li>'+
-    '<li>沙壩山區、番西邦纜車上訊號會變差，這是正常的，不是卡有問題。</li>'+
-    '<li>不想自己弄的人可以直接用飯店 Wi-Fi，或跟主辦人說，出發前一起處理。</li>'+
-  '</ul></div>';
+/* ===== 知識小卡的簡易標記 =====
+   一行一種東西，主辦人在一個大文字框裡寫：
+     ## 小標題        ### 重點框的標題（開一個新的框）
+     - 條列           1. 步驟（數字照順序自動編）
+     ! 警示           名稱｜說明（對照表，半形 | 也可以）
+     **粗體**         空一行＝分段；其他就是一般文字
+   先整段跳脫再只放回 <b>，所以雲端資料裡就算有人塞 <script> 也只會顯示成文字。 */
+function mdIn(s){ return esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>'); }
+function mdLine(s){ var m;
+  s=String(s).replace(/\s+$/,''); if(!s.trim()) return {t:'_'};
+  s=s.replace(/^\s+/,'');
+  if((m=/^#{3,}\s*(.*)$/.exec(s))) return {t:'h3',x:m[1]};
+  if((m=/^#{1,2}\s*(.*)$/.exec(s))) return {t:'h2',x:m[1]};
+  if((m=/^[!！]\s*(.+)$/.exec(s))) return {t:'w',x:m[1]};
+  if((m=/^(?:[-•・]\s*|\*\s+)(.+)$/.exec(s))) return {t:'ul',x:m[1]};
+  if((m=/^\d{1,2}(?:\.\s+|、\s*|[)）]\s*)(.+)$/.exec(s))) return {t:'ol',x:m[1]};
+  if((m=/^([^｜|]+?)\s*[｜|]\s*(.+)$/.exec(s))) return {t:'kv',k:m[1],x:m[2]};
+  return {t:'p',x:s}; }
+function mdCard(src){
+  var out=[], box=null, run=null;
+  function endRun(){ if(!run) return; var h;
+    if(run.t==='ul') h='<ul class="dots">'+run.a.map(function(x){ return '<li>'+mdIn(x.x)+'</li>'; }).join('')+'</ul>';
+    else if(run.t==='ol') h='<ol class="steps">'+run.a.map(function(x){ return '<li>'+mdIn(x.x)+'</li>'; }).join('')+'</ol>';
+    else if(run.t==='kv') h='<dl class="kv2">'+run.a.map(function(x){ return '<dt>'+mdIn(x.k)+'</dt><dd>'+mdIn(x.x)+'</dd>'; }).join('')+'</dl>';
+    else h='<p>'+run.a.map(function(x){ return mdIn(x.x); }).join('<br>')+'</p>';
+    box.push({w:false,h:h}); run=null; }
+  /* 一個框裡只有警示的話，就不要再包一層框 */
+  function endBox(){ endRun(); if(box&&box.length){ var allW=box.every(function(b){ return b.w; }), inner=box.map(function(b){ return b.h; }).join('');
+      out.push(allW?inner:'<div class="info-card">'+inner+'</div>'); } box=null; }
+  String(src||'').split(/\r?\n/).forEach(function(line){ var L=mdLine(line);
+    if(L.t==='_'){ endRun(); return; }
+    if(L.t==='h2'){ endBox(); if(L.x) out.push('<h2 class="sec">'+mdIn(L.x)+'</h2>'); return; }
+    if(L.t==='h3'){ endBox(); box=[]; if(L.x) box.push({w:false,h:'<div class="ic-h">'+ic('info')+'<span>'+mdIn(L.x)+'</span></div>'}); return; }
+    if(!box) box=[];
+    if(L.t==='w'){ endRun(); box.push({w:true,h:'<div class="warn-box">'+ic('alert')+'<span>'+mdIn(L.x)+'</span></div>'}); return; }
+    if(run&&run.t!==L.t) endRun();
+    if(!run) run={t:L.t,a:[]};
+    run.a.push(L); });
+  endBox();
+  return out.join('');
 }
-/* 小費文化 */
-function toolTips(){
-  return backBar('越南小費文化')+
-  '<div class="info-card"><div class="ic-h">'+ic('info')+'一句話結論</div>'+
-    '<p>越南<b>沒有強制小費</b>的規定，不給也不會被白眼。但在觀光區給一點是常見的禮貌，金額小、心意到就好。</p></div>'+
-  '<h2 class="sec">'+ic('cash')+'常見場合與行情</h2>'+
-  '<div class="info-card"><dl class="kv2">'+
-    '<dt>飯店房務</dt><dd>每天 20,000～50,000 越盾，放在枕頭上或桌上</dd>'+
-    '<dt>行李員</dt><dd>每件行李 20,000～50,000 越盾</dd>'+
-    '<dt>餐廳</dt><dd>帳單如果已收 5～10% service charge 就不用再給；沒收的話留零錢即可</dd>'+
-    '<dt>按摩</dt><dd>50,000～100,000 越盾，做得舒服再給</dd>'+
-    '<dt>計程車 / Grab</dt><dd>不用給，湊整數不用找零就很夠</dd>'+
-    '<dt>包車司機 / 導覽</dt><dd>大家一起出比較好處理，可以跟主辦人討論</dd>'+
-  '</dl></div>'+
-  '<h2 class="sec">'+ic('alert')+'給小費的眉角</h2>'+
-  '<div class="info-card"><ul class="dots">'+
-    '<li><b>準備小面額。</b>10,000、20,000、50,000 越盾各留幾張，不然只有 500,000 大鈔會很尷尬。</li>'+
-    '<li><b>用越盾，不要給台幣或硬幣。</b>外幣硬幣他們換不掉，等於沒給。</li>'+
-    '<li><b>雙手遞、面帶微笑</b>，或直接放在桌上；不要丟或塞。</li>'+
-    '<li>服務讓你不舒服就<b>不用給</b>，不要有壓力。</li>'+
-    '<li>小心「找零陷阱」：越盾 20,000 和 500,000 顏色接近，付錢與找零時<b>看清楚位數</b>再收。</li>'+
-  '</ul></div>';
+function toolCard(){
+  var c=tlCard(P.card); if(!c) return toolMenu();
+  var body=mdCard(c.body);
+  return backBar(esc(c.title||'（沒有標題）'))+
+    (P.leader?'<div class="row tl-lead"><button class="btn sm" data-act="tlCardEdit" data-id="'+esc(c.id)+'">'+ic('edit')+'編輯這張卡</button></div>':'')+
+    (body?'<div class="kc">'+body+'</div>':'<div class="card muted">這張卡還沒有內容'+(P.leader?'，按上面的「編輯這張卡」開始寫':'')+'</div>');
 }
-/* 電壓與插頭 */
-function toolPower(){
-  return backBar('電壓與插頭')+
-  '<div class="info-card"><div class="ic-h">'+ic('info')+'越南的電</div>'+
-    '<p><b>電壓 220V、頻率 50Hz</b>（台灣是 110V、60Hz）。插座大多是<b>雙圓孔</b>，很多飯店是圓孔與扁孔通用的萬用插座。</p></div>'+
-  '<h2 class="sec">'+ic('check')+'哪些東西可以直接插</h2>'+
-  '<div class="info-card"><ul class="dots">'+
-    '<li><b>手機、平板、筆電、相機充電器：可以直接用。</b>這類變壓器上都印著「INPUT 100–240V」，本來就吃全球電壓。</li>'+
-    '<li>台灣的<b>兩腳扁插頭</b>大多可以直接插進越南的萬用插座；插不進去就用一個小圓轉接頭（台灣的百元商店或機場都買得到）。</li>'+
-    '<li>行動電源、行李秤、電動牙刷等 USB 充電的東西也都沒問題。</li>'+
-  '</ul></div>'+
-  '<h2 class="sec">'+ic('alert')+'這些千萬不要直接插</h2>'+
-  '<div class="info-card"><ul class="dots">'+
-    '<li><b>台灣帶去的吹風機、電湯匙、捲髮棒、小電鍋</b>——這類只吃 110V，直接插 220V 會燒掉甚至冒煙。飯店都有吹風機，不用自己帶。</li>'+
-    '<li>插上去前先<b>看變壓器上的字</b>：有「100–240V」才安全，只寫「110V」就不能用。</li>'+
-    '<li>轉接頭<b>只轉形狀、不會降電壓</b>，不要以為插了轉接頭就安全。真的要用 110V 電器要買「變壓器」。</li>'+
-  '</ul></div>'+
-  '<div class="info-card"><div class="ic-h">'+ic('info')+'順帶提醒</div>'+
-    '<p>沙壩山區偶爾會短暫停電，手機與行動電源<b>睡前先充飽</b>。夜臥火車上的插座不一定每個舖位都有，建議帶一顆行動電源。</p></div>';
-}
-/* 入境與通關（資料來源：外交部領事事務局越南國家簽證及入境須知，2026-09 查證） */
-function toolEntry(){
-  return backBar('入境與通關')+
-  '<div class="info-card"><div class="ic-h">'+ic('info')+'一句話結論</div>'+
-    '<p>台灣護照去越南<b>要簽證</b>，不是免簽。本團由旅行社統一辦理，你自己要顧的只有一件事：<b>護照效期夠不夠</b>。</p></div>'+
-
-  '<h2 class="sec">'+ic('ticket')+'出發前自己核對這三項</h2>'+
-  '<div class="info-card"><ul class="dots">'+
-    '<li><b>護照效期至少還有 6 個月</b>（從入境日算起）。翻到護照個人資料頁看「效期截止日」，2027 年 3 月以後到期才安全；快到期就要馬上去換，別拖。</li>'+
-    '<li><b>護照上的英文名要跟機票一模一樣。</b>拼錯一個字母就可能上不了飛機，收到電子機票就先對一次。</li>'+
-    '<li><b>護照裡至少留兩頁空白</b>，入境與出境各要蓋一次章。舊護照蓋滿的人先確認一下。</li>'+
-    '<li><b>簽證由旅行社辦。</b>如果你是自己辦，是上越南官方網站 <b>evisa.gov.vn</b> 申請電子簽證，約 3～7 個工作天，觀光簽效期不超過 90 天。認明這個網址，其他代辦網站收費高很多。</li>'+
-  '</ul></div>'+
-
-  '<h2 class="sec">'+ic('cash')+'可以帶多少現金</h2>'+
-  '<div class="info-card"><dl class="kv2">'+
-    '<dt>外幣</dt><dd>超過 <b>5,000 美元</b>等值就要向海關申報</dd>'+
-    '<dt>越南盾</dt><dd>超過 <b>1,500 萬越盾</b>要申報</dd>'+
-    '<dt>黃金</dt><dd>金塊禁止攜入；18K 以上金飾<b>超過 300 公克</b>要申報</dd>'+
-  '</dl><div class="warn-box" style="margin-top:.6rem">'+ic('alert')+'<span>五天的行程用不到那麼多現金，<b>正常帶不會超過門檻</b>，這段只是讓你知道界線在哪。身上金項鍊金手鐲之類的日常配戴不用緊張。</span></div></div>'+
-
-  '<h2 class="sec">'+ic('walk')+'下飛機之後的順序</h2>'+
-  '<div class="info-card"><ol class="steps">'+
-    '<li>跟著人群走到<b>證照查驗（Immigration）</b>，排「Foreigners／外國人」那排。</li>'+
-    '<li>把<b>護照</b>交給櫃檯人員，可能會請你看鏡頭拍照、按指紋。不用講話，聽不懂就微笑等他指示。</li>'+
-    '<li>蓋完章往前走，看螢幕找我們的班機號碼，到<b>行李轉盤</b>提行李。</li>'+
-    '<li>出口前是<b>海關</b>，沒有要申報的東西就走綠色通道直接出去。</li>'+
-    '<li>出關後在大廳等，<b>跟緊大家、不要自己先走</b>。</li>'+
-  '</ol></div>'+
-
-  '<h2 class="sec">'+ic('alert')+'護照怎麼顧</h2>'+
-  '<div class="info-card"><ul class="dots">'+
-    '<li><b>護照絕對不要放托運行李。</b>隨身背包貼身放，過關後就收好。</li>'+
-    '<li>出發前<b>拍一張護照資料頁</b>存在手機相簿，再印一份紙本放行李箱。萬一遺失，補辦會快很多。</li>'+
-    '<li>飯店入住時櫃檯可能會收走護照登記，<b>記得當天要回來</b>，離開飯店前確認拿回。</li>'+
-    '<li>護照掉了先找主辦人，並聯絡駐越南台北經濟文化辦事處（電話在「緊急求助」頁）。</li>'+
-  '</ul></div>';
-}
-/* 沙壩天氣與穿搭（氣溫資料：climatestotravel.com 沙壩九月月均值，2026-09 查證） */
-function toolWeather(){
-  return backBar('沙壩天氣與穿搭')+
-  '<div class="info-card"><div class="ic-h">'+ic('info')+'一句話結論</div>'+
-    '<p>沙壩在<b>海拔 1,500 公尺</b>的山上，九月白天約 <b>21 度</b>、晚上會降到 <b>16 度</b>，而且十天有六天在下雨。台灣同期還在三十幾度，<b>溫差比你想像的大</b>。</p></div>'+
-
-  '<h2 class="sec">'+ic('thermo')+'各地溫度差很多</h2>'+
-  '<div class="info-card"><dl class="kv2">'+
-    '<dt>河內（平地）</dt><dd>悶熱潮濕，跟台灣夏天差不多</dd>'+
-    '<dt>沙壩（1,500m）</dt><dd>白天約 21 度、夜裡約 16 度，早晚涼</dd>'+
-    '<dt>番西邦山頂（3,143m）</dt><dd>比沙壩鎮上<b>再低約 10 度</b>，加上山頂風大，體感可能只有幾度</dd>'+
-  '</dl><div class="warn-box" style="margin-top:.6rem">'+ic('alert')+'<span>上番西邦那天<b>一定要帶外套</b>，不要看沙壩鎮上出太陽就輕裝上山。纜車上去只要十幾分鐘，溫度卻差一大截。</span></div></div>'+
-
-  '<h2 class="sec">'+ic('coat')+'這樣穿最省事</h2>'+
-  '<div class="info-card"><ul class="dots">'+
-    '<li><b>洋蔥式穿法</b>：短袖或薄長袖打底，外面一件薄外套，最外面一件<b>防風防潑水外套</b>。熱了脫、冷了加，比穿一件厚的好用。</li>'+
-    '<li><b>鞋子要防滑。</b>山區石板路、梯田步道下過雨很滑，穿包鞋或運動鞋，不要穿新鞋或拖鞋。</li>'+
-    '<li><b>帶輕便雨衣，勝過雨傘。</b>山上風大，傘常常撐不住，雨衣還能擋風。</li>'+
-    '<li>怕冷的人多帶一條<b>薄圍巾或帽子</b>，脖子跟頭保暖，體感差很多。</li>'+
-    '<li>行李裡放一套<b>乾的替換衣物</b>，淋濕了有得換。</li>'+
-  '</ul></div>'+
-
-  '<h2 class="sec">'+ic('rain')+'雨季尾巴要有心理準備</h2>'+
-  '<div class="info-card"><ul class="dots">'+
-    '<li>九月是沙壩雨量最多的月份之一（月雨量約 315 毫米、約 20 個雨天），<b>遇到下雨是正常的</b>，通常是陣雨不是整天下。</li>'+
-    '<li>山上常起<b>雲霧</b>，看不看得到雲海要碰運氣；霧散得快，等一下再看常有驚喜。</li>'+
-    '<li>雨後<b>石階很滑</b>，走路手不要插口袋，慢慢走。</li>'+
-    '<li>房間可能<b>濕氣重、沒有暖氣</b>，怕冷的人可以請飯店多給一條被子。</li>'+
-  '</ul></div>';
-}
-/* 換匯與付款 */
-function toolExchange(){
-  var r=Number(S().settings.vndPerTwd)||820;
-  return backBar('換匯與付款')+
-  '<div class="info-card"><div class="ic-h">'+ic('info')+'先記這個心算法</div>'+
-    '<p><b>越盾去掉三個零，再乘以 1.2，就是台幣。</b><br>例如 100,000 盾 → 去掉三個零剩 100 → ×1.2 ＝ <b>約 120 台幣</b>。<br>算不出來就用工具頁的「越幣點鈔速算」，按鈔票就好，不用打字。</p></div>'+
-
-  '<h2 class="sec">'+ic('cash')+'在哪裡換錢</h2>'+
-  '<div class="info-card"><ul class="dots">'+
-    '<li><b>台灣的銀行也能換越南盾，但匯率通常比較差。</b>多數人是在台灣先換好美金，到越南再換成越盾，或直接在當地提款。</li>'+
-    '<li><b>機場換一點就好。</b>機場匯率差，換夠當天車資與零用即可，其餘到市區再換。</li>'+
-    '<li><b>ATM 提款</b>方便但每筆有手續費，還可能被台灣的銀行再收一次；要用的人出發前先確認金融卡有開通海外提款與密碼。</li>'+
-    '<li>換錢時<b>當場點清楚再走</b>，並要求多給一些小面額。</li>'+
-  '</ul></div>'+
-
-  '<h2 class="sec">'+ic('alert')+'越南盾的三個坑</h2>'+
-  '<div class="info-card"><ul class="dots">'+
-    '<li><b>零很多。</b>一碗河粉五萬盾聽起來嚇人，其實約 60 台幣。看到價格先去掉三個零再算。</li>'+
-    '<li><b>顏色很像。</b>20,000（藍）和 500,000（藍綠）容易看錯，付錢跟找零都要<b>看清楚位數</b>，一張差 25 倍。</li>'+
-    '<li><b>小費與零錢要小面額。</b>10,000、20,000、50,000 各留幾張，只有大鈔會很難處理。</li>'+
-  '</ul></div>'+
-
-  '<h2 class="sec">'+ic('ticket')+'刷卡還是付現</h2>'+
-  '<div class="info-card"><dl class="kv2">'+
-    '<dt>飯店、大餐廳</dt><dd>可以刷卡，記得選<b>用越盾結帳</b>（選台幣結帳匯率較差）</dd>'+
-    '<dt>市場、小攤、路邊攤</dt><dd>只收現金，準備小鈔</dd>'+
-    '<dt>計程車 / Grab</dt><dd>現金最保險；Grab 也可綁卡</dd>'+
-    '<dt>參考匯率</dt><dd>1 台幣 ≈ '+r+' 越盾（可在團務設定更新）</dd>'+
-  '</dl></div>';
-}
-/* 手機出發前設定 */
-function toolPhoneSetup(){
-  return backBar('手機出發前設定')+
-  '<div class="info-card"><div class="ic-h">'+ic('info')+'為什麼要先弄</div>'+
-    '<p>這幾件事<b>在台灣用 Wi-Fi 做只要十分鐘</b>，落地後沒網路才弄會很麻煩。出發前一晚照著做一次就好。</p></div>'+
-
-  '<h2 class="sec">'+ic('alert')+'第一件事：關掉數據漫遊</h2>'+
-  '<div class="info-card"><p style="margin-bottom:.6rem">這是最容易收到高額帳單的地方，出發前一定要關。</p><ul class="dots">'+
-    '<li><b>iPhone：</b>設定 → 行動服務 → 找到你的台灣門號 → 把「數據漫遊」關掉。</li>'+
-    '<li><b>Android：</b>設定 → 網路和網際網路 → SIM 卡 → 關閉「數據漫遊」。</li>'+
-    '<li>台灣門號<b>不要整個關掉</b>，留著才能收銀行或驗證碼簡訊，只關「數據漫遊」即可。</li>'+
-    '<li>有買 eSIM 的人，上網走 eSIM，作法看「eSIM 網路卡怎麼買」那張卡。</li>'+
-  '</ul></div>'+
-
-  '<h2 class="sec">'+ic('down')+'出發前先裝好、先下載好</h2>'+
-  '<div class="info-card"><ul class="dots">'+
-    '<li><b>Grab</b>（叫車用）：註冊要用手機號碼收簡訊驗證，<b>一定要在台灣用台灣門號註冊好</b>，落地才裝常常收不到驗證碼。</li>'+
-    '<li><b>Google 地圖離線地圖</b>：搜尋「Sa Pa」→ 點地名 → 下載 → 下載離線地圖。沒網路也能看自己在哪。</li>'+
-    '<li><b>Google 翻譯</b>：進 App 把「越南文」語言包下載成離線，相機即時翻譯菜單很好用。</li>'+
-    '<li><b>本工具站</b>：用瀏覽器打開後「加入主畫面」，之後像 App 一樣點開，沒網路也看得到。</li>'+
-  '</ul></div>'+
-
-  '<h2 class="sec">'+ic('phone')+'存好這些資料</h2>'+
-  '<div class="info-card"><ul class="dots">'+
-    '<li>把<b>主辦人電話</b>存進通訊錄（緊急求助頁有）。</li>'+
-    '<li><b>飯店名稱與地址截圖</b>存在相簿，走散時可以直接給司機看——本工具站的「計程車回飯店卡」已經是越文版，更好用。</li>'+
-    '<li>護照資料頁拍照存起來。</li>'+
-    '<li><b>把手機的緊急聯絡人設定好</b>，並記得帶<b>行動電源</b>；山區冷、訊號差，電量掉得比平常快。</li>'+
-  '</ul></div>'+
-  '<div class="info-card"><div class="ic-h">'+ic('info')+'打電話怎麼打</div>'+
-    '<p>eSIM 多半只有上網、沒有電話號碼。要聯絡團員請用 <b>LINE 免費通話</b>；打當地電話（飯店、餐廳）才需要用台灣門號直撥，會算國際漫遊費。</p></div>';
-}
-/* 越幣速算 */
-function twd(vnd){ var r=Number(S().settings.vndPerTwd)||820; return Math.round(vnd/r); }
-function fmtVND(v){ return String(v).replace(/\B(?=(\d{3})+(?!\d))/g,','); }
+/* 外幣點鈔速算 */
 function toolMoney(){
-  var total=P.money.reduce(function(a,b){return a+b;},0), r=Number(S().settings.vndPerTwd)||820;
-  return backBar('越幣點鈔速算')+
-    '<div class="warn-box">'+ic('alert')+'<span><b>20,000 與 500,000 都是藍色系</b>、10,000 與 200,000 都偏紅褐色——付錢前請數清楚後面幾個零！</span></div>'+
-    '<div class="total"><div class="muted">已點 '+P.money.length+' 張 · 合計</div><div class="v">'+fmtVND(total)+' 盾</div><div class="t">≈ NT$ '+fmtVND(twd(total))+'</div><div class="r">1 台幣 ≈ '+r+' 盾（'+(P.leader?'<a href="#" data-act="settings">可修改</a>':'團務設定')+'）</div></div>'+
-    '<div class="notes">'+NOTES.map(function(n){ return '<button class="note" data-act="noteTap" data-v="'+n.v+'"><span class="sw" style="background:'+n.color+'"></span><span class="nt">'+fmtVND(n.v)+'<small>'+esc(n.note)+'</small></span><span class="nv">≈ NT$ '+twd(n.v)+'</span></button>'; }).join('')+'</div>'+
+  var m=tlMoney(), L=P.leader, ok=moneyOK(), u=moneyUnit();
+  var head=backBar('外幣點鈔速算')+(L?'<div class="row tl-lead"><button class="btn sm" data-act="moneyEdit">'+ic('edit')+(ok?'外幣設定':'設定外幣')+'</button></div>':'');
+  if(!ok) return head+'<div class="card muted">'+(L?'還沒設定這次要用的外幣。按上面的「設定外幣」，選一種常用貨幣就能帶入面額與參考匯率，也可以自己填。':'主辦人還沒設定這次的外幣。')+'</div>';
+  var total=P.money.reduce(function(a,b){ return a+b; },0);
+  return head+
+    (m.warn?'<div class="warn-box">'+ic('alert')+'<span>'+mdIn(m.warn)+'</span></div>':'')+
+    '<div class="total"><div class="muted">已點 '+P.money.length+' 張 · 合計</div><div class="v">'+fmtNum(total)+' '+esc(u)+'</div><div class="t">≈ NT$ '+fmtTwd(fxToTwd(total))+'</div><div class="r">'+esc(rateText())+(L?'（<a href="#" data-act="moneyEdit">可修改</a>）':'')+'</div></div>'+
+    '<div class="notes">'+moneyNotes().map(function(n){ var v=Number(n.v)||0; return '<button class="note" data-act="noteTap" data-v="'+v+'"><span class="sw" style="background:'+safeColor(n.color)+'"></span><span class="nt">'+fmtNum(v)+'<small>'+esc(n.note||'')+'</small></span><span class="nv">≈ NT$ '+fmtTwd(fxToTwd(v))+'</span></button>'; }).join('')+'</div>'+
     '<div class="row"><button class="btn" data-act="moneyUndo">退一張</button><button class="btn" data-act="moneyClear">全部清除</button></div>'+
-    '<section class="card"><div class="card-h"><h2>'+ic('refresh')+'反過來算：我想付台幣</h2></div><div class="f"><label>台幣金額</label><input class="in" id="twdIn" type="number" inputmode="numeric" placeholder="例如 300"></div><div class="total" style="margin-top:.6rem"><div class="v" id="twdOut">—</div><div class="muted">盾（大約）</div></div></section>'+
-    '<button class="btn block soft" data-act="nbGo" data-id="money">'+ic('book')+'更多金錢與購物小技巧</button>';
+    '<section class="card"><div class="card-h"><h2>'+ic('refresh')+'反過來算：我想付台幣</h2></div><div class="f"><label>台幣金額</label><input class="in" id="twdIn" type="number" inputmode="numeric" placeholder="例如 300"></div><div class="total" style="margin-top:.6rem"><div class="v" id="twdOut">—</div><div class="muted">'+esc(u)+'（大約）</div></div></section>'+
+    (nbHas('money')?'<button class="btn block soft" data-act="nbGo" data-id="money">'+ic('book')+'更多金錢與購物小技巧</button>':'');
 }
-/* 越語圖卡 */
-/* 兩層：先選類別（P.phCat 空字串＝還在類別清單），再看該類的圖卡 */
+/* 外語圖卡：兩層，先選類別（P.phCat 空字串＝還在類別清單），再看該類的圖卡。
+   類別被刪掉的圖卡不會消失，集中在「未分類」 */
+function phCatsAll(){ var cs=tlCats().slice(), ids={}; cs.forEach(function(c){ ids[c.id]=1; });
+  if(tlPhrases().some(function(p){ return !ids[p.cat]; })) cs.push({id:'_',e:'📁',name:'未分類',sub:'所屬類別已經刪掉的圖卡'});
+  return cs; }
+function phInCat(cid){ var ids={}; tlCats().forEach(function(c){ ids[c.id]=1; }); return tlPhrases().filter(function(p){ return cid==='_'?!ids[p.cat]:p.cat===cid; }); }
+function phById(id){ return tlPhrases().filter(function(p){ return p.id===id; })[0]||null; }
 function toolPhrases(){
-  var cat=PHRASE_CATS.filter(function(c){return c.id===P.phCat;})[0];
-  if(!cat) return backBar('越語溝通圖卡')+
-    '<div class="muted">先選類別，再點你要說的那一句。點下去會放大成全螢幕，直接把手機拿給對方看；每一句都附空耳中文，照著念也通。</div>'+
-    '<div class="stack">'+PHRASE_CATS.map(function(c){
-      var n=PHRASES.filter(function(p){return p.cat===c.id;}).length;
-      return '<button class="ph" data-act="phCat" data-cat="'+c.id+'"><span class="e">'+c.e+'</span>'+
-        '<span class="tx"><span class="zh">'+esc(c.name)+'</span><br><span class="vi">'+esc(c.sub)+'</span></span>'+
-        '<span class="phn">'+n+' 句</span>'+ic('arrow')+'</button>';
-    }).join('')+'</div>';
-  return '<div style="display:flex;align-items:center;gap:.5rem"><button class="btn sm" data-act="phCat" data-cat="">‹ 類別</button><b style="font-size:1.15rem">'+c_e(cat)+esc(cat.name)+'</b></div>'+
-    '<div class="muted" style="margin-top:.5rem">綠色那行是空耳中文，照著念就有七八分像。</div>'+
-    '<div class="stack">'+PHRASES.map(function(p,i){
-      if(p.cat!==cat.id) return '';
-      return '<button class="ph" data-act="phrase" data-i="'+i+'"><span class="e">'+p.e+'</span>'+
-        '<span class="tx"><span class="zh">'+esc(p.zh)+'</span><br><span class="vi">'+esc(p.vi)+'</span>'+
+  var L=P.leader, cats=phCatsAll(), cat=cats.filter(function(c){ return c.id===P.phCat; })[0];
+  if(!cat) return backBar('外語溝通圖卡')+
+    (L?'<div class="row tl-lead"><button class="btn sm" data-act="langEdit">'+ic('edit')+'外語設定</button><button class="btn sm" data-act="phCatEdit" data-id="">'+ic('plus')+'新增類別</button></div>':'')+
+    (cats.length?'<div class="muted">先選類別，再點你要說的那一句。點下去會放大成全螢幕，直接把手機拿給對方看。</div>'+
+      '<div class="stack">'+cats.map(function(c){
+        var row='<button class="ph" data-act="phCat" data-cat="'+esc(c.id)+'"><span class="e">'+esc(c.e||'')+'</span>'+
+          '<span class="tx"><span class="zh">'+esc(c.name||'')+'</span><br><span class="vi">'+esc(c.sub||'')+'</span></span>'+
+          '<span class="phn">'+phInCat(c.id).length+' 句</span>'+ic('arrow')+'</button>';
+        return (L&&c.id!=='_')?'<div class="it-row">'+row+'<button class="btn sm edit" data-act="phCatEdit" data-id="'+esc(c.id)+'" aria-label="編輯類別">'+ic('edit')+'</button></div>':row;
+      }).join('')+'</div>'
+    :'<div class="card muted">'+(L?'還沒有圖卡。可以按「新增類別」自己建，或到管理專區「工具頁範本」套用通用版、越南範本。':'主辦人還沒放圖卡。')+'</div>')+
+    (L&&tlPhrases().length?'<div class="row tl-lead"><button class="btn sm" data-act="phClearAsk">'+ic('trash')+'清空全部圖卡</button></div>':'');
+  var list=phInCat(cat.id);
+  return '<div style="display:flex;align-items:center;gap:.5rem"><button class="btn sm" data-act="phCat" data-cat="">‹ 類別</button><b style="font-size:1.15rem">'+c_e(cat)+esc(cat.name||'')+'</b></div>'+
+    (list.some(function(p){ return p.say&&p.say.charAt(0)!=='（'; })?'<div class="muted" style="margin-top:.5rem">綠色那行是空耳中文，照著念就有七八分像。</div>':'')+
+    '<div class="stack">'+list.map(function(p){
+      var row='<button class="ph" data-act="phrase" data-id="'+esc(p.id)+'"><span class="e">'+esc(p.e||'')+'</span>'+
+        '<span class="tx"><span class="zh">'+esc(p.zh||'')+'</span><br><span class="vi">'+esc(p.fl||'')+'</span>'+
         (p.say&&p.say.charAt(0)!=='（'?'<br><span class="say-s">'+esc(p.say)+'</span>':'')+'</span>'+ic('arrow')+'</button>';
-    }).join('')+'</div>';
+      return L?'<div class="it-row">'+row+'<button class="btn sm edit" data-act="phEdit" data-id="'+esc(p.id)+'" aria-label="編輯">'+ic('edit')+'</button></div>':row;
+    }).join('')+(list.length?'':'<div class="card muted">這一類還沒有圖卡</div>')+'</div>'+
+    (L&&cat.id!=='_'?'<div class="row"><button class="btn" data-act="phEdit" data-id="" data-cat="'+esc(cat.id)+'">'+ic('plus')+'新增一句</button></div>':'');
 }
-function c_e(c){ return '<span style="margin-right:.3rem">'+c.e+'</span>'; }
+function c_e(c){ return c.e?'<span style="margin-right:.3rem">'+esc(c.e)+'</span>':''; }
 function phraseFull(p){
-  var st=S().settings;
+  var t=tl();
   return '<div class="fh"><b>出示給對方看</b><button class="btn sm" data-act="fullClose">'+ic('x')+'關閉</button></div>'+
-    '<div style="font-size:3rem;text-align:center">'+p.e+'</div>'+
-    '<div class="fk">TIẾNG VIỆT · 越文</div><div class="vi xl">'+esc(p.vi)+'</div>'+
-    '<div class="fk">中文意思</div><div class="zh">'+esc(p.zh)+'</div>'+
+    (p.e?'<div style="font-size:3rem;text-align:center">'+esc(p.e)+'</div>':'')+
+    (p.fl?'<div class="fk">'+esc(langHead())+'</div><div class="vi xl">'+esc(p.fl)+'</div>':'')+
+    '<div class="fk">中文意思</div><div class="zh">'+esc(p.zh||'')+'</div>'+
     (p.say?'<div class="fk">空耳中文 · 照著念</div><div class="say">'+esc(p.say)+'</div>':'')+
-    (p.lost?'<div class="fk">LIÊN HỆ · 請幫我打這些電話</div>'+contactLinks():'')+
-    '<div class="foot">Xin cảm ơn! 謝謝您的幫忙。</div>';
+    (p.lost?'<div class="fk">'+esc(fkLab(tlLab().call,'請幫我打這些電話'))+'</div>'+contactLinks():'')+
+    '<div class="foot">'+(t.thanks?esc(t.thanks)+' ':'')+'謝謝您的幫忙。</div>';
 }
+/* 走散卡：圖卡裡標成「走散卡」的第一張；被刪光了也要有一張（長輩走散時最需要它） */
+var LOST_DEF={e:'🧑‍🤝‍🧑',zh:'走散了，請幫我打電話',fl:'I am separated from my group. Please call the phone number below for me.',say:'（出示此卡並指向下方電話）',lost:1};
+function lostPhrase(){ return tlPhrases().filter(function(p){ return p.lost; })[0]||LOST_DEF; }
 function contactLinks(){ return contacts().map(function(c){ return !c.phone?'':'<a class="ph-big" href="'+telHref(c.phone)+'">'+ic('phone')+'<span>'+esc(fmtPhone(c.phone))+'<small style="display:block;font-size:.85rem;color:#666;font-weight:800">'+esc(c.name)+(c.label?' · '+esc(c.label):'')+'</small></span></a>'; }).join(''); }
 var FULL_LOCK=false;
 function lockBar(){ return '<div class="lockbar" id="lockBar">'+(FULL_LOCK
   ?'<button class="btn sm pri" data-act="fullUnlock" id="unlockBtn">'+ic('lock')+'按住 2 秒解鎖</button><span>畫面已鎖定，不怕誤觸</span>'
   :'<button class="btn sm" data-act="fullLock">'+ic('unlock')+'鎖定畫面</button><span>把手機亮度調到最亮，遞給對方看</span>')+'</div>'; }
 function taxiFull(){
-  var st=S().settings, ho=hotel();
-  return '<div class="fh"><b>出示給計程車司機</b>'+(FULL_LOCK?'':'<button class="btn sm" data-act="fullClose">'+ic('x')+'關閉</button>')+'</div>'+lockBar()+
-    '<div class="vi xl">Làm ơn đưa tôi về khách sạn này. Cảm ơn!</div><div class="zh">請載我回這間飯店，謝謝！</div>'+
-    '<div class="fk">KHÁCH SẠN · 飯店</div><div class="vi">'+esc(ho.nameVi||ho.name||'')+'</div>'+
-    '<div class="fk">ĐỊA CHỈ · 地址</div><div class="vi">'+esc(ho.addrVi||'')+'</div>'+
-    (ho.phone?'<div class="fk">ĐIỆN THOẠI KHÁCH SẠN · 飯店電話</div><a class="ph-big" href="'+telHref(ho.phone)+'">'+ic('phone')+esc(fmtPhone(ho.phone))+'</a>':'')+
-    '<div class="fk">LIÊN HỆ · 緊急聯絡</div>'+contactLinks()+
-    '<div class="foot">小提醒：上車前先問「Bao nhiêu tiền?」（多少錢）並講好價；請餐廳或飯店幫忙叫車、或用 Grab 叫車最穩妥。鎮內短程車資多在幾萬盾之間，喊價太高可以微笑婉拒。</div>';
-}
-/* Grab 叫車（沙壩可用性：sapanomad.com，2026-09 查證） */
-function toolGrab(){
-  return backBar('Grab 叫車')+
-  '<div class="info-card"><div class="ic-h">'+ic('info')+'為什麼推薦用 Grab</div>'+
-    '<p>Grab 是東南亞版的計程車 App。<b>叫車前就看得到車資、直接在 App 付或現金付</b>，不用喊價也不怕繞路，對不會講越南文的人最安全。</p></div>'+
-
-  '<h2 class="sec">'+ic('alert')+'最重要：註冊要在台灣先做</h2>'+
-  '<div class="info-card"><div class="warn-box">'+ic('alert')+'<span>Grab 註冊要用<b>手機號碼收簡訊驗證碼</b>。出國買的 eSIM 多半<b>只有上網、沒有電話號碼</b>，落地才註冊會收不到驗證碼卡住。<b>請在台灣就用台灣門號註冊完成。</b></span></div>'+
-    '<ol class="steps" style="margin-top:.6rem">'+
-    '<li>App Store／Google Play 搜尋「<b>Grab</b>」下載。</li>'+
-    '<li>用<b>台灣手機號碼</b>註冊，收簡訊填驗證碼。</li>'+
-    '<li>填姓名、email 就完成了，可以不綁信用卡（到時選現金付款）。</li>'+
-  '</ol></div>'+
-
-  '<h2 class="sec">'+ic('taxi')+'怎麼叫車</h2>'+
-  '<div class="info-card"><ol class="steps">'+
-    '<li>打開 App，上面那格是<b>上車地點</b>（通常自動抓你現在位置），下面那格輸入<b>目的地</b>。看不懂越南地名就從地圖上點，或先在 Google 地圖找好、複製名稱貼上。</li>'+
-    '<li>選車型：<b>Car 是四人座轎車</b>（推薦），Bike 是機車載客，長輩不建議。</li>'+
-    '<li>螢幕會直接顯示<b>車資</b>，覺得可以就按下訂。</li>'+
-    '<li>配對後會出現<b>司機姓名、車型、車牌號碼</b>。上車前<b>核對車牌</b>，不對就不要上。</li>'+
-    '<li>到了付現金或 App 扣款。車資已經談好，<b>不用再議價</b>。</li>'+
-  '</ol></div>'+
-
-  '<h2 class="sec">'+ic('mountain')+'沙壩的實際狀況</h2>'+
-  '<div class="info-card"><ul class="dots">'+
-    '<li>沙壩<b>叫得到 Grab，但司機比河內少很多</b>，<b>清晨與深夜特別難叫</b>，可能等比較久或叫不到。</li>'+
-    '<li>另一個選擇是 <b>Xanh SM</b>（越南的電動計程車，車身是青綠色），沙壩也有跑，可以用它的 App 叫，路邊也招得到。</li>'+
-    '<li>叫不到車就<b>請飯店櫃檯幫忙叫</b>，這是最穩的方法，也可以請他們先問好價錢。</li>'+
-    '<li>從老街火車站到沙壩這段山路<b>不適合用 App</b>，一般是搭接駁巴士或共乘小巴，跟著團走就好。</li>'+
-    '<li>真的要搭路邊計程車，上車前先問「Bao nhiêu tiền?（包 妞 電）多少錢」講好價，或請司機<b>開計費表</b>。</li>'+
-  '</ul></div>'+
-  '<button class="btn block soft" data-act="fullTaxi">'+ic('taxi')+'打開計程車回飯店卡</button>';
-}
-/* 身體不適怎麼辦 */
-function toolHealth(){
-  return backBar('身體不適怎麼辦')+
-  '<div class="info-card"><div class="ic-h">'+ic('info')+'先講最重要的</div>'+
-    '<p>在國外不舒服，<b>第一件事是告訴主辦人</b>，不要自己忍。早講可以調整行程、早點就醫；忍到晚上或上了山才說，處理起來麻煩很多。</p></div>'+
-
-  '<h2 class="sec">'+ic('mountain')+'上番西邦會不會高山症</h2>'+
-  '<div class="info-card"><ul class="dots">'+
-    '<li>沙壩鎮上海拔約 1,500 公尺，<b>一般不會有高山反應</b>。</li>'+
-    '<li>番西邦山頂 <b>3,143 公尺</b>，纜車幾分鐘就上去，有些人會覺得<b>頭悶、喘、走幾步就累</b>，這在高海拔是常見反應。</li>'+
-    '<li>上去以後<b>走慢一點、少講話、不要跑跳</b>，山頂那幾百階不必勉強走完，坐著看風景一樣值得。</li>'+
-    '<li>覺得頭痛、噁心、喘不過來，<b>就往下走、搭纜車下山</b>，下降高度是最有效的方法，並且告訴主辦人。</li>'+
-    '<li>本來就有心臟、肺部或高血壓問題的人，上山前<b>先跟主辦人說一聲</b>，行程中互相照應。</li>'+
-  '</ul></div>'+
-
-  '<h2 class="sec">'+ic('bus')+'暈車</h2>'+
-  '<div class="info-card"><ul class="dots">'+
-    '<li>河內到沙壩的山路<b>彎道很多</b>，容易暈車的人請提早跟主辦人說，<b>坐前排</b>會好很多。</li>'+
-    '<li>上車前<b>不要吃太飽</b>，也不要空腹。</li>'+
-    '<li>會暈車的人<b>自己從台灣帶慣用的暈車藥</b>，出發前一段時間先吃（依你平常的習慣或藥師指示）。</li>'+
-    '<li>車上<b>看遠方、不要滑手機</b>，開一點窗透氣。</li>'+
-  '</ul></div>'+
-
-  '<h2 class="sec">'+ic('meal')+'腸胃不舒服</h2>'+
-  '<div class="info-card"><ul class="dots">'+
-    '<li><b>只喝瓶裝水</b>，開瓶前確認封膜完好；水龍頭的水不要生飲，刷牙用瓶裝水比較保險。</li>'+
-    '<li>生冷的食物（生菜、生魚、切好的水果）與<b>來路不明的冰塊</b>斟酌，腸胃弱的人避開。</li>'+
-    '<li>吃東西前<b>洗手或用乾洗手</b>。</li>'+
-    '<li>拉肚子時<b>先補水</b>（瓶裝水、電解質飲料），少量多次；狀況沒改善或有發燒，跟主辦人說並就醫。</li>'+
-  '</ul></div>'+
-
-  '<h2 class="sec">'+ic('thermo')+'藥品自己帶</h2>'+
-  '<div class="info-card"><ul class="dots">'+
-    '<li><b>慢性病藥一定要帶足全程的量</b>，放隨身行李不要托運，並多帶幾天備用。</li>'+
-    '<li>把藥名或藥袋<b>拍照存手機</b>，萬一需要就醫，可以直接給醫生看。</li>'+
-    '<li>常備：個人習慣的<b>止痛、感冒、腸胃、暈車、OK 繃</b>。台灣帶慣用的最安心，越南藥局的品項與名稱不一定對得上。</li>'+
-    '<li>越南藥局招牌寫 <b>Nhà thuốc</b>，市區很常見。找藥局或看醫生的越南話，在「越語溝通圖卡 → 身體不適」那一類裡。</li>'+
-  '</ul></div>'+
-
-  '<div class="warn-box">'+ic('alert')+'<span><b>緊急狀況打 115（救護車）</b>，並立刻聯絡主辦人。電話都在「緊急求助」頁，一鍵可撥。</span></div>'+
-  '<button class="btn block soft" data-act="tool" data-tool="sos">'+ic('alert')+'前往緊急求助頁</button>';
-}
-/* 購物殺價與少數民族禮儀 */
-function toolMarket(){
-  return backBar('購物與當地禮儀')+
-  '<div class="info-card"><div class="ic-h">'+ic('info')+'沙壩的市場長什麼樣</div>'+
-    '<p>沙壩是<b>黑苗族、紅瑤族</b>等少數民族的聚居地，市場與街上會看到穿著傳統服飾的婦女賣手工織品、銀飾、草藥。東西有特色，但<b>幾乎都要議價</b>。</p></div>'+
-
-  '<h2 class="sec">'+ic('cash')+'殺價怎麼開口</h2>'+
-  '<div class="info-card"><ul class="dots">'+
-    '<li><b>觀光區開價通常偏高。</b>心裡先想好「這東西我願意付多少」，從對方開價的<b>一半左右</b>開始談，通常會落在中間。</li>'+
-    '<li><b>不想買就不要問價。</b>一問價對方就會認真跟你談，之後不買容易尷尬、也容易被纏著。</li>'+
-    '<li><b>轉身走是最有效的一招。</b>價錢談不下來就微笑說謝謝離開，可以接受的話對方多半會叫住你。</li>'+
-    '<li><b>多買可以要求算便宜一點</b>，同一攤買三件比分開買三攤好談。</li>'+
-    '<li>付錢前<b>再確認一次金額與位數</b>（越南盾零很多，20,000 和 500,000 容易看錯），找零當場點清楚。</li>'+
-  '</ul></div>'+
-
-  '<h2 class="sec">'+ic('walk')+'被小販跟著怎麼辦</h2>'+
-  '<div class="info-card"><ul class="dots">'+
-    '<li>沙壩街上常有婦女或小孩<b>一路跟著推銷</b>，這是當地常態，不是針對你，也<b>沒有危險</b>。</li>'+
-    '<li>不想買就<b>看著對方、微笑、清楚說「Không, cảm ơn（空，感 恩）」不用了謝謝</b>，然後繼續走。含糊其辭或一直笑而不答，反而會被跟更久。</li>'+
-    '<li><b>不要停下來翻看商品</b>，一旦拿在手上就很難脫身。</li>'+
-    '<li>對方幫你帶路、陪你走一段之後才開口要錢，是常見情況；<b>不需要的協助一開始就婉拒</b>。</li>'+
-  '</ul></div>'+
-
-  '<h2 class="sec">'+ic('camera')+'拍照的禮貌</h2>'+
-  '<div class="info-card"><ul class="dots">'+
-    '<li><b>拍人之前先問一聲</b>，舉起相機比個手勢、看對方點不點頭。少數民族長輩不見得喜歡被拍。</li>'+
-    '<li><b>不要對著小孩猛拍</b>，也不要拍完就走；有些地方拍照後會被要求付費，先問清楚再拍。</li>'+
-    '<li>進入村寨、民宅或有宗教意味的地方，<b>先問可不可以進、可不可以拍</b>。</li>'+
-    '<li>大家一起拍團體照時<b>注意腳下</b>，梯田田埂窄又滑。</li>'+
-  '</ul></div>'+
-
-  '<h2 class="sec">'+ic('heart')+'一個小提醒</h2>'+
-  '<div class="info-card"><p>路上會遇到賣東西或討錢的孩子。<b>不建議直接給錢或糖果</b>——這會讓家長更傾向讓孩子上街而不是上學。真的想幫忙，<b>跟大人買一件他們做的東西</b>，比較實際。</p></div>';
-}
-/* 廁所與飲水 */
-function toolBasics(){
-  return backBar('廁所與飲水')+
-  '<div class="info-card"><div class="ic-h">'+ic('info')+'兩句話結論</div>'+
-    '<p><b>衛生紙自己帶，用完丟垃圾桶不要丟馬桶；水只喝瓶裝的。</b>這兩件事做到，旅途會順很多。</p></div>'+
-
-  '<h2 class="sec">'+ic('toilet')+'廁所</h2>'+
-  '<div class="info-card"><ul class="dots">'+
-    '<li><b>隨身帶一包衛生紙與濕紙巾。</b>景區、休息站、山區的廁所經常沒有供應，這是最常後悔沒帶的東西。</li>'+
-    '<li><b>用過的衛生紙丟旁邊的垃圾桶</b>，不要丟進馬桶。當地管線細，很容易堵住。</li>'+
-    '<li>觀光區廁所<b>有時要收費</b>（幾千盾），身上留一點零錢。</li>'+
-    '<li>看到廁所就先去，<b>不要等到上車前才去</b>。山路一開就是一段路，中間不一定有地方停。</li>'+
-    '<li>找廁所的越南話：<b>Nhà vệ sinh ở đâu?（呀 唯 星 兒 鬥）</b>，圖卡在「交通與問路」那一類。</li>'+
-  '</ul></div>'+
-
-  '<h2 class="sec">'+ic('cup')+'喝水</h2>'+
-  '<div class="info-card"><ul class="dots">'+
-    '<li><b>只喝瓶裝水</b>，開瓶前看一下<b>封膜是否完整</b>。飯店房間每天會附贈幾瓶。</li>'+
-    '<li><b>水龍頭的水不要生飲</b>；講究一點的人連刷牙都用瓶裝水。</li>'+
-    '<li>餐廳的<b>冰塊</b>：正規餐廳多半用製冰廠的乾淨冰塊（中間有孔的圓柱狀），路邊小攤的碎冰腸胃弱的人就避開。不想加冰就出示「溫開水，不加冰」那張圖卡。</li>'+
-    '<li>山上早晚涼，<b>喝溫水比冰水舒服</b>，帶個保溫瓶請餐廳或飯店裝熱水很方便。</li>'+
-  '</ul></div>'+
-
-  '<h2 class="sec">'+ic('check')+'其他小事</h2>'+
-  '<div class="info-card"><ul class="dots">'+
-    '<li>吃飯前<b>用乾洗手</b>，山區洗手台不一定有肥皂。</li>'+
-    '<li>飯店的<b>牙刷牙膏不一定會附</b>，習慣用自己的就自己帶。</li>'+
-    '<li>山區<b>濕氣重</b>，衣服不容易乾，多帶一雙襪子與一套換洗會比較舒服。</li>'+
-  '</ul></div>';
+  var t=tl(), tx=(t.taxi&&typeof t.taxi==='object')?t.taxi:{}, lb=tlLab(), ho=hotel(), has=!!(ho.name||ho.nameVi||ho.addrVi);
+  var ctl=FULL_LOCK?'':'<span class="fh-b">'+(P.leader?'<button class="btn sm" data-act="taxiEdit">'+ic('edit')+'編輯</button>':'')+'<button class="btn sm" data-act="fullClose">'+ic('x')+'關閉</button></span>';
+  return '<div class="fh"><b>出示給計程車司機</b>'+ctl+'</div>'+lockBar()+
+    (tx.fl?'<div class="vi xl">'+esc(tx.fl)+'</div>':'')+(tx.zh?'<div class="zh">'+esc(tx.zh)+'</div>':'')+
+    (has?'':'<div class="fk">'+(P.leader?'還沒有飯店資料：到管理專區「飯店資料」填入':'主辦人還沒填飯店資料')+'</div>')+
+    '<div class="fk">'+esc(fkLab(lb.hotel,'飯店'))+'</div><div class="vi">'+esc(ho.nameVi||ho.name||'')+'</div>'+
+    '<div class="fk">'+esc(fkLab(lb.addr,'地址'))+'</div><div class="vi">'+esc(ho.addrVi||'')+'</div>'+
+    (ho.phone?'<div class="fk">'+esc(fkLab(lb.phone,'飯店電話'))+'</div><a class="ph-big" href="'+telHref(ho.phone)+'">'+ic('phone')+esc(fmtPhone(ho.phone))+'</a>':'')+
+    '<div class="fk">'+esc(fkLab(lb.call,'緊急聯絡'))+'</div>'+contactLinks()+
+    (tx.tip?'<div class="foot">'+esc(tx.tip)+'</div>':'');
 }
 /* 緊急求助 */
 function toolSOS(){
-  var st=S().settings;
-  function row(t,s2,p,cls,ln){ return '<div class="em-row"><div class="t"><b>'+esc(t)+'</b><span>'+esc(s2)+'</span></div>'+(p?'<a class="btn '+(cls||'')+'" href="'+telHref(p)+'">'+ic('phone')+esc(fmtPhone(p))+'</a>':(ln?'':'<span class="muted">'+(P.leader?'<a href="#" data-act="settings">請填入</a>':'尚未填入')+'</span>'))+(ln?'<a class="btn line" href="'+esc(ln)+'" target="_blank" rel="noopener">'+ic('chat')+'加 LINE</a>':'')+'</div>'; }
-  var lostIdx=PHRASES.findIndex(function(p){return p.lost;});
+  var st=S().settings, L=P.leader, lines=tlArr('sos').filter(function(x){ return x&&(x.name||x.phone); });
+  function row(t,s2,p,cls,ln,edit){ return '<div class="em-row"><div class="t"><b>'+esc(t)+'</b><span>'+esc(s2)+'</span></div>'+(p?'<a class="btn '+(cls||'')+'" href="'+telHref(p)+'">'+ic('phone')+esc(fmtPhone(p))+'</a>':(ln?'':'<span class="muted">'+(L?'<a href="#" data-act="'+(edit||'settings')+'">請填入</a>':'尚未填入')+'</span>'))+(ln?'<a class="btn line" href="'+esc(ln)+'" target="_blank" rel="noopener">'+ic('chat')+'加 LINE</a>':'')+'</div>'; }
+  /* 3.22 以前駐外館處電話放在團務設定；還沒搬進下面清單的舊資料照樣顯示 */
+  var legacy=st.embassyPhone&&!lines.some(function(x){ return x.phone===st.embassyPhone; });
   return backBar('緊急求助')+
-    '<button class="btn big warn" data-act="phrase" data-i="'+lostIdx+'">'+ic('alert')+'<span class="b2">我走散了：出示這張卡<small>越文請路人幫忙打電話</small></span></button>'+
+    '<button class="btn big warn" data-act="lostCard">'+ic('alert')+'<span class="b2">我走散了：出示這張卡<small>'+esc(tl().lang||'外語')+'，請路人幫忙打電話</small></span></button>'+
     '<h2 class="sec">'+ic('phone')+'緊急聯絡人</h2><div class="stack">'+
     contacts().map(function(c){ return row(c.name,c.label||'',c.phone,'pri',c.line||''); }).join('')+
-    (contacts().length?'':'<div class="card muted">尚未設定聯絡人'+(P.leader?'，請到團務設定填入':'')+'</div>')+
-    '</div><h2 class="sec">'+ic('alert')+'越南當地與官方專線</h2><div class="stack">'+
-    row('越南報警','Công an · 24 小時','113')+
-    row('救護車','Cấp cứu · 24 小時','115')+
-    row('消防','Cứu hỏa · 24 小時','114')+
+    (contacts().length?'':'<div class="card muted">尚未設定聯絡人'+(L?'，請到團務設定填入':'')+'</div>')+
+    '</div><h2 class="sec">'+ic('alert')+'當地與官方專線</h2><div class="stack">'+
+    lines.map(function(x){ return row(x.name||'',x.sub||'',x.phone||'','','','sosEdit'); }).join('')+
+    (legacy?row('駐外館處','急難救助專線',st.embassyPhone):'')+
+    (lines.length||legacy?'':'<div class="card muted">'+(L?'還沒有當地的報警、救護車電話，按下面的「編輯當地電話」填入。':'主辦人還沒填當地的急救電話。')+'</div>')+
     row('外交部急難救助專線','境外撥打，24 小時（付費）','+886800085095')+
-    row('駐越南台北辦事處','河內 · 急難救助專線',st.embassyPhone)+
     '</div>'+
-    '<button class="btn block soft" data-act="nbGo" data-id="lost">'+ic('book')+'萬一走散，這樣做</button>';
+    (L?'<button class="btn block" data-act="sosEdit">'+ic('edit')+'編輯當地電話</button>':'')+
+    (nbHas('lost')?'<button class="btn block soft" data-act="nbGo" data-id="lost">'+ic('book')+'萬一走散，這樣做</button>':'');
 }
 /* 集合點名（管理者） */
 function toolRollcall(){
@@ -2962,10 +3268,13 @@ function toolRollcall(){
 /* ===== 底部表單（Sheet）與全螢幕卡 ===== */
 var SHEET=null;
 /* Android 返回鍵 / 瀏覽器上一頁：關掉 sheet 或全螢幕卡，而不是離開網站 */
-var HIST={sheet:false,full:false};
+/* 自己關掉時用 history.back() 把那一筆拿掉；那次 back() 引起的 popstate 要略過（skip）。
+   否則「關掉一個、馬上開另一個」（例：防呆標籤存檔後回到清單、計程車卡按編輯）時，
+   back() 比新的 pushState 晚執行，popstate 會把剛開的那一個關掉（v3.22 以前就有，v3.23 修正） */
+var HIST={sheet:false,full:false,skip:0};
 function histPush(kind){ if(HIST[kind]) return; try{ history.pushState({sapa:kind},''); HIST[kind]=true; }catch(e){} }
-function histPop(kind){ if(!HIST[kind]) return; HIST[kind]=false; try{ if(history.state&&history.state.sapa===kind) history.back(); }catch(e){} }
-window.addEventListener('popstate',function(){ if(HIST.full){ HIST.full=false; closeFull(); return; } if(HIST.sheet){ HIST.sheet=false; closeSheet(); } });
+function histPop(kind){ if(!HIST[kind]) return; HIST[kind]=false; try{ if(history.state&&history.state.sapa===kind){ HIST.skip++; history.back(); } }catch(e){} }
+window.addEventListener('popstate',function(){ if(HIST.skip>0){ HIST.skip--; return; } if(HIST.full){ HIST.full=false; closeFull(); return; } if(HIST.sheet){ HIST.sheet=false; closeSheet(); } });
 function openSheet(o){
   SHEET=o;
   el('sheetRoot').innerHTML='<div class="sheet-bg" data-act="sheetBg"><div class="sheet'+(o.tall?' tall':'')+'" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"><div class="sheet-h"><span id="sheetTitle">'+o.title+'</span><button class="icon-btn" data-act="sheetClose" aria-label="關閉">'+ic('x')+'</button></div><div class="sheet-b">'+o.body+'</div>'+(o.foot?'<div class="sheet-f">'+o.foot+'</div>':'')+'</div></div>';
@@ -3008,14 +3317,14 @@ function sheetLeaderMenu(){
 function sheetBroadcast(){
   var b=S().broadcast||{}, cur=items().filter(function(x){return x.isCurrent;})[0];
   /* 集合日期：有日期才算得出跨日倒數（例如出發前先公布出發當天 05:30 的機場集合） */
-  var st=S().settings, today=tzParts(VN).date, tmr=ymd(parseDate(today)+86400000);
+  var st=S().settings, today=tzParts(LTZ()).date, tmr=ymd(parseDate(today)+86400000);
   var picks=[[today,'今天'],[tmr,'明天']];
   if(st.startDate&&!isNaN(parseDate(st.startDate))&&st.startDate!==today&&st.startDate!==tmr) picks.push([st.startDate,'出發日 '+dayDate(1).split('（')[0]]);
   openSheet({title:'修改即時廣播',focus:true,body:
     /* 日期預設：上一則還有效就沿用它的日期；已經過期（例如出發日的機場集合）就帶今天，
        免得主辦人只改時間、日期還停在前一天，整則廣播被當成過期藏起來 */
     fld('集合日期',inp('date',(bcActive()&&b.time)?(b.date||bcDate()):today,'date')+'<div class="chips" style="margin-top:.4rem">'+picks.map(function(x){ return '<button type="button" class="chip pick" data-act="chipSet" data-target="date" data-val="'+esc(x[0])+'">'+esc(x[1])+'</button>'; }).join('')+'</div>')+
-    fld('集合時間（24 小時制）',timeField('time',b.time)+'<input type="hidden" name="tz" value="'+esc(b.tz||'')+'" data-at="'+esc(b.tz?(b.date||'')+' '+(b.time||''):'')+'">'+'<div class="muted" style="margin-top:.3rem">出發日 '+esc(twCutoff())+' 以前填台灣時間，其他時間都填越南時間。</div>'+'<div class="chips" style="margin-top:.4rem">'+[15,30,45,60].map(function(m){return '<button type="button" class="chip pick" data-act="chipTimeFromNow" data-min="'+m+'">現在＋'+m+'分</button>';}).join('')+'</div>')+
+    fld('集合時間（24 小時制）',timeField('time',b.time)+'<input type="hidden" name="tz" value="'+esc(b.tz||'')+'" data-at="'+esc(b.tz?(b.date||'')+' '+(b.time||''):'')+'">'+'<div class="muted" style="margin-top:.3rem">出發日 '+esc(twCutoff())+' 以前填台灣時間，其他時間都填當地時間。</div>'+'<div class="chips" style="margin-top:.4rem">'+[15,30,45,60].map(function(m){return '<button type="button" class="chip pick" data-act="chipTimeFromNow" data-min="'+m+'">現在＋'+m+'分</button>';}).join('')+'</div>')+
     fld('動作',inp('label',b.label||'原地集合')+chipsFill('label',['原地集合','大廳集合','上車','餐廳集合','纜車站集合']))+
     fld('集合地點（建議 12 字以內，手機才不換行）',inp('location',b.location)+(cur?'<div class="chips" style="margin-top:.4rem"><button type="button" class="chip pick" data-act="chipSet" data-target="location" data-val="'+esc(cur.title)+'">帶入目前站：'+esc(cur.title)+'</button></div>':''))+
     fld('天氣與叮嚀',ta('tip',b.tip)+chipsFill('tip',['山頂約 10 度，請備妥外套與保溫水壺','下午有雨，請帶雨具、走慢一點','請把護照放身上，等一下要辦入住','上車前請先上洗手間'])),
@@ -3050,7 +3359,7 @@ function dbgField(id){
     '</div>'+
     '<div class="dbg-row"><span>濃度</span><input type="range" id="dbgOp" min="3" max="30" value="'+op+'"'+(has?'':' disabled')+'><output id="dbgOpV">'+op+'%</output></div>'+
     '<div class="dbg-prev" id="dbgPrev" style="--dbg:'+url+';--dop:'+(has?op/100:0)+'">'+
-      '<div class="pv-t">08:00</div><div><b>番西邦峰纜車</b><span>山頂約 10 度，請備妥外套與保溫水壺</span></div>'+
+      '<div class="pv-t">08:00</div><div><b>搭纜車上山</b><span>山上約 10 度，請備妥外套與保溫水壺</span></div>'+
     '</div>'+
     '<div class="row dbg-btns">'+
       '<label class="btn sm" style="cursor:pointer">'+ic('camera')+'選照片<input type="file" id="dbgFile" accept="image/*" hidden></label>'+
@@ -3213,7 +3522,7 @@ function sheetSim(){
   P2.push(['出發前一晚',d0+'T21:00']);
   P2.push(['出發日 05:00・集合前',at(1,'05:00')]);
   P2.push(['出發日 05:45・集合遲到',at(1,'05:45')]);
-  P2.push(['第 1 天 14:00・前往沙壩',at(1,'14:00')]);
+  P2.push(['第 1 天 14:00・抵達之後',at(1,'14:00')]);
   for(var n=2;n<(st.days||5);n++) P2.push(['第 '+n+' 天 09:00',at(n,'09:00')]);
   P2.push(['第 '+(st.days||5)+' 天 07:00・最後一天',at(st.days||5,'07:00')]);
   P2.push(['第 '+(st.days||5)+' 天 20:00・已回台灣',at(st.days||5,'20:00')]);
@@ -3231,7 +3540,7 @@ function sheetTripName(){
     fld('顯示在畫面最上方（建議 10 字以內）',inp('tripName',v,'text','maxlength="20" id="tnInput"'))+
     '<div class="muted" id="tnCount" style="text-align:right;margin-top:-.35rem">'+[].slice.call(v).length+' / 20 字</div>'+
     '<div class="chips" style="margin-top:.5rem">'+
-      ['沙壩雲海五日','越南沙壩 5 日','2026 沙壩團'].map(function(x){
+      [((st.startDate||'').slice(0,4)||tzParts(TW).date.slice(0,4))+' 團體旅遊',(st.days||5)+' 日自由行','月半團旅'].map(function(x){
         return '<button type="button" class="chip pick" data-act="tnPick" data-val="'+esc(x)+'">'+esc(x)+'</button>'; }).join('')+
     '</div>'+
     '<div class="muted" style="margin-top:.6rem">太長會在標頭以「…」截斷，不會換行。窄螢幕（iPhone SE）大約放得下 10 個中文字。</div>',
@@ -3302,9 +3611,9 @@ function sheetHotel(){
 function sheetHotelEdit(id){
   var st=S().settings, h=(st.hotels||[]).filter(function(x){return x.id===id;})[0]||{name:'',nameVi:'',addrVi:'',phone:'',wifi:'',wifiPass:'',wifiNote:'',breakfast:'',leaderRoom:'',nights:''};
   openSheet({title:id?'編輯飯店':'新增飯店',focus:true,body:
-    fld('飯店名稱（中文＋英文）',inp('name',h.name))+fld('越文全名（給司機看）',inp('nameVi',h.nameVi))+fld('越文地址',inp('addrVi',h.addrVi))+
+    fld('飯店名稱（中文＋英文）',inp('name',h.name))+fld('當地語言的飯店名稱（給司機看）',inp('nameVi',h.nameVi))+fld('當地語言的地址（給司機看）',inp('addrVi',h.addrVi))+
     '<div class="grid2">'+fld('飯店電話',inp('phone',h.phone,'tel'))+fld('主辦人房號',inp('leaderRoom',h.leaderRoom))+'</div>'+
-    '<div class="grid2">'+fld('Wi-Fi 名稱',inp('wifi',h.wifi,'text','placeholder="例：PaosSapa-Guest"'))+fld('Wi-Fi 密碼',inp('wifiPass',h.wifiPass,'text','placeholder="例：sapa2026"'))+'</div>'+
+    '<div class="grid2">'+fld('Wi-Fi 名稱',inp('wifi',h.wifi,'text','placeholder="例：Hotel-Guest"'))+fld('Wi-Fi 密碼',inp('wifiPass',h.wifiPass,'text','placeholder="例：12345678"'))+'</div>'+
     fld('Wi-Fi 補充說明（留白就不顯示）',inp('wifiNote',(h.wifiNote===undefined||h.wifiNote===null?'連不上請到櫃台問，或跟主辦人說。':h.wifiNote),'text','placeholder="例：連不上請到櫃台問"'))+
     fld('入住晚數',inp('nights',h.nights,'text','placeholder="例：第 2、3 晚"'))+
     fld('早餐時間／地點',inp('breakfast',h.breakfast)),
@@ -3364,6 +3673,12 @@ function sheetMoveMember(id){
   var sc=scenario(), m=member(id); if(!sc||!m) return;
   openSheet({title:'移動：'+esc(m.name),body:'<div class="muted">'+esc(sc.name)+'</div><div class="stack">'+sc.names.slice(0,sc.count).map(function(n,i){ return '<button class="btn'+(sc.assign&&sc.assign[id]===i?' pri':'')+'" data-act="setGroup" data-id="'+id+'" data-g="'+i+'">'+esc(n||('第 '+(i+1)+' 組'))+'</button>'; }).join('')+'<button class="btn dng" data-act="setGroup" data-id="'+id+'" data-g="-1">移出分組</button></div>'});
 }
+/* 目的地時區的選單：括號裡「比台灣快／慢幾小時」用今天的日期算（有夏令時間的地方會跟著季節變） */
+function tzDiffText(z){ var now=nowMs(), d=Math.round((tzOff(z,now)-tzOff(TW,now))/60000); if(!d) return '跟台灣一樣';
+  var a=Math.abs(d), h=Math.floor(a/60), m=a%60; return (d>0?'比台灣快 ':'比台灣慢 ')+(h?h+' 小時':'')+(m?(h?' ':'')+m+' 分':''); }
+function tzSelect(cur){ var list=TZ_PRESETS.filter(function(x){ return tzValid(x[0]); });
+  if(cur&&tzValid(cur)&&cur!==TW&&!list.some(function(x){ return x[0]===cur; })) list.push([cur,cur]);
+  return '<select class="in" name="tz"><option value="">跟台灣一樣（沒有時差）</option>'+list.map(function(x){ return '<option value="'+esc(x[0])+'"'+(x[0]===cur?' selected':'')+'>'+esc(x[1]+'（'+tzDiffText(x[0])+'）')+'</option>'; }).join('')+'</select>'; }
 function sheetSettings(){
   var st=S().settings, cs=(st.contacts&&st.contacts.length?st.contacts:contacts()).slice(); while(cs.length<4) cs.push({name:'',label:'',phone:'',line:''});
   var f=st.flights||{}; f.eva=f.eva||{}; f.ci=f.ci||{};
@@ -3371,13 +3686,15 @@ function sheetSettings(){
     fld('團名',inp('tripName',st.tripName))+
     '<div class="grid2">'+fld('出發日期（第 1 天）',inp('startDate',st.startDate,'date'))+fld('總天數',inp('days',st.days,'number','min="1" max="15" inputmode="numeric"'))+'</div>'+
     fld('今天是第幾天','<select class="in" name="dayOverride"><option value="0">依日期自動判斷</option>'+Array.apply(null,{length:st.days||5}).map(function(_,i){return '<option value="'+(i+1)+'"'+(st.dayOverride===i+1?' selected':'')+'>手動指定：第 '+(i+1)+' 天</option>';}).join('')+'</select><div class="muted" style="margin-top:.3rem">注意：手動指定會套用到<b>全團每一支手機</b>。只是想自己先看看，請用管理專區的「時間模擬」。</div>')+
-    '<div class="grid2">'+fld('改管理 PIN（不改就留白）',inp('pin','','tel','maxlength="6" inputmode="numeric" placeholder="4 位數字" autocomplete="off"'))+fld('1 台幣 ≈ 幾越盾',inp('vndPerTwd',st.vndPerTwd,'number','inputmode="numeric"'))+'</div>'+
-    '<div class="muted" style="margin-top:-.5rem">PIN 只會以雜湊保存，雲端看不到明文。</div>'+
+    fld('目的地時區（標頭「當地」時鐘、首頁倒數都用它）',tzSelect(st.tz||'')+'<div class="muted" style="margin-top:.3rem">出發日搭機前（最晚一班去程起飛以前）人還在台灣，那段一律用台灣時間。</div>')+
+    fld('改管理 PIN（不改就留白）',inp('pin','','tel','maxlength="6" inputmode="numeric" placeholder="4 位數字" autocomplete="off"'))+
+    '<div class="muted" style="margin-top:-.5rem">PIN 只會以雜湊保存，雲端看不到明文。外幣與匯率改在「工具 → 外幣點鈔速算」設定。</div>'+
     '<h2 class="sec">'+ic('plane')+'航班（起飛時間）</h2>'+
-    '<div class="grid2">'+fld('長榮 去程 桃園起飛',timeField('eva_out',f.eva.out))+fld('長榮 回程 河內起飛',timeField('eva_back',f.eva.back))+fld('華航 去程 桃園起飛',timeField('ci_out',f.ci.out))+fld('華航 回程 河內起飛',timeField('ci_back',f.ci.back))+'</div>'+'<div class="muted" style="margin-top:-.5rem">團員首頁不會同時看到去回程：出發前與第 1 天只顯示去程，第 '+Math.max(2,(st.days||5)-1)+' 天起只顯示回程，中間幾天航班卡收起。</div>'+fld('去程團體報到說明（只在去程階段顯示在航班卡下方）',ta('flight_note',f.note))+
+    '<div class="grid2">'+fld(esc(alShort('eva'))+' 去程 桃園起飛',timeField('eva_out',f.eva.out))+fld(esc(alShort('eva'))+' 回程起飛',timeField('eva_back',f.eva.back))+fld(esc(alShort('ci'))+' 去程 桃園起飛',timeField('ci_out',f.ci.out))+fld(esc(alShort('ci'))+' 回程起飛',timeField('ci_back',f.ci.back))+'</div>'+
+    fld('回程從哪個機場起飛（選填，會寫在航班卡上）',inp('backPort',f.backPort,'text','maxlength="20" placeholder="例：成田機場、河內內排機場"'))+'<div class="muted" style="margin-top:-.5rem">團員首頁不會同時看到去回程：出發前與第 1 天只顯示去程，第 '+Math.max(2,(st.days||5)-1)+' 天起只顯示回程，中間幾天航班卡收起。</div>'+fld('去程團體報到說明（只在去程階段顯示在航班卡下方）',ta('flight_note',f.note))+
     '<h2 class="sec">'+ic('phone')+'緊急聯絡人</h2><div class="muted" style="margin-top:-.5rem">留白＝不顯示</div>'+
-    cs.map(function(c,i){ return '<div class="f" style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem">'+inp('c_name_'+i,c.name,'text','placeholder="姓名"')+inp('c_label_'+i,c.label,'text','placeholder="例：越南電話"')+'<div style="grid-column:1/-1">'+inp('c_phone_'+i,c.phone,'tel','placeholder="+84 或 +886 開頭"')+'</div><div style="grid-column:1/-1">'+inp('c_line_'+i,c.line,'url','placeholder="LINE 加好友網址（選填）"')+'</div></div>'; }).join('')+
-    fld('駐越南台北經濟文化辦事處 急難救助電話',inp('embassyPhone',st.embassyPhone,'tel','placeholder="出發前請至外交部領事事務局網站確認"'))+
+    cs.map(function(c,i){ return '<div class="f" style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem">'+inp('c_name_'+i,c.name,'text','placeholder="姓名"')+inp('c_label_'+i,c.label,'text','placeholder="例：當地電話"')+'<div style="grid-column:1/-1">'+inp('c_phone_'+i,c.phone,'tel','placeholder="含國碼，例：+886 912 345 678"')+'</div><div style="grid-column:1/-1">'+inp('c_line_'+i,c.line,'url','placeholder="LINE 加好友網址（選填）"')+'</div></div>'; }).join('')+
+    '<div class="muted">當地的報警、救護車與駐外館處電話，改在「工具 → 緊急求助」頁編輯。</div>'+
     '<h2 class="sec">'+ic('clipboard')+'備份與還原</h2><div class="row"><button type="button" class="btn" data-act="exportData">'+ic('down')+'匯出備份檔</button><label class="btn" style="cursor:pointer">'+ic('up')+'匯入備份檔<input type="file" id="importFile" accept="application/json,.json" hidden></label></div><div class="muted">匯出會下載一個 JSON 檔（含名單、行程、電話）；匯入會覆蓋並同步給全團。</div>',
     foot:footBtns('saveSettings')});
   SHEET.nContacts=cs.length;
@@ -3522,7 +3839,7 @@ function sheetNbItem(pgId,id,head){
   var isHead=it.kind==='head';
   openSheet({title:(id?'編輯':'新增')+(isHead?'小標題':'一條提醒'),focus:true,body:
     fld(isHead?'小標題文字':'內容（可換行；開頭放一個表情符號更好認）',isHead?inp('text',it.text):ta('text',it.text))+
-    (isHead?'':'<div class="muted">例：🕐 越南比台灣慢 1 小時…</div>')+
+    (isHead?'':'<div class="muted">例：🕐 當地比台灣慢 1 小時…</div>')+
     (id?'<div class="row"><button class="btn" data-act="nbMove" data-pg="'+pgId+'" data-id="'+id+'" data-dir="-1">'+ic('up')+'上移</button><button class="btn" data-act="nbMove" data-pg="'+pgId+'" data-id="'+id+'" data-dir="1">'+ic('down')+'下移</button><button class="btn dng" data-act="nbDelItem" data-pg="'+pgId+'" data-id="'+id+'">'+ic('trash')+'刪除</button></div>':''),
     foot:footBtns('nbSaveItem')});
   SHEET.pg=pgId; SHEET.id=id; SHEET.head=isHead;
@@ -3540,8 +3857,9 @@ function sheetClear(){
   L.push('記事本'+n(s.notebook,'頁')+'，包含出發前準備清單');
   L.push('即時廣播、明早時程');
   L.push('團名'+(st.tripName?'「'+st.tripName+'」':'')+'、出發日期與天數、航班時間');
-  L.push('飯店資料'+n(s.hotels,'間')+'、緊急聯絡人'+n(s.contacts,'位')+'、駐越南辦事處電話');
-  L.push('防呆標籤、航空公司名稱與航廈、首頁卡片位置與高亮、匯率');
+  L.push('飯店資料'+n(s.hotels,'間')+'、緊急聯絡人'+n(s.contacts,'位'));
+  L.push('防呆標籤、航空公司名稱與航廈、首頁卡片位置與高亮、目的地時區');
+  L.push('工具頁內容：知識小卡'+n(s.cards,'張')+'、外語圖卡'+n(s.phrases,'句')+'、外幣、計程車卡、當地急救電話（之後可以到「工具頁範本」一鍵套用通用版）');
   openSheet({title:'一鍵清空內容',tall:true,body:
     '<div class="warn-box dng-box">'+ic('alert')+'<span>清空後，<b>全團每一支手機都會同步變成空白</b>，首頁只剩「尚未建立旅程」。</span></div>'+
     '<div><b>會清空</b><ul class="dots clr-list">'+L.map(function(x){ return '<li>'+esc(x)+'</li>'; }).join('')+'</ul></div>'+
@@ -3580,18 +3898,149 @@ function sheetRestore(id){
   SHEET.bk=id;
 }
 
+/* ===== 工具頁內容的編輯（v3.23，主辦人）=====
+   全部存在 tools 文件，一律整份存檔（Store.save('tools')）：工具內容多半只有主辦人一個人在改。
+   會讓內容變少的動作（清空一區、刪類別、套用範本）先在這支手機留一份上一版（Store.keepPrev）。 */
+function sck(n){ var e=el('sheetRoot').querySelector('[name="'+n+'"]'); return !!(e&&e.checked); }
+/* 小卡編輯器上方的插入鈕：[要插入的字, 按鈕名稱, 是否插在游標位置（不另起一行）] */
+var MD_HELP=[['## ','小標題'],['### ','重點框'],['- ','條列'],['1. ','步驟'],['! ','警示'],['｜','對照',1]];
+function sheetCardEdit(id,sec){
+  var c=id?tlCard(id):null; if(id&&!c) return;
+  c=c||{id:'',sec:(sec==='local'?'local':'pre'),icon:'info',title:'',sub:'',body:''};
+  /* 順序：最常改的（標題、內容、預覽）放上面，區塊與圖示放最後——圖示有 30 個，放前面要捲很久才到內容 */
+  openSheet({title:id?'編輯小卡':'新增小卡',tall:true,body:
+    '<div class="grid2">'+fld('標題（10 字以內）',inp('title',c.title,'text','maxlength="10" placeholder="例：入境與通關"'))+fld('小字說明（選填）',inp('sub',c.sub,'text','maxlength="16" placeholder="例：護照效期"'))+'</div>'+
+    '<div class="f"><label>內容</label><div class="md-bar">'+MD_HELP.map(function(x){ return '<button type="button" class="chip" data-act="mdIns" data-v="'+esc(x[0])+'"'+(x[2]?' data-inline="1"':'')+'>＋'+esc(x[1])+'</button>'; }).join('')+'<button type="button" class="chip" data-act="mdBold"><b>粗體</b></button></div>'+
+      '<textarea class="in md-ta" name="body" id="mdBody" placeholder="## 小標題&#10;- 條列一&#10;- 條列二&#10;! 要特別注意的事">'+esc(c.body||'')+'</textarea>'+
+      '<div class="muted md-help">一行一件事：開頭「## 」是小標題、「### 」開一個重點框、「- 」條列、「1. 」步驟、「! 」警示；「名稱｜說明」是對照表；**兩個星號夾住**是粗體；空一行分段。</div></div>'+
+    '<div class="f"><label>預覽（團員看到的樣子）</label><div class="md-prev kc" id="mdPrev">'+(mdCard(c.body)||'<div class="muted">還沒有內容</div>')+'</div></div>'+
+    fld('放在哪一區',swatches('sec',TOOL_SECS.map(function(s){ return [s.id,s.name]; }),c.sec==='local'?'local':'pre'))+
+    fld('圖示',swatches('icon',CARD_ICONS.map(function(k){ return [k,k]; }),ICONS[c.icon]?c.icon:'info',function(v){ return ic(v); }))+
+    (id?'<div class="row"><button class="btn" data-act="tlCardMove" data-dir="-1">'+ic('up')+'往前移</button><button class="btn" data-act="tlCardMove" data-dir="1">'+ic('down')+'往後移</button></div>':''),
+    foot:footBtns('tlCardSave',id?'<button class="btn dng" data-act="tlCardDel">刪除</button>':'')});
+  SHEET.id=id;
+}
+function mdPreview(){ var ta=el('mdBody'), pv=el('mdPrev'); if(ta&&pv) pv.innerHTML=mdCard(ta.value)||'<div class="muted">還沒有內容</div>'; }
+function mdInsert(txt,inline){ var ta=el('mdBody'); if(!ta) return; var s=ta.selectionStart||0, e=ta.selectionEnd||0, v=ta.value;
+  var pre=(!inline&&s>0&&v.charAt(s-1)!=='\n')?'\n':''; ta.value=v.slice(0,s)+pre+txt+v.slice(e);
+  var c=s+pre.length+txt.length; ta.focus(); try{ ta.setSelectionRange(c,c); }catch(x){} mdPreview(); }
+function mdWrap(w){ var ta=el('mdBody'); if(!ta) return; var s=ta.selectionStart||0, e=ta.selectionEnd||0, v=ta.value, sel=v.slice(s,e);
+  ta.value=v.slice(0,s)+w+sel+w+v.slice(e); ta.focus();
+  try{ if(sel) ta.setSelectionRange(s,e+2*w.length); else ta.setSelectionRange(s+w.length,s+w.length); }catch(x){} mdPreview(); }
+function sheetTaxi(){
+  var t=tl(), tx=(t.taxi&&typeof t.taxi==='object')?t.taxi:{}, lb=tlLab();
+  openSheet({title:'計程車回飯店卡',tall:true,body:
+    '<div class="muted">飯店名稱、地址、電話在管理專區的「飯店資料」裡改；這裡改卡片上的句子。</div>'+
+    fld('給司機看的句子（外語）',ta('fl',tx.fl))+
+    fld('中文意思',inp('zh',tx.zh,'text','placeholder="例：請載我回這間飯店，謝謝！"'))+
+    '<h2 class="sec">'+ic('edit')+'欄位的外語小標（選填）</h2><div class="muted" style="margin-top:-.5rem">會顯示成「外語 · 中文」，例如「HOTEL · 飯店」；留白就只顯示中文。走散卡也會用到「緊急聯絡」這一個。</div>'+
+    '<div class="grid2">'+fld('飯店',inp('lab_hotel',lb.hotel,'text','placeholder="例：HOTEL"'))+fld('地址',inp('lab_addr',lb.addr,'text','placeholder="例：ADDRESS"'))+fld('飯店電話',inp('lab_phone',lb.phone,'text','placeholder="例：PHONE"'))+fld('緊急聯絡',inp('lab_call',lb.call,'text','placeholder="例：CONTACT"'))+'</div>'+
+    fld('最下面的小提醒（選填）',ta('tip',tx.tip)),
+    foot:footBtns('taxiSave')});
+}
+function sheetLang(){
+  var t=tl();
+  openSheet({title:'外語設定',focus:true,body:
+    fld('這次用的外語',inp('lang',t.lang,'text','maxlength="8" placeholder="例：日語、泰語、英語"'))+
+    fld('圖卡上的外語標示（選填）',inp('langTag',t.langTag,'text','maxlength="24" placeholder="例：日本語、ภาษาไทย、ENGLISH"'))+
+    fld('「謝謝您的幫忙」的外語（選填）',inp('thanks',t.thanks,'text','maxlength="40" placeholder="例：ありがとうございます"'))+
+    '<div class="muted">全螢幕圖卡上方會寫「外語標示 · 外語」，例如「ENGLISH · 英語」；走散卡、圖卡最下面會先寫外語的謝謝。</div>',
+    foot:footBtns('langSave')});
+}
+function sheetPhCat(id){
+  var cs=tlCats(), c=id?cs.filter(function(x){ return x.id===id; })[0]:{id:'',e:'',name:'',sub:''}; if(!c) return;
+  var n=id?phInCat(id).length:0;
+  openSheet({title:id?'編輯類別':'新增類別',focus:true,body:
+    '<div class="grid2">'+fld('圖示（1 個表情符號）',inp('e',c.e,'text','maxlength="4"'))+fld('類別名稱',inp('name',c.name,'text','maxlength="8" placeholder="例：點餐與飲食"'))+'</div>'+
+    fld('說明（選填）',inp('sub',c.sub,'text','maxlength="20" placeholder="例：溫水、不要香菜"'))+
+    (id?'<div class="row"><button class="btn" data-act="phCatMove" data-dir="-1">'+ic('up')+'往前</button><button class="btn" data-act="phCatMove" data-dir="1">'+ic('down')+'往後</button></div>'+
+      '<div class="muted">這一類有 '+n+' 句；刪除類別會連同這 '+n+' 句一起刪掉。</div>':''),
+    foot:footBtns('phCatSave',id?'<button class="btn dng" data-act="phCatDel">刪除</button>':'')});
+  SHEET.id=id;
+}
+function sheetPhrase(id,cat){
+  var p=id?phById(id):{id:'',cat:cat||'',e:'',zh:'',fl:'',say:''}; if(!p) return;
+  var cs=tlCats();
+  openSheet({title:id?'編輯圖卡':'新增圖卡',tall:true,focus:true,body:
+    fld('中文（團員看的）',inp('zh',p.zh,'text','placeholder="例：請不要放香菜"'))+
+    fld('外語（給對方看的那一句）',ta('fl',p.fl))+
+    fld('空耳中文（照著念，選填）',inp('say',p.say,'text','placeholder="例：新 登 糗 繞 妹"'))+
+    '<div class="grid2">'+fld('圖示（1 個表情符號）',inp('e',p.e,'text','maxlength="4"'))+
+      fld('類別','<select class="in" name="cat">'+cs.map(function(c){ return '<option value="'+esc(c.id)+'"'+(c.id===p.cat?' selected':'')+'>'+esc(c.name||'')+'</option>'; }).join('')+'</select>')+'</div>'+
+    '<label class="ck-line"><input type="checkbox" name="lost"'+(p.lost?' checked':'')+'><span>這是<b>走散卡</b>：全螢幕時附上緊急聯絡電話，「緊急求助」頁的走散按鈕也會打開它</span></label>'+
+    (id?'<div class="row"><button class="btn" data-act="phMove" data-dir="-1">'+ic('up')+'上移</button><button class="btn" data-act="phMove" data-dir="1">'+ic('down')+'下移</button></div>':''),
+    foot:footBtns('phSave',id?'<button class="btn dng" data-act="phDel">刪除</button>':'')});
+  SHEET.id=id;
+}
+/* input type=color 只吃 #RRGGBB */
+function hex6(c){ c=String(c||''); if(/^#[0-9a-f]{6}$/i.test(c)) return c.toLowerCase(); var m=/^#([0-9a-f])([0-9a-f])([0-9a-f])$/i.exec(c); return m?('#'+m[1]+m[1]+m[2]+m[2]+m[3]+m[3]).toLowerCase():'#9aa3b2'; }
+function mnRow(n,i){ return '<div class="mn-row">'+inp('n_v_'+i,n.v||'','number','inputmode="decimal" step="any" min="0" placeholder="面額" aria-label="面額"')+
+  '<input class="in" type="color" name="n_c_'+i+'" value="'+hex6(n.color)+'" aria-label="顏色">'+inp('n_t_'+i,n.note||'','text','maxlength="12" placeholder="例：藍色 ⚠" aria-label="說明"')+'</div>'; }
+function moneyAddRow(n){ var box=el('sheetRoot').querySelector('.mn-rows'); if(!box||!SHEET||SHEET.mn>=16) return; box.insertAdjacentHTML('beforeend',mnRow(n||{},SHEET.mn)); SHEET.mn++; }
+/* 按常用貨幣：整張表單換成那一種（還沒按儲存都不算數） */
+function moneyFill(p){ var R=el('sheetRoot'); function set(n,v){ var e=R.querySelector('[name="'+n+'"]'); if(e) e.value=(v==null?'':v); }
+  set('m_name',p.name); set('m_unit',p.unit); set('m_dir',p.dir==='twd'?'twd':'fx'); set('m_rate',p.rate); set('m_warn',p.warn||'');
+  var box=R.querySelector('.mn-rows'); if(!box) return; box.innerHTML=''; SHEET.mn=0; (p.notes||[]).forEach(function(n){ moneyAddRow(n); }); moneyAddRow({}); }
+function sheetMoney(){
+  var m=tlMoney(), ns=(Array.isArray(m.notes)?m.notes:[]).filter(Boolean);
+  openSheet({title:'外幣設定',tall:true,body:
+    '<div class="f"><label>快速帶入常用貨幣</label><div class="chips">'+MONEY_PRESETS.map(function(p){ return '<button type="button" class="chip pick" data-act="moneyPreset" data-id="'+p.id+'">'+esc(p.name)+'</button>'; }).join('')+'</div>'+
+      '<div class="muted" style="margin-top:.3rem">匯率與鈔票顏色都是約略值，帶入後請對照出發前的匯率再改。</div></div>'+
+    '<div class="grid2">'+fld('貨幣名稱',inp('m_name',m.name,'text','maxlength="10" placeholder="例：日圓"'))+fld('顯示單位',inp('m_unit',m.unit,'text','maxlength="4" placeholder="例：盾、日圓"'))+'</div>'+
+    fld('匯率','<div class="rate-row"><select class="in" name="m_dir"><option value="fx"'+(m.dir!=='twd'?' selected':'')+'>1 台幣 ≈ 幾外幣</option><option value="twd"'+(m.dir==='twd'?' selected':'')+'>1 外幣 ≈ 幾台幣</option></select>'+
+      inp('m_rate',m.rate||'','number','inputmode="decimal" step="any" min="0" placeholder="例：0.21" aria-label="匯率"')+'</div>'+
+      '<div class="muted" style="margin-top:.3rem">數字很大的貨幣（越南盾、韓元、印尼盾）選「1 台幣 ≈ 幾外幣」比較好填。</div>')+
+    '<div class="f"><label>面額、顏色、說明（存檔時大的排上面）</label><div class="mn-rows"></div><button type="button" class="btn sm" data-act="moneyRow">'+ic('plus')+'再加一種</button></div>'+
+    fld('提醒文字（選填，**兩個星號**夾住是粗體）',ta('m_warn',m.warn)),
+    foot:footBtns('moneySave',(m.name||ns.length)?'<button class="btn dng" data-act="moneyWipe">清空外幣</button>':'')});
+  SHEET.mn=0; ns.forEach(function(n){ moneyAddRow(n); }); var k=Math.max(2,4-ns.length); while(k--) moneyAddRow({});
+}
+function sheetSOS(){
+  var st=S().settings, ls=tlArr('sos').filter(function(x){ return x&&(x.name||x.phone); }).map(clone);
+  /* 3.22 以前的駐外館處電話在團務設定裡：第一次打開就帶進來，存檔後改放這裡 */
+  if(st.embassyPhone&&!ls.some(function(x){ return x.phone===st.embassyPhone; })) ls.push({name:'駐外館處',sub:'急難救助專線',phone:st.embassyPhone});
+  var n=Math.min(12,Math.max(ls.length+2,4)); while(ls.length<n) ls.push({name:'',sub:'',phone:''});
+  openSheet({title:'當地與官方專線',tall:true,body:
+    '<div class="muted">填當地的報警、救護車、消防，以及駐外館處的急難救助電話。整列留白就不會顯示；外交部急難救助專線固定列在最後。</div>'+
+    ls.map(function(x,i){ return '<div class="f sos-ed"><div class="grid2">'+inp('s_name_'+i,x.name,'text','placeholder="名稱，例：報警"')+inp('s_phone_'+i,x.phone,'tel','placeholder="電話，例：110"')+'</div>'+inp('s_sub_'+i,x.sub,'text','placeholder="說明（選填），例：24 小時"')+'</div>'; }).join(''),
+    foot:footBtns('sosSave')});
+  SHEET.n=ls.length;
+}
+/* 清空工具頁的一區：quick＝現場馬上用、phrases＝全部圖卡、pre／local＝知識小卡那兩區 */
+function sheetTlClear(sec){
+  var L=[], name='';
+  if(sec==='quick'){ name='現場馬上用';
+    L=['計程車回飯店卡的句子與外語小標','外幣設定'+(tlMoney().name?'（'+tlMoney().name+'）':''),'外語圖卡 '+tlPhrases().length+' 句、類別 '+tlCats().length+' 個','當地與官方專線 '+tlArr('sos').length+' 筆','外語名稱與「謝謝」的說法']; }
+  else if(sec==='phrases'){ name='外語圖卡'; L=['外語圖卡 '+tlPhrases().length+' 句','類別 '+tlCats().length+' 個']; }
+  else { var s=TOOL_SECS.filter(function(x){ return x.id===sec; })[0]; if(!s) return; name=s.name; L=tlCards(sec).map(function(c){ return c.title||'（沒有標題）'; }); }
+  openSheet({title:'清空「'+esc(name)+'」',body:
+    '<div class="warn-box dng-box">'+ic('alert')+'<span>清空後，<b>全團手機</b>的工具頁都會同步少掉這些內容。</span></div>'+
+    '<div><b>會清空</b><ul class="dots clr-list">'+L.map(function(x){ return '<li>'+esc(x)+'</li>'; }).join('')+'</ul></div>'+
+    (sec==='quick'?'<div class="muted">「緊急求助」頁會留著：緊急聯絡人（在團務設定）與外交部急難救助專線不受影響。</div>':'')+
+    '<div class="bk-note">'+ic('history')+'<span>清空前會在這支手機<b>自動留一份</b>；按錯了，到「管理專區 → 還原上一版」救回來。</span></div>',
+    foot:'<button class="btn" data-act="sheetClose">取消</button><button class="btn dng" data-act="tlClearGo" data-sec="'+esc(sec)+'">'+ic('trash')+'確定清空</button>'});
+}
+function sheetTpl(){
+  openSheet({title:'工具頁範本',body:
+    '<div class="muted">把工具頁的內容<b>整個換成</b>下面其中一套：外語圖卡、外幣、計程車卡、當地電話，以及「出發前先看」「在地小知識」的小卡。行程、名單、記事本、時區都不受影響。</div>'+
+    '<div class="stack" style="margin-top:.6rem">'+Object.keys(TPL).map(function(k){ var x=TPL[k], t=x.tools;
+      return '<div class="bk-row"><div class="bk-t"><b>'+esc(x.name)+'</b><div class="muted">'+esc(x.desc)+'</div><div class="muted">知識小卡 '+t.cards.length+' 張、外語圖卡 '+t.phrases.length+' 句</div></div><button class="btn sm pri" data-act="tplGo" data-id="'+k+'">套用</button></div>'; }).join('')+'</div>'+
+    '<div class="bk-note">'+ic('history')+'<span>套用前會在這支手機自動留一份目前的內容，到「管理專區 → 還原上一版」可以換回來。</span></div>'});
+}
 /* ===== 事件處理 ===== */
 function scnPath(sc){ var g=S().groups||{}; return 'scenarios/'+(g.scenarios||[]).indexOf(sc); }
-/* 「現在＋N 分」：先算出絕對時間，再決定要寫成台灣時間還是越南時間（出發日搭機前人在台灣）。
+/* 「現在＋N 分」：先算出絕對時間，再決定要寫成台灣時間還是當地時間（出發日搭機前人在台灣）。
    跨過午夜時日期跟著進位，不然倒數會變成「已過」。 */
-function wallAt(ms,off){ var d=new Date(ms+off*3600000); return {date:ymd(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate())),hm:pad(d.getUTCHours())+':'+pad(d.getUTCMinutes())}; }
-function nowPlusSlot(min){ var ms=Math.floor(nowMs()/60000)*60000+min*60000, tw=wallAt(ms,8), vn=wallAt(ms,7);
-  /* 挑「寫下去之後倒數算得回同一個時間」的那種寫法；出發日越南 08:01～09:00 兩種都對不上（大家在飛機上），
-     這時寫越南時間並另外記 tz:'VN'，倒數照 tz 算 */
-  if(slotMs(tw.date,tw.hm)===ms) return tw; if(slotMs(vn.date,vn.hm)===ms) return vn; vn.tz='VN'; return vn; }
+function wallAt(ms,tz){ var p=tzParts(tz,ms); return {date:p.date,hm:p.hm}; }
+function nowPlusSlot(min){ var ms=Math.floor(nowMs()/60000)*60000+min*60000, tw=wallAt(ms,TW), lt=wallAt(ms,LTZ());
+  /* 挑「寫下去之後倒數算得回同一個時間」的那種寫法；出發日（例：越南）08:01～09:00 兩種都對不上（大家在飛機上），
+     這時寫當地時間並另外記 tz:'VN'（舊名字，意思是「當地時間」），倒數照 tz 算 */
+  if(slotMs(tw.date,tw.hm)===ms) return tw; if(slotMs(lt.date,lt.hm)===ms) return lt; lt.tz='VN'; return lt; }
 function nowPlus(min){ return nowPlusSlot(min).hm; }
 function nowPlusDate(min){ return nowPlusSlot(min).date; }
 function stamp(){ return nowPlus(0); }
+/* 刪除、清空這類按鈕：第一次按只把字換成「再按一次…」，第二次才真的做 */
+function sure(t,label){ if(t.getAttribute('data-sure')==='1') return true; t.setAttribute('data-sure','1'); t.innerHTML=ic('alert')+esc(label); return false; }
 /* 下載一段文字成檔案（匯出備份檔、下載某一份自動備份） */
 function dlText(name,text){ try{ var blob=new Blob([text],{type:'application/json'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },500); return true; }catch(e){ return false; } }
 /* 清空與還原共用：驗 PIN → 按鈕變「處理中」→ 整批寫入。
@@ -3654,7 +4103,78 @@ var ACT={
   fullTaxi:function(){ FULL_LOCK=false; openFull(taxiFull()); },
   fullLock:function(){ FULL_LOCK=true; openFull(taxiFull()); toast('已鎖定，關閉前請按住解鎖鍵 2 秒'); },
   fullUnlock:function(){ /* 由長按處理，點一下不放行 */ toast('請按住 2 秒'); },
-  phrase:function(t){ var p=PHRASES[Number(t.getAttribute('data-i'))]; if(p) openFull(phraseFull(p)); },
+  phrase:function(t){ var p=phById(t.getAttribute('data-id')); if(p) openFull(phraseFull(p)); },
+  lostCard:function(){ openFull(phraseFull(lostPhrase())); },
+  /* ===== 工具頁內容（v3.23）===== */
+  tlCard:function(t){ P.tab='tools'; P.tool='card'; P.card=t.getAttribute('data-id')||''; closeSheet(); render(); window.scrollTo(0,0); },
+  tlCardEdit:function(t){ sheetCardEdit(t.getAttribute('data-id')||'',t.getAttribute('data-sec')||''); },
+  mdIns:function(t){ mdInsert(t.getAttribute('data-v'),t.getAttribute('data-inline')==='1'); },
+  mdBold:function(){ mdWrap('**'); },
+  tlCardSave:function(){ var id=SHEET.id, title=sv('title'); if(!title){ toast('請輸入標題'); return; }
+    var c=id?tlCard(id):null; if(!c){ c={id:uid()}; tlArr('cards').push(c); }
+    c.sec=sv('sec')==='local'?'local':'pre'; c.title=title; c.sub=sv('sub'); c.icon=ICONS[sv('icon')]?sv('icon'):'info';
+    var b=el('sheetRoot').querySelector('[name=body]'); c.body=b?b.value.replace(/\s+$/,''):'';
+    closeSheet(); Store.save('tools'); toast(id?'小卡已儲存':'已新增小卡'); },
+  tlCardDel:function(t){ if(!sure(t,'再按一次刪除')) return; var id=SHEET.id; Store.keepPrev('tools');
+    tl().cards=tlArr('cards').filter(function(c){ return !(c&&c.id===id); }); if(P.tool==='card'&&P.card===id) P.tool='menu';
+    closeSheet(); Store.save('tools'); toast('已刪除小卡'); },
+  /* 只跟同一區的小卡交換位置；表單留著，已經打的字不會不見 */
+  tlCardMove:function(t){ var c=tlCard(SHEET.id); if(!c) return; var dir=Number(t.getAttribute('data-dir')), all=tlArr('cards'), same=tlCards(c.sec==='local'?'local':'pre'), i=same.indexOf(c), j=i+dir;
+    if(i<0||j<0||j>=same.length){ toast(dir<0?'已經在最前面':'已經在最後面'); return; }
+    var a=all.indexOf(c), b=all.indexOf(same[j]); all[a]=same[j]; all[b]=c; Store.save('tools'); toast(dir<0?'已往前移':'已往後移'); },
+  taxiEdit:function(){ closeFull(); sheetTaxi(); },
+  taxiSave:function(){ var t=tl(); t.taxi={fl:sv('fl'),zh:sv('zh'),tip:sv('tip')}; t.lab={hotel:sv('lab_hotel'),addr:sv('lab_addr'),phone:sv('lab_phone'),call:sv('lab_call')};
+    closeSheet(); Store.save('tools'); toast('計程車卡已儲存'); },
+  langEdit:function(){ sheetLang(); },
+  langSave:function(){ var t=tl(); t.lang=sv('lang'); t.langTag=sv('langTag'); t.thanks=sv('thanks'); closeSheet(); Store.save('tools'); toast('外語設定已儲存'); },
+  phCatEdit:function(t){ sheetPhCat(t.getAttribute('data-id')||''); },
+  phCatSave:function(){ var name=sv('name'); if(!name){ toast('請輸入類別名稱'); return; }
+    var id=SHEET.id, c=id?tlCats().filter(function(x){ return x.id===id; })[0]:null; if(!c){ c={id:uid()}; tlArr('cats').push(c); }
+    c.name=name; c.e=sv('e'); c.sub=sv('sub'); closeSheet(); Store.save('tools'); toast('類別已儲存'); },
+  phCatDel:function(t){ if(!sure(t,'連圖卡一起刪？再按一次')) return; var id=SHEET.id, d=tl(); Store.keepPrev('tools');
+    d.cats=tlArr('cats').filter(function(c){ return !(c&&c.id===id); }); d.phrases=tlArr('phrases').filter(function(p){ return !(p&&p.cat===id); });
+    if(P.phCat===id) P.phCat=''; closeSheet(); Store.save('tools'); toast('已刪除類別'); },
+  phCatMove:function(t){ var dir=Number(t.getAttribute('data-dir')), cs=tlArr('cats'), i=cs.findIndex(function(c){ return c&&c.id===SHEET.id; }), j=i+dir;
+    if(i<0||j<0||j>=cs.length){ toast(dir<0?'已經在最前面':'已經在最後面'); return; }
+    var tmp=cs[i]; cs[i]=cs[j]; cs[j]=tmp; Store.save('tools'); toast(dir<0?'已往前移':'已往後移'); },
+  phEdit:function(t){ sheetPhrase(t.getAttribute('data-id')||'',t.getAttribute('data-cat')||P.phCat); },
+  phSave:function(){ var zh=sv('zh'); if(!zh){ toast('請輸入中文'); return; }
+    var id=SHEET.id, p=id?phById(id):null; if(!p){ p={id:uid()}; tlArr('phrases').push(p); }
+    p.zh=zh; p.fl=sv('fl'); p.say=sv('say'); p.e=sv('e'); p.cat=sv('cat')||p.cat||''; if(sck('lost')) p.lost=1; else delete p.lost;
+    closeSheet(); Store.save('tools'); toast('圖卡已儲存'); },
+  phDel:function(t){ if(!sure(t,'再按一次刪除')) return; var id=SHEET.id; tl().phrases=tlArr('phrases').filter(function(p){ return !(p&&p.id===id); });
+    closeSheet(); Store.save('tools'); toast('已刪除'); },
+  phMove:function(t){ var p=phById(SHEET.id); if(!p) return; var dir=Number(t.getAttribute('data-dir')), all=tlArr('phrases');
+    var cid=tlCats().some(function(c){ return c.id===p.cat; })?p.cat:'_', same=phInCat(cid), i=same.indexOf(p), j=i+dir;
+    if(i<0||j<0||j>=same.length){ toast(dir<0?'已經在最上面':'已經在最下面'); return; }
+    var a=all.indexOf(p), b=all.indexOf(same[j]); all[a]=same[j]; all[b]=p; Store.save('tools'); toast(dir<0?'已上移':'已下移'); },
+  phClearAsk:function(){ sheetTlClear('phrases'); },
+  tlClearAsk:function(t){ sheetTlClear(t.getAttribute('data-sec')); },
+  tlClearGo:function(t){ var sec=t.getAttribute('data-sec'), d=tl(); Store.keepPrev('tools');
+    if(sec==='quick'){ d.taxi={}; d.lab={}; d.money={}; d.cats=[]; d.phrases=[]; d.sos=[]; d.lang=''; d.langTag=''; d.thanks=''; P.money=[]; P.phCat=''; }
+    else if(sec==='phrases'){ d.cats=[]; d.phrases=[]; P.phCat=''; }
+    else d.cards=tlArr('cards').filter(function(c){ return !(c&&(c.sec==='local'?'local':'pre')===sec); });
+    closeSheet(); Store.save('tools'); toast('已清空'); },
+  sosEdit:function(){ sheetSOS(); },
+  sosSave:function(){ var out=[]; for(var i=0;i<(SHEET.n||0);i++){ var n=sv('s_name_'+i), ph=sv('s_phone_'+i), sb=sv('s_sub_'+i); if(n||ph) out.push({name:n||'電話',sub:sb,phone:ph}); }
+    tl().sos=out; var st=S().settings; if(st.embassyPhone){ delete st.embassyPhone; Store.save('settings'); }
+    closeSheet(); Store.save('tools'); toast('當地電話已儲存'); },
+  moneyEdit:function(){ sheetMoney(); },
+  moneyPreset:function(t){ var p=MONEY_PRESETS.filter(function(x){ return x.id===t.getAttribute('data-id'); })[0]; if(!p) return; moneyFill(p);
+    t.parentNode.querySelectorAll('.chip').forEach(function(b){ b.classList.toggle('on',b===t); }); toast('已帶入「'+p.name+'」，確認匯率後按儲存'); },
+  moneyRow:function(){ moneyAddRow({}); },
+  moneySave:function(){ var rate=Number(sv('m_rate')), notes=[];
+    for(var i=0;i<(SHEET.mn||0);i++){ var v=Number(sv('n_v_'+i)); if(v>0) notes.push({v:v,color:hex6(sv('n_c_'+i)),note:sv('n_t_'+i)}); }
+    if(!notes.length){ toast('至少要填一種面額'); return; }
+    if(!(rate>0)){ toast('請填匯率'); return; }
+    notes.sort(function(a,b){ return b.v-a.v; });
+    tl().money={name:sv('m_name'),unit:sv('m_unit'),dir:sv('m_dir')==='twd'?'twd':'fx',rate:rate,warn:sv('m_warn'),notes:notes};
+    P.money=[]; closeSheet(); Store.save('tools'); toast('外幣已儲存'); },
+  moneyWipe:function(t){ if(!sure(t,'再按一次清空')) return; Store.keepPrev('tools'); tl().money={}; P.money=[]; closeSheet(); Store.save('tools'); toast('已清空外幣'); },
+  tplList:function(){ sheetTpl(); },
+  tplGo:function(t){ var k=t.getAttribute('data-id'); if(!TPL[k]) return; if(!sure(t,'確定？')) return;
+    Store.keepPrev('tools'); Store.s.tools=clone(TPL[k].tools); P.tool='menu'; P.phCat=''; P.money=[];
+    closeSheet(); Store.save('tools'); toast('已套用「'+TPL[k].name+'」'); },
   noop:function(){},
   resetLocal:function(){ try{ localStorage.removeItem('sapa-data'); }catch(e){} location.reload(); },
   /* 更新：先把 Service Worker 與快取清掉再重載，不然重載回來的還是舊版 */
@@ -3720,7 +4240,7 @@ var ACT={
     '<div class="hero" style="margin-top:.6rem"><div class="lab">'+ic('megaphone')+'即時廣播</div><div class="time" style="font-size:1.9rem">自由活動</div><div class="loc"><span>目前沒有集合安排，請等下次廣播通知。</span></div></div>'+
     '<div class="muted" style="margin-top:.6rem">下一次設定集合時間時會自動恢復正常顯示。</div>',
     foot:'<button class="btn" data-act="sheetClose">取消</button><button class="btn warn" data-act="clearBroadcastGo">'+ic('trash')+'確定清空</button>'}); },
-  clearBroadcastGo:function(){ var b=S().broadcast; b.time=''; b.label=''; b.location=''; b.tip=''; b.idle=true; b.date=tzParts(VN).date; b.updatedAt=stamp();   /* 帶日期：隔天自動失效 */
+  clearBroadcastGo:function(){ var b=S().broadcast; b.time=''; b.label=''; b.location=''; b.tip=''; b.idle=true; b.date=tzParts(LTZ()).date; b.updatedAt=stamp();   /* 帶日期：隔天自動失效 */
     closeSheet(); Store.save('broadcast'); toast('已清空，現在顯示「自由活動」'); },
   bumpTime:function(t){ var b=S().broadcast, n=Number(t.getAttribute('data-min')), sl=nowPlusSlot(n); b.time=sl.hm; b.date=sl.date; if(sl.tz) b.tz=sl.tz; else delete b.tz; b.idle=false; b.updatedAt=stamp(); Store.save('broadcast'); toast('集合時間改為 '+b.time); },
   chipSet:function(t){ var e=el('sheetRoot').querySelector('[name="'+t.getAttribute('data-target')+'"]'); if(e){ e.value=t.getAttribute('data-val'); e.focus(); } },
@@ -3852,10 +4372,11 @@ var ACT={
   moveMember:function(t){ sheetMoveMember2(t.getAttribute('data-id')); },
   setGroup:function(t){ var sc=scenario(); if(!sc) return; var gi=Number(t.getAttribute('data-g')); var id=t.getAttribute('data-id'); closeSheet(); Store.savePath('groups',scnPath(sc)+'/assign/'+id, gi<0?null:gi); },
   settings:function(){ sheetSettings(); },
-  saveSettings:function(){ var st=S().settings; st.tripName=sv('tripName')||st.tripName; st.startDate=sv('startDate'); st.days=Math.max(1,Number(sv('days'))||5); st.dayOverride=Number(sv('dayOverride'))||0; if(sv('pin')){ st.pinHash=pinHash(sv('pin')); delete st.pin; } st.vndPerTwd=Number(sv('vndPerTwd'))||820;
-    st.flights={eva:{out:sv('eva_out'),back:sv('eva_back')},ci:{out:sv('ci_out'),back:sv('ci_back')},note:sv('flight_note')};
+  saveSettings:function(){ var st=S().settings; st.tripName=sv('tripName')||st.tripName; st.startDate=sv('startDate'); st.days=Math.max(1,Number(sv('days'))||5); st.dayOverride=Number(sv('dayOverride'))||0; if(sv('pin')){ st.pinHash=pinHash(sv('pin')); delete st.pin; }
+    var tz=sv('tz'); if(tz&&tzValid(tz)) st.tz=tz; else delete st.tz;
+    st.flights={eva:{out:sv('eva_out'),back:sv('eva_back')},ci:{out:sv('ci_out'),back:sv('ci_back')},note:sv('flight_note'),backPort:sv('backPort')};
     var cs=[]; for(var i=0;i<(SHEET.nContacts||0);i++){ var ph=sv('c_phone_'+i), ln=sv('c_line_'+i); if(ph||ln) cs.push({name:sv('c_name_'+i)||'聯絡人',label:sv('c_label_'+i),phone:ph,line:ln}); } st.contacts=cs; delete st.leaderName; delete st.leaderPhone; delete st.guideName; delete st.guidePhone;
-    st.embassyPhone=sv('embassyPhone'); P.planDay=0; closeSheet(); Store.save('settings'); toast('設定已儲存'); },
+    P.planDay=0; closeSheet(); Store.save('settings'); toast('設定已儲存'); },
   themeToggle:function(){ P.theme = (!P.theme) ? 'light' : (P.theme==='light' ? 'dark' : ''); savePrefs(); render();
     toast(!P.theme?'主題：跟隨系統設定':(P.theme==='dark'?'主題：固定深色':'主題：固定淺色')); },
   cardFold:function(b){ cardToggle(b.getAttribute('data-id')); },
@@ -3905,10 +4426,10 @@ var ACT={
       closeSheet(); render(); window.scrollTo(0,0);
       toast('已還原 '+whenText(e.at)+' 的備份，全團手機會同步'); }); },
   bkFile:function(t){ var e=bkFind(t.getAttribute('data-id')); if(!e) return;
-    var d=new Date(e.at||Date.now()), name='sapa-backup-'+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+'-'+pad(d.getHours())+pad(d.getMinutes())+'.json';
+    var d=new Date(e.at||Date.now()), name='trip-backup-'+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+'-'+pad(d.getHours())+pad(d.getMinutes())+'.json';
     /* 格式跟「匯出備份檔」一樣，可以直接用團務設定的「匯入備份檔」讀回來 */
     toast(dlText(name,JSON.stringify({app:'sapa-tour-tool',version:e.ver||APP_VERSION,exportedAt:new Date(e.at||Date.now()).toISOString(),reason:e.reason||'',docs:e.docs},null,2))?'已下載備份檔':'這個環境不支援下載'); },
-  exportData:function(){ toast(dlText('sapa-backup-'+tzParts(TW).date+'.json',Store.exportJSON())?'已匯出備份檔':'這個環境不支援下載'); },
+  exportData:function(){ toast(dlText('trip-backup-'+tzParts(TW).date+'.json',Store.exportJSON())?'已匯出備份檔':'這個環境不支援下載'); },
   noteTap:function(t){ P.money.push(Number(t.getAttribute('data-v'))); render(); },
   moneyUndo:function(){ P.money.pop(); render(); },
   moneyClear:function(){ P.money=[]; render(); },
@@ -3932,7 +4453,8 @@ document.addEventListener('input',function(ev){
   var t=ev.target;
   if(t.id==='memberSearch'){ P.q=t.value; var l=el('memberList'); if(l) l.innerHTML=memberListHTML(); }
   else if(t.id==='meSearch'){ var ml=el('meList'); if(ml) ml.innerHTML=meListHTML(t.value.trim()); }
-  else if(t.id==='twdIn'){ var v=Number(t.value)||0, r=Number(S().settings.vndPerTwd)||820; el('twdOut').textContent=v?fmtVND(Math.round(v*r/1000)*1000):'—'; }
+  else if(t.id==='twdIn'){ var v=Number(t.value)||0; el('twdOut').textContent=v?fmtFx(twdToFx(v)):'—'; }
+  else if(t.id==='mdBody'){ clearTimeout(window._mdT); window._mdT=setTimeout(mdPreview,150); }
   else if(t.id==='tnInput'){ var c=el('tnCount'); if(c) c.textContent=[].slice.call(t.value).length+' / 20 字'; }
   else if(t.id==='dbgZ'){ if(DBG){ DBG.z=(Number(t.value)||100)/100; dbgLayout(); } var zv=el('dbgZV'); if(zv) zv.textContent=t.value+'%'; }
   else if(t.id==='dbgX'||t.id==='dbgY'){ if(DBG){ if(t.id==='dbgX') DBG.px=Number(t.value)||0; else DBG.py=Number(t.value)||0; DBG.bySlider=true; dbgLayout(); } }

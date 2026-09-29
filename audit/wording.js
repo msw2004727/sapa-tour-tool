@@ -13,7 +13,7 @@ const ck=(n,c,x)=>{ if(!c){fails++;console.log('  ✗',n,x===undefined?'':JSON.s
   console.log('[1] 所有畫面都不出現「領隊」「導遊」（團員與管理模式都查）');
   const r=await p.evaluate(()=>{
     const found=[]; let screens=0;
-    const tools=['menu','money','phrases','sos','esim','tips','power','entry','weather','exchange','phoneset','grab','health','market','basics','rollcall'];
+    const tools=['menu','money','phrases','sos','rollcall'];
     const check=(label)=>{ screens++;
       const t=document.body.innerText;
       for(const w of ['領隊','導遊']){ const i=t.indexOf(w);
@@ -27,17 +27,20 @@ const ck=(n,c,x)=>{ if(!c){fails++;console.log('  ✗',n,x===undefined?'':JSON.s
       for(const tab of ['plan','rooms','groups']){ P.tab=tab; render(); check(who+' '+tab); }
       P.planMode='detail'; P.tab='plan'; for(let d=1;d<=5;d++){ P.planDay=d; render(); check(who+' 行程詳細 第'+d+'天'); } P.planMode='simple';
       P.tab='tools'; for(const t of tools){ P.tool=t; render(); check(who+' 工具 '+t); }
+      /* v3.23 起知識小卡、圖卡類別都是資料：一張一張、一類一類打開 */
+      for(const c of tlCards()){ P.tool='card'; P.card=c.id; render(); check(who+' 小卡 '+c.title); }
+      for(const c of tlCats()){ P.tool='phrases'; P.phCat=c.id; render(); check(who+' 圖卡 '+c.name); } P.phCat='';
       P.tab='notes'; render(); check(who+' 記事本');
     }
     return {screens, found};
   });
-  ck('檢查的畫面數夠多（測試本身有效）',r.screens>=56,r.screens);
+  ck('檢查的畫面數夠多（測試本身有效）',r.screens>=70,r.screens);
   ck('沒有任何畫面出現「領隊」或「導遊」',r.found.length===0,r.found.slice(0,5));
   /* 原始碼層級再擋一次：表單、toast 這類不在畫面上的字也算 */
   const src=require('fs').readFileSync(require('./_lib').at('standalone.html'),'utf8');
   ck('組裝後的網頁原始碼沒有「領隊」',src.indexOf('領隊')<0,src.indexOf('領隊'));
   ck('組裝後的網頁原始碼沒有「導遊」',src.indexOf('導遊')<0,src.indexOf('導遊'));
-  ck('走散卡的越文不再請人打給導遊（hướng dẫn viên）',src.indexOf('hướng dẫn viên')<0);
+  ck('走散卡的越文不再請人打給導遊（hướng dẫn viên；越南範本也算）',src.indexOf('hướng dẫn viên')<0);
 
   console.log('[2] 住宿卡：LINE聯繫');
   const L=await p.evaluate(()=>{

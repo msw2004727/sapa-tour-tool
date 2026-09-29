@@ -143,7 +143,7 @@ out.terminalReflectsEditedNote=await p.evaluate(()=>document.querySelector('.me-
 await p.evaluate(()=>{P.leader=false;P.meId='';render();});
 // v2.6：集合倒數支援跨日（廣播多了日期欄位；舊廣播沒日期時，出發前自動當成出發日）
 out.cdCases=await p.evaluate(()=>{
-  function at(min){ var vn=tzParts(VN); var t=vn.h*60+vn.m+min; var d=Math.floor(t/1440); t=((t%1440)+1440)%1440;
+  function at(min){ var vn=tzParts(LTZ()); var t=vn.h*60+vn.m+min; var d=Math.floor(t/1440); t=((t%1440)+1440)%1440;
     return {date:ymd(parseDate(vn.date)+d*86400000), time:pad(Math.floor(t/60))+':'+pad(t%60)}; }
   var b=S().broadcast, o={};
   function set(min){ var x=at(min); b.idle=false; b.date=x.date; b.time=x.time; }
@@ -158,7 +158,7 @@ out.cdCases=await p.evaluate(()=>{
 });
 out.cdLegacyNoDate=await p.evaluate(()=>{
   // 舊廣播只有時間沒有日期：旅程還沒開始就當成出發日那天，不用重存也算得出來
-  var st=S().settings, b=S().broadcast, vn=tzParts(VN);
+  var st=S().settings, b=S().broadcast, vn=tzParts(LTZ());
   st.dayOverride=0; st.days=5; st.startDate=ymd(parseDate(vn.date)+10*86400000);
   b.idle=false; b.time='05:30'; delete b.date;
   return {status:dayInfo().status, inferredDate:bcDate(), startDate:st.startDate, short:countdownShort().text};
@@ -202,15 +202,16 @@ out.planSegLabels=await p.evaluate(()=>{
   return Array.from(document.querySelectorAll('#view .seg button')).map(function(b){return b.textContent.trim();});
 });
 await p.evaluate(()=>{P.tab='home';render();});
-// v3.0：溝通圖卡改成兩層（分類 → 圖卡），每張都要有空耳中文
+// v3.0：溝通圖卡改成兩層（分類 → 圖卡），每張都要有空耳中文（v3.23 起圖卡是資料；假資料用越南範本）
 out.phrases=await p.evaluate(()=>{
   P.tab='tools'; P.tool='phrases'; P.phCat=''; render();
   var cats=Array.from(document.querySelectorAll('#view [data-act="phCat"]'));
-  var total=PHRASES.length;
-  var noSay=PHRASES.filter(function(p){return !p.say;}).length;
-  var noCat=PHRASES.filter(function(p){return !p.cat||!PHRASE_CATS.some(function(c){return c.id===p.cat;});}).length;
-  var counts=PHRASE_CATS.map(function(c){return c.name+':'+PHRASES.filter(function(p){return p.cat===c.id;}).length;});
-  return {catBtns:cats.length, catCount:PHRASE_CATS.length, total:total, missingSay:noSay, badCat:noCat, perCat:counts,
+  var PH=tlPhrases(), CT=tlCats();
+  var total=PH.length;
+  var noSay=PH.filter(function(p){return !p.say;}).length;
+  var noCat=PH.filter(function(p){return !p.cat||!CT.some(function(c){return c.id===p.cat;});}).length;
+  var counts=CT.map(function(c){return c.name+':'+PH.filter(function(p){return p.cat===c.id;}).length;});
+  return {catBtns:cats.length, catCount:CT.length, total:total, missingSay:noSay, badCat:noCat, perCat:counts,
           cardsHiddenOnCatList:document.querySelectorAll('#view [data-act="phrase"]').length};
 });
 out.phraseDrill=await p.evaluate(()=>{
@@ -233,14 +234,14 @@ out.phraseFullOpens=await p.evaluate(()=>{
   return {opened:!!f, hasSayLabel:txt.indexOf('空耳中文')>=0};
 });
 await p.evaluate(()=>{P.tab='home';P.tool='menu';P.phCat='';render();});
-// v3.1：8 張新知識小卡都要能開、有內容、有返回鍵，且都掛在工具選單上
+// v3.1：知識小卡都要能開、有內容、有返回鍵，且都掛在工具選單上（v3.23 起是資料，11 張都查）
 out.knowledgeCards=await p.evaluate(()=>{
-  var ids=['entry','weather','exchange','phoneset','grab','health','market','basics'];
+  var ids=['entry','weather','exchange','phoneset','esim','tips','power','grab','health','market','basics'];
   var menuHas=[], opened=[], tooShort=[], noBack=[];
   P.tab='tools'; P.tool='menu'; render();
-  ids.forEach(function(id){ if(!document.querySelector('#view [data-act="tool"][data-tool="'+id+'"]')) menuHas.push(id); });
+  ids.forEach(function(id){ if(!document.querySelector('#view [data-act="tlCard"][data-id="'+id+'"]')) menuHas.push(id); });
   ids.forEach(function(id){
-    P.tool=id; render();
+    P.tool='card'; P.card=id; render();
     var v=document.getElementById('view');
     var t=v.textContent.replace(/\s+/g,'');
     opened.push(id+':'+t.length);

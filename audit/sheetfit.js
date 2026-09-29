@@ -16,6 +16,14 @@ const SHEETS=[
   ['clear',()=>{P.leader=true;sheetClear();}],
   ['backups',()=>{ const d=JSON.parse(JSON.stringify(S())); localStorage.setItem('sapa-bk',JSON.stringify([{id:'bT',at:Date.now(),reason:'clear',ver:APP_VERSION,sum:bkSum(d),docs:d}])); sheetBackups(); }],
   ['restore',()=>{ sheetRestore('bT'); }],
+  /* v3.23 工具頁內容的編輯：小卡編輯器最長（文字框＋預覽），外幣設定的面額列最密 */
+  ['card-edit',()=>sheetCardEdit('esim')],
+  ['taxi',()=>sheetTaxi()],
+  ['phrase',()=>sheetPhrase(tlPhrases()[14].id)],
+  ['money',()=>sheetMoney()],
+  ['sos',()=>sheetSOS()],
+  ['tl-clear',()=>sheetTlClear('quick')],
+  ['tpl',()=>sheetTpl()],
 ];
 let fails=0;
 (async()=>{

@@ -1,7 +1,7 @@
 {
-  "name": "月半越南團旅",
-  "short_name": "月半越南",
-  "description": "我們是一群在越南吃吃喝喝團體自由行的旅遊好咖",
+  "name": "月半團旅",
+  "short_name": "月半團旅",
+  "description": "我們是一群到處吃吃喝喝團體自由行的旅遊好咖",
   "lang": "zh-Hant",
   "start_url": "./",
   "scope": "./",

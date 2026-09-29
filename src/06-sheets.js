@@ -1,10 +1,13 @@
 /* ===== 底部表單（Sheet）與全螢幕卡 ===== */
 var SHEET=null;
 /* Android 返回鍵 / 瀏覽器上一頁：關掉 sheet 或全螢幕卡，而不是離開網站 */
-var HIST={sheet:false,full:false};
+/* 自己關掉時用 history.back() 把那一筆拿掉；那次 back() 引起的 popstate 要略過（skip）。
+   否則「關掉一個、馬上開另一個」（例：防呆標籤存檔後回到清單、計程車卡按編輯）時，
+   back() 比新的 pushState 晚執行，popstate 會把剛開的那一個關掉（v3.22 以前就有，v3.23 修正） */
+var HIST={sheet:false,full:false,skip:0};
 function histPush(kind){ if(HIST[kind]) return; try{ history.pushState({sapa:kind},''); HIST[kind]=true; }catch(e){} }
-function histPop(kind){ if(!HIST[kind]) return; HIST[kind]=false; try{ if(history.state&&history.state.sapa===kind) history.back(); }catch(e){} }
-window.addEventListener('popstate',function(){ if(HIST.full){ HIST.full=false; closeFull(); return; } if(HIST.sheet){ HIST.sheet=false; closeSheet(); } });
+function histPop(kind){ if(!HIST[kind]) return; HIST[kind]=false; try{ if(history.state&&history.state.sapa===kind){ HIST.skip++; history.back(); } }catch(e){} }
+window.addEventListener('popstate',function(){ if(HIST.skip>0){ HIST.skip--; return; } if(HIST.full){ HIST.full=false; closeFull(); return; } if(HIST.sheet){ HIST.sheet=false; closeSheet(); } });
 function openSheet(o){
   SHEET=o;
   el('sheetRoot').innerHTML='<div class="sheet-bg" data-act="sheetBg"><div class="sheet'+(o.tall?' tall':'')+'" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"><div class="sheet-h"><span id="sheetTitle">'+o.title+'</span><button class="icon-btn" data-act="sheetClose" aria-label="關閉">'+ic('x')+'</button></div><div class="sheet-b">'+o.body+'</div>'+(o.foot?'<div class="sheet-f">'+o.foot+'</div>':'')+'</div></div>';
@@ -47,14 +50,14 @@ function sheetLeaderMenu(){
 function sheetBroadcast(){
   var b=S().broadcast||{}, cur=items().filter(function(x){return x.isCurrent;})[0];
   /* 集合日期：有日期才算得出跨日倒數（例如出發前先公布出發當天 05:30 的機場集合） */
-  var st=S().settings, today=tzParts(VN).date, tmr=ymd(parseDate(today)+86400000);
+  var st=S().settings, today=tzParts(LTZ()).date, tmr=ymd(parseDate(today)+86400000);
   var picks=[[today,'今天'],[tmr,'明天']];
   if(st.startDate&&!isNaN(parseDate(st.startDate))&&st.startDate!==today&&st.startDate!==tmr) picks.push([st.startDate,'出發日 '+dayDate(1).split('（')[0]]);
   openSheet({title:'修改即時廣播',focus:true,body:
     /* 日期預設：上一則還有效就沿用它的日期；已經過期（例如出發日的機場集合）就帶今天，
        免得主辦人只改時間、日期還停在前一天，整則廣播被當成過期藏起來 */
     fld('集合日期',inp('date',(bcActive()&&b.time)?(b.date||bcDate()):today,'date')+'<div class="chips" style="margin-top:.4rem">'+picks.map(function(x){ return '<button type="button" class="chip pick" data-act="chipSet" data-target="date" data-val="'+esc(x[0])+'">'+esc(x[1])+'</button>'; }).join('')+'</div>')+
-    fld('集合時間（24 小時制）',timeField('time',b.time)+'<input type="hidden" name="tz" value="'+esc(b.tz||'')+'" data-at="'+esc(b.tz?(b.date||'')+' '+(b.time||''):'')+'">'+'<div class="muted" style="margin-top:.3rem">出發日 '+esc(twCutoff())+' 以前填台灣時間，其他時間都填越南時間。</div>'+'<div class="chips" style="margin-top:.4rem">'+[15,30,45,60].map(function(m){return '<button type="button" class="chip pick" data-act="chipTimeFromNow" data-min="'+m+'">現在＋'+m+'分</button>';}).join('')+'</div>')+
+    fld('集合時間（24 小時制）',timeField('time',b.time)+'<input type="hidden" name="tz" value="'+esc(b.tz||'')+'" data-at="'+esc(b.tz?(b.date||'')+' '+(b.time||''):'')+'">'+'<div class="muted" style="margin-top:.3rem">出發日 '+esc(twCutoff())+' 以前填台灣時間，其他時間都填當地時間。</div>'+'<div class="chips" style="margin-top:.4rem">'+[15,30,45,60].map(function(m){return '<button type="button" class="chip pick" data-act="chipTimeFromNow" data-min="'+m+'">現在＋'+m+'分</button>';}).join('')+'</div>')+
     fld('動作',inp('label',b.label||'原地集合')+chipsFill('label',['原地集合','大廳集合','上車','餐廳集合','纜車站集合']))+
     fld('集合地點（建議 12 字以內，手機才不換行）',inp('location',b.location)+(cur?'<div class="chips" style="margin-top:.4rem"><button type="button" class="chip pick" data-act="chipSet" data-target="location" data-val="'+esc(cur.title)+'">帶入目前站：'+esc(cur.title)+'</button></div>':''))+
     fld('天氣與叮嚀',ta('tip',b.tip)+chipsFill('tip',['山頂約 10 度，請備妥外套與保溫水壺','下午有雨，請帶雨具、走慢一點','請把護照放身上，等一下要辦入住','上車前請先上洗手間'])),
@@ -89,7 +92,7 @@ function dbgField(id){
     '</div>'+
     '<div class="dbg-row"><span>濃度</span><input type="range" id="dbgOp" min="3" max="30" value="'+op+'"'+(has?'':' disabled')+'><output id="dbgOpV">'+op+'%</output></div>'+
     '<div class="dbg-prev" id="dbgPrev" style="--dbg:'+url+';--dop:'+(has?op/100:0)+'">'+
-      '<div class="pv-t">08:00</div><div><b>番西邦峰纜車</b><span>山頂約 10 度，請備妥外套與保溫水壺</span></div>'+
+      '<div class="pv-t">08:00</div><div><b>搭纜車上山</b><span>山上約 10 度，請備妥外套與保溫水壺</span></div>'+
     '</div>'+
     '<div class="row dbg-btns">'+
       '<label class="btn sm" style="cursor:pointer">'+ic('camera')+'選照片<input type="file" id="dbgFile" accept="image/*" hidden></label>'+
@@ -252,7 +255,7 @@ function sheetSim(){
   P2.push(['出發前一晚',d0+'T21:00']);
   P2.push(['出發日 05:00・集合前',at(1,'05:00')]);
   P2.push(['出發日 05:45・集合遲到',at(1,'05:45')]);
-  P2.push(['第 1 天 14:00・前往沙壩',at(1,'14:00')]);
+  P2.push(['第 1 天 14:00・抵達之後',at(1,'14:00')]);
   for(var n=2;n<(st.days||5);n++) P2.push(['第 '+n+' 天 09:00',at(n,'09:00')]);
   P2.push(['第 '+(st.days||5)+' 天 07:00・最後一天',at(st.days||5,'07:00')]);
   P2.push(['第 '+(st.days||5)+' 天 20:00・已回台灣',at(st.days||5,'20:00')]);
@@ -270,7 +273,7 @@ function sheetTripName(){
     fld('顯示在畫面最上方（建議 10 字以內）',inp('tripName',v,'text','maxlength="20" id="tnInput"'))+
     '<div class="muted" id="tnCount" style="text-align:right;margin-top:-.35rem">'+[].slice.call(v).length+' / 20 字</div>'+
     '<div class="chips" style="margin-top:.5rem">'+
-      ['沙壩雲海五日','越南沙壩 5 日','2026 沙壩團'].map(function(x){
+      [((st.startDate||'').slice(0,4)||tzParts(TW).date.slice(0,4))+' 團體旅遊',(st.days||5)+' 日自由行','月半團旅'].map(function(x){
         return '<button type="button" class="chip pick" data-act="tnPick" data-val="'+esc(x)+'">'+esc(x)+'</button>'; }).join('')+
     '</div>'+
     '<div class="muted" style="margin-top:.6rem">太長會在標頭以「…」截斷，不會換行。窄螢幕（iPhone SE）大約放得下 10 個中文字。</div>',
@@ -341,9 +344,9 @@ function sheetHotel(){
 function sheetHotelEdit(id){
   var st=S().settings, h=(st.hotels||[]).filter(function(x){return x.id===id;})[0]||{name:'',nameVi:'',addrVi:'',phone:'',wifi:'',wifiPass:'',wifiNote:'',breakfast:'',leaderRoom:'',nights:''};
   openSheet({title:id?'編輯飯店':'新增飯店',focus:true,body:
-    fld('飯店名稱（中文＋英文）',inp('name',h.name))+fld('越文全名（給司機看）',inp('nameVi',h.nameVi))+fld('越文地址',inp('addrVi',h.addrVi))+
+    fld('飯店名稱（中文＋英文）',inp('name',h.name))+fld('當地語言的飯店名稱（給司機看）',inp('nameVi',h.nameVi))+fld('當地語言的地址（給司機看）',inp('addrVi',h.addrVi))+
     '<div class="grid2">'+fld('飯店電話',inp('phone',h.phone,'tel'))+fld('主辦人房號',inp('leaderRoom',h.leaderRoom))+'</div>'+
-    '<div class="grid2">'+fld('Wi-Fi 名稱',inp('wifi',h.wifi,'text','placeholder="例：PaosSapa-Guest"'))+fld('Wi-Fi 密碼',inp('wifiPass',h.wifiPass,'text','placeholder="例：sapa2026"'))+'</div>'+
+    '<div class="grid2">'+fld('Wi-Fi 名稱',inp('wifi',h.wifi,'text','placeholder="例：Hotel-Guest"'))+fld('Wi-Fi 密碼',inp('wifiPass',h.wifiPass,'text','placeholder="例：12345678"'))+'</div>'+
     fld('Wi-Fi 補充說明（留白就不顯示）',inp('wifiNote',(h.wifiNote===undefined||h.wifiNote===null?'連不上請到櫃台問，或跟主辦人說。':h.wifiNote),'text','placeholder="例：連不上請到櫃台問"'))+
     fld('入住晚數',inp('nights',h.nights,'text','placeholder="例：第 2、3 晚"'))+
     fld('早餐時間／地點',inp('breakfast',h.breakfast)),
@@ -403,6 +406,12 @@ function sheetMoveMember(id){
   var sc=scenario(), m=member(id); if(!sc||!m) return;
   openSheet({title:'移動：'+esc(m.name),body:'<div class="muted">'+esc(sc.name)+'</div><div class="stack">'+sc.names.slice(0,sc.count).map(function(n,i){ return '<button class="btn'+(sc.assign&&sc.assign[id]===i?' pri':'')+'" data-act="setGroup" data-id="'+id+'" data-g="'+i+'">'+esc(n||('第 '+(i+1)+' 組'))+'</button>'; }).join('')+'<button class="btn dng" data-act="setGroup" data-id="'+id+'" data-g="-1">移出分組</button></div>'});
 }
+/* 目的地時區的選單：括號裡「比台灣快／慢幾小時」用今天的日期算（有夏令時間的地方會跟著季節變） */
+function tzDiffText(z){ var now=nowMs(), d=Math.round((tzOff(z,now)-tzOff(TW,now))/60000); if(!d) return '跟台灣一樣';
+  var a=Math.abs(d), h=Math.floor(a/60), m=a%60; return (d>0?'比台灣快 ':'比台灣慢 ')+(h?h+' 小時':'')+(m?(h?' ':'')+m+' 分':''); }
+function tzSelect(cur){ var list=TZ_PRESETS.filter(function(x){ return tzValid(x[0]); });
+  if(cur&&tzValid(cur)&&cur!==TW&&!list.some(function(x){ return x[0]===cur; })) list.push([cur,cur]);
+  return '<select class="in" name="tz"><option value="">跟台灣一樣（沒有時差）</option>'+list.map(function(x){ return '<option value="'+esc(x[0])+'"'+(x[0]===cur?' selected':'')+'>'+esc(x[1]+'（'+tzDiffText(x[0])+'）')+'</option>'; }).join('')+'</select>'; }
 function sheetSettings(){
   var st=S().settings, cs=(st.contacts&&st.contacts.length?st.contacts:contacts()).slice(); while(cs.length<4) cs.push({name:'',label:'',phone:'',line:''});
   var f=st.flights||{}; f.eva=f.eva||{}; f.ci=f.ci||{};
@@ -410,13 +419,15 @@ function sheetSettings(){
     fld('團名',inp('tripName',st.tripName))+
     '<div class="grid2">'+fld('出發日期（第 1 天）',inp('startDate',st.startDate,'date'))+fld('總天數',inp('days',st.days,'number','min="1" max="15" inputmode="numeric"'))+'</div>'+
     fld('今天是第幾天','<select class="in" name="dayOverride"><option value="0">依日期自動判斷</option>'+Array.apply(null,{length:st.days||5}).map(function(_,i){return '<option value="'+(i+1)+'"'+(st.dayOverride===i+1?' selected':'')+'>手動指定：第 '+(i+1)+' 天</option>';}).join('')+'</select><div class="muted" style="margin-top:.3rem">注意：手動指定會套用到<b>全團每一支手機</b>。只是想自己先看看，請用管理專區的「時間模擬」。</div>')+
-    '<div class="grid2">'+fld('改管理 PIN（不改就留白）',inp('pin','','tel','maxlength="6" inputmode="numeric" placeholder="4 位數字" autocomplete="off"'))+fld('1 台幣 ≈ 幾越盾',inp('vndPerTwd',st.vndPerTwd,'number','inputmode="numeric"'))+'</div>'+
-    '<div class="muted" style="margin-top:-.5rem">PIN 只會以雜湊保存，雲端看不到明文。</div>'+
+    fld('目的地時區（標頭「當地」時鐘、首頁倒數都用它）',tzSelect(st.tz||'')+'<div class="muted" style="margin-top:.3rem">出發日搭機前（最晚一班去程起飛以前）人還在台灣，那段一律用台灣時間。</div>')+
+    fld('改管理 PIN（不改就留白）',inp('pin','','tel','maxlength="6" inputmode="numeric" placeholder="4 位數字" autocomplete="off"'))+
+    '<div class="muted" style="margin-top:-.5rem">PIN 只會以雜湊保存，雲端看不到明文。外幣與匯率改在「工具 → 外幣點鈔速算」設定。</div>'+
     '<h2 class="sec">'+ic('plane')+'航班（起飛時間）</h2>'+
-    '<div class="grid2">'+fld('長榮 去程 桃園起飛',timeField('eva_out',f.eva.out))+fld('長榮 回程 河內起飛',timeField('eva_back',f.eva.back))+fld('華航 去程 桃園起飛',timeField('ci_out',f.ci.out))+fld('華航 回程 河內起飛',timeField('ci_back',f.ci.back))+'</div>'+'<div class="muted" style="margin-top:-.5rem">團員首頁不會同時看到去回程：出發前與第 1 天只顯示去程，第 '+Math.max(2,(st.days||5)-1)+' 天起只顯示回程，中間幾天航班卡收起。</div>'+fld('去程團體報到說明（只在去程階段顯示在航班卡下方）',ta('flight_note',f.note))+
+    '<div class="grid2">'+fld(esc(alShort('eva'))+' 去程 桃園起飛',timeField('eva_out',f.eva.out))+fld(esc(alShort('eva'))+' 回程起飛',timeField('eva_back',f.eva.back))+fld(esc(alShort('ci'))+' 去程 桃園起飛',timeField('ci_out',f.ci.out))+fld(esc(alShort('ci'))+' 回程起飛',timeField('ci_back',f.ci.back))+'</div>'+
+    fld('回程從哪個機場起飛（選填，會寫在航班卡上）',inp('backPort',f.backPort,'text','maxlength="20" placeholder="例：成田機場、河內內排機場"'))+'<div class="muted" style="margin-top:-.5rem">團員首頁不會同時看到去回程：出發前與第 1 天只顯示去程，第 '+Math.max(2,(st.days||5)-1)+' 天起只顯示回程，中間幾天航班卡收起。</div>'+fld('去程團體報到說明（只在去程階段顯示在航班卡下方）',ta('flight_note',f.note))+
     '<h2 class="sec">'+ic('phone')+'緊急聯絡人</h2><div class="muted" style="margin-top:-.5rem">留白＝不顯示</div>'+
-    cs.map(function(c,i){ return '<div class="f" style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem">'+inp('c_name_'+i,c.name,'text','placeholder="姓名"')+inp('c_label_'+i,c.label,'text','placeholder="例：越南電話"')+'<div style="grid-column:1/-1">'+inp('c_phone_'+i,c.phone,'tel','placeholder="+84 或 +886 開頭"')+'</div><div style="grid-column:1/-1">'+inp('c_line_'+i,c.line,'url','placeholder="LINE 加好友網址（選填）"')+'</div></div>'; }).join('')+
-    fld('駐越南台北經濟文化辦事處 急難救助電話',inp('embassyPhone',st.embassyPhone,'tel','placeholder="出發前請至外交部領事事務局網站確認"'))+
+    cs.map(function(c,i){ return '<div class="f" style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem">'+inp('c_name_'+i,c.name,'text','placeholder="姓名"')+inp('c_label_'+i,c.label,'text','placeholder="例：當地電話"')+'<div style="grid-column:1/-1">'+inp('c_phone_'+i,c.phone,'tel','placeholder="含國碼，例：+886 912 345 678"')+'</div><div style="grid-column:1/-1">'+inp('c_line_'+i,c.line,'url','placeholder="LINE 加好友網址（選填）"')+'</div></div>'; }).join('')+
+    '<div class="muted">當地的報警、救護車與駐外館處電話，改在「工具 → 緊急求助」頁編輯。</div>'+
     '<h2 class="sec">'+ic('clipboard')+'備份與還原</h2><div class="row"><button type="button" class="btn" data-act="exportData">'+ic('down')+'匯出備份檔</button><label class="btn" style="cursor:pointer">'+ic('up')+'匯入備份檔<input type="file" id="importFile" accept="application/json,.json" hidden></label></div><div class="muted">匯出會下載一個 JSON 檔（含名單、行程、電話）；匯入會覆蓋並同步給全團。</div>',
     foot:footBtns('saveSettings')});
   SHEET.nContacts=cs.length;
@@ -561,7 +572,7 @@ function sheetNbItem(pgId,id,head){
   var isHead=it.kind==='head';
   openSheet({title:(id?'編輯':'新增')+(isHead?'小標題':'一條提醒'),focus:true,body:
     fld(isHead?'小標題文字':'內容（可換行；開頭放一個表情符號更好認）',isHead?inp('text',it.text):ta('text',it.text))+
-    (isHead?'':'<div class="muted">例：🕐 越南比台灣慢 1 小時…</div>')+
+    (isHead?'':'<div class="muted">例：🕐 當地比台灣慢 1 小時…</div>')+
     (id?'<div class="row"><button class="btn" data-act="nbMove" data-pg="'+pgId+'" data-id="'+id+'" data-dir="-1">'+ic('up')+'上移</button><button class="btn" data-act="nbMove" data-pg="'+pgId+'" data-id="'+id+'" data-dir="1">'+ic('down')+'下移</button><button class="btn dng" data-act="nbDelItem" data-pg="'+pgId+'" data-id="'+id+'">'+ic('trash')+'刪除</button></div>':''),
     foot:footBtns('nbSaveItem')});
   SHEET.pg=pgId; SHEET.id=id; SHEET.head=isHead;
@@ -579,8 +590,9 @@ function sheetClear(){
   L.push('記事本'+n(s.notebook,'頁')+'，包含出發前準備清單');
   L.push('即時廣播、明早時程');
   L.push('團名'+(st.tripName?'「'+st.tripName+'」':'')+'、出發日期與天數、航班時間');
-  L.push('飯店資料'+n(s.hotels,'間')+'、緊急聯絡人'+n(s.contacts,'位')+'、駐越南辦事處電話');
-  L.push('防呆標籤、航空公司名稱與航廈、首頁卡片位置與高亮、匯率');
+  L.push('飯店資料'+n(s.hotels,'間')+'、緊急聯絡人'+n(s.contacts,'位'));
+  L.push('防呆標籤、航空公司名稱與航廈、首頁卡片位置與高亮、目的地時區');
+  L.push('工具頁內容：知識小卡'+n(s.cards,'張')+'、外語圖卡'+n(s.phrases,'句')+'、外幣、計程車卡、當地急救電話（之後可以到「工具頁範本」一鍵套用通用版）');
   openSheet({title:'一鍵清空內容',tall:true,body:
     '<div class="warn-box dng-box">'+ic('alert')+'<span>清空後，<b>全團每一支手機都會同步變成空白</b>，首頁只剩「尚未建立旅程」。</span></div>'+
     '<div><b>會清空</b><ul class="dots clr-list">'+L.map(function(x){ return '<li>'+esc(x)+'</li>'; }).join('')+'</ul></div>'+
@@ -619,3 +631,132 @@ function sheetRestore(id){
   SHEET.bk=id;
 }
 
+/* ===== 工具頁內容的編輯（v3.23，主辦人）=====
+   全部存在 tools 文件，一律整份存檔（Store.save('tools')）：工具內容多半只有主辦人一個人在改。
+   會讓內容變少的動作（清空一區、刪類別、套用範本）先在這支手機留一份上一版（Store.keepPrev）。 */
+function sck(n){ var e=el('sheetRoot').querySelector('[name="'+n+'"]'); return !!(e&&e.checked); }
+/* 小卡編輯器上方的插入鈕：[要插入的字, 按鈕名稱, 是否插在游標位置（不另起一行）] */
+var MD_HELP=[['## ','小標題'],['### ','重點框'],['- ','條列'],['1. ','步驟'],['! ','警示'],['｜','對照',1]];
+function sheetCardEdit(id,sec){
+  var c=id?tlCard(id):null; if(id&&!c) return;
+  c=c||{id:'',sec:(sec==='local'?'local':'pre'),icon:'info',title:'',sub:'',body:''};
+  /* 順序：最常改的（標題、內容、預覽）放上面，區塊與圖示放最後——圖示有 30 個，放前面要捲很久才到內容 */
+  openSheet({title:id?'編輯小卡':'新增小卡',tall:true,body:
+    '<div class="grid2">'+fld('標題（10 字以內）',inp('title',c.title,'text','maxlength="10" placeholder="例：入境與通關"'))+fld('小字說明（選填）',inp('sub',c.sub,'text','maxlength="16" placeholder="例：護照效期"'))+'</div>'+
+    '<div class="f"><label>內容</label><div class="md-bar">'+MD_HELP.map(function(x){ return '<button type="button" class="chip" data-act="mdIns" data-v="'+esc(x[0])+'"'+(x[2]?' data-inline="1"':'')+'>＋'+esc(x[1])+'</button>'; }).join('')+'<button type="button" class="chip" data-act="mdBold"><b>粗體</b></button></div>'+
+      '<textarea class="in md-ta" name="body" id="mdBody" placeholder="## 小標題&#10;- 條列一&#10;- 條列二&#10;! 要特別注意的事">'+esc(c.body||'')+'</textarea>'+
+      '<div class="muted md-help">一行一件事：開頭「## 」是小標題、「### 」開一個重點框、「- 」條列、「1. 」步驟、「! 」警示；「名稱｜說明」是對照表；**兩個星號夾住**是粗體；空一行分段。</div></div>'+
+    '<div class="f"><label>預覽（團員看到的樣子）</label><div class="md-prev kc" id="mdPrev">'+(mdCard(c.body)||'<div class="muted">還沒有內容</div>')+'</div></div>'+
+    fld('放在哪一區',swatches('sec',TOOL_SECS.map(function(s){ return [s.id,s.name]; }),c.sec==='local'?'local':'pre'))+
+    fld('圖示',swatches('icon',CARD_ICONS.map(function(k){ return [k,k]; }),ICONS[c.icon]?c.icon:'info',function(v){ return ic(v); }))+
+    (id?'<div class="row"><button class="btn" data-act="tlCardMove" data-dir="-1">'+ic('up')+'往前移</button><button class="btn" data-act="tlCardMove" data-dir="1">'+ic('down')+'往後移</button></div>':''),
+    foot:footBtns('tlCardSave',id?'<button class="btn dng" data-act="tlCardDel">刪除</button>':'')});
+  SHEET.id=id;
+}
+function mdPreview(){ var ta=el('mdBody'), pv=el('mdPrev'); if(ta&&pv) pv.innerHTML=mdCard(ta.value)||'<div class="muted">還沒有內容</div>'; }
+function mdInsert(txt,inline){ var ta=el('mdBody'); if(!ta) return; var s=ta.selectionStart||0, e=ta.selectionEnd||0, v=ta.value;
+  var pre=(!inline&&s>0&&v.charAt(s-1)!=='\n')?'\n':''; ta.value=v.slice(0,s)+pre+txt+v.slice(e);
+  var c=s+pre.length+txt.length; ta.focus(); try{ ta.setSelectionRange(c,c); }catch(x){} mdPreview(); }
+function mdWrap(w){ var ta=el('mdBody'); if(!ta) return; var s=ta.selectionStart||0, e=ta.selectionEnd||0, v=ta.value, sel=v.slice(s,e);
+  ta.value=v.slice(0,s)+w+sel+w+v.slice(e); ta.focus();
+  try{ if(sel) ta.setSelectionRange(s,e+2*w.length); else ta.setSelectionRange(s+w.length,s+w.length); }catch(x){} mdPreview(); }
+function sheetTaxi(){
+  var t=tl(), tx=(t.taxi&&typeof t.taxi==='object')?t.taxi:{}, lb=tlLab();
+  openSheet({title:'計程車回飯店卡',tall:true,body:
+    '<div class="muted">飯店名稱、地址、電話在管理專區的「飯店資料」裡改；這裡改卡片上的句子。</div>'+
+    fld('給司機看的句子（外語）',ta('fl',tx.fl))+
+    fld('中文意思',inp('zh',tx.zh,'text','placeholder="例：請載我回這間飯店，謝謝！"'))+
+    '<h2 class="sec">'+ic('edit')+'欄位的外語小標（選填）</h2><div class="muted" style="margin-top:-.5rem">會顯示成「外語 · 中文」，例如「HOTEL · 飯店」；留白就只顯示中文。走散卡也會用到「緊急聯絡」這一個。</div>'+
+    '<div class="grid2">'+fld('飯店',inp('lab_hotel',lb.hotel,'text','placeholder="例：HOTEL"'))+fld('地址',inp('lab_addr',lb.addr,'text','placeholder="例：ADDRESS"'))+fld('飯店電話',inp('lab_phone',lb.phone,'text','placeholder="例：PHONE"'))+fld('緊急聯絡',inp('lab_call',lb.call,'text','placeholder="例：CONTACT"'))+'</div>'+
+    fld('最下面的小提醒（選填）',ta('tip',tx.tip)),
+    foot:footBtns('taxiSave')});
+}
+function sheetLang(){
+  var t=tl();
+  openSheet({title:'外語設定',focus:true,body:
+    fld('這次用的外語',inp('lang',t.lang,'text','maxlength="8" placeholder="例：日語、泰語、英語"'))+
+    fld('圖卡上的外語標示（選填）',inp('langTag',t.langTag,'text','maxlength="24" placeholder="例：日本語、ภาษาไทย、ENGLISH"'))+
+    fld('「謝謝您的幫忙」的外語（選填）',inp('thanks',t.thanks,'text','maxlength="40" placeholder="例：ありがとうございます"'))+
+    '<div class="muted">全螢幕圖卡上方會寫「外語標示 · 外語」，例如「ENGLISH · 英語」；走散卡、圖卡最下面會先寫外語的謝謝。</div>',
+    foot:footBtns('langSave')});
+}
+function sheetPhCat(id){
+  var cs=tlCats(), c=id?cs.filter(function(x){ return x.id===id; })[0]:{id:'',e:'',name:'',sub:''}; if(!c) return;
+  var n=id?phInCat(id).length:0;
+  openSheet({title:id?'編輯類別':'新增類別',focus:true,body:
+    '<div class="grid2">'+fld('圖示（1 個表情符號）',inp('e',c.e,'text','maxlength="4"'))+fld('類別名稱',inp('name',c.name,'text','maxlength="8" placeholder="例：點餐與飲食"'))+'</div>'+
+    fld('說明（選填）',inp('sub',c.sub,'text','maxlength="20" placeholder="例：溫水、不要香菜"'))+
+    (id?'<div class="row"><button class="btn" data-act="phCatMove" data-dir="-1">'+ic('up')+'往前</button><button class="btn" data-act="phCatMove" data-dir="1">'+ic('down')+'往後</button></div>'+
+      '<div class="muted">這一類有 '+n+' 句；刪除類別會連同這 '+n+' 句一起刪掉。</div>':''),
+    foot:footBtns('phCatSave',id?'<button class="btn dng" data-act="phCatDel">刪除</button>':'')});
+  SHEET.id=id;
+}
+function sheetPhrase(id,cat){
+  var p=id?phById(id):{id:'',cat:cat||'',e:'',zh:'',fl:'',say:''}; if(!p) return;
+  var cs=tlCats();
+  openSheet({title:id?'編輯圖卡':'新增圖卡',tall:true,focus:true,body:
+    fld('中文（團員看的）',inp('zh',p.zh,'text','placeholder="例：請不要放香菜"'))+
+    fld('外語（給對方看的那一句）',ta('fl',p.fl))+
+    fld('空耳中文（照著念，選填）',inp('say',p.say,'text','placeholder="例：新 登 糗 繞 妹"'))+
+    '<div class="grid2">'+fld('圖示（1 個表情符號）',inp('e',p.e,'text','maxlength="4"'))+
+      fld('類別','<select class="in" name="cat">'+cs.map(function(c){ return '<option value="'+esc(c.id)+'"'+(c.id===p.cat?' selected':'')+'>'+esc(c.name||'')+'</option>'; }).join('')+'</select>')+'</div>'+
+    '<label class="ck-line"><input type="checkbox" name="lost"'+(p.lost?' checked':'')+'><span>這是<b>走散卡</b>：全螢幕時附上緊急聯絡電話，「緊急求助」頁的走散按鈕也會打開它</span></label>'+
+    (id?'<div class="row"><button class="btn" data-act="phMove" data-dir="-1">'+ic('up')+'上移</button><button class="btn" data-act="phMove" data-dir="1">'+ic('down')+'下移</button></div>':''),
+    foot:footBtns('phSave',id?'<button class="btn dng" data-act="phDel">刪除</button>':'')});
+  SHEET.id=id;
+}
+/* input type=color 只吃 #RRGGBB */
+function hex6(c){ c=String(c||''); if(/^#[0-9a-f]{6}$/i.test(c)) return c.toLowerCase(); var m=/^#([0-9a-f])([0-9a-f])([0-9a-f])$/i.exec(c); return m?('#'+m[1]+m[1]+m[2]+m[2]+m[3]+m[3]).toLowerCase():'#9aa3b2'; }
+function mnRow(n,i){ return '<div class="mn-row">'+inp('n_v_'+i,n.v||'','number','inputmode="decimal" step="any" min="0" placeholder="面額" aria-label="面額"')+
+  '<input class="in" type="color" name="n_c_'+i+'" value="'+hex6(n.color)+'" aria-label="顏色">'+inp('n_t_'+i,n.note||'','text','maxlength="12" placeholder="例：藍色 ⚠" aria-label="說明"')+'</div>'; }
+function moneyAddRow(n){ var box=el('sheetRoot').querySelector('.mn-rows'); if(!box||!SHEET||SHEET.mn>=16) return; box.insertAdjacentHTML('beforeend',mnRow(n||{},SHEET.mn)); SHEET.mn++; }
+/* 按常用貨幣：整張表單換成那一種（還沒按儲存都不算數） */
+function moneyFill(p){ var R=el('sheetRoot'); function set(n,v){ var e=R.querySelector('[name="'+n+'"]'); if(e) e.value=(v==null?'':v); }
+  set('m_name',p.name); set('m_unit',p.unit); set('m_dir',p.dir==='twd'?'twd':'fx'); set('m_rate',p.rate); set('m_warn',p.warn||'');
+  var box=R.querySelector('.mn-rows'); if(!box) return; box.innerHTML=''; SHEET.mn=0; (p.notes||[]).forEach(function(n){ moneyAddRow(n); }); moneyAddRow({}); }
+function sheetMoney(){
+  var m=tlMoney(), ns=(Array.isArray(m.notes)?m.notes:[]).filter(Boolean);
+  openSheet({title:'外幣設定',tall:true,body:
+    '<div class="f"><label>快速帶入常用貨幣</label><div class="chips">'+MONEY_PRESETS.map(function(p){ return '<button type="button" class="chip pick" data-act="moneyPreset" data-id="'+p.id+'">'+esc(p.name)+'</button>'; }).join('')+'</div>'+
+      '<div class="muted" style="margin-top:.3rem">匯率與鈔票顏色都是約略值，帶入後請對照出發前的匯率再改。</div></div>'+
+    '<div class="grid2">'+fld('貨幣名稱',inp('m_name',m.name,'text','maxlength="10" placeholder="例：日圓"'))+fld('顯示單位',inp('m_unit',m.unit,'text','maxlength="4" placeholder="例：盾、日圓"'))+'</div>'+
+    fld('匯率','<div class="rate-row"><select class="in" name="m_dir"><option value="fx"'+(m.dir!=='twd'?' selected':'')+'>1 台幣 ≈ 幾外幣</option><option value="twd"'+(m.dir==='twd'?' selected':'')+'>1 外幣 ≈ 幾台幣</option></select>'+
+      inp('m_rate',m.rate||'','number','inputmode="decimal" step="any" min="0" placeholder="例：0.21" aria-label="匯率"')+'</div>'+
+      '<div class="muted" style="margin-top:.3rem">數字很大的貨幣（越南盾、韓元、印尼盾）選「1 台幣 ≈ 幾外幣」比較好填。</div>')+
+    '<div class="f"><label>面額、顏色、說明（存檔時大的排上面）</label><div class="mn-rows"></div><button type="button" class="btn sm" data-act="moneyRow">'+ic('plus')+'再加一種</button></div>'+
+    fld('提醒文字（選填，**兩個星號**夾住是粗體）',ta('m_warn',m.warn)),
+    foot:footBtns('moneySave',(m.name||ns.length)?'<button class="btn dng" data-act="moneyWipe">清空外幣</button>':'')});
+  SHEET.mn=0; ns.forEach(function(n){ moneyAddRow(n); }); var k=Math.max(2,4-ns.length); while(k--) moneyAddRow({});
+}
+function sheetSOS(){
+  var st=S().settings, ls=tlArr('sos').filter(function(x){ return x&&(x.name||x.phone); }).map(clone);
+  /* 3.22 以前的駐外館處電話在團務設定裡：第一次打開就帶進來，存檔後改放這裡 */
+  if(st.embassyPhone&&!ls.some(function(x){ return x.phone===st.embassyPhone; })) ls.push({name:'駐外館處',sub:'急難救助專線',phone:st.embassyPhone});
+  var n=Math.min(12,Math.max(ls.length+2,4)); while(ls.length<n) ls.push({name:'',sub:'',phone:''});
+  openSheet({title:'當地與官方專線',tall:true,body:
+    '<div class="muted">填當地的報警、救護車、消防，以及駐外館處的急難救助電話。整列留白就不會顯示；外交部急難救助專線固定列在最後。</div>'+
+    ls.map(function(x,i){ return '<div class="f sos-ed"><div class="grid2">'+inp('s_name_'+i,x.name,'text','placeholder="名稱，例：報警"')+inp('s_phone_'+i,x.phone,'tel','placeholder="電話，例：110"')+'</div>'+inp('s_sub_'+i,x.sub,'text','placeholder="說明（選填），例：24 小時"')+'</div>'; }).join(''),
+    foot:footBtns('sosSave')});
+  SHEET.n=ls.length;
+}
+/* 清空工具頁的一區：quick＝現場馬上用、phrases＝全部圖卡、pre／local＝知識小卡那兩區 */
+function sheetTlClear(sec){
+  var L=[], name='';
+  if(sec==='quick'){ name='現場馬上用';
+    L=['計程車回飯店卡的句子與外語小標','外幣設定'+(tlMoney().name?'（'+tlMoney().name+'）':''),'外語圖卡 '+tlPhrases().length+' 句、類別 '+tlCats().length+' 個','當地與官方專線 '+tlArr('sos').length+' 筆','外語名稱與「謝謝」的說法']; }
+  else if(sec==='phrases'){ name='外語圖卡'; L=['外語圖卡 '+tlPhrases().length+' 句','類別 '+tlCats().length+' 個']; }
+  else { var s=TOOL_SECS.filter(function(x){ return x.id===sec; })[0]; if(!s) return; name=s.name; L=tlCards(sec).map(function(c){ return c.title||'（沒有標題）'; }); }
+  openSheet({title:'清空「'+esc(name)+'」',body:
+    '<div class="warn-box dng-box">'+ic('alert')+'<span>清空後，<b>全團手機</b>的工具頁都會同步少掉這些內容。</span></div>'+
+    '<div><b>會清空</b><ul class="dots clr-list">'+L.map(function(x){ return '<li>'+esc(x)+'</li>'; }).join('')+'</ul></div>'+
+    (sec==='quick'?'<div class="muted">「緊急求助」頁會留著：緊急聯絡人（在團務設定）與外交部急難救助專線不受影響。</div>':'')+
+    '<div class="bk-note">'+ic('history')+'<span>清空前會在這支手機<b>自動留一份</b>；按錯了，到「管理專區 → 還原上一版」救回來。</span></div>',
+    foot:'<button class="btn" data-act="sheetClose">取消</button><button class="btn dng" data-act="tlClearGo" data-sec="'+esc(sec)+'">'+ic('trash')+'確定清空</button>'});
+}
+function sheetTpl(){
+  openSheet({title:'工具頁範本',body:
+    '<div class="muted">把工具頁的內容<b>整個換成</b>下面其中一套：外語圖卡、外幣、計程車卡、當地電話，以及「出發前先看」「在地小知識」的小卡。行程、名單、記事本、時區都不受影響。</div>'+
+    '<div class="stack" style="margin-top:.6rem">'+Object.keys(TPL).map(function(k){ var x=TPL[k], t=x.tools;
+      return '<div class="bk-row"><div class="bk-t"><b>'+esc(x.name)+'</b><div class="muted">'+esc(x.desc)+'</div><div class="muted">知識小卡 '+t.cards.length+' 張、外語圖卡 '+t.phrases.length+' 句</div></div><button class="btn sm pri" data-act="tplGo" data-id="'+k+'">套用</button></div>'; }).join('')+'</div>'+
+    '<div class="bk-note">'+ic('history')+'<span>套用前會在這支手機自動留一份目前的內容，到「管理專區 → 還原上一版」可以換回來。</span></div>'});
+}

@@ -1,4 +1,4 @@
-/* Firebase 規則驗證（v3.22）：用官方模擬器實際寫入，確認 firebase.rules.json 該擋的擋、該過的過。
+/* Firebase 規則驗證（v3.22；v3.23 加上工具頁內容 tools）：用官方模擬器實際寫入，確認 firebase.rules.json 該擋的擋、該過的過。
    ─────────────────────────────────────────────────────────────
    不在 npm test 裡：需要 Java 11 以上與 Firebase 模擬器。改規則之前／之後手動跑：
      npx firebase-tools@15 emulators:exec --only database --project demo-sapa "node audit/fbrules.js"
@@ -19,8 +19,9 @@ const OLD_RULES=JSON.stringify({rules:{trip:{'.read':true,
   itinerary:{'.write':'newData.exists()','.validate':"newData.hasChildren() && newData.child('_ts').isNumber() && newData.child('items').child('0').exists()"}},
   '$other':{'.read':false,'.write':false}}});
 const NEW_RULES=fs.readFileSync(path.join(ROOT,'firebase.rules.json'),'utf8');
-const ctx={}; vm.createContext(ctx);
-vm.runInContext(fs.readFileSync(path.join(ROOT,'src/03-data.js'),'utf8')+fs.readFileSync(path.join(ROOT,'src/03b-seed.js'),'utf8')+';this.DEFAULTS=DEFAULTS;this.DOC_KEYS=DOC_KEYS;',ctx);
+/* v3.23 起程式裡的預設資料是空殼，33 人／30 站那一團在 audit/fixture-trip.js（跟瀏覽器測試用同一份） */
+const ctx={}; ctx.window=ctx; vm.createContext(ctx);
+vm.runInContext(['audit/fixture-trip.js','src/03-data.js','src/03a-tpl.js','src/03b-seed.js'].map(f=>fs.readFileSync(path.join(ROOT,f),'utf8')).join('\n')+';this.DEFAULTS=DEFAULTS;this.DOC_KEYS=DOC_KEYS;this.APP_VERSION=APP_VERSION;',ctx);
 const J=o=>JSON.parse(JSON.stringify(o));
 /* owner=true：用管理者身分（跳過規則）準備資料；false：一般未登入連線，照規則判斷 */
 async function req(ns,method,p,body,owner){
@@ -31,9 +32,9 @@ function seed(){ const T=Date.now()-60000, d=J(ctx.DEFAULTS); ctx.DOC_KEYS.forEa
   d.photos.items={d1a:{src:'data:image/webp;base64,AAAA',op:9,kb:1}}; d.settings.pinHash='abc'; delete d.settings.pin; return d; }
 const reset=ns=>req(ns,'PUT','',{trip:seed()},true);
 const cnt=async(ns,k)=>{ const r=await req(ns,'GET','trip/'+k,undefined,true); const it=r.body&&r.body.items; return it?Object.keys(it).length:0; };
-/* App 的「一鍵清空」送出的那一筆：8 份文件換成空殼＋一份備份 */
-function clearBody(T,snap){ const u={}; ctx.DOC_KEYS.forEach(k=>{ u['trip/'+k]={_ts:T,_cleared:T}; }); u['trip/settings'].pinHash='abc'; u['trip/settings'].minVersion='3.22';
-  u['backups/trip/b'+T]={at:T,reason:'clear',ver:'3.22',docs:snap}; return u; }
+/* App 的「一鍵清空」送出的那一筆：所有文件（v3.23 起 9 份，含工具頁內容）換成空殼＋一份備份 */
+function clearBody(T,snap){ const u={}; ctx.DOC_KEYS.forEach(k=>{ u['trip/'+k]={_ts:T,_cleared:T}; }); u['trip/settings'].pinHash='abc'; u['trip/settings'].minVersion=ctx.APP_VERSION;
+  u['backups/trip/b'+T]={at:T,reason:'clear',ver:ctx.APP_VERSION,docs:snap}; return u; }
 let fails=0; const ck=(n,c,x)=>{ if(!c){fails++;console.log('  ✗',n,x===undefined?'':JSON.stringify(x).slice(0,200));} else console.log('  ✓',n); };
 
 (async()=>{
@@ -43,7 +44,7 @@ let fails=0; const ck=(n,c,x)=>{ if(!c){fails++;console.log('  ✗',n,x===undefi
 
   console.log('【v3.21 以前的規則：還沒換規則就按清空】');
   await reset(OLD); const snap=seed();
-  ck('前提：名單 33 人、行程 30 站',await cnt(OLD,'members')===33&&await cnt(OLD,'itinerary')===30);
+  ck('前提：名單 33 人、行程 30 站、有工具頁內容（9 份文件）',await cnt(OLD,'members')===33&&await cnt(OLD,'itinerary')===30&&ctx.DOC_KEYS.length===9&&await req(OLD,'GET','trip/tools/phrases',undefined,true).then(x=>Array.isArray(x.body)&&x.body.length===55));
   let r=await req(OLD,'PATCH','',clearBody(Date.now(),snap));
   ck('一鍵清空（整批）被擋',!r.ok,r);
   ck('被擋之後名單仍是 33 人（全有全無，沒有清掉一半）',await cnt(OLD,'members')===33);
@@ -57,6 +58,9 @@ let fails=0; const ck=(n,c,x)=>{ if(!c){fails++;console.log('  ✗',n,x===undefi
   const m=await req(NEW,'GET','trip/members',undefined,true), it=await req(NEW,'GET','trip/itinerary',undefined,true);
   ck('清空後名單只剩 _ts 與 _cleared',JSON.stringify(m.body)===JSON.stringify({_cleared:T,_ts:T}),m.body);
   ck('清空後行程只剩 _ts 與 _cleared',JSON.stringify(it.body)===JSON.stringify({_cleared:T,_ts:T}),it.body);
+  const tl=await req(NEW,'GET','trip/tools',undefined,true);
+  ck('清空後工具頁內容也只剩 _ts 與 _cleared',JSON.stringify(tl.body)===JSON.stringify({_cleared:T,_ts:T}),tl.body);
+  ck('清空後新增第一張知識小卡（整份存檔）→ 通過',(await req(NEW,'PUT','trip/tools',{_ts:Date.now(),cards:[{id:'c1',sec:'pre',title:'新小卡',body:'- 內容'}]})).ok);
   const bk=await req(NEW,'GET','backups/trip');
   ck('備份寫進 backups/trip，一般連線讀得到',bk.ok&&bk.body&&bk.body['b'+T]&&Object.keys(bk.body['b'+T].docs.members.items).length===33,bk.status);
   r=await req(NEW,'PATCH','',{'trip/members/items/5/room':'609','trip/members/_ts':Date.now()});
@@ -75,6 +79,9 @@ let fails=0; const ck=(n,c,x)=>{ if(!c){fails++;console.log('  ✗',n,x===undefi
   ck('寫到 trip／backups 以外 → 仍被擋',!(await req(NEW,'PUT','other/x',{a:1})).ok);
   ck('一般點名寫入 → 通過',(await req(NEW,'PATCH','',{'trip/rollcall/present/m01':true,'trip/rollcall/_ts':Date.now()})).ok);
   ck('廣播整份存檔 → 通過',(await req(NEW,'PUT','trip/broadcast',{_ts:Date.now(),time:'15:30',location:'飯店大廳'})).ok);
+  ck('工具頁內容整份存檔（套用範本）→ 通過',(await req(NEW,'PUT','trip/tools',Object.assign(J(ctx.TPL.generic.tools),{_ts:Date.now()}))).ok);
+  ck('工具頁內容沒有 _ts → 被擋',!(await req(NEW,'PUT','trip/tools',{lang:'英語'})).ok);
+  ck('整份刪除工具頁內容 → 被擋',!(await req(NEW,'DELETE','trip/tools')).ok);
   ck('單一團員局部修改 → 通過',(await req(NEW,'PATCH','',{'trip/members/items/0/room':'301','trip/members/_ts':Date.now()})).ok);
   ck('寫一份格式正確的備份 → 通過',(await req(NEW,'PUT','backups/trip/b2',{at:1,reason:'clear',docs:{a:1}})).ok);
   ck('刪掉最舊的備份（自動淘汰）→ 通過',(await req(NEW,'DELETE','backups/trip/b2')).ok);

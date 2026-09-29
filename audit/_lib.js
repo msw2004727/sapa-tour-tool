@@ -21,11 +21,16 @@ function loadPlaywright() {
 const LOCAL = /^(https?|wss?):\/\/(localhost|127\.0\.0\.1)(:\d+)?(\/|$)/;
 const OUTSIDE = (u) => /^(https?|wss?):$/.test(u.protocol) && !LOCAL.test(u.href);
 let blocked = 0;
-async function guard(ctx) {
+/* 測試用的一團假資料（v3.23）：網站程式不再內建任何一團的資料，測試需要一團「進行中」的沙壩團，
+   所以每個測試瀏覽器載入網頁之前先放進 window.__SEED__（內容見 audit/fixture-trip.js，團員名字是代號）。
+   想測「全新、什麼都沒有」的樣子：browser.newContext({ noSeed: true })。 */
+const FIXTURE = path.join(__dirname, 'fixture-trip.js');
+async function guard(ctx, noSeed) {
   if (ctx.__guarded) return ctx;   /* browser.newPage() 內部也會走 newContext()，不要註冊兩次 */
   ctx.__guarded = true;
   await ctx.route(OUTSIDE, (r) => { blocked++; return r.abort(); });
   if (ctx.routeWebSocket) await ctx.routeWebSocket(OUTSIDE, (ws) => { blocked++; ws.close(); });
+  if (!noSeed) await ctx.addInitScript({ path: FIXTURE });
   return ctx;
 }
 const pw = loadPlaywright();
@@ -33,7 +38,11 @@ const chromium = {
   launch: async (...a) => {
     const b = await pw.chromium.launch(...a);
     const newContext = b.newContext.bind(b), newPage = b.newPage.bind(b);
-    b.newContext = async (...o) => guard(await newContext(...o));
+    b.newContext = async (o, ...rest) => {
+      const noSeed = !!(o && o.noSeed);
+      if (o && 'noSeed' in o) { o = Object.assign({}, o); delete o.noSeed; }
+      return guard(await newContext(o, ...rest), noSeed);
+    };
     b.newPage = async (...o) => { const p = await newPage(...o); await guard(p.context()); return p; };
     return b;
   }

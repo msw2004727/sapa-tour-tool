@@ -1,5 +1,5 @@
 /* ===== 工具函式 ===== */
-var VN='Asia/Ho_Chi_Minh', TW='Asia/Taipei';
+var TW='Asia/Taipei';
 function el(id){ return document.getElementById(id); }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
 function clone(o){ return JSON.parse(JSON.stringify(o)); }
@@ -17,10 +17,18 @@ try{ var _sm=/[?&]sim=([^&#]+)/.exec(location.search), _sv=null;
   var _st=simParse(_sv); if(!isNaN(_st)){ SIM_OFF=(_st-Date.now())||1; try{ sessionStorage.setItem('sapa-sim',_sv); }catch(e){} }
   else { try{ sessionStorage.removeItem('sapa-sim'); }catch(e){} } }catch(e){}   /* 壞掉的網址不留舊的模擬 */
 function nowMs(){ return Date.now()+SIM_OFF; }
-function tzParts(tz){
-  var d=new Date(nowMs());
+/* 目的地時區（v3.23）：團務設定選的 settings.tz；沒選、或存了認不得的值，就跟台灣同一個時區。
+   家鄉固定是台灣（台灣時間、台幣）。 */
+var TZ_OK={}, TZ_FMT={};
+function tzValid(z){ if(!z||typeof z!=='string') return false;
+  if(TZ_OK[z]===undefined){ try{ new Intl.DateTimeFormat('en-GB',{timeZone:z}); TZ_OK[z]=true; }catch(e){ TZ_OK[z]=false; } }
+  return TZ_OK[z]; }
+function LTZ(){ var z=((Store&&Store.s&&Store.s.settings)||{}).tz; return tzValid(z)?z:TW; }
+/* 某個時區在某一刻（預設是現在）的日期與時刻 */
+function tzParts(tz,ms){
+  var d=new Date(ms===undefined?nowMs():ms);
   try{
-    var f=new Intl.DateTimeFormat('en-GB',{timeZone:tz,hour12:false,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+    var f=TZ_FMT[tz]||(TZ_FMT[tz]=new Intl.DateTimeFormat('en-GB',{timeZone:tz,hour12:false,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}));
     var o={}; f.formatToParts(d).forEach(function(p){o[p.type]=p.value;});
     var h=parseInt(o.hour,10); if(h===24) h=0;
     return {date:o.year+'-'+o.month+'-'+o.day,h:h,m:parseInt(o.minute,10),hm:pad(h)+':'+o.minute};
@@ -34,9 +42,16 @@ var WD=['日','一','二','三','四','五','六'];
 /* 2026-09-24 → 9/24（四） */
 function mdw(s){ var t=parseDate(s); if(isNaN(t)) return ''; var d=new Date(t); return (d.getUTCMonth()+1)+'/'+d.getUTCDate()+'（'+WD[d.getUTCDay()]+'）'; }
 function dayDate(n){ var t=parseDate(S().settings.startDate); if(isNaN(t)) return ''; return mdw(ymd(t+(n-1)*86400000)); }
+/* 某個時區在某一刻比 UTC 快多少毫秒（有夏令時間的地方，同一個時區在不同日期會不一樣） */
+function tzOff(tz,ms){ var p=tzParts(tz,ms); return parseDate(p.date)+(p.h*60+p.m)*60000-Math.floor(ms/60000)*60000; }
 function dayInfo(){
-  var st=S().settings, vn=tzParts(VN), days=st.days||5;
-  var start=parseDate(st.startDate), today=parseDate(vn.date);
+  var st=S().settings, days=st.days||5;
+  var start=parseDate(st.startDate), today=parseDate(tzParts(LTZ()).date);
+  /* 「今天」用當地日期算，但出發前人還在台灣：
+     台灣還沒到出發日 → 一律算出發前（目的地比台灣快的，例如紐西蘭，前一晚當地已經過了午夜）；
+     台灣已經是出發日、當地還是前一天 → 算第 1 天（目的地比台灣慢很多的，例如美國） */
+  var twd=parseDate(tzParts(TW).date);
+  if(!isNaN(start)&&!isNaN(twd)){ if(twd<start) today=Math.min(today,twd); else if(twd===start&&today<start) today=start; }
   var diff=isNaN(start)?0:Math.round((today-start)/86400000);
   if(st.dayOverride>0) return {idx:Math.min(st.dayOverride,days),status:'override',days:days,diff:diff};
   if(isNaN(start)) return {idx:1,status:'on',days:days,diff:0};
@@ -44,15 +59,17 @@ function dayInfo(){
   if(diff>=days) return {idx:days,status:'after',days:days,diff:diff};
   return {idx:diff+1,status:'on',days:days,diff:diff};
 }
-/* ===== 時區：第 1 天搭機前人還在台灣，那段時間是「台灣時間」，其餘一律越南時間 =====
+/* ===== 時區：第 1 天搭機前人還在台灣，那段時間是「台灣時間」，其餘一律當地時間（團務設定選的目的地時區）=====
    判斷方式：出發日當天、時間不晚於最晚一班去程起飛（例：長榮 09:00）→ 台灣時間。
-   不用另外在資料裡標記，改航班時間就會自動跟著變。越南、台灣都沒有日光節約時間。 */
+   不用另外在資料裡標記，改航班時間就會自動跟著變。當地有夏令時間也算得對（tzOff 用那一天的時差）。 */
 function twCutoff(){ var f=(S().settings||{}).flights||{}, c=''; Object.keys(f).forEach(function(k){ var o=f[k]&&f[k].out; if(o&&/^\d{1,2}:\d{2}$/.test(o)&&o>c) c=o; }); return c||'09:00'; }
 function isTWSlot(date,hm){ var st=S().settings||{}; return !!(date&&hm&&date===st.startDate&&hm<=twCutoff()); }
 /* 某個日期＋時刻（依上面的規則決定時區）換成絕對時間（毫秒） */
 function slotMs(date,hm,tw){ var t=parseDate(date); if(isNaN(t)||!hm||hm.indexOf(':')<0) return NaN; var p=hm.split(':').map(Number);
   if(tw===undefined) tw=isTWSlot(date,hm);
-  return t+(p[0]*60+p[1])*60000-(tw?8:7)*3600000; }
+  var w=t+(p[0]*60+p[1])*60000;   /* 先把「那一天的那個時刻」當成 UTC，再扣掉時差 */
+  if(tw) return w-8*3600000;
+  var z=LTZ(), o=tzOff(z,w); return w-tzOff(z,w-o); }   /* 先猜一次時差再校正一次：夏令時間切換那天也對 */
 /* 行程第 N 天的某個時刻是不是台灣時間（第 1 天搭機前） */
 function twItem(day,hm){ return day===1&&!!hm&&hm<=twCutoff(); }
 function dayYmd(n){ var t=parseDate(S().settings.startDate); return isNaN(t)?'':ymd(t+(n-1)*86400000); }
@@ -64,7 +81,7 @@ function nextStop(di){
   var cur=list.filter(function(x){return x.isCurrent;})[0];
   if(cur) return {id:cur.id,time:cur.time,title:cur.title,kind:'cur',tw:twItem(day,cur.time)};
   /* 手動指定第幾天時，把「今天」當成那一天，只比時刻；否則用那一天的實際日期 */
-  var dd=(di.status==='override')?tzParts(twItem(day,'00:00')?TW:VN).date:dayYmd(day), nm=nowMin();
+  var dd=(di.status==='override')?tzParts(twItem(day,'00:00')?TW:LTZ()).date:dayYmd(day), nm=nowMin();
   var up=list.filter(function(x){ var ms=slotMs(dd,x.time,twItem(day,x.time)); return !isNaN(ms)&&ms/60000>=nm; })[0];
   if(up) return {id:up.id,time:up.time,title:up.title,kind:'next',tw:twItem(day,up.time)};
   return {id:'',time:'',title:'',kind:'done'};
@@ -82,12 +99,12 @@ function bcDate(){
   /* 沒有日期的舊廣播：用「存檔的那一刻」推回它指的是哪一天，才不會每天早上復活。
      出發前存的 → 出發日；旅途中存的 → 存檔當天（時間已經過了就是隔天）。 */
   if(b._ts&&!isNaN(parseDate(st.startDate))&&b.time){
-    var sd=ymd(Math.floor((b._ts+7*3600000)/86400000)*86400000);   /* 存檔當下的越南日期 */
+    var sd=tzParts(LTZ(),b._ts).date;   /* 存檔當下的當地日期 */
     if(sd<st.startDate) return st.startDate;
     return slotMs(sd,b.time)>=b._ts-60000?sd:ymd(parseDate(sd)+86400000);
   }
   if(dayInfo().status==='before'&&!isNaN(parseDate(st.startDate))) return st.startDate;
-  return tzParts(VN).date;
+  return tzParts(LTZ()).date;
 }
 /* 距離集合還有幾分鐘（負數＝已經過了）；沒設集合時間就回 null。跨日靠 bcDate() 補上天數差。 */
 function bcDiffMin(){
@@ -100,13 +117,13 @@ function bcDiffMin(){
 function bcActive(){
   var b=S().broadcast||{};
   if(b.time){ var d=bcDiffMin(); return d===null||d>-240; }
-  if(b.idle) return !(b.date&&b.date<tzParts(VN).date);
+  if(b.idle) return !(b.date&&b.date<tzParts(LTZ()).date);
   return false;
 }
 function bcIsTW(){ var b=S().broadcast||{}; if(!b.time) return false; return b.tz?b.tz==='TW':isTWSlot(bcDate(),b.time); }
 function countdown(){
   var diff=bcDiffMin(); if(diff===null) return null;
-  var bd=bcDate(), pre=(bd===tzParts(VN).date)?'':(mdw(bd)+' · ');
+  var bd=bcDate(), pre=(bd===tzParts(LTZ()).date)?'':(mdw(bd)+' · ');
   if(diff>0) return {text:pre+'還有 '+fmtDur(diff),late:false};
   if(diff===0) return {text:'集合時間到了！',late:true};
   if(diff>-240) return {text:'已過 '+fmtDur(-diff),late:true};
@@ -272,7 +289,11 @@ var Store={
       if(P.leader) toast(DOC_NAMES[k]+'突然從 '+cnt+' 筆變成 '+nxt+' 筆，已自動留下上一版（管理專區 → 還原上一版）');
     }
   },
-  docCount:function(k,d){ if(!d) return 0; if(d.items) return Array.isArray(d.items)?d.items.length:Object.keys(d.items).length; if(d.pages) return d.pages.length; if(d.scenarios) return d.scenarios.length; return 0; },
+  docCount:function(k,d){ if(!d) return 0; if(k==='tools') return toolsCount(d); if(d.items) return Array.isArray(d.items)?d.items.length:Object.keys(d.items).length; if(d.pages) return d.pages.length; if(d.scenarios) return d.scenarios.length; return 0; },
+  /* 主辦人自己要清空或整份換掉之前（清空工具頁的一區、套用範本），先留一份上一版；規則跟上面一樣，一天內留最完整的那份 */
+  keepPrev:function(k){ if(SIM_OFF) return; var cnt=Store.docCount(k,Store.s[k]); if(!cnt) return;
+    try{ var old=JSON.parse(localStorage.getItem('sapa-prev-'+k)||'null');
+      if(!(old&&old.n>cnt&&Date.now()-old.at<86400000)) localStorage.setItem('sapa-prev-'+k,JSON.stringify({at:Date.now(),n:cnt,doc:Store.s[k]})); }catch(e){} },
   prevSnapshots:function(){ var out=[]; DOC_KEYS.forEach(function(k){ try{ var v=JSON.parse(localStorage.getItem('sapa-prev-'+k)||'null'); if(v&&v.doc) out.push({key:k,at:v.at,n:v.n}); }catch(e){} }); return out; },
   restorePrev:function(k){ if(SIM_OFF) return false; try{ var v=JSON.parse(localStorage.getItem('sapa-prev-'+k)||'null'); if(!v||!v.doc) return false; Store.s[k]=v.doc; localStorage.removeItem('sapa-prev-'+k); Store.save(k); return true; }catch(e){ return false; } },
   /* 雲端快照進來：先套用雲端，再把「這支手機還沒送出去的修改」重新疊上去，離線期間的修改不會被舊快照蓋掉 */
@@ -412,6 +433,11 @@ function contacts(){ var st=S().settings; if(st.contacts&&st.contacts.length) re
 function nbPages(){ var n=S().notebook; return (n&&n.pages)||[]; }
 function nbPage(id){ var ps=nbPages(); return ps.filter(function(p){return p.id===(id||P.nbPage);})[0]||ps[0]; }
 function checkStats(pg){ var items=(pg.items||[]).filter(function(i){return i.kind!=='head';}); var ck=(P.checks||{})[pg.id]||{}; var done=items.filter(function(i){return ck[i.id];}).length; return {done:done,total:items.length}; }
+/* 工具頁內容（v3.23）：清空後從雲端回來時陣列都不見了（Firebase 不存空陣列），一樣要把空陣列掛回文件上 */
+function tl(){ var d=S().tools; if(!d||typeof d!=='object') d=Store.s.tools={}; return d; }
+function tlArr(k){ var d=tl(); if(!Array.isArray(d[k])) d[k]=(d[k]&&typeof d[k]==='object')?Object.keys(d[k]).map(function(x){ return d[k][x]; }).filter(Boolean):[]; return d[k]; }
+function toolsCount(d){ if(!d||typeof d!=='object') return 0;
+  return lenOf(d.cards)+lenOf(d.phrases)+lenOf(d.sos)+lenOf(d.money&&d.money.notes)+((d.taxi&&(d.taxi.fl||d.taxi.zh))?1:0); }
 function hotel(){ var st=S().settings; return (st.hotels||[]).filter(function(h){return h.id===st.currentHotelId;})[0]||(st.hotels||[])[0]||{}; }
 
 /* ===== 一鍵清空・自動備份（v3.22）=====
@@ -436,10 +462,12 @@ function bkSum(docs){ docs=docs||{}; var st=docs.settings||{};
   return {trip:st.tripName||'', start:st.startDate||'',
     members:lenOf((docs.members||{}).items), itinerary:lenOf((docs.itinerary||{}).items), groups:lenOf((docs.groups||{}).scenarios),
     notebook:lenOf((docs.notebook||{}).pages), photos:lenOf((docs.photos||{}).items), hotels:lenOf(st.hotels),
+    cards:lenOf((docs.tools||{}).cards), phrases:lenOf((docs.tools||{}).phrases),
     contacts:(Array.isArray(st.contacts)?st.contacts:[]).filter(function(c){ return c&&(c.phone||c.line); }).length}; }
 function bkSumText(s){ var a=[];
   if(s.itinerary) a.push('行程 '+s.itinerary+' 站'); if(s.members) a.push('團員 '+s.members+' 人');
   if(s.groups) a.push('分組 '+s.groups+' 個'); if(s.notebook) a.push('記事本 '+s.notebook+' 頁'); if(s.photos) a.push('底圖 '+s.photos+' 張');
+  if(s.cards) a.push('知識小卡 '+s.cards+' 張'); if(s.phrases) a.push('外語圖卡 '+s.phrases+' 句');
   return a.join('、')||'沒有行程與名單'; }
 function whenText(ms){ var d=new Date(ms||0); return (d.getMonth()+1)+'/'+d.getDate()+' '+pad(d.getHours())+':'+pad(d.getMinutes()); }
 /* 清空後的樣子 */
@@ -453,7 +481,10 @@ function blankDocs(T){
 }
 /* 從備份還原成的樣子：時間戳記換成現在；空的名單／行程要補上標記，規則才收 */
 function restoreDocs(e,T){ var out={}, src=(e&&e.docs)||{};
-  DOC_KEYS.forEach(function(k){ var d=clone(src[k]||{}); d._ts=T;
+  DOC_KEYS.forEach(function(k){ var d=clone(src[k]||{});
+    /* 3.23 以前的備份沒有工具頁內容：那時工具頁寫死越南內容，還原時一併換回越南範本 */
+    if(k==='tools'&&!src.tools&&e&&verCmp(String(e.ver||'0'),'3.23')<0) d=clone(TPL.vietnam.tools);
+    d._ts=T;
     if(Store.docCount(k,d)>0) delete d._cleared; else if(docBlank(k,d)) d._cleared=T;
     out[k]=d; });
   return out; }
@@ -481,8 +512,8 @@ function bkLoad(cb){
     function(){ cb(BK_VIEW,'fail'); });
 }
 function bkFind(id){ return BK_VIEW.filter(function(e){ return e.id===id; })[0]||bkLocalList().filter(function(e){ return e.id===id; })[0]||null; }
-/* 整批換掉 8 份文件（清空、還原都走這裡），換之前先備份目前內容。
-   make(T) 回傳新的 8 份文件；next(err, 備份)：err 是 null 代表成功，
+/* 整批換掉所有文件（清空、還原都走這裡），換之前先備份目前內容。
+   make(T) 回傳新的整組文件；next(err, 備份)：err 是 null 代表成功，
    'sim' 時間模擬中、'offline' 沒連上雲端、'pending' 還有修改沒送出、'denied' 雲端規則擋下（整批都沒寫進去）、
    'nospace' 單機模式手機放不下備份、'fail' 其他錯誤 */
 function bulkWrite(make,reason,next){
@@ -658,8 +689,8 @@ function setPin(id,v){
   if(!z.manual) z.manual={};
   z.manual[id]=v;
 }
-/* 航班卡的階段：出發前與第 1 天只看去程；倒數第 2 天（搭夜臥火車回河內那天）起到回國後只看回程；
-   中間在沙壩的日子沒有要搭的飛機，整張收起。小麥指定：不要同時列出去回程，免得長輩看錯。 */
+/* 航班卡的階段：出發前與第 1 天只看去程；倒數第 2 天起到回國後只看回程（沙壩團是搭夜臥火車回河內那天）；
+   中間幾天沒有要搭的飛機，整張收起。小麥指定：不要同時列出去回程，免得長輩看錯。 */
 function flightPhase(di){
   di=di||dayInfo(); var days=di.days||5, back=Math.max(2,days-1);
   if(di.status==='before') return 'out';
@@ -767,7 +798,7 @@ function zlab(t){ return '<div class="zlab"><span>'+t+'</span><i></i></div>'; }
 function grp(key,label,cards){ cards=cards.filter(Boolean); if(!cards.length) return ''; return '<div class="zsec g-'+key+'">'+zlab(label)+cards.join('')+'</div>'; }
 function renderSync(){
   renderSim();
-  /* 連線狀態（點＋字）併進標頭第二列，跟越南／台灣時間同一行；狀態字固定用簡短版本 */
+  /* 連線狀態（點＋字）併進標頭第二列，跟當地／台灣時間同一行；狀態字固定用簡短版本 */
   var state='', txt='';
   if(Store.mode==='cloud'){ state=(navigator.onLine===false?'off':'on'); txt=navigator.onLine===false?'離線':'已連線'; }
   else if(Store.mode==='connecting'){ txt='連線中'; }
@@ -776,7 +807,7 @@ function renderSync(){
   var dot=el('hdDot'), sy=el('hdSyncTx');
   dot.className='dot'+(state?' '+state:'');
   sy.textContent=txt;
-  sy.title='月半越南團旅 v'+APP_VERSION+(Store.q.length?'（'+Store.q.length+' 筆修改待送出）':'');
+  sy.title='月半團旅 v'+APP_VERSION+(Store.q.length?'（'+Store.q.length+' 筆修改待送出）':'');
   /* 離線提示條：看得到的資料是幾點的，免得照著舊的集合時間走 */
   var ob=el('offBar');
   if(ob){
@@ -791,7 +822,7 @@ function renderSync(){
   /* 選過名字的人：下面單獨一列問候；沒選名字時這列整個隱藏（連線狀態已經在上面那排看得到） */
   var me=getMe(), bar=el('syncBar');
   if(me){
-    var h=tzParts(VN).h, g=(h<11?'早安':(h<18?'午安':'晚安'));
+    var h=tzParts(LTZ()).h, g=(h<11?'早安':(h<18?'午安':'晚安'));
     bar.hidden=false;
     bar.innerHTML='<span class="me">'+esc(g)+'，'+esc(me.name)+'</span>';
   } else { bar.hidden=true; bar.innerHTML=''; }
@@ -812,7 +843,7 @@ function renderTabs(){
 /* 首頁該長什麼樣的「鍵」：日期 + 下一站。鍵變了才重畫，不會每 15 秒閃一次 */
 function homeKey(){ var di=dayInfo(); var n=nextStop(di); return di.status+':'+di.idx+':'+(n?n.id+':'+n.kind:''); }
 function tick(){
-  var vn=tzParts(VN), tw=tzParts(TW);
+  var lt=tzParts(LTZ()), tw=tzParts(TW);
   var hk=''; try{ hk=homeKey(); }catch(e){}
   if(tick._hk===undefined) tick._hk=hk;
   else if(hk!==tick._hk){
@@ -820,7 +851,7 @@ function tick(){
     if(!busy){ if(String(hk).split(':').slice(0,2).join(':')!==String(tick._hk).split(':').slice(0,2).join(':')) P.planDay=0;   /* 換天了：行程頁回到今天 */
       tick._hk=hk; render(); }   /* 正在打字或表單開著就先不動，下一次 tick 再補畫 */
   }
-  el('clockVN').textContent=vn.hm; el('clockTW').textContent=tw.hm;
+  el('clockLT').textContent=lt.hm; el('clockTW').textContent=tw.hm;
   if(SIM_OFF){ var sn=el('simNow'); if(sn) sn.textContent=simLabel(); }
   var c=el('countdown'); if(c){ var cd=countdown(); c.hidden=!cd; if(cd){ c.innerHTML=ic('clock')+esc(cd.text); c.classList.toggle('late',cd.late); } }
   var hc=el('hdCountdown');
@@ -863,6 +894,7 @@ function memberCard(m,opt){
 }
 function airDef(k){ var d=AIRLINES[k]; if(!d) return null; var o=((S().settings||{}).airlines||{})[k]||{};
   return {cls:d.cls, short:(o.short||d.label), name:(o.name||d.name), note:(o.note===undefined||o.note===null?d.note:o.note)}; }
+function alShort(k){ var d=airDef(k); return d?d.short:k; }
 function airlineBadge(a,lg){ var d=airDef(a); if(!d) return ''; return '<span class="al '+d.cls+(lg?' lg':'')+'" title="'+esc(d.name)+'">'+esc(d.short)+'</span>'; }
 /* 分組情境：固定不可刪除、臨時標籤 */
 var FIXED_SCN={meal:1};
@@ -944,7 +976,7 @@ VIEWS.home=function(){
     var ad=airDef(me.airline);
     var strip=[];
     strip.push('<button data-act="tab" data-tab="groups" data-scn="airline"><span class="k">航空公司</span><span class="v s">'+(ad?airlineBadge(me.airline)+' '+esc(ad.short):'待設定')+'</span></button>');
-    /* 報到航廈是桃園的航廈，只在去程階段有意義；回程在河內內排機場，顯示桃園航廈反而會誤導 */
+    /* 報到航廈是桃園的航廈，只在去程階段有意義；回程在國外的機場，顯示桃園航廈反而會誤導 */
     if(flightPhase(di)==='out') strip.push('<button data-act="tab" data-tab="groups" data-scn="airline"><span class="k">報到航廈</span><span class="v s">'+esc(ad&&ad.note?ad.note.replace(/^桃園/,''):'—')+'</span></button>');
     strip.push('<button data-act="tab" data-tab="rooms"><span class="k">我的房號</span><span class="v">'+esc(me.room||'待分配')+'</span></button>');
     (S().groups.scenarios||[]).forEach(function(sc){
@@ -1059,7 +1091,7 @@ function flightCard(){
   function col(k){ var t=tm(k);
     return '<div class="fl-col"><div class="fl-h">'+airlineBadge(k)+esc(alN(k))+'</div>'+
       '<div class="fl-r"><b>'+(t?esc(t):'<span class="muted" style="font-size:1rem">待公布</span>')+'</b><span class="k">'+
-      (back?'回程 · 河內內排機場起飛':'去程 · 桃園 '+esc(alT(k))+' 起飛')+'</span></div></div>'; }
+      (back?'回程 · '+(f.backPort?esc(f.backPort)+' ':'')+'起飛':'去程 · 桃園 '+esc(alT(k))+' 起飛')+'</span></div></div>'; }
   var inner='<div class="fl">'+keys.map(col).join('')+'</div>'+
     (!back&&f.note&&!(di.status==='before'&&!(S().broadcast||{}).time)?'<div class="warn-box" style="margin-top:.6rem">'+ic('clock')+'<span>'+esc(f.note)+'</span></div>':'');
   /* 收起時的摘要：每家航空一段、段內不斷行，窄螢幕時整段換行而不是被「…」切掉 */

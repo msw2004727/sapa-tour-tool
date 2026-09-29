@@ -1,4 +1,4 @@
-<title>月半越南團旅</title>
+<title>月半團旅</title>
 <style>
 :root{
   --bg:#EEF2F5; --card:#FFFFFF; --ink:#1B2437; --ink-2:#4A5568; --ink-3:#5F6B7A; --line:#D9E0E8; --frame:#C9D2DC;
@@ -89,7 +89,7 @@ svg.i{width:1.25rem;height:1.25rem;flex-shrink:0;fill:none;stroke:currentColor;s
 .lcd .cd.late{color:var(--lcd-red);text-shadow:0 0 8px var(--lcd-red-glow)}
 .lcd .cd.none{color:var(--lcd-dim);text-shadow:none}
 html[data-fs="xl"] .lcd .dv2{display:none}
-/* 面板分成「越南｜台灣」與「集合倒數｜連線」兩組；放不下一行時第二組自動換到下一行，
+/* 面板分成「當地｜台灣」與「集合倒數｜連線」兩組；放不下一行時第二組自動換到下一行，
    中間那條分隔線在換行時藏起來。這樣字級可以放大到看得清楚，不用為了塞成一行而縮字。 */
 @media (max-width:360px){
   html[data-fs="lg"] .lcd .dv2,html[data-fs="xl"] .lcd .dv2{display:none}
@@ -487,7 +487,7 @@ ul.clr-list{gap:.3rem;margin-top:.35rem;line-height:1.45}
 .note-item{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.75rem .85rem;font-size:1rem;line-height:1.55;font-weight:600;color:var(--ink);white-space:pre-line}
 .it-wrap{display:flex;flex-direction:column;gap:.5rem}
 .it-row{display:flex;gap:.4rem;align-items:stretch}
-.it-row>.ck-row,.it-row>.note-item{flex:1;min-width:0}
+.it-row>.ck-row,.it-row>.note-item,.it-row>.ph{flex:1;min-width:0}
 .it-row>.nb-head{flex:1}
 .it-row .edit{width:44px;min-width:44px;padding:0;flex-shrink:0;align-self:center;min-height:44px}
 .tf{display:flex;align-items:center;gap:.35rem}
@@ -667,6 +667,29 @@ select.in.sm{min-height:2.5rem;font-size:.88rem;padding:0 1.6rem 0 .55rem;width:
 .tcard svg.i{width:1.5rem;height:1.5rem;color:var(--indigo);margin-bottom:.15rem}
 .tcard b{font-size:1rem;font-weight:900;white-space:nowrap;word-break:keep-all}
 .tcard small{font-size:.875rem;color:var(--ink-3);font-weight:700;line-height:1.25}
+/* ===== 工具頁內容（v3.23）：主辦人自己寫的，長度不一定，寧可換行也不要撐破版面 ===== */
+.tcard b{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.tl-lead{margin-top:-.35rem}
+.tl-lead>.btn{flex:0 1 auto}
+.kc{display:flex;flex-direction:column;gap:.8rem}
+.kc .ic-h,.kc dl.kv2 dt{white-space:normal}
+.kc .info-card>*+*{margin-top:.6rem}
+.kc .info-card>.ic-h+*{margin-top:0}
+.kc h2.sec::before{content:'';display:inline-block;width:.28rem;height:1.05em;border-radius:2px;background:var(--indigo);flex-shrink:0}
+.kc .info-card,.kc .warn-box{overflow-wrap:anywhere}
+.md-bar{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.4rem}
+.md-bar .chip{min-height:2.5rem}
+textarea.in.md-ta{min-height:14rem;font-size:1rem;line-height:1.55}
+.md-help{margin-top:.35rem;line-height:1.5}
+.md-prev{border:1.5px dashed var(--line);border-radius:12px;padding:.6rem;background:var(--bg)}
+.rate-row{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:.4rem}
+.mn-rows{display:flex;flex-direction:column;gap:.4rem;margin-bottom:.45rem}
+.mn-row{display:grid;grid-template-columns:minmax(0,1fr) 3rem minmax(0,1.3fr);gap:.4rem;align-items:center}
+.mn-row input[type=color]{padding:.2rem;height:3rem;cursor:pointer}
+.sos-ed{display:flex;flex-direction:column;gap:.4rem;padding-bottom:.6rem;border-bottom:1px dashed var(--line)}
+.ck-line{display:flex;gap:.55rem;align-items:flex-start;font-weight:700;line-height:1.45;padding:.3rem 0;cursor:pointer}
+.ck-line input{width:1.5rem;height:1.5rem;flex-shrink:0;margin-top:.05rem;accent-color:var(--indigo)}
+.full .fh-b{display:flex;gap:.4rem;flex-shrink:0}
 .ver{text-align:center;font-size:.875rem;color:var(--ink-3);font-weight:700;padding:.4rem 0 .2rem;letter-spacing:.04em}
 .btn.line{background:#0B7A3A;color:#fff;border-color:#0B7A3A}
 .btn.line svg.i{width:1.1rem;height:1.1rem}
