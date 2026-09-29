@@ -441,6 +441,53 @@ async function open(b,opt){
     ck('沒有 JS 錯誤',!errs.length,errs);
     await ctx.close(); }
 
+  console.log('\n[12] 兩段式刪除：按一次之後，「取消」「儲存」與確認鈕都在表單內（v3.23 就有的洞，v3.26 修）');
+  /* 按一次「刪除」，那顆按鈕會換成很長的確認字（例：連圖卡一起刪？再按一次）。以前三顆按鈕擠同一列，
+     長的那顆把「取消」「儲存」擠出表單外；現在放不下就換行，確認鈕獨佔一整列（原本在最下面一列就留在最下面，字大螢幕窄時底部擠成兩列、
+     它原本在上面那列就留在上面），而且蓋住原本那顆的位置。
+     一顆一顆真的按下去量：按鈕有沒有出表單、字有沒有被切、確認鈕是不是獨佔一列、原本那顆的位置現在點到的是不是它、再按一次是不是真的刪掉。
+     280px 是折疊機外螢幕的寬度（設計基準是 320px，這條只守底線）：特大字時「連圖卡一起刪？再按一次」比一整列還寬，
+     要靠確認鈕裡的字自己換行才不會凸出表單；320px 以上放得下，碰不到這條保護（v3.26 突變驗證時發現，才補這一格）。 */
+  for(const [w,fs,dark] of [[320,'md',false],[320,'lg',false],[320,'xl',false],[320,'xl',true],[375,'md',false],[375,'xl',false],[390,'xl',true],[280,'xl',false]]){
+    const {ctx,p,errs}=await open(b,{viewport:{width:w,height:740},colorScheme:dark?'dark':'light'});
+    const tag=`${w}/${fs}/${dark?'深':'淺'}`;
+    for(const [i,name] of [[0,'小卡「刪除」'],[1,'圖卡類別「刪除」'],[2,'圖卡「刪除」'],[3,'外幣「清空」']]){
+      const r=await p.evaluate(async ([i,fs])=>{
+        var C=[
+          ['tlCardDel',function(){ sheetCardEdit('entry'); },function(){ return tlCards().length; }],
+          ['phCatDel',function(){ sheetPhCat('eat'); },function(){ return tlArr('cats').length; }],
+          ['phDel',function(){ sheetPhrase(tlPhrases()[9].id); },function(){ return tlPhrases().length; }],
+          ['moneyWipe',function(){ sheetMoney(); },function(){ return moneyOK()?1:0; }]][i];
+        P.fs=fs; P.leader=true; render(); C[1](); await sleep(320);   /* 表單從下面滑上來要 0.22 秒，滑完才量位置 */
+        var sh=document.querySelector('.sheet'), btn=document.querySelector('.sheet [data-act="'+C[0]+'"]');
+        if(!sh||!btn) return {no:true};
+        var b0=btn.getBoundingClientRect(), pt={x:Math.round(b0.left+b0.width/2),y:Math.round(b0.top+b0.height/2)}, n0=C[2]();
+        btn.click(); await sleep(30);
+        var R=sh.getBoundingClientRect(), f=document.querySelector('.sheet-f'), arm=document.querySelector('.sheet [data-act="'+C[0]+'"]'), ar=arm.getBoundingClientRect();
+        var box=function(e){ var r=e.getBoundingClientRect(); return {t:e.textContent.trim().slice(0,14),l:Math.round(r.left),r:Math.round(r.right),top:Math.round(r.top),bottom:Math.round(r.bottom),clip:e.scrollWidth>e.clientWidth+1}; };
+        var others=[].filter.call(f.querySelectorAll('.btn'),function(e){ return e!==arm; }).map(box), a=box(arm), all=others.concat([a]);
+        var o={label:a.t,sheet:Math.round(R.left)+'-'+Math.round(R.right),boxes:all.map(function(x){ return x.t+'['+x.l+'-'+x.r+(x.clip?' 字被切':'')+']'; }).join(' ')};
+        o.inside=all.every(function(x){ return x.l>=R.left-1&&x.r<=R.right+1&&!x.clip; })&&f.scrollWidth<=f.clientWidth+1;
+        o.ownRow=others.length===2&&others.every(function(x){ return a.top>=x.bottom-1||a.bottom<=x.top+1; });   /* 跟別的按鈕沒有上下重疊＝獨佔一整列 */
+        o.sameSpot=pt.x>=a.l&&pt.x<=a.r&&pt.y>=a.top&&pt.y<=a.bottom;
+        var hit=document.elementFromPoint(pt.x,pt.y); hit=hit&&hit.closest&&hit.closest('[data-act]'); o.hitIsArmed=(hit===arm);
+        o.stillThere=C[2]()===n0;
+        /* 確認字換成兩行時，最後一行不能只剩一個字（例：「…再按一／次」）。逐字量它在第幾行 */
+        var tn=[].slice.call(arm.childNodes).filter(function(n){ return n.nodeType===3; }).pop(), lines={}, rg=document.createRange();
+        if(tn) for(var k=0;k<tn.length;k++){ rg.setStart(tn,k); rg.setEnd(tn,k+1); var rc=rg.getClientRects()[0]; if(rc){ var ln=Math.round(rc.top/6); lines[ln]=(lines[ln]||0)+1; } }
+        var per=Object.keys(lines).map(function(k){ return lines[k]; }); o.textLines=per.join('+'); o.noOrphan=!!tn&&(per.length<2||Math.min.apply(null,per)>=2);
+        if(hit) hit.click(); await sleep(60);
+        o.deleted=C[2]()<n0; o.closed=!document.querySelector('.sheet');
+        return o; },[i,fs]);
+      if(r.no){ ck(tag+' '+name+'：表單打得開',false,r); continue; }
+      ck(tag+' '+name+'：按一次之後三顆按鈕都在表單內、字沒被切（'+r.boxes+'）',r.inside,r);
+      ck(tag+' '+name+'：確認鈕獨佔一整列，蓋住原本那顆的位置（再點同一個地方還是它）；按一次還沒刪',r.ownRow&&r.sameSpot&&r.hitIsArmed&&r.stillThere,r);
+      ck(tag+' '+name+'：確認字換行時最後一行不會只剩一個字（每行 '+r.textLines+' 字）',r.noOrphan,r);
+      ck(tag+' '+name+'：再按一次真的刪掉、表單關閉',r.deleted&&r.closed,r);
+    }
+    ck(tag+'：沒有 JS 錯誤',!errs.length,errs);
+    await ctx.close(); }
+
   await b.close();
   console.log(fails?`\n${fails} 個問題`:'\n全部通過');
   process.exit(fails?1:0);

@@ -562,8 +562,16 @@ ul.clr-list{gap:.3rem;margin-top:.35rem;line-height:1.45}
    自動最小尺寸就會被蓋掉，表單一高過螢幕子項就被壓扁、內容疊在一起。
    這裡一律不准縮，高度不夠就讓 .sheet-b 自己捲。 */
 .sheet-b>*{flex:none}
-.sheet-f{padding:.6rem 1rem calc(.75rem + env(safe-area-inset-bottom));border-top:1px solid var(--line);display:flex;gap:.5rem}
+.sheet-f{padding:.6rem 1rem calc(.75rem + env(safe-area-inset-bottom));border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:.5rem}
 .sheet-f .btn{flex:1}
+/* 兩段式確認（sure()）按過一次之後，那顆按鈕的字會變長（例：「連圖卡一起刪？再按一次」）。
+   以前三顆按鈕擠在同一列，長的那顆把「取消」「儲存」擠出表單（v3.23 就有，v3.26 修）。
+   現在放不下就換行：等著確認的那顆（sure() 會替它加 data-sure）獨佔最下面一整列——
+   底部是貼著螢幕下緣往上長的，所以它就在原本那顆的位置上，再按一次還是按得到（原本在上面那列的用 data-up 留在上面，見 sure()）；
+   字太長（字級特大、螢幕很窄）時在鈕裡自己換行：keep-all 讓它只在「？」這類標點後面斷行（連圖卡一起刪？／再按一次），
+   不會把最後一個字孤零零留在第二行；真的連一小段都放不下才由 overflow-wrap 在任何字之間斷開，不會凸出表單 */
+.sheet-f .btn[data-sure="1"]{flex:1 1 100%;order:9;white-space:normal;word-break:keep-all;overflow-wrap:anywhere;line-height:1.25;padding-top:.45rem;padding-bottom:.45rem}
+.sheet-f .btn[data-sure="1"][data-up="1"]{order:-1}
 /* 用直接子代選擇器：欄位裡若有 <label class="btn">（例：選照片）不能被 display:block 打回方塊，
    不然裡面的 SVG 就不會置中。 */
 .f>label{display:block;font-size:.85rem;font-weight:900;color:var(--ink-2);margin-bottom:.3rem}
@@ -819,7 +827,7 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
 <script src="./config.js"></script>
 <script>
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '3.25';
+var APP_VERSION = '3.26';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -4303,7 +4311,13 @@ function nowPlus(min){ return nowPlusSlot(min).hm; }
 function nowPlusDate(min){ return nowPlusSlot(min).date; }
 function stamp(){ return nowPlus(0); }
 /* 刪除、清空這類按鈕：第一次按只把字換成「再按一次…」，第二次才真的做 */
-function sure(t,label){ if(t.getAttribute('data-sure')==='1') return true; t.setAttribute('data-sure','1'); t.innerHTML=ic('alert')+esc(label); return false; }
+/* 兩段式確認：第一次按，按鈕變成「再按一次…」；第二次才回傳 true。
+   表單底部放不下會換行（見 .sheet-f）：按過一次的這顆獨佔一整列。原本在最下面一列的它留在最下面、原本在上面那列的
+   （字大、螢幕窄時底部會擠成兩列）留在上面（data-up），這樣它永遠蓋在原本那顆的位置上，再按一次不會點到別顆 */
+function sure(t,label){ if(t.getAttribute('data-sure')==='1') return true;
+  var f=t.parentNode, r=t.getBoundingClientRect(), up=false;
+  if(f&&f.classList&&f.classList.contains('sheet-f')) [].forEach.call(f.children,function(x){ if(x!==t&&x.getBoundingClientRect().top>r.top+1) up=true; });
+  t.setAttribute('data-sure','1'); if(up) t.setAttribute('data-up','1'); t.innerHTML=ic('alert')+esc(label); return false; }
 /* 下載一段文字成檔案（匯出備份檔、下載某一份自動備份） */
 function dlText(name,text){ try{ var blob=new Blob([text],{type:'application/json'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },500); return true; }catch(e){ return false; } }
 /* 清空與還原共用：驗 PIN → 按鈕變「處理中」→ 整批寫入。

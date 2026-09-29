@@ -10,7 +10,13 @@ function nowPlus(min){ return nowPlusSlot(min).hm; }
 function nowPlusDate(min){ return nowPlusSlot(min).date; }
 function stamp(){ return nowPlus(0); }
 /* 刪除、清空這類按鈕：第一次按只把字換成「再按一次…」，第二次才真的做 */
-function sure(t,label){ if(t.getAttribute('data-sure')==='1') return true; t.setAttribute('data-sure','1'); t.innerHTML=ic('alert')+esc(label); return false; }
+/* 兩段式確認：第一次按，按鈕變成「再按一次…」；第二次才回傳 true。
+   表單底部放不下會換行（見 .sheet-f）：按過一次的這顆獨佔一整列。原本在最下面一列的它留在最下面、原本在上面那列的
+   （字大、螢幕窄時底部會擠成兩列）留在上面（data-up），這樣它永遠蓋在原本那顆的位置上，再按一次不會點到別顆 */
+function sure(t,label){ if(t.getAttribute('data-sure')==='1') return true;
+  var f=t.parentNode, r=t.getBoundingClientRect(), up=false;
+  if(f&&f.classList&&f.classList.contains('sheet-f')) [].forEach.call(f.children,function(x){ if(x!==t&&x.getBoundingClientRect().top>r.top+1) up=true; });
+  t.setAttribute('data-sure','1'); if(up) t.setAttribute('data-up','1'); t.innerHTML=ic('alert')+esc(label); return false; }
 /* 下載一段文字成檔案（匯出備份檔、下載某一份自動備份） */
 function dlText(name,text){ try{ var blob=new Blob([text],{type:'application/json'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },500); return true; }catch(e){ return false; } }
 /* 清空與還原共用：驗 PIN → 按鈕變「處理中」→ 整批寫入。
