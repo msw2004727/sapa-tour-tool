@@ -107,13 +107,15 @@ npx playwright install chromium
 
 # 改完 src/ 之後
 node build.js            # 或 npm run build
-npm run test:quick       # 快檢：regress + sheetfit（約 1 分鐘）
-npm test                 # 全部 17 支測試（約 16 分鐘）
+npm run test:quick       # 快檢：regress + sheetfit（幾分鐘，見下）
+npm test                 # 全部 17 支測試（約 9～16 分鐘，見下）
 npm run test:rules       # 只有改 Firebase 規則時才跑：官方模擬器實際寫入（要 Java，見 audit/fbrules.js 開頭）
 
 # 在瀏覽器看
 npm run serve            # http://localhost:8080
 ```
+
+> 測試時間隨環境差很多。2026-09-29 在雲端工作階段（4 核心）實測：快檢 4 分 22 秒（Playwright 1.56.0）、全套 8 分 49 秒（Playwright 1.63.0＋預裝 Chrome）；更早在別的環境記的是快檢約 1 分鐘、全套約 16 分鐘。指令跑超過幾分鐘時，用背景執行、把輸出寫進檔案再看，不要乾等。
 
 `build.js` 會做四件事，任何一項失敗就中止：組裝 → 語法檢查（`node --check`）→ **重複函式定義檢查** → 印出版本與位元組數。
 
@@ -184,7 +186,7 @@ Cowork 的容器**沒有 GitHub 憑證，不能 `git push`**，而且對話結�
 `claude.ai/code` 的雲端工作階段會自己 clone 這個 repo，不需要本機檔案。以下是 2026-09-29 在雲端工作階段實測過的做法（來龍去脈在 `notes/03-改版日誌_v3.14起.md` 第十七節）：
 
 1. 改完**一定要 `node build.js`**，否則推上去的 `index.html` 還是舊的 —— 這是這個專案最容易犯的錯，因為原始碼與產出物在同一個 repo 裡。
-2. **跑測試：`npm install` 就好，不要跑 `npx playwright install`。** 雲端環境的 Chromium 是預裝的（`PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers`，目前是 chromium-1194，對應 Playwright 1.56），不能再下載。專案沒有鎖檔，`npm install` 會裝到最新的 Playwright（2026-09 是 1.63.0），它要的瀏覽器編號不在預裝目錄，一開瀏覽器就報 `Executable doesn't exist`。`audit/_lib.js` 現在遇到這個錯誤會自動改用預裝的 Chromium（終端機會印一行 `[_lib] … 改用預裝的 …`，表示走了後備），所以照常 `npm install && npm test` 即可。
+2. **跑測試：`npm install` 就好，不要跑 `npx playwright install`。** 雲端環境的 Chromium 是預裝的（`PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers`，目前是 chromium-1194，對應 Playwright 1.56），不能再下載。專案沒有鎖檔，`npm install` 會裝到最新的 Playwright（2026-09 是 1.63.0），它要的瀏覽器編號不在預裝目錄，一開瀏覽器就報 `Executable doesn't exist`。`audit/_lib.js` 現在遇到這個錯誤會自動改用預裝的 Chromium（終端機會印一行 `[_lib] … 改用預裝的 …`，表示走了後備），所以照常 `npm install && npm test` 即可（實測：Playwright 1.63.0＋預裝的 Chrome 141，全套 17 支 940 項全過，跟 Playwright 1.56.0 那次逐項相同）。
    - 如果連 `npm install` 都不行、或測試還是跑不起來：至少確認 `node build.js` 有過，並把「沒跑測試」講出來。
 3. **分支與上線**：雲端工作階段會被指定一個 `claude/…` 分支，平常推那個分支。**推 `main` 要小麥明確同意**（他說「上線」）：`git push origin HEAD:main`；`main` 是 HEAD 的祖先時就是快轉，不會有衝突。
 4. **驗證上線**：容器連不到 `750hd.com`（也連不到 `github.io`），但連得到 `api.github.com` 與 `raw.githubusercontent.com`（匿名，有速率限制）：
