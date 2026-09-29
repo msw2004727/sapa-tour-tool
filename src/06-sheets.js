@@ -414,7 +414,7 @@ function sheetSettings(){
     '<div class="muted" style="margin-top:-.5rem">PIN 只會以雜湊保存，雲端看不到明文。</div>'+
     '<h2 class="sec">'+ic('plane')+'航班（起飛時間）</h2>'+
     '<div class="grid2">'+fld('長榮 去程 桃園起飛',timeField('eva_out',f.eva.out))+fld('長榮 回程 河內起飛',timeField('eva_back',f.eva.back))+fld('華航 去程 桃園起飛',timeField('ci_out',f.ci.out))+fld('華航 回程 河內起飛',timeField('ci_back',f.ci.back))+'</div>'+'<div class="muted" style="margin-top:-.5rem">團員首頁不會同時看到去回程：出發前與第 1 天只顯示去程，第 '+Math.max(2,(st.days||5)-1)+' 天起只顯示回程，中間幾天航班卡收起。</div>'+fld('去程團體報到說明（只在去程階段顯示在航班卡下方）',ta('flight_note',f.note))+
-    '<h2 class="sec">'+ic('phone')+'緊急聯絡人（留白＝不顯示）</h2>'+
+    '<h2 class="sec">'+ic('phone')+'緊急聯絡人</h2><div class="muted" style="margin-top:-.5rem">留白＝不顯示</div>'+
     cs.map(function(c,i){ return '<div class="f" style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem">'+inp('c_name_'+i,c.name,'text','placeholder="姓名"')+inp('c_label_'+i,c.label,'text','placeholder="例：越南電話"')+'<div style="grid-column:1/-1">'+inp('c_phone_'+i,c.phone,'tel','placeholder="+84 或 +886 開頭"')+'</div><div style="grid-column:1/-1">'+inp('c_line_'+i,c.line,'url','placeholder="LINE 加好友網址（選填）"')+'</div></div>'; }).join('')+
     fld('駐越南台北經濟文化辦事處 急難救助電話',inp('embassyPhone',st.embassyPhone,'tel','placeholder="出發前請至外交部領事事務局網站確認"'))+
     '<h2 class="sec">'+ic('clipboard')+'備份與還原</h2><div class="row"><button type="button" class="btn" data-act="exportData">'+ic('down')+'匯出備份檔</button><label class="btn" style="cursor:pointer">'+ic('up')+'匯入備份檔<input type="file" id="importFile" accept="application/json,.json" hidden></label></div><div class="muted">匯出會下載一個 JSON 檔（含名單、行程、電話）；匯入會覆蓋並同步給全團。</div>',
@@ -565,5 +565,57 @@ function sheetNbItem(pgId,id,head){
     (id?'<div class="row"><button class="btn" data-act="nbMove" data-pg="'+pgId+'" data-id="'+id+'" data-dir="-1">'+ic('up')+'上移</button><button class="btn" data-act="nbMove" data-pg="'+pgId+'" data-id="'+id+'" data-dir="1">'+ic('down')+'下移</button><button class="btn dng" data-act="nbDelItem" data-pg="'+pgId+'" data-id="'+id+'">'+ic('trash')+'刪除</button></div>':''),
     foot:footBtns('nbSaveItem')});
   SHEET.pg=pgId; SHEET.id=id; SHEET.head=isHead;
+}
+/* ===== 一鍵清空・備份與還原（v3.22）=====
+   清空與還原都會影響全團，所以：先把「會發生什麼事」講清楚，再輸入一次管理 PIN 才執行。
+   PIN 欄位不自動取得焦點：手機鍵盤一跳出來就會蓋住上面的警語。 */
+function pinField(verb){ return '<div class="warn-box dng-box" id="sheetErr" role="alert" hidden></div>'+
+  '<div class="f"><label>輸入管理 PIN 確認'+verb+'</label><input class="in pinmask" name="pin" type="tel" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="管理 PIN"></div>'; }
+function sheetClear(){
+  var s=bkSum(S()), st=S().settings||{}, L=[];
+  function n(x,u){ return x?'（'+x+' '+u+'）':''; }
+  L.push('行程'+n(s.itinerary,'站')+'、行程底圖'+n(s.photos,'張'));
+  L.push('團員名單'+n(s.members,'人')+'、分組'+n(s.groups,'個情境')+'、點名紀錄');
+  L.push('記事本'+n(s.notebook,'頁')+'，包含出發前準備清單');
+  L.push('即時廣播、明早時程');
+  L.push('團名'+(st.tripName?'「'+st.tripName+'」':'')+'、出發日期與天數、航班時間');
+  L.push('飯店資料'+n(s.hotels,'間')+'、緊急聯絡人'+n(s.contacts,'位')+'、駐越南辦事處電話');
+  L.push('防呆標籤、航空公司名稱與航廈、首頁卡片位置與高亮、匯率');
+  openSheet({title:'一鍵清空內容',tall:true,body:
+    '<div class="warn-box dng-box">'+ic('alert')+'<span>清空後，<b>全團每一支手機都會同步變成空白</b>，首頁只剩「尚未建立旅程」。</span></div>'+
+    '<div><b>會清空</b><ul class="dots clr-list">'+L.map(function(x){ return '<li>'+esc(x)+'</li>'; }).join('')+'</ul></div>'+
+    '<div><b>會保留</b><div class="muted" style="margin-top:.25rem">管理 PIN（清空後一樣用原本的 PIN 進管理模式）。每支手機自己的字級、深淺色不受影響。</div></div>'+
+    '<div class="bk-note">'+ic('history')+'<span>清空前會<b>自動備份</b>一份（雲端＋這支手機）。按錯了，到「管理專區 → 備份與還原」就能一鍵復原；雲端最多保留最近 '+BK_MAX+' 份。</span></div>'+
+    '<button type="button" class="btn block" data-act="exportData">'+ic('install')+'下載備份檔（選用）</button>'+
+    pinField('清空'),
+    foot:'<button class="btn" data-act="sheetClose">取消</button><button class="btn dng" data-act="clearGo">'+ic('trash')+'確定清空</button>'});
+}
+/* 備份清單：先列這支手機裡的，雲端讀到了再換成合併後的 */
+function bkListHTML(list,state){
+  var h=['<div class="muted">每次「一鍵清空」或「還原」之前，都會先自動備份當時的全部內容。按「還原」會用那一份取代現在的資料，並同步給全團。</div>'];
+  if(state==='loading') h.push('<div class="muted">正在讀取雲端的備份…</div>');
+  else if(state==='fail') h.push('<div class="muted">雲端的備份暫時讀不到（可能沒有網路），先列出這支手機裡的。</div>');
+  if(!list.length){ if(state!=='loading') h.push('<div class="card muted">目前沒有備份。按「一鍵清空內容」時，會先自動備份一份。</div>'); }
+  else h.push('<div class="stack">'+list.map(function(e){ var s=e.sum||bkSum(e.docs);
+    return '<div class="bk-row"><div class="bk-t"><b>'+esc(whenText(e.at))+' '+(e.reason==='restore'?'還原前':'清空前')+'的備份</b>'+
+      '<span class="muted">'+esc((s.trip?s.trip+'：':'')+bkSumText(s))+'</span>'+
+      '<span class="bk-src">存在'+(e.cloud&&e.local?'雲端＋這支手機':(e.cloud?'雲端':'這支手機'))+'</span></div>'+
+      '<div class="row"><button class="btn sm pri" data-act="bkAsk" data-id="'+esc(e.id)+'">'+ic('refresh')+'還原</button><button class="btn sm" data-act="bkFile" data-id="'+esc(e.id)+'">'+ic('install')+'下載</button></div></div>'; }).join('')+'</div>');
+  return h.join('');
+}
+function sheetBackups(){
+  openSheet({title:'備份與還原',tall:true,body:'<div id="bkList" class="stack"></div>'});
+  bkLoad(function(list,state){ var box=el('bkList'); if(box) box.innerHTML=bkListHTML(list,state); });
+}
+function sheetRestore(id){
+  var e=bkFind(id); if(!e){ toast('找不到這份備份，請重新打開清單'); return; }
+  var s=e.sum||bkSum(e.docs);
+  openSheet({title:'還原這份備份？',body:
+    '<div class="bk-row"><div class="bk-t"><b>'+esc(whenText(e.at))+' '+(e.reason==='restore'?'還原前':'清空前')+'的備份</b><span class="muted">'+esc((s.trip?s.trip+'：':'')+bkSumText(s))+'</span></div></div>'+
+    '<div class="warn-box">'+ic('alert')+'<span>現在的內容會被這份備份<b>整個取代</b>，全團手機會同步。</span></div>'+
+    (stateBlank(S())?'':'<div class="bk-note">'+ic('history')+'<span>還原前會先把<b>現在的內容</b>也自動備份一份，還原錯了可以再還原回來。</span></div>')+
+    pinField('還原'),
+    foot:'<button class="btn" data-act="sheetClose">取消</button><button class="btn pri" data-act="bkGo">'+ic('refresh')+'確定還原</button>'});
+  SHEET.bk=id;
 }
 

@@ -261,7 +261,9 @@ var Store={
   },
   /* 資料突然變少時自動留一份上一版（例：一次誤寫把 33 人名單清空），管理專區可以還原 */
   guardShrink:function(k,incoming){
-    if(SIM_OFF) return;
+    if(SIM_OFF||Store._bulk) return;   /* _bulk：這支手機自己正在整批清空／還原 */
+    /* 「一鍵清空」送來的空殼（帶 _cleared）不是意外：清空前已經做了完整備份，這裡不必再留一份、也不用跳提示 */
+    if(incoming&&incoming._cleared) return;
     var cnt=Store.docCount(k,Store.s[k]), nxt=Store.docCount(k,incoming);
     if(cnt>=5&&nxt<cnt*0.5){
       try{ var old=JSON.parse(localStorage.getItem('sapa-prev-'+k)||'null');
@@ -329,6 +331,11 @@ var Store={
       db.ref(root).on('value',function(snap){ var got=Store.applyRemote(snap.val()||{}); if(!got&&P.leader) toast('雲端尚無資料，第一次修改後會自動建立'); },function(err){ Store.mode='offline'; renderSync(); });
       db.ref('.info/connected').on('value',function(sn){ if(Store.mode==='cloud'||Store.mode==='offline'){ Store.mode=sn.val()?'cloud':'offline'; renderSync(); if(sn.val()) Store.flush(); } });
       Store.pushOp=function(op){ if(op.path){ var u={}; u[op.key+'/'+op.path]=op.val; u[op.key+'/_ts']=op.ts; return db.ref(root).update(u); } return db.ref(root+'/'+op.key).set(op.val); };
+      /* 一鍵清空／還原：8 份文件加上備份用同一筆 update 送出，全部成功或全部不動 */
+      Store.pushMulti=function(u){ return db.ref().update(u); };
+      Store.root=root;
+      /* 備份放在 backups/<root>，不在 trip 底下，所以平常不會被下載；只有主辦人打開備份清單時才讀 */
+      Store.fetchBackups=function(){ return db.ref('backups/'+root).once('value').then(function(s){ return s.val()||{}; }); };
       Store.push=true; Store.flush();
     }).catch(function(){ Store.mode='local'; Store._lastTry=Date.now(); renderSync(); if(!Store._offToasted){ Store._offToasted=true; toast('連不上雲端，先顯示手機裡的資料；有訊號時會自動再連'); } });
   },
@@ -367,14 +374,19 @@ var Store={
         Store.mode='offline'; renderSync(); toast(Store.cacheOK===false?'雲端儲存失敗，而且手機空間不足沒存到；請盡快連線':'雲端儲存失敗，已先存在這支手機，連上線會自動補送'); });
   },
   save:function(key){
-    var d=Store.s[key]; if(d&&typeof d==='object') d._ts=Date.now();
+    var d=Store.s[key]; if(d&&typeof d==='object'){ d._ts=Date.now();
+      /* 清空過的文件開始有內容了：拿掉「已清空」標記（規則只准「帶標記的空文件」，有內容就不能再掛著它） */
+      if(d._cleared&&Store.docCount(key,d)>0) delete d._cleared; }
     Store.cache(); render();
     Store.enqueue({key:key,path:'',val:clone(d),ts:(d&&d._ts)||Date.now()});
   },
   /* 局部寫入：只送改到的那一格，兩支手機同時操作不會互相蓋掉 */
   savePath:function(key,path,val){
     var d=Store.s[key]; if(!d||typeof d!=='object') d=Store.s[key]={};
-    setPath(d,path,val); d._ts=Date.now();
+    setPath(d,path,val);
+    /* 清空後第一次放進內容（例：第一張底圖）：改成整份存檔，才能順便把「已清空」標記一起拿掉 */
+    if(d._cleared&&Store.docCount(key,d)>0) return Store.save(key);
+    d._ts=Date.now();
     Store.cache(); render();
     Store.enqueue({key:key,path:path,val:(val===undefined?null:clone(val)),ts:d._ts});
   },
@@ -384,10 +396,13 @@ var Store={
 };
 setInterval(function(){ Store.reconnect(); if(Store.q.length&&!Store.flushing) Store.flush(); },20000);
 function S(){ return Store.s; }
-function members(){ return (S().members&&S().members.items)||[]; }
+/* 清空後的名單／行程從雲端回來時連 items 都沒有（Firebase 不存空陣列）。
+   要把空陣列掛回文件上，不能回傳一個「沒掛在資料上」的新陣列——
+   否則新增第一位團員時是 push 進那個孤兒陣列，畫面說「已儲存」其實什麼都沒存到。 */
+function members(){ var d=S().members; if(!d||typeof d!=='object') return []; return d.items||(d.items=[]); }
 function member(id){ return members().filter(function(m){return m.id===id;})[0]; }
 function getMe(){ return P.meId?member(P.meId):null; }
-function items(){ return (S().itinerary&&S().itinerary.items)||[]; }
+function items(){ var d=S().itinerary; if(!d||typeof d!=='object') return []; return d.items||(d.items=[]); }
 function scenario(id){ var g=S().groups||{scenarios:[]}; var want=id||P.scn||g.activeId; var sc=(g.scenarios||[]).filter(function(x){return x.id===want;})[0]; return sc||(id?null:(g.scenarios||[])[0]); }
 function groupNameOf(scnId,mid){ var sc=scenario(scnId); if(!sc) return ''; var gi=sc.assign&&sc.assign[mid]; if(gi===undefined||gi===null||gi<0) return ''; return sc.names[gi]||('第 '+(gi+1)+' 組'); }
 /* 首頁「我的資訊」分組列：管理者可以把特定分組情境從首頁關掉（分組頁籤不受影響，只是不出現在首頁） */
@@ -398,6 +413,117 @@ function nbPages(){ var n=S().notebook; return (n&&n.pages)||[]; }
 function nbPage(id){ var ps=nbPages(); return ps.filter(function(p){return p.id===(id||P.nbPage);})[0]||ps[0]; }
 function checkStats(pg){ var items=(pg.items||[]).filter(function(i){return i.kind!=='head';}); var ck=(P.checks||{})[pg.id]||{}; var done=items.filter(function(i){return ck[i.id];}).length; return {done:done,total:items.length}; }
 function hotel(){ var st=S().settings; return (st.hotels||[]).filter(function(h){return h.id===st.currentHotelId;})[0]||(st.hotels||[])[0]||{}; }
+
+/* ===== 一鍵清空・自動備份（v3.22）=====
+   清空＝8 份文件都換成只剩 _ts 與 _cleared 標記的空殼，設定只留 PIN 雜湊（小麥指定「全部清到最乾淨」）。
+   清空或還原之前，先把目前整包內容做成一份備份，跟「換資料」放在同一筆 update 送出：
+   全部成功或全部不動——雲端規則還沒更新、半路斷線，都不會「清了一半」或「清了卻沒備份」。
+   備份放在 backups/<root>/<id>，不放 trip 底下：trip 底下的東西 33 支手機每次打開都要下載。
+   雲端最多留 BK_MAX 份（含底圖，一份約 375 KB）；做清空的那支手機另外留同樣的幾份。 */
+var BK_MAX=3, BK_LOCAL='sapa-bk', BK_VIEW=[];
+/* 清空後仍會留著的欄位，不算「內容」 */
+var BLANK_OK={_ts:1,_cleared:1}, SET_KEEP={pinHash:1,pin:1,minVersion:1};
+function lenOf(x){ return Array.isArray(x)?x.filter(function(v){ return v!=null; }).length:((x&&typeof x==='object')?Object.keys(x).length:0); }
+function docBlank(k,d){ if(!d||typeof d!=='object') return true;
+  return Object.keys(d).every(function(x){ var v=d[x];
+    if(BLANK_OK[x]||(k==='settings'&&SET_KEEP[x])||v==null||v==='') return true;
+    return typeof v==='object'&&!lenOf(v); }); }
+function stateBlank(docs){ docs=docs||{}; return DOC_KEYS.every(function(k){ return docBlank(k,docs[k]); }); }
+/* 沒有日期、沒有行程、沒有團員：首頁改顯示「尚未建立旅程」 */
+function tripEmpty(){ var st=S().settings||{}; return isNaN(parseDate(st.startDate))&&!items().length&&!members().length; }
+/* 一份資料的摘要：清空警語、備份清單都用它 */
+function bkSum(docs){ docs=docs||{}; var st=docs.settings||{};
+  return {trip:st.tripName||'', start:st.startDate||'',
+    members:lenOf((docs.members||{}).items), itinerary:lenOf((docs.itinerary||{}).items), groups:lenOf((docs.groups||{}).scenarios),
+    notebook:lenOf((docs.notebook||{}).pages), photos:lenOf((docs.photos||{}).items), hotels:lenOf(st.hotels),
+    contacts:(Array.isArray(st.contacts)?st.contacts:[]).filter(function(c){ return c&&(c.phone||c.line); }).length}; }
+function bkSumText(s){ var a=[];
+  if(s.itinerary) a.push('行程 '+s.itinerary+' 站'); if(s.members) a.push('團員 '+s.members+' 人');
+  if(s.groups) a.push('分組 '+s.groups+' 個'); if(s.notebook) a.push('記事本 '+s.notebook+' 頁'); if(s.photos) a.push('底圖 '+s.photos+' 張');
+  return a.join('、')||'沒有行程與名單'; }
+function whenText(ms){ var d=new Date(ms||0); return (d.getMonth()+1)+'/'+d.getDate()+' '+pad(d.getHours())+':'+pad(d.getMinutes()); }
+/* 清空後的樣子 */
+function blankDocs(T){
+  var st=S().settings||{}, out={};
+  DOC_KEYS.forEach(function(k){ out[k]={_ts:T,_cleared:T}; });
+  out.settings.pinHash=st.pinHash||pinHash(st.pin||'8888');
+  /* 還停在舊版的手機不認得清空後的格式（新增第一筆會存不進去），讓它們跳「有新版本」 */
+  out.settings.minVersion=(st.minVersion&&verCmp(String(st.minVersion),APP_VERSION)>0)?String(st.minVersion):APP_VERSION;
+  return out;
+}
+/* 從備份還原成的樣子：時間戳記換成現在；空的名單／行程要補上標記，規則才收 */
+function restoreDocs(e,T){ var out={}, src=(e&&e.docs)||{};
+  DOC_KEYS.forEach(function(k){ var d=clone(src[k]||{}); d._ts=T;
+    if(Store.docCount(k,d)>0) delete d._cleared; else if(docBlank(k,d)) d._cleared=T;
+    out[k]=d; });
+  return out; }
+/* 這支手機留的備份（最新的在前） */
+function bkLocalList(){ try{ var a=JSON.parse(localStorage.getItem(BK_LOCAL)||'[]'); return Array.isArray(a)?a.filter(function(x){ return x&&x.id&&x.docs; }):[]; }catch(e){ return []; } }
+function bkLocalSave(e){
+  var a=bkLocalList().filter(function(x){ return x.id!==e.id; }); a.push(e);
+  a.sort(function(x,y){ return (y.at||0)-(x.at||0); }); a=a.slice(0,BK_MAX);
+  /* 放不下就先丟最舊的；連這一份都放不下才放棄（雲端模式時雲端那份還在） */
+  while(a.length){ try{ localStorage.setItem(BK_LOCAL,JSON.stringify(a)); return a.some(function(x){ return x.id===e.id; }); }catch(x){ a.pop(); } }
+  return false;
+}
+/* 雲端＋這支手機合併成一份清單（同一份只列一次，最新的在前） */
+function bkMerge(cloud,local){ var m={};
+  Object.keys(cloud||{}).forEach(function(id){ var e=cloud[id]; if(e&&e.docs) m[id]=Object.assign({},e,{id:id,cloud:true}); });
+  (local||[]).forEach(function(e){ if(m[e.id]) m[e.id].local=true; else m[e.id]=Object.assign({},e,{local:true}); });
+  return Object.keys(m).map(function(id){ return m[id]; }).sort(function(a,b){ return (b.at||0)-(a.at||0); });
+}
+/* 備份清單：先給手機裡的，雲端讀到了再給一次合併後的（state：local／loading／ok／fail） */
+function bkLoad(cb){
+  var can=!!Store.fetchBackups&&Store.mode==='cloud'&&navigator.onLine!==false;
+  BK_VIEW=bkMerge(Store.bkCloud,bkLocalList()); cb(BK_VIEW,can?'loading':'local');
+  if(!can) return;
+  withTimeout(Store.fetchBackups(),10000).then(function(v){ Store.bkCloud=v||{}; BK_VIEW=bkMerge(Store.bkCloud,bkLocalList()); cb(BK_VIEW,'ok'); },
+    function(){ cb(BK_VIEW,'fail'); });
+}
+function bkFind(id){ return BK_VIEW.filter(function(e){ return e.id===id; })[0]||bkLocalList().filter(function(e){ return e.id===id; })[0]||null; }
+/* 整批換掉 8 份文件（清空、還原都走這裡），換之前先備份目前內容。
+   make(T) 回傳新的 8 份文件；next(err, 備份)：err 是 null 代表成功，
+   'sim' 時間模擬中、'offline' 沒連上雲端、'pending' 還有修改沒送出、'denied' 雲端規則擋下（整批都沒寫進去）、
+   'nospace' 單機模式手機放不下備份、'fail' 其他錯誤 */
+function bulkWrite(make,reason,next){
+  if(SIM_OFF) return next('sim');
+  var T=Date.now(), cur={}; DOC_KEYS.forEach(function(k){ cur[k]=clone(Store.s[k]||{}); });
+  var nd=make(T), bk=stateBlank(cur)?null:{id:'b'+T.toString(36),at:T,reason:reason,ver:APP_VERSION,sum:bkSum(cur),docs:cur};
+  /* 已經被別人更新過（_ts 比這次新）的就不蓋回去 */
+  var apply=function(){ DOC_KEYS.forEach(function(k){ var d=Store.s[k]; if(!d||typeof d!=='object'||(d._ts||0)<=T) Store.s[k]=clone(nd[k]); }); };
+  if(Store.backend!=='firebase'){
+    /* 單機（或預覽環境）：先確定備份存得進手機，才動資料 */
+    if(bk&&!bkLocalSave(bk)) return next('nospace');
+    apply(); if(Store.backend) Store.pushAll(); else { Store.cache(); render(); }
+    return next(null,bk);
+  }
+  if(!Store.pushMulti||Store.mode!=='cloud'||navigator.onLine===false) return next('offline');
+  if(Store.q.length||Store.flushing) return next('pending');
+  var root=Store.root||'trip', base='backups/'+root+'/';
+  /* 先看雲端現在有哪幾份備份，算出這次要淘汰哪些（只有做清空的這支手機會下載備份） */
+  withTimeout(Store.fetchBackups(),10000).then(function(v){ Store.bkCloud=v||{}; },function(){}).then(function(){
+    var u={}, drop=[];
+    DOC_KEYS.forEach(function(k){ u[root+'/'+k]=clone(nd[k]); });
+    if(bk){ u[base+bk.id]=bk;
+      drop=Object.keys(Store.bkCloud||{}).map(function(id){ return {id:id,at:((Store.bkCloud[id]||{}).at)||0}; })
+        .sort(function(a,b){ return b.at-a.at; }).slice(BK_MAX-1).map(function(x){ return x.id; });
+      drop.forEach(function(id){ u[base+id]=null; }); }
+    Store._bulk=true;
+    var slow=setTimeout(function(){ toast('網路比較慢，還在等雲端確認，請不要關掉 App'); },8000);
+    Promise.resolve().then(function(){ return Store.pushMulti(u); }).then(function(){
+      clearTimeout(slow); Store._bulk=false;
+      apply(); Store.cache(); render();
+      Store.bkCloud=Store.bkCloud||{}; drop.forEach(function(id){ delete Store.bkCloud[id]; });
+      if(bk){ Store.bkCloud[bk.id]=bk; bkLocalSave(bk); }
+      next(null,bk);
+    },function(e){
+      clearTimeout(slow); Store._bulk=false;
+      /* 雲端會自己把畫面退回原狀；萬一沒退，用剛剛留的那份退回去 */
+      DOC_KEYS.forEach(function(k){ var d=Store.s[k]; if(d&&d._ts===T) Store.s[k]=cur[k]; }); Store.cache(); render();
+      next(/PERMISSION_DENIED|permission/i.test(String((e&&(e.code||e.message))||e||''))?'denied':'fail');
+    });
+  });
+}
 
 /* ===== 畫面渲染 ===== */
 var TABS=[['plan','行程','calendar'],['rooms','房號','key'],['groups','分組','users'],['tools','工具','grid']];
@@ -420,7 +546,9 @@ function renderHeader(){
   el('btnTrip').hidden=!P.leader;
   /* 狀態藥丸：六種階段，全部是不換行的短標籤 */
   var t,cls='';
-  if(di.status==='before'){
+  /* 清空後還沒設定出發日期：不能顯示「今天出發」 */
+  if(isNaN(parseDate(st.startDate))&&!(st.dayOverride>0)){ t='日期未定'; }
+  else if(di.status==='before'){
     var d=-di.diff;
     if(d>1){ t='倒數 '+d+' 天'; }
     else if(d===1){ t='明天出發'; cls='warm'; }
@@ -747,6 +875,17 @@ function mtagsOf(sc,id){ return (sc&&sc.mtags&&sc.mtags[id])||[]; }
 VIEWS.home=function(){
   var s=S(), b=s.broadcast||{}, st=s.settings, di=dayInfo(), h=[];
   if(showTip()) h.push('<div class="tip-banner">'+ic('info')+'<span>把這個網頁裝成 App，之後一鍵打開，名字也不用再選一次。</span><button class="tb-go" data-act="installApp">看教學</button><button data-act="tipClose" aria-label="關閉">'+ic('x')+'</button></div>');
+  /* 清空之後（沒有日期、沒有行程、沒有團員）：只放一張說明，不要一整排「待公布」的卡片讓長輩以為有集合 */
+  if(tripEmpty()){
+    h.push('<section class="hero pre" aria-label="尚未建立旅程">'+
+      '<div class="lab">'+ic('calendar')+'目前沒有旅程資料</div>'+
+      '<div class="time" style="font-size:1.9rem">尚未建立旅程</div>'+
+      '<div class="loc long"><span>主辦人填好團名、日期、行程和名單之後，這裡就會顯示集合時間與下一站。</span></div>'+
+      (P.leader?'<div class="ctl"><button class="btn" data-act="settings">'+ic('gear')+'團務設定</button><button class="btn" data-act="tab" data-tab="plan">'+ic('calendar')+'新增行程</button></div>':'')+
+    '</section>');
+    h.push(grp('ref','隨時查',[sosRow()]));
+    return h.join('');
+  }
   var before=(di.status==='before'), after=(di.status==='after'), day=di.idx;
   /* 出發前：管理者還沒廣播時，改顯示第 1 天第一站（例：05:30 桃園機場集合），不會是一大塊「待公布」 */
   var pre=null;

@@ -11,6 +11,7 @@
   --hl-bg:#FFFBEC; --hl-edge:#F0C64A; --hl-glow:rgba(201,154,30,.55); --hl-ink:#7A5B08; --hl-sw:#FFEDB8;
   --band:#2F4479; --lcd-ink:#7DE0C0; --lcd-glow:rgba(125,224,192,.32); --lcd-dim:#B8C4D0; --lcd-amber:#FFB648; --lcd-amber-glow:rgba(255,182,72,.35); --lcd-red:#FF6B5B; --lcd-red-glow:rgba(255,107,91,.4);
   --indigo-ink:#FFFFFF; --dome:0 -2px 10px rgba(47,68,121,.18),0 6px 18px rgba(47,68,121,.34);
+  --pre-ink:#FFFFFF;   /* 藍色／綠色首頁大卡的字色：淺色主題底色深，用白字 */
   --shadow:0 1px 2px rgba(27,36,55,.06),0 6px 16px rgba(27,36,55,.07);
   --lift:0 1px 2px rgba(27,36,55,.08),0 8px 20px rgba(27,36,55,.10);
   --r:14px;
@@ -27,6 +28,7 @@
     --hl-bg:#2A2413; --hl-edge:#C9A23C; --hl-glow:rgba(201,154,30,.45); --hl-ink:#F0D488; --hl-sw:#3F3317;
     --band:#1E2C48; --lcd-ink:#6FD9B8; --lcd-glow:rgba(111,217,184,.3); --lcd-dim:#8496A6; --lcd-amber:#FFC062; --lcd-amber-glow:rgba(255,192,98,.32); --lcd-red:#FF7F70; --lcd-red-glow:rgba(255,127,112,.35);
     --indigo-ink:#101828; --dome:0 -2px 10px rgba(0,0,0,.5),0 6px 18px rgba(0,0,0,.55);
+    --pre-ink:#101828;   /* 深色主題的藍／綠變成淺色，字要改深色（v3.21 以前是白字，對比只有 2:1） */
     --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
     --lift:0 1px 2px rgba(0,0,0,.5),0 10px 24px rgba(0,0,0,.45);
   }
@@ -42,6 +44,7 @@
   --hl-bg:#2A2413; --hl-edge:#C9A23C; --hl-glow:rgba(201,154,30,.45); --hl-ink:#F0D488; --hl-sw:#3F3317;
   --band:#1E2C48; --lcd-ink:#6FD9B8; --lcd-glow:rgba(111,217,184,.3); --lcd-dim:#8496A6; --lcd-amber:#FFC062; --lcd-amber-glow:rgba(255,192,98,.32); --lcd-red:#FF7F70; --lcd-red-glow:rgba(255,127,112,.35);
   --indigo-ink:#101828; --dome:0 -2px 10px rgba(0,0,0,.5),0 6px 18px rgba(0,0,0,.55);
+  --pre-ink:#101828;
   --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
   --lift:0 1px 2px rgba(0,0,0,.5),0 10px 24px rgba(0,0,0,.45);
 }
@@ -201,9 +204,10 @@ a.btn{text-decoration:none}
 /* 清空廣播（左）與貼到 LINE（右）左右鏡像；只剩一顆時貼到 LINE 仍靠右 */
 .hero .hero-foot{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
 .hero .hero-foot .clr.shr{margin-left:auto;white-space:nowrap;word-break:keep-all}
-.hero.pre{background:var(--indigo)}
-.hero.done{background:var(--terrace)}
-.hero.pre .tip svg.i,.hero.done .tip svg.i{color:var(--indigo)}
+.hero.pre{background:var(--indigo);color:var(--pre-ink)}
+.hero.done{background:var(--terrace);color:var(--pre-ink)}
+/* 叮嚀框的底色兩種主題都是白的，圖示固定用深藍（跟著 --indigo 的話深色主題會變成淺藍配白底） */
+.hero.pre .tip svg.i,.hero.done .tip svg.i{color:#2F4479}
 /* me strip */
 .me-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
 .me-strip button{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.55rem .3rem;min-height:4.2rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.1rem;color:var(--ink)}
@@ -413,6 +417,17 @@ dl.kv2 dd:last-child{border-bottom:0;padding-bottom:0;margin-bottom:0}
 .air-note .btn{flex-shrink:0;align-self:center}
 .warn-box{background:var(--alert-2);border-left:4px solid var(--alert);border-radius:10px;padding:.6rem .75rem;font-weight:800;line-height:1.45;font-size:.95rem;display:flex;gap:.45rem;align-items:flex-start}
 .warn-box svg.i{color:var(--alert);margin-top:.15rem}
+/* v3.22 一鍵清空・備份與還原 */
+.warn-box.dng-box{border-left-color:var(--danger)}
+.warn-box.dng-box>svg.i{color:var(--danger)}
+.bk-note{background:var(--terrace-2);border-left:4px solid var(--terrace);border-radius:10px;padding:.6rem .75rem;font-weight:700;line-height:1.45;font-size:.92rem;display:flex;gap:.45rem;align-items:flex-start}
+.bk-note>svg.i{color:var(--terrace);margin-top:.15rem}
+ul.clr-list{gap:.3rem;margin-top:.35rem;line-height:1.45}
+.bk-row{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.7rem .8rem;display:flex;flex-direction:column;gap:.55rem}
+.bk-t{display:flex;flex-direction:column;gap:.15rem;min-width:0}
+.bk-src{font-size:.88rem;font-weight:800;color:var(--terrace)}
+.pinmask{-webkit-text-security:disc}
+.pinmask:not(:placeholder-shown){letter-spacing:.3em}
 /* phrase list */
 .ph{display:flex;align-items:center;gap:.6rem;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.7rem .8rem;min-height:3.8rem;width:100%;text-align:left;color:var(--ink)}
 .ph .e{font-size:1.5rem;flex-shrink:0;width:2rem;text-align:center}

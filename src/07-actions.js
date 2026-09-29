@@ -10,6 +10,30 @@ function nowPlusSlot(min){ var ms=Math.floor(nowMs()/60000)*60000+min*60000, tw=
 function nowPlus(min){ return nowPlusSlot(min).hm; }
 function nowPlusDate(min){ return nowPlusSlot(min).date; }
 function stamp(){ return nowPlus(0); }
+/* 下載一段文字成檔案（匯出備份檔、下載某一份自動備份） */
+function dlText(name,text){ try{ var blob=new Blob([text],{type:'application/json'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },500); return true; }catch(e){ return false; } }
+/* 清空與還原共用：驗 PIN → 按鈕變「處理中」→ 整批寫入。
+   失敗的原因寫在表單裡（toast 兩秒就不見，來不及看），而且一律說明「資料都沒有變動」。 */
+function bulkMsg(e,verb){
+  if(e==='sim') return '時間模擬中不能'+verb+'，請先結束模擬';
+  if(e==='offline') return verb+'要連上雲端才能做，請到有網路的地方再試一次。資料都沒有變動';
+  if(e==='pending') return (Store.q.length?'還有 '+Store.q.length+' 筆修改':'剛剛的修改')+'正在送上雲端，請等幾秒再按一次。資料都沒有變動';
+  if(e==='denied') return '雲端規則擋下了這次'+verb+'，所有資料都沒有變動。請確認 Firebase 規則已經換成 v3.22 的新版';
+  if(e==='nospace') return '手機空間不足，沒辦法先備份，所以沒有'+verb+'。可以先下載備份檔再試';
+  return verb+'沒有成功，所有資料都沒有變動，請稍後再試';
+}
+function bulkAsk(t,verb,make,reason,done){
+  var box=el('sheetErr'), inp=el('sheetRoot').querySelector('[name=pin]'), pin=inp?inp.value.trim():'';
+  function err(msg){ if(box){ box.innerHTML=ic('alert')+'<span>'+esc(msg)+'</span>'; box.hidden=false; } toast(msg); }
+  if(!pin){ err('請先輸入管理 PIN'); if(inp) inp.focus(); return; }
+  if(!pinOK(pin)){ err('PIN 不正確，沒有'+verb); if(inp) inp.value=''; return; }
+  var label=t.innerHTML; t.disabled=true; t.innerHTML=verb+'中…';
+  bulkWrite(make,reason,function(e,bk){
+    if(!e) return done(bk);
+    if(t.isConnected){ t.disabled=false; t.innerHTML=label; }
+    err(bulkMsg(e,verb));
+  });
+}
 var ACT={
   tab:function(t){ P.tab=t.getAttribute('data-tab'); if(t.getAttribute('data-scn')) P.scn=t.getAttribute('data-scn'); if(P.tab==='tools') P.tool='menu'; closeSheet(); render(); window.scrollTo(0,0); },
   planDay:function(t){ P.planDay=Number(t.getAttribute('data-day')); render(); },
@@ -280,9 +304,29 @@ var ACT={
   nbSaveItem:function(){ var pg=nbPage(SHEET.pg); if(!pg) return; pg.items=pg.items||[]; var text=sv('text'); if(!text){ toast('請輸入內容'); return; } var it=SHEET.id?pg.items.filter(function(x){return x.id===SHEET.id;})[0]:null; if(!it){ it={id:uid(),kind:SHEET.head?'head':'item'}; pg.items.push(it); } it.text=text; closeSheet(); Store.save('notebook'); },
   nbDelItem:function(t){ var pg=nbPage(t.getAttribute('data-pg')); if(!pg) return; var id=t.getAttribute('data-id'); pg.items=(pg.items||[]).filter(function(x){return x.id!==id;}); closeSheet(); Store.save('notebook'); toast('已刪除'); },
   nbMove:function(t){ var pg=nbPage(t.getAttribute('data-pg')); if(!pg) return; var its=pg.items||[], id=t.getAttribute('data-id'), dir=Number(t.getAttribute('data-dir')); var i=its.findIndex(function(x){return x.id===id;}); var j=i+dir; if(i<0||j<0||j>=its.length){ toast(dir<0?'已經在最上面':'已經在最下面'); return; } var tmp=its[i]; its[i]=its[j]; its[j]=tmp; Store.save('notebook'); toast(dir<0?'已上移':'已下移'); },
-  resetDemo:function(){ openSheet({title:'重置為初始資料？',body:'<div class="muted">會把廣播、行程、名單、分組、記事本全部換回程式內建的初始內容（電話會清空），並同步給全團。建議先「匯出備份檔」。這個動作無法復原。</div>',foot:'<button class="btn" data-act="sheetClose">取消</button><button class="btn dng" data-act="resetConfirm">確定重置</button>'}); },
-  resetConfirm:function(){ Store.s=clone(DEFAULTS); closeSheet(); Store.pushAll(); toast('已重置為初始資料'); },
-  exportData:function(){ try{ var blob=new Blob([Store.exportJSON()],{type:'application/json'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='sapa-backup-'+tzParts(TW).date+'.json'; document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },500); toast('已匯出備份檔'); }catch(e){ toast('這個環境不支援下載'); } },
+  /* 一鍵清空：取代舊的「重置為初始資料」（那顆會把資料換回程式內建的沙壩行程，而且沒有密碼、沒有備份） */
+  clearAsk:function(){ if(!P.leader) return;
+    if(SIM_OFF){ toast('時間模擬中不能清空，請先結束模擬'); return; }
+    if(stateBlank(S())){ toast('目前已經是空白的，不需要清空'); return; }
+    sheetClear(); },
+  clearGo:function(t){ if(!P.leader||!SHEET) return;
+    bulkAsk(t,'清空',blankDocs,'clear',function(bk){
+      P.meId=''; P.planDay=0; P.scn=''; P.nbPage=''; P.q=''; P.tab='home'; savePrefs();
+      closeSheet(); render(); window.scrollTo(0,0);
+      toast(bk?'已清空。清空前的內容已自動備份（管理專區 → 備份與還原）':'已清空'); }); },
+  bkList:function(){ if(!P.leader) return; sheetBackups(); },
+  bkAsk:function(t){ if(!P.leader) return; sheetRestore(t.getAttribute('data-id')); },
+  bkGo:function(t){ if(!P.leader||!SHEET) return; var e=bkFind(SHEET.bk);
+    if(!e){ toast('找不到這份備份，請重新打開清單'); return; }
+    bulkAsk(t,'還原',function(T){ return restoreDocs(e,T); },'restore',function(){
+      P.planDay=0; P.scn=''; P.nbPage=''; P.tab='home'; savePrefs();
+      closeSheet(); render(); window.scrollTo(0,0);
+      toast('已還原 '+whenText(e.at)+' 的備份，全團手機會同步'); }); },
+  bkFile:function(t){ var e=bkFind(t.getAttribute('data-id')); if(!e) return;
+    var d=new Date(e.at||Date.now()), name='sapa-backup-'+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+'-'+pad(d.getHours())+pad(d.getMinutes())+'.json';
+    /* 格式跟「匯出備份檔」一樣，可以直接用團務設定的「匯入備份檔」讀回來 */
+    toast(dlText(name,JSON.stringify({app:'sapa-tour-tool',version:e.ver||APP_VERSION,exportedAt:new Date(e.at||Date.now()).toISOString(),reason:e.reason||'',docs:e.docs},null,2))?'已下載備份檔':'這個環境不支援下載'); },
+  exportData:function(){ toast(dlText('sapa-backup-'+tzParts(TW).date+'.json',Store.exportJSON())?'已匯出備份檔':'這個環境不支援下載'); },
   noteTap:function(t){ P.money.push(Number(t.getAttribute('data-v'))); render(); },
   moneyUndo:function(){ P.money.pop(); render(); },
   moneyClear:function(){ P.money=[]; render(); },
