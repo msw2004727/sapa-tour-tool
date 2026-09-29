@@ -1,5 +1,8 @@
 /* 高亮提醒功能自我驗收 */
 const {chromium,FILE,at}=require('./_lib');
+/* 時間固定在出發前（2026-09-20 上午，台灣時間）：這支測試的「出發前」「今天」都以這天為準。
+   v3.21 以前沒固定，9/24 出發之後再跑就會紅（跟程式對錯無關），v3.22 補上。 */
+const T0=new Date('2026-09-20T10:00:00+08:00');
 const F=FILE;
 let fails=0;
 function ck(name,cond,extra){ if(!cond){fails++;console.log('  ✗',name,extra===undefined?'':JSON.stringify(extra));} else console.log('  ✓',name); }
@@ -10,7 +13,7 @@ function ck(name,cond,extra){ if(!cond){fails++;console.log('  ✗',name,extra==
   console.log('[1] 狀態機');
   let ctx=await b.newContext({viewport:{width:390,height:900}});
   let p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(String(e)));
-  await p.goto(F); await p.waitForTimeout(400);
+  await p.clock.install({time:T0}); await p.goto(F); await p.waitForTimeout(400);
   let r=await p.evaluate(()=>{
     const out={};
     P.leader=true; P.cards={}; S().settings.cards={}; S().settings.dayOverride=2;
@@ -87,7 +90,7 @@ function ck(name,cond,extra){ if(!cond){fails++;console.log('  ✗',name,extra==
   for(const w of [320,375,390]) for(const fs of ['md','lg','xl']) for(const dark of [false,true]){
     const c2=await b.newContext({viewport:{width:w,height:900},colorScheme:dark?'dark':'light'});
     const p2=await c2.newPage(); const e2=[]; p2.on('pageerror',e=>e2.push(String(e)));
-    await p2.goto(F); await p2.waitForTimeout(350);
+    await p2.clock.install({time:T0}); await p2.goto(F); await p2.waitForTimeout(350);
     const m=await p2.evaluate(f=>{
       P.fs=f; P.leader=false; P.cards={}; P.tab='home';
       S().settings.dayOverride=0; S().settings.startDate='2026-09-24';
@@ -117,7 +120,7 @@ function ck(name,cond,extra){ if(!cond){fails++;console.log('  ✗',name,extra==
   // ---- 4. 截圖 ----
   for(const dark of [false,true]){
     const c3=await b.newContext({viewport:{width:390,height:900},colorScheme:dark?'dark':'light',deviceScaleFactor:2});
-    const p3=await c3.newPage(); await p3.goto(F); await p3.waitForTimeout(350);
+    const p3=await c3.newPage(); await p3.clock.install({time:T0}); await p3.goto(F); await p3.waitForTimeout(350);
     await p3.evaluate(L=>{
       P.leader=L; P.cards={}; P.tab='home'; P.tipDismissed=true;
       S().settings.dayOverride=0; S().settings.startDate='2026-09-24';

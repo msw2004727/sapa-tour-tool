@@ -12,6 +12,10 @@ const SHEETS=[
   ['homeScn',()=>ACT.homeScnVis()],
   ['pin',()=>{P.leader=false;sheetPin();}],
   ['leaderMenu',()=>{P.leader=true;sheetLeaderMenu();}],
+  /* v3.22 一鍵清空・備份與還原 */
+  ['clear',()=>{P.leader=true;sheetClear();}],
+  ['backups',()=>{ const d=JSON.parse(JSON.stringify(S())); localStorage.setItem('sapa-bk',JSON.stringify([{id:'bT',at:Date.now(),reason:'clear',ver:APP_VERSION,sum:bkSum(d),docs:d}])); sheetBackups(); }],
+  ['restore',()=>{ sheetRestore('bT'); }],
 ];
 let fails=0;
 (async()=>{

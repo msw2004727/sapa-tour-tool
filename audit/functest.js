@@ -1,6 +1,9 @@
 const {chromium,FILE,at}=require('./_lib');
+/* 時間固定在出發前（2026-09-20 上午，台灣時間）：這支測試的「出發前」「今天」都以這天為準。
+   v3.21 以前沒固定，9/24 出發之後再跑就會紅（跟程式對錯無關），v3.22 補上。 */
+const T0=new Date('2026-09-20T10:00:00+08:00');
 (async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:375,height:800}});const errs=[];p.on('pageerror',e=>errs.push(String(e)));
-await p.goto(FILE);await p.waitForTimeout(500);
+await p.clock.install({time:T0});await p.goto(FILE);await p.waitForTimeout(500);
 const out={};
 // PIN 解鎖（明文舊資料）
 await p.evaluate(()=>{P.leader=false;render();document.getElementById('btnLeader').click();});await p.waitForTimeout(200);

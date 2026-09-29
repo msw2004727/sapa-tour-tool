@@ -57,6 +57,10 @@ const SHEETS=[
   ['install-android',()=>{uaEnv=()=>({ios:false,android:true,line:false,inapp:false});sheetInstall();}],
   ['install-line',()=>{uaEnv=()=>({ios:true,android:false,line:true,inapp:true});sheetInstall();}],
   ['install-desktop',()=>{uaEnv=()=>({ios:false,android:false,line:false,inapp:false});sheetInstall();}],
+  /* v3.22 一鍵清空・備份與還原 */
+  ['clear',()=>{P.leader=true;sheetClear();}],
+  ['backups',()=>{ const d=JSON.parse(JSON.stringify(S())); localStorage.setItem('sapa-bk',JSON.stringify([{id:'bT',at:Date.now(),reason:'clear',ver:APP_VERSION,sum:bkSum(d),docs:d}])); sheetBackups(); }],
+  ['restore',()=>{ sheetRestore('bT'); }],
 ];
 (async()=>{
   const b=await chromium.launch(); let fails=0;

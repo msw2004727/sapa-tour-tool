@@ -1,5 +1,8 @@
 /* 首頁卡片分區：預設規則、逐卡自動／釘死、跨區 ↑↓、舊資料相容、設定面板 */
 const {chromium,FILE,at}=require('./_lib');
+/* 時間固定在出發前（2026-09-20 上午，台灣時間）：這支測試的「出發前」「今天」都以這天為準。
+   v3.21 以前沒固定，9/24 出發之後再跑就會紅（跟程式對錯無關），v3.22 補上。 */
+const T0=new Date('2026-09-20T10:00:00+08:00');
 const F=FILE;
 let fails=0;
 const ck=(n,c,x)=>{ if(!c){fails++;console.log('  ✗',n,x===undefined?'':JSON.stringify(x));} else console.log('  ✓',n); };
@@ -7,7 +10,7 @@ const ck=(n,c,x)=>{ if(!c){fails++;console.log('  ✗',n,x===undefined?'':JSON.s
   const b=await chromium.launch();
   const ctx=await b.newContext({viewport:{width:390,height:760}});
   const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(String(e)));
-  await p.goto(F); await p.waitForTimeout(400);
+  await p.clock.install({time:T0}); await p.goto(F); await p.waitForTimeout(400);
 
   console.log('[1] 預設規則（全部自動）');
   const table=await p.evaluate(()=>{

@@ -192,6 +192,29 @@ const wait=(p,ms)=>p.waitForTimeout(ms);
   ck('淺色：灰色小字對比 ≥ 4.5',c9.light.grey>=4.5,c9.light);
   ck('深色：灰色小字對比 ≥ 4.5',c9.dark.grey>=4.5,c9.dark);
   ck('淺色：頂列標籤對比 ≥ 4.5（相對於深藍帶，實際面板更深）',c9.light.lcd>=4.5,c9.light);
+  /* v3.22：藍／綠首頁大卡（今天行程、出發集合、旅程結束、尚未建立旅程）在深色主題以前是白字配淺色底，對比只有 2:1 */
+  const c9b=await p.evaluate(()=>{
+    const srgb=c=>{c/=255;return c<=.03928?c/12.92:Math.pow((c+.055)/1.055,2.4);};
+    const lum=v=>{const m=String(v).match(/(\d+),\s*(\d+),\s*(\d+)/); return .2126*srgb(+m[1])+.7152*srgb(+m[2])+.0722*srgb(+m[3]);};
+    const rat=(a,b)=>{const x=Math.max(a,b),y=Math.min(a,b);return +((x+.05)/(y+.05)).toFixed(2);};
+    const one=()=>{ const h=document.querySelector('.hero'); const bg=lum(getComputedStyle(h).backgroundColor);
+      return {cls:h.className, time:rat(bg,lum(getComputedStyle(h.querySelector('.time')).color)), lab:rat(bg,lum(getComputedStyle(h.querySelector('.lab')).color))}; };
+    const st=S().settings, b=S().broadcast, keep=JSON.stringify({st,b,m:S().members,i:S().itinerary});
+    b.time=''; b.idle=false; P.tab='home'; P.tipDismissed=true; const out={};
+    /* 主題要設在 P.theme：render() 會照 P.theme 重設 data-theme（只改屬性的話一 render 就被洗回淺色） */
+    for(const th of ['light','dark']){ P.theme=th; const o=out[th]={};
+      st.dayOverride=2; render(); o.today=one(); o.theme=getComputedStyle(document.querySelector('.hero')).backgroundColor;
+      st.dayOverride=0; st.startDate='2099-01-01'; render(); o.pre=one();
+      st.startDate='2020-01-01'; render(); o.done=one();
+      st.startDate=''; S().members={items:[]}; S().itinerary={items:[]}; render(); o.blank=one();
+      const k=JSON.parse(keep); Object.assign(st,k.st); Object.assign(b,k.b); S().members=k.m; S().itinerary=k.i; }
+    P.theme=''; render();
+    return out;
+  });
+  ck('首頁大卡四種都有量到（測試本身有效）',['light','dark'].every(t=>/pre/.test(c9b[t].today.cls)&&/pre/.test(c9b[t].pre.cls)&&/done/.test(c9b[t].done.cls)&&/pre/.test(c9b[t].blank.cls)),c9b);
+  ck('深色真的有套上（卡片底色跟淺色不同，測試本身有效）',c9b.dark.theme!==c9b.light.theme,{light:c9b.light.theme,dark:c9b.dark.theme});
+  for(const t of ['light','dark']) for(const k of ['today','pre','done','blank'])
+    ck((t==='light'?'淺色':'深色')+'：首頁大卡「'+({today:'今天行程',pre:'出發集合',done:'旅程結束',blank:'尚未建立旅程'})[k]+'」字色對比 ≥ 4.5',c9b[t][k].time>=4.5&&c9b[t][k].lab>=4.5,c9b[t][k]);
 
   console.log('[11] 空間不足與佇列合併');
   const q11=await p.evaluate(()=>{
