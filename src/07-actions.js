@@ -253,8 +253,12 @@ var ACT={
     if(i<0||j<0||j>=st.tags.length) return;
     var tmp=st.tags[i]; st.tags[i]=st.tags[j]; st.tags[j]=tmp;
     Store.save('settings'); sheetTags(); },
-  saveItem:function(){ var title=sv('title'); if(!title){ toast('請輸入名稱'); return; } var all=items(); var x=SHEET.id?all.filter(function(i){return i.id===SHEET.id;})[0]:null; if(!x){ x={id:uid(),tags:[]}; all.push(x); }
-    x.day=Number(sv('day'))||1; x.time=sv('time'); x.title=title; x.desc=sv('desc'); x.place=sv('place'); x.detail=sv('detail'); x.tags=sv('tags')?sv('tags').split(','):[]; all.sort(function(a,b){ return a.day-b.day; }); closeSheet(); P.planDay=x.day; Store.save('itinerary'); toast('行程已儲存'); },
+  saveItem:function(){ var title=sv('title'); if(!title){ toast('請輸入名稱'); return; } var all=items(); var x=SHEET.id?all.filter(function(i){return i.id===SHEET.id;})[0]:null; var isNew=!x; if(!x){ x={id:uid(),tags:[]}; all.push(x); }
+    var oldDay=x.day, oldTime=x.time||'';
+    x.day=Number(sv('day'))||1; x.time=sv('time'); x.title=title; x.desc=sv('desc'); x.place=sv('place'); x.detail=sv('detail'); x.tags=sv('tags')?sv('tags').split(','):[]; all.sort(function(a,b){ return a.day-b.day; });
+    /* v3.28 新增，或改了「第幾天」「時間」之後，那一天的行程自動依時間排好；只改文字說明時不動順序，主辦人手動上移下移的排法才不會被蓋掉 */
+    if(isNew||oldDay!==x.day||oldTime!==(x.time||'')) sortDayByTime(all,x.day);
+    closeSheet(); P.planDay=x.day; Store.save('itinerary'); toast('行程已儲存'); },
   delItem:function(){ var id=SHEET.id; S().itinerary.items=items().filter(function(x){return x.id!==id;});
     /* 行程刪掉了，它的底圖也要一起清掉，不然那 10 幾 KB 會永遠留在資料庫裡 */
     if(itemBg(id)){ delete photoMap()[id]; Store.savePath('photos','items/'+id,null); }

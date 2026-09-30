@@ -424,6 +424,17 @@ function members(){ var d=S().members; if(!d||typeof d!=='object') return []; re
 function member(id){ return members().filter(function(m){return m.id===id;})[0]; }
 function getMe(){ return P.meId?member(P.meId):null; }
 function items(){ var d=S().itinerary; if(!d||typeof d!=='object') return []; return d.items||(d.items=[]); }
+/* v3.28 同一天的行程依時間由早到晚排。只動「有填時間」的那幾站，而且只在它們原本佔的位置上換來換去：
+   沒填時間的站（例如「自由活動」）留在原位不跑；時間相同的維持原本的先後。只處理 day 那一天，其他天不碰。 */
+function sortDayByTime(all,day){
+  var pos=[], got=[];
+  all.forEach(function(it,i){
+    if(!it||it.day!==day||!/^\d{1,2}:\d{2}$/.test(it.time||'')) return;
+    var p=it.time.split(':'); pos.push(i); got.push({it:it,i:i,m:Number(p[0])*60+Number(p[1])});
+  });
+  got.sort(function(a,b){ return a.m-b.m||a.i-b.i; });
+  pos.forEach(function(p,k){ all[p]=got[k].it; });
+}
 /* ===== 分組：大分類與情境（v3.25）=====
    groups.scenarios[] 的每個情境 {id,name,cat,count,names[],assign{團員id:第幾組},…}。
    cat 是大分類（SCN_CATS：交通、餐飲、逛街、旅伴）；每一組的欄位存成跟 names 一樣長的陣列：
