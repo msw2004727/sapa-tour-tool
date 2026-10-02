@@ -51,11 +51,11 @@ const HEAD = `<!doctype html>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="月半團旅">
-<meta name="description" content="我們是一群到處吃吃喝喝團體自由行的旅遊好咖">
+<meta name="description" content="暫時放下工作，把忙碌留在台灣，出發清邁放鬆充電！">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="月半團旅">
-<meta property="og:title" content="月半團旅">
-<meta property="og:description" content="我們是一群到處吃吃喝喝團體自由行的旅遊好咖">
+<meta property="og:site_name" content="國聚員旅暢遊清邁">
+<meta property="og:title" content="國聚員旅暢遊清邁">
+<meta property="og:description" content="暫時放下工作，把忙碌留在台灣，出發清邁放鬆充電！">
 <meta property="og:url" content="https://750hd.com/">
 <meta property="og:image" content="https://750hd.com/icons/og-logo.jpg">
 <meta property="og:image:type" content="image/jpeg">
@@ -64,8 +64,8 @@ const HEAD = `<!doctype html>
 <meta property="og:image:alt" content="月半團旅">
 <meta property="og:locale" content="zh_TW">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="月半團旅">
-<meta name="twitter:description" content="我們是一群到處吃吃喝喝團體自由行的旅遊好咖">
+<meta name="twitter:title" content="國聚員旅暢遊清邁">
+<meta name="twitter:description" content="暫時放下工作，把忙碌留在台灣，出發清邁放鬆充電！">
 <meta name="twitter:image" content="https://750hd.com/icons/og-logo.jpg">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" type="image/png" href="./icons/icon-192.png">

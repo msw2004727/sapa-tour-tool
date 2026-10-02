@@ -1,6 +1,6 @@
 {
   "name": "sapa-tour-tool",
-  "version": "3.28.0",
+  "version": "3.29.0",
   "private": true,
   "description": "月半團旅 — 團體自由行的隨身工具（單檔 PWA；第一團是 2026 越南沙壩）",
   "scripts": {
