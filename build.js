@@ -50,7 +50,7 @@ const HEAD = `<!doctype html>
 <meta name="robots" content="noindex,nofollow">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="月半團旅">
+<meta name="apple-mobile-web-app-title" content="國聚員旅暢遊清邁">
 <meta name="description" content="暫時放下工作，把忙碌留在台灣，出發清邁放鬆充電！">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="國聚員旅暢遊清邁">

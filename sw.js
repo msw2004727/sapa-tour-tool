@@ -5,7 +5,7 @@
      網路那份回來後仍會寫進快取，下一次打開就是新的。完全斷線時立刻回退快取。
    - config.js、manifest、圖示等：快取優先、背景更新（幾乎不變，不值得每次等）。
    - 只快取成功的回應（res.ok）：飯店 Wi-Fi 的登入頁、404 這類東西不能被存成網頁本身。 */
-var CACHE = 'sapa-tour-v4';   /* 換 logo／改標題／改策略時要進版，舊快取才會被清掉 */
+var CACHE = 'sapa-tour-v5';   /* 換 logo／改標題／改策略時要進版，舊快取才會被清掉 */
 var SHELL = ['./', './index.html', './config.js', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png'];
 var NET_WAIT = 2500;
 

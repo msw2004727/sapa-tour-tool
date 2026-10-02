@@ -33,7 +33,7 @@ const srv=http.createServer((req,res)=>{
   await p.goto(URL0); await p.waitForTimeout(2500);
   const sw=await p.evaluate(async()=>{ const r=await navigator.serviceWorker.getRegistration(); const ks=await caches.keys(); const c=ks.length?await caches.open(ks[0]):null; const keys=c?(await c.keys()).map(k=>new URL(k.url).pathname):[]; return {reg:!!r,active:!!(r&&r.active),caches:ks,keys}; });
   ck('SW 已註冊且啟用',sw.reg&&sw.active,sw);
-  ck('快取名稱是 v4（v3.23 改了網站名稱與 manifest）',sw.caches.indexOf('sapa-tour-v4')>=0,sw.caches);
+  ck('快取名稱是 v5（v3.30 改了主畫面名稱與 manifest；v3.23 那次是 v4）',sw.caches.indexOf('sapa-tour-v5')>=0&&sw.caches.indexOf('sapa-tour-v4')<0,sw.caches);
   ck('index.html 與 config.js 在快取裡',sw.keys.indexOf('/index.html')>=0&&sw.keys.indexOf('/config.js')>=0,sw.keys);
   /* 第二次一般載入：讓「/?v=xxx」這種帶參數的導覽也命中 */
   await p.goto(URL0+'?v=test'); await p.waitForTimeout(800);
