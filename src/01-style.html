@@ -345,7 +345,8 @@ a.btn{text-decoration:none}
 .mc .em{width:2rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1}
 .mc .em.none{width:.2rem}
 .mc .tx{min-width:0;flex:1}
-.mc .nm{display:block;font-size:1.125rem;font-weight:900;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* 姓名太長就換行（英文護照名一行、中文名一行），不要用「…」切掉：長輩要認的是中文名。keep-all＝只在空格換行，不把中文名拆開 */
+.mc .nm{display:block;font-size:1.125rem;font-weight:900;line-height:1.2;white-space:normal;word-break:keep-all;overflow-wrap:anywhere}
 .mc .rk{display:block;font-size:.85rem;color:#514A6E;font-weight:700;margin-top:.22rem;line-height:1.3}
 .mc .rt{text-align:right;font-size:.875rem;font-weight:900;color:#514A6E;flex-shrink:0;white-space:nowrap;line-height:1.25}
 .al{display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;border-radius:50%;font-size:.74rem;font-weight:900;color:#fff;flex-shrink:0;letter-spacing:.02em;line-height:1;box-shadow:0 1px 2px rgba(0,0,0,.2)}
@@ -376,11 +377,11 @@ a.btn{text-decoration:none}
 .mc.sm.bd-gold,.mc.sm.bd-red,.mc.sm.bd-black{border-width:2.5px}
 .mc.sm .nm{font-size:1rem}
 .mc.sm .em{font-size:1.2rem;width:1.5rem}
+/* 名單一律直瀑式單欄：姓名常是「英文護照名＋中文名」，兩欄的話每欄只剩約 90px，右欄會被擠出畫面（v3.31） */
 .mlist{display:flex;flex-direction:column;gap:.5rem}
-.mlist.two{display:grid;grid-template-columns:1fr 1fr;gap:.45rem}
 .me-wait{display:flex;align-items:center;gap:.5rem;background:var(--indigo-2);border-color:transparent;color:var(--indigo);font-weight:800;font-size:.95rem;line-height:1.4}
 .me-wait svg.i{flex-shrink:0}
-.rooms{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.6rem}
+.rooms{display:grid;grid-template-columns:minmax(0,1fr);gap:.6rem}
 .room{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:.6rem;display:flex;flex-direction:column;gap:.4rem}
 .room h3{margin:0 0 .1rem;font-size:1.05rem;font-weight:900;display:flex;align-items:center;gap:.3rem;white-space:nowrap}
 .room h3 svg.i{color:var(--gold)}
@@ -420,7 +421,7 @@ a.btn{text-decoration:none}
 @media (max-width:360px){ html[data-fs="lg"] .scn-row .grid2,html[data-fs="xl"] .scn-row .grid2{grid-template-columns:minmax(0,1fr)} }
 /* 大按鈕裡的兩行字：地點很長時自己換行，不撐出表單 */
 .btn.big .b2,.btn.big .b2 small{overflow-wrap:anywhere}
-.grp .gm{display:grid;grid-template-columns:1fr 1fr;gap:.4rem}
+.grp .gm{display:flex;flex-direction:column;gap:.4rem}
 .grp .gm .mc{cursor:default}
 .grp .gm .mc.pk{cursor:pointer}
 /* roll call */
@@ -428,8 +429,9 @@ a.btn{text-decoration:none}
 .rc-head{display:flex;align-items:baseline;gap:.5rem}
 .rc button .bdg{width:1.3rem;height:1.3rem}
 .rc-head .big{font-size:2rem;font-weight:900;font-variant-numeric:tabular-nums;line-height:1}
-.rc{display:grid;grid-template-columns:1fr 1fr;gap:.45rem}
+.rc{display:flex;flex-direction:column;gap:.45rem}
 .rc button{min-height:3.3rem;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-weight:800;font-size:1rem;display:flex;align-items:center;gap:.45rem;padding:.3rem .6rem;text-align:left}
+.rc .rcn{flex:1;min-width:0;word-break:keep-all;overflow-wrap:anywhere}
 .rc button.on{background:var(--terrace-2);border-color:var(--terrace)}
 .rc .ck{width:1.4rem;height:1.4rem;border-radius:50%;border:2px solid var(--line);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;color:transparent}
 .rc button.on .ck{background:var(--terrace);border-color:var(--terrace);color:#fff}

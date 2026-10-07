@@ -1306,7 +1306,7 @@ VIEWS.rooms=function(){
     }).join('')+'</div>');
     if(me&&!me.room) h.push('<div class="card me-wait">'+ic('key')+'<span>'+esc(me.name)+'，你的房號公布後會顯示在這裡，並且排在最前面。</span></div>');
     if(none.length){ var meFirst=none.slice().sort(function(a,b){ return (b.id===(me||{}).id)-(a.id===(me||{}).id); });
-      h.push('<h2 class="sec">尚未分配房號<span class="n" style="margin-left:auto;font-size:.85rem;color:var(--ink-3)">'+none.length+' 人</span></h2><div class="mlist two">'+meFirst.map(function(m){return memberCard(m,{sm:true,noTr:true});}).join('')+'</div>'); }
+      h.push('<h2 class="sec">尚未分配房號<span class="n" style="margin-left:auto;font-size:.85rem;color:var(--ink-3)">'+none.length+' 人</span></h2><div class="mlist">'+meFirst.map(function(m){return memberCard(m,{sm:true,noTr:true});}).join('')+'</div>'); }
   } else {
     h.push('<div class="search">'+ic('search')+'<input id="memberSearch" type="search" placeholder="找我的名字…" autocomplete="off" aria-label="搜尋團員"></div>');
     h.push('<div id="memberList">'+memberListHTML()+'</div>');
