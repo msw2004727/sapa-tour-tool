@@ -279,14 +279,22 @@ a.btn{text-decoration:none}
 .dayrow.fit button .td{position:absolute;top:-.3rem;right:-.2rem;width:.7rem;height:.7rem;border-radius:50%;background:var(--terrace);border:2px solid var(--card)}
 .day-title{display:flex;align-items:baseline;gap:.5rem;margin:.2rem 0 -.2rem}
 .day-title b{font-size:1.15rem;font-weight:900}
-.stop{display:grid;grid-template-columns:62px 1fr;gap:.6rem;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:.85rem;position:relative;margin-top:.35rem}
+.stop{display:grid;grid-template-columns:62px minmax(0,1fr);gap:.6rem;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:.85rem;position:relative;margin-top:.35rem}
 .stop.cur{border:2.5px solid var(--terrace);background:var(--terrace-2)}
 .stop.off{opacity:.62}
 .stop.off .t-title{text-decoration:line-through}
 .t-time{font-weight:900;font-size:1.15rem;line-height:1.2;font-variant-numeric:tabular-nums;color:var(--indigo);letter-spacing:-.01em}
 .stop.cur .t-time{color:var(--terrace)}
 .t-time span{display:block;font-size:.8rem;color:var(--ink-3);font-weight:800;margin-top:.1rem}
-.t-title{font-size:clamp(20px,1.25rem,22px);font-weight:900;line-height:1.25;margin:0 0 .3rem}
+.t-title{font-size:clamp(20px,1.25rem,22px);font-weight:900;line-height:1.25;margin:0 0 .3rem;overflow-wrap:anywhere}
+/* 標題一行放不下時不換行，改成緩緩左右來回，看得到完整的字（v3.33）。
+   .mq 由 mqInit() 加上：程式沒跑成功、瀏覽器不支援動畫、或系統設了「減少動態效果」時沒有它，標題就照舊換行，字一個都不會被藏起來。
+   外層 h3 是裁切框，內層 .mq-in 是被移動的字；來回的動畫在 mqInit 用 Web Animations API 啟動
+   （兩端停多久、滑多快要照字的長度算，CSS 關鍵影格寫不出來）。 */
+.t-title.mq{overflow:hidden;white-space:nowrap}
+.t-title.mq>.mq-in{display:block;width:max-content}
+.t-title.mq>.mq-in.run{will-change:transform}
+.stop.off .t-title>.mq-in{text-decoration:line-through}
 .t-desc{font-size:1rem;color:var(--ink-2);margin:0 0 .5rem;line-height:1.45;font-weight:500}
 .t-detail{font-size:.98rem;line-height:1.6;color:var(--ink);border-top:1px dashed var(--line);padding-top:.55rem;margin-top:.45rem;white-space:pre-line}
 .badge{position:absolute;top:-.65rem;right:.8rem;background:var(--terrace);color:var(--terrace-ink);font-size:.75rem;font-weight:900;border-radius:999px;padding:.22rem .65rem;letter-spacing:.04em}

@@ -666,8 +666,46 @@ function render(){
   var q=el('memberSearch'); if(q&&P.q){ q.value=P.q; }
   if(y) window.scrollTo(0,y);
   try{ document.documentElement.style.setProperty('--stick',((document.querySelector('.top')||{}).offsetHeight||0)+'px'); }catch(e){}
+  mqInit();
   tick();
 }
+/* ===== 行程標題太長：不換行，緩緩左右來回（v3.33）=====
+   行程頁每一站的標題，一行放得下就不動；放不下就不換行，在原地先停一下，緩緩往左滑到看見最後一個字，
+   再停一下，滑回開頭，一直重複。滑的距離＝字比框多出來的寬度（所以最後一個字剛好完整露出）。
+   系統設了「減少動態效果」、或瀏覽器沒有 Web Animations API 時完全不處理：標題照舊換行，一個字都不藏。
+   MQ.speed：每秒滑幾 px（越小越慢）；pause：兩端各停幾毫秒；minTravel／maxTravel：單程最短、最長幾毫秒 */
+var MQ={speed:30,pause:1500,minTravel:1200,maxTravel:15000,pad:4,w:0};
+function mqInit(){
+  try{
+    var reduce=false; try{ reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){}
+    MQ.w=window.innerWidth;
+    [].slice.call(document.querySelectorAll('.t-title')).forEach(function(h){
+      var n=h.querySelector('.mq-in'); if(!n) return;
+      if(n.getAnimations) n.getAnimations().forEach(function(a){ a.cancel(); });
+      n.classList.remove('run');
+      if(reduce||!n.animate){ h.classList.remove('mq'); return; }
+      h.classList.add('mq');
+      var over=n.getBoundingClientRect().width-h.getBoundingClientRect().width;
+      if(over<=0.5) return;
+      var dist=Math.ceil(over)+MQ.pad, tr=Math.max(MQ.minTravel,Math.min(MQ.maxTravel,dist/MQ.speed*1000)), p=MQ.pause, D=2*(p+tr);
+      var a='translateX(0)', b='translateX('+(-dist)+'px)';
+      n.classList.add('run');
+      n.animate([
+        {transform:a,offset:0,easing:'linear'},
+        {transform:a,offset:p/D,easing:'ease-in-out'},
+        {transform:b,offset:(p+tr)/D,easing:'linear'},
+        {transform:b,offset:(2*p+tr)/D,easing:'ease-in-out'},
+        {transform:a,offset:1}
+      ],{duration:D,iterations:Infinity});
+    });
+  }catch(e){}
+}
+(function(){
+  var tmr; function later(){ clearTimeout(tmr); tmr=setTimeout(function(){ if(window.innerWidth!==MQ.w) mqInit(); },150); }
+  window.addEventListener('resize',later); window.addEventListener('orientationchange',later);
+  try{ var m=window.matchMedia('(prefers-reduced-motion: reduce)'); if(m.addEventListener) m.addEventListener('change',mqInit); else if(m.addListener) m.addListener(mqInit); }catch(e){}
+  try{ if(document.fonts&&document.fonts.ready) document.fonts.ready.then(mqInit); }catch(e){}
+})();
 function renderHeader(){
   var st=S().settings, di=dayInfo(), days=di.days||st.days||5;
   el('hdTrip').textContent=st.tripName||'旅遊團';
@@ -1264,7 +1302,7 @@ VIEWS.plan=function(){
     h.push('<article class="'+cls+'"'+bgStyle(xb)+'>'+
       (x.isCurrent&&!x.isCanceled?'<span class="badge">進行中</span>':'')+(x.isCanceled?'<span class="badge off">因天候取消</span>':'')+
       '<div class="t-time">'+esc(x.time)+(x.end?'<span>– '+esc(x.end)+'</span>':'')+'</div>'+
-      '<div><h3 class="t-title">'+esc(x.title)+'</h3><p class="t-desc">'+esc(x.desc||'')+'</p>'+tagsHTML(x.tags,x.place)+
+      '<div><h3 class="t-title"><span class="mq-in">'+esc(x.title)+'</span></h3><p class="t-desc">'+esc(x.desc||'')+'</p>'+tagsHTML(x.tags,x.place)+
       (P.planMode==='detail'&&x.detail?'<div class="t-detail">'+esc(x.detail)+'</div>':'')+'</div>'+
       (P.leader?'<div class="lead-ctl">'+
         '<button class="btn sm" data-act="moveItem" data-id="'+x.id+'" data-dir="-1"'+(i===0?' disabled':'')+'>'+ic('up')+'上移</button>'+
