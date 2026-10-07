@@ -1128,10 +1128,12 @@ function todayCard(di,day){
   /* 首頁這張主卡刻意不放底圖（小麥指定）：底圖只出現在「行程」分頁的每一站卡片上 */
   return '<section class="card">'+
     '<div class="card-h"><h2>'+ic('calendar')+(di.status==='before'?'第 1 天預告':'今日行程')+'</h2><span class="sub">第 '+day+' 天 · '+esc(dayDate(day))+'</span></div>'+
-    '<div class="stack">'+todays.map(function(x){
-      return '<div style="display:flex;gap:.6rem;align-items:baseline;'+(x.isCanceled?'opacity:.55;text-decoration:line-through;':'')+'">'+
-        '<b class="tm'+(x.isCurrent?' cur':'')+'">'+esc(x.time)+'</b>'+
-        '<span style="font-weight:'+(x.isCurrent?'900':'600')+';flex:1;min-width:0">'+esc(x.title)+(x.isCurrent?' <span class="chip" style="min-height:1.5rem;padding:.05rem .5rem;font-size:.75rem;background:var(--terrace-2);color:var(--terrace)">進行中</span>':'')+(x.isCanceled?' <span class="muted">取消</span>':'')+'</span>'+mapBtn(x.place)+'</div>';
+    '<div class="pv">'+todays.map(function(x){
+      /* 沒填時間的站：時間欄放一個小圓點佔位（不是空的膠囊），標題才跟有時間的站對齊（v3.32） */
+      var has=!!String(x.time==null?'':x.time).trim();
+      return '<div class="pv-row'+(x.isCurrent?' cur':'')+(x.isCanceled?' off':'')+'">'+
+        (has?'<b class="tm'+(x.isCurrent?' cur':'')+'">'+esc(x.time)+'</b>':'<span class="tm none" aria-hidden="true"></span>')+
+        '<span class="pv-t">'+esc(x.title)+(x.isCurrent?' <span class="chip pv-now">進行中</span>':'')+(x.isCanceled?' <span class="muted">取消</span>':'')+'</span>'+mapBtn(x.place)+'</div>';
     }).join('')+(todays.length?'':'<div class="muted">這天還沒有行程</div>')+'</div>'+
     '<button class="btn block soft" style="margin-top:.7rem" data-act="tab" data-tab="plan">看完整行程與注意事項 '+ic('arrow')+'</button></section>';
 }

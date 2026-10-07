@@ -333,6 +333,18 @@ a.btn{text-decoration:none}
 /* 首頁「今日行程」主卡每一列前面的時間（薄荷／橘色的小膠囊；進行中那一站換成綠色） */
 .tm{flex:none;min-width:3.6rem;text-align:center;font-variant-numeric:tabular-nums;font-weight:900;background:var(--indigo-2);color:var(--indigo);border-radius:12px;padding:.12rem .5rem}
 .tm.cur{background:var(--terrace-2);color:var(--terrace)}
+/* 首頁「今日行程／第 1 天預告」：每一列等高（至少 44px，跟地圖鈕一樣高，有沒有地圖鈕都一樣高）、時間欄同寬；
+   沒填時間的列用小圓點佔位，標題才對得齊（v3.32） */
+.pv{display:flex;flex-direction:column}
+.pv-row{display:flex;align-items:center;gap:.6rem;min-height:2.75rem}
+.pv-row+.pv-row{border-top:1px solid var(--line)}
+.pv-row.off{opacity:.55;text-decoration:line-through}
+.pv-row .tm{min-width:4rem;box-sizing:border-box}
+.pv-row .tm.none{background:none;padding:0;display:flex;align-items:center;justify-content:center}
+.pv-row .tm.none::before{content:"";width:.5rem;height:.5rem;border-radius:50%;background:var(--ink-3);opacity:.55}
+.pv-t{flex:1;min-width:0;padding:.35rem 0;font-weight:600;line-height:1.35;overflow-wrap:anywhere;text-wrap:balance}
+.pv-row.cur .pv-t{font-weight:900}
+.pv-now{min-height:1.5rem;padding:.05rem .5rem;font-size:.75rem;background:var(--terrace-2);color:var(--terrace)}
 /* 首頁的「今日行程」主卡不套底圖，所以這裡沒有 .card 的規則。 */
 @media (prefers-reduced-motion: no-preference){.stop.has-bg::before{transition:opacity .18s}}
 
@@ -554,6 +566,9 @@ ul.clr-list{gap:.3rem;margin-top:.35rem;line-height:1.45}
 /* flights */
 .fl{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:.5rem}
 @media (max-width:360px){ html[data-fs="lg"] .fl,html[data-fs="xl"] .fl{grid-template-columns:minmax(0,1fr)} }
+/* 只有一班（或班數是單數時的最後一班）就佔滿整列，不要留一半空白；佔滿時時間與說明排在同一行（v3.32） */
+.fl>.fl-col:last-child:nth-child(odd){grid-column:1/-1}
+.fl>.fl-col:last-child:nth-child(odd) .fl-r{flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:.1rem .7rem}
 .fl-col{background:var(--bg);border-radius:12px;padding:.6rem .7rem}
 .fl-h{display:flex;align-items:center;gap:.3rem;font-weight:900;font-size:clamp(.82rem,4.2vw,1rem);margin-bottom:.4rem;white-space:nowrap;overflow:hidden;min-width:0}
 .fl-h .al{width:1.7rem;height:1.7rem;font-size:.66rem}
@@ -862,7 +877,7 @@ svg.bdg.lg{width:2.1rem;height:2.1rem}
 <script src="./config.js"></script>
 <script>
 /* ===== 圖示：100% inline SVG，無外部字型／CDN ===== */
-var APP_VERSION = '3.31';
+var APP_VERSION = '3.32';
 var ICONS = {
   megaphone:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/>',
   pin:'<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -3016,10 +3031,12 @@ function todayCard(di,day){
   /* 首頁這張主卡刻意不放底圖（小麥指定）：底圖只出現在「行程」分頁的每一站卡片上 */
   return '<section class="card">'+
     '<div class="card-h"><h2>'+ic('calendar')+(di.status==='before'?'第 1 天預告':'今日行程')+'</h2><span class="sub">第 '+day+' 天 · '+esc(dayDate(day))+'</span></div>'+
-    '<div class="stack">'+todays.map(function(x){
-      return '<div style="display:flex;gap:.6rem;align-items:baseline;'+(x.isCanceled?'opacity:.55;text-decoration:line-through;':'')+'">'+
-        '<b class="tm'+(x.isCurrent?' cur':'')+'">'+esc(x.time)+'</b>'+
-        '<span style="font-weight:'+(x.isCurrent?'900':'600')+';flex:1;min-width:0">'+esc(x.title)+(x.isCurrent?' <span class="chip" style="min-height:1.5rem;padding:.05rem .5rem;font-size:.75rem;background:var(--terrace-2);color:var(--terrace)">進行中</span>':'')+(x.isCanceled?' <span class="muted">取消</span>':'')+'</span>'+mapBtn(x.place)+'</div>';
+    '<div class="pv">'+todays.map(function(x){
+      /* 沒填時間的站：時間欄放一個小圓點佔位（不是空的膠囊），標題才跟有時間的站對齊（v3.32） */
+      var has=!!String(x.time==null?'':x.time).trim();
+      return '<div class="pv-row'+(x.isCurrent?' cur':'')+(x.isCanceled?' off':'')+'">'+
+        (has?'<b class="tm'+(x.isCurrent?' cur':'')+'">'+esc(x.time)+'</b>':'<span class="tm none" aria-hidden="true"></span>')+
+        '<span class="pv-t">'+esc(x.title)+(x.isCurrent?' <span class="chip pv-now">進行中</span>':'')+(x.isCanceled?' <span class="muted">取消</span>':'')+'</span>'+mapBtn(x.place)+'</div>';
     }).join('')+(todays.length?'':'<div class="muted">這天還沒有行程</div>')+'</div>'+
     '<button class="btn block soft" style="margin-top:.7rem" data-act="tab" data-tab="plan">看完整行程與注意事項 '+ic('arrow')+'</button></section>';
 }
