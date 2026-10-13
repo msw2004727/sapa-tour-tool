@@ -94,7 +94,7 @@ function dbgField(id){
     '</div>'+
     '<div class="dbg-row"><span>濃度</span><input type="range" id="dbgOp" min="3" max="30" value="'+op+'"'+(has?'':' disabled')+'><output id="dbgOpV">'+op+'%</output></div>'+
     '<div class="dbg-prev" id="dbgPrev" style="--dbg:'+url+';--dop:'+(has?op/100:0)+'">'+
-      '<div class="pv-t">08:00</div><div><b>搭纜車上山</b><span>山上約 10 度，請備妥外套與保溫水壺</span></div>'+
+      '<div class="pv-t">預覽</div><div><b>底圖效果預覽</b><span>僅示意文字，不是正式行程</span></div>'+
     '</div>'+
     '<div class="row dbg-btns">'+
       '<label class="btn sm" style="cursor:pointer">'+ic('camera')+'選照片<input type="file" id="dbgFile" accept="image/*" hidden></label>'+
