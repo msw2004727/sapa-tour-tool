@@ -31,7 +31,7 @@ function ta(n,v){ return '<textarea class="in" name="'+n+'">'+esc(v||'')+'</text
 function chipsFill(target,vals){ return '<div class="chips" style="margin-top:.4rem">'+vals.map(function(v){ return '<button type="button" class="chip pick" data-act="chipSet" data-target="'+target+'" data-val="'+esc(v)+'">'+esc(v)+'</button>'; }).join('')+'</div>'; }
 function swatches(group,list,cur,render){ return '<div class="sw" data-group="'+group+'">'+list.map(function(x){ var v=x[0],lab=x[1]; return '<button type="button" class="'+(v===cur?'on':'')+'" data-act="pick" data-val="'+esc(v)+'" title="'+esc(lab)+'">'+(render?render(v,lab):esc(lab))+'</button>'; }).join('')+'</div><input type="hidden" name="'+group+'" value="'+esc(cur)+'">'; }
 function footBtns(saveAct,extra){ return (extra||'')+'<button class="btn" data-act="sheetClose">取消</button><button class="btn pri" data-act="'+saveAct+'">儲存</button>'; }
-function openFull(html){ el('fullRoot').innerHTML='<div class="full" role="dialog" aria-modal="true">'+html+'</div>'; histPush('full'); }
+function openFull(html){ el('fullRoot').innerHTML='<div class="full" role="dialog" aria-modal="true">'+html+'</div>'; if(P.tab==='tools') linkToolText(el('fullRoot')); histPush('full'); }
 function closeFull(){ el('fullRoot').innerHTML=''; histPop('full'); FULL_LOCK=false; }
 
 /* ===== 各種表單 ===== */

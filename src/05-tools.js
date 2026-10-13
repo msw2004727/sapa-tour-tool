@@ -86,7 +86,9 @@ function toolMenu(){
      ! 警示           名稱｜說明（對照表，半形 | 也可以）
      **粗體**         空一行＝分段；其他就是一般文字
    先整段跳脫再只放回 <b>，所以雲端資料裡就算有人塞 <script> 也只會顯示成文字。 */
-function mdIn(s){ return esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>'); }
+function mdIn(s){ return String(s==null?'':s).split(/(\*\*.+?\*\*)/g).map(function(x){
+  return /^\*\*.+\*\*$/.test(x)?'<b>'+toolLinkText(x.slice(2,-2))+'</b>':toolLinkText(x);
+}).join(''); }
 function mdLine(s){ var m;
   s=String(s).replace(/\s+$/,''); if(!s.trim()) return {t:'_'};
   s=s.replace(/^\s+/,'');

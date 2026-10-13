@@ -653,6 +653,37 @@ function bulkWrite(make,reason,next){
   });
 }
 
+/* 工具內的網址：只接受 HTTP(S)，文字與屬性分別跳脫，保留句尾標點。 */
+function toolLinkText(text){
+  var s=String(text==null?'':text), re=/https?:\/\/[^\s<>"'`，。！？；：、【】「」『』]+/gi, out='', at=0, m;
+  while((m=re.exec(s))){
+    var url=m[0], tail='';
+    while(/[.,!?;:）》]$/.test(url)||(/[)\]}]$/.test(url)&&
+      url.split(url.slice(-1)).length>url.split({')':'(',']':'[','}':'{'}[url.slice(-1)]).length)){
+      tail=url.slice(-1)+tail; url=url.slice(0,-1);
+    }
+    out+=esc(s.slice(at,m.index));
+    try{ var parsed=new URL(url); if(!parsed.hostname) throw new Error('host');
+      var href=url;
+      if(isInLine()){ parsed.searchParams.set('openExternalBrowser','1'); href=parsed.href; }
+      out+='<a class="tool-url" href="'+esc(href)+'" target="_blank" rel="noopener noreferrer">'+esc(url)+'</a>';
+    }catch(e){ out+=esc(url); }
+    out+=esc(tail); at=re.lastIndex;
+  }
+  return out+esc(s.slice(at));
+}
+/* 補上工具頁與記事本的純文字網址；不碰既有連結、按鈕或輸入欄。 */
+function linkToolText(root){
+  if(!root) return;
+  var walk=document.createTreeWalker(root,NodeFilter.SHOW_TEXT), nodes=[], n;
+  while((n=walk.nextNode())) if(/https?:\/\//i.test(n.nodeValue)&&
+    !n.parentElement.closest('a,button,input,textarea,select,script,style,[contenteditable]')) nodes.push(n);
+  nodes.forEach(function(node){ var html=toolLinkText(node.nodeValue); if(html.indexOf('<a ')<0) return;
+    var box=document.createElement('span'); box.innerHTML=html;
+    var frag=document.createDocumentFragment(); while(box.firstChild) frag.appendChild(box.firstChild);
+    node.parentNode.replaceChild(frag,node);
+  });
+}
 /* ===== 畫面渲染 ===== */
 var TABS=[['plan','行程','calendar'],['rooms','房號','key'],['groups','分組','users'],['tools','工具','grid']];
 function render(){
@@ -662,6 +693,7 @@ function render(){
   renderHeader(); renderSync(); renderTabs();
   var fn=VIEWS[P.tab]||VIEWS.home, y=window.scrollY||0;
   try{ el('view').innerHTML=fn(); }catch(e){ el('view').innerHTML='<div class="card"><b>畫面顯示發生問題</b><div class="muted">'+esc(e.message)+'</div><button class="btn block" style="margin-top:.6rem" data-act="resetLocal">清除這支手機的快取重新載入</button></div>'; }
+  if(P.tab==='tools'||P.tab==='notes') linkToolText(el('view'));
   el('leaderBar').hidden=!P.leader;
   var q=el('memberSearch'); if(q&&P.q){ q.value=P.q; }
   if(y) window.scrollTo(0,y);

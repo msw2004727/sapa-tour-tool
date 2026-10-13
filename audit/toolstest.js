@@ -98,6 +98,34 @@ async function open(b,opt){
     ck('標記裡的 HTML 全部當成文字（img、script、onclick 都不會變成元素）',!x.img&&!x.script&&!x.onclick&&!x.i&&x.text,x);
     await ctx.close(); }
 
+  console.log('\n[2b] 網址自動連結：格式、安全與外部開啟');
+  { const {ctx,p}=await open(b);
+    const r=await p.evaluate(()=>{
+      var box=document.createElement('div');
+      box.innerHTML=mdCard('## 官方網站\n**https://example.com/path?a=1&b=2#info**。\n- http://example.org/a_(b)。\n! javascript:alert(1)\nhttps://example.net/?q=<img onerror=alert(1)>');
+      var a=[...box.querySelectorAll('a')];
+      var mixed=document.createElement('div'); mixed.innerHTML='<p>說明 https://example.com/。</p><button>https://example.org/</button><textarea>https://example.org/</textarea><a href="https://example.org/">https://example.org/</a>';
+      linkToolText(mixed); linkToolText(mixed);
+      return {urls:a.map(x=>x.getAttribute('href')),labels:a.map(x=>x.textContent),safe:a.every(x=>x.target==='_blank'&&x.rel.includes('noopener')&&x.rel.includes('noreferrer')),
+        bold:!!box.querySelector('b a'),invalid:box.querySelectorAll('img,script,[onerror]').length,
+        js:a.some(x=>x.href.indexOf('javascript:')===0),sentence:box.textContent.includes('info。'),
+        mixed:mixed.querySelectorAll('a').length,nested:mixed.querySelectorAll('a a,button a,textarea a').length};
+    });
+    ck('HTTP、HTTPS 查詢參數與頁內定位完整保留',r.urls[0]==='https://example.com/path?a=1&b=2#info'&&r.urls[1]==='http://example.org/a_(b)',r);
+    ck('粗體內的網址可點；句尾標點仍是一般文字',r.bold&&r.sentence&&r.labels[0].endsWith('#info'),r);
+    ck('外部連結用新分頁且隔離 opener',r.safe,r);
+    ck('HTML 與 javascript 不會變成可執行內容',!r.invalid&&!r.js,r);
+    ck('純文字可連結；不重複處理或把連結塞進按鈕',r.mixed===2&&r.nested===0,r);
+    await p.evaluate(()=>{ document.getElementById('view').innerHTML=mdCard('https://example.com/'); });
+    const popup=p.waitForEvent('popup'); await p.click('#view a.tool-url');
+    const external=await popup; ck('實際點擊打開另一個分頁',external!==p); await external.close();
+    await ctx.close();
+    const line=await open(b,{userAgent:'Mozilla/5.0 iPhone Line/13.0'});
+    const dest=await line.p.evaluate(()=>{var h=document.createElement('div');h.innerHTML=mdIn('https://example.com/?a=1&openExternalBrowser=0#info');var a=h.querySelector('a'),u=new URL(a.href);return {external:u.searchParams.get('openExternalBrowser'),a:u.searchParams.get('a'),hash:u.hash,display:a.textContent};});
+    ck('LINE 外部開啟參數放在查詢區，原參數與 hash 保留',dest.external==='1'&&dest.a==='1'&&dest.hash==='#info'&&dest.display==='https://example.com/?a=1&openExternalBrowser=0#info',dest);
+    await line.ctx.close();
+  }
+
   console.log('\n[3] 知識小卡：新增、編輯、預覽、排序、刪除（點畫面）');
   { const {ctx,p,errs}=await open(b);
     const r=await p.evaluate(async()=>{ var o={};
